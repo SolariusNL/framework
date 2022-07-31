@@ -1,0 +1,60 @@
+import { Table } from "@mantine/core";
+import DocWrapper from "../components/DocWrapper";
+export const meta = {
+  title: "Framework Privacy Policy",
+  lastModified: "7/30/2022",
+  summary: "How does Framework protect your privacy?",
+};
+export const cookies = [
+  { 
+    name: ".frameworksession", 
+    purpose: "Store information about your session (e.g. user ID, session ID, etc.)",
+    expiration: "2 months",
+  },
+  {
+    name: "Frameworkanalytics",
+    purpose: "Maintains a record of your usage of Framework",
+    expiration: "3 years",
+  }
+];
+
+## About Framework
+Framework is a platform that aims to be a free, open source alternative platform to Roblox. Framework is developed by people like you, and we hope you enjoy using it.
+
+## Cookies
+Framework uses cookies to store information about your session. This information is used to provide you with a better experience when you visit our website.
+
+<Table striped>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Purpose</th>
+      <th>Expiration</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {cookies.map((cookie) => (
+      <tr key={cookie.name}>
+        <td>{cookie.name}</td>
+        <td>{cookie.purpose}</td>
+        <td>{cookie.expiration}</td>
+      </tr>
+    ))}
+  </tbody>
+</Table>
+
+## What information do we collect?
+We try our best to reduce the amount of information that we collect about you. Here is a short summary of what we collect to make our service possible:
+
+- **Browser information**: We collect information about your browser, including your browser type, version, and operating system.
+- **On-site search**: We collect information about your search queries, and the results that you see when you search. This information is used to provide you with a better experience when you visit our website.
+- **Route information**: We collect information about the routes that you visit, and the results that you see when you visit those routes. This information is used to provide you with a better experience when you visit our website.
+
+## Does Framework sell my data?
+We do not sell your data to third parties. We will never, ever sell your data to third parties. We will only use your data for the purposes that you have given us permission to use by agreeing to this privacy policy.
+
+## Thats it?
+That's it! We hope you enjoy using Framework. If you have any questions, please contact us at [inquiries@framework.soodam.rocks](mailto:inquiries@framework.soodam.rocks). We're always happy to help.
+
+export default ({ children }) => <DocWrapper meta={meta}>{children}</DocWrapper>

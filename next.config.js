@@ -2,6 +2,18 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-}
+};
 
-module.exports = nextConfig
+const withMDX = require("@next/mdx")({
+  // get mdx files in src/pages
+  extension: /\.mdx?$/,
+  options: {
+    remarkPlugins: [],
+    rehypePlugins: [],
+  },
+});
+
+module.exports = withMDX({
+  ...nextConfig,
+  pageExtensions: ["ts", "tsx", "js", "jsx", "md", "mdx"],
+});
