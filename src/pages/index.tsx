@@ -11,7 +11,10 @@ interface HomeProps {
 const Home: NextPage<HomeProps> = ({ user }) => {
   return (
     <Framework user={user} activeTab="home">
-      <Title>Home</Title>
+      <Title mb={12}>
+        Good {new Date().getHours() > 12 ? "afternoon" : "morning"},{" "}
+        {user.username}
+      </Title>
     </Framework>
   );
 };

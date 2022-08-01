@@ -1,19 +1,24 @@
-import { useState } from "react";
 import {
-  createStyles,
-  Container,
+  ActionIcon,
+  Autocomplete,
   Avatar,
-  UnstyledButton,
-  Group,
-  Text,
-  Menu,
-  Tabs,
   Burger,
+  Container,
+  createStyles,
   Drawer,
+  Group,
+  Kbd,
+  Menu,
+  Popover,
   Stack,
+  Tabs,
+  Text,
   ThemeIcon,
+  UnstyledButton,
 } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import { useDisclosure, useHotkeys } from "@mantine/hooks";
+import { useRouter } from "next/router";
+import React, { useRef, useState } from "react";
 import {
   HiChevronDown,
   HiCog,
@@ -21,20 +26,30 @@ import {
   HiHome,
   HiLightBulb,
   HiLogout,
+  HiSearch,
+  HiSearchCircle,
   HiShoppingBag,
   HiUser,
+  HiUsers,
   HiViewGrid,
   HiViewList,
 } from "react-icons/hi";
-import { useRouter } from "next/router";
-import useMediaQuery from "../util/useMediaQuery";
-import { User } from "../util/prisma-types";
 import { setCookie } from "../util/cookies";
+import { User } from "../util/prisma-types";
+import useMediaQuery from "../util/useMediaQuery";
 
 interface FrameworkProps {
   user: User;
   children: React.ReactNode;
-  activeTab: "home" | "games" | "catalog" | "invent" | "avatar" | "settings";
+  activeTab:
+    | "home"
+    | "games"
+    | "catalog"
+    | "invent"
+    | "avatar"
+    | "settings"
+    | "friends"
+    | "none";
 }
 
 const HeaderStyle = {
@@ -44,7 +59,7 @@ const HeaderStyle = {
     "url('https://assets-global.website-files.com/600ead1452cf056d0e52dbed/603408f80d379f66929884cf_PurpleBackground%20(1).png')",
   backgroundPosition: "0 15%",
   backgroundSize: "cover",
-  fontSize: "1.1rem",
+  fontSize: "1.2rem",
   lineHeight: "1em",
   fontWeight: "900",
   WebkitBackgroundClip: "text",
@@ -135,6 +150,50 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
+const Search = ({ ref }: { ref: React.RefObject<HTMLInputElement> }) => {
+  const [search, setSearch] = React.useState("");
+  const router = useRouter();
+  const searchOptions = [
+    search.trim().length > 0
+      ? ["games", "users", "catalog", "sounds"].map((provider) => {
+          return {
+            value: `Search ${provider} for "${search}"`,
+            provider: provider,
+            query: search,
+          };
+        })
+      : [],
+  ].flat();
+
+  return (
+    <Autocomplete
+      icon={<HiSearchCircle />}
+      placeholder="Search Framework"
+      variant="default"
+      type="search"
+      styles={{ rightSection: { pointerEvents: "none" } }}
+      rightSectionWidth={90}
+      rightSection={
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <Kbd>Ctrl</Kbd>
+          <span style={{ margin: "0 5px" }}>+</span>
+          <Kbd>K</Kbd>
+        </div>
+      }
+      value={search}
+      onChange={setSearch}
+      data={searchOptions}
+      onItemSubmit={(item) => {
+        const { provider, query } = item;
+
+        setSearch("");
+        router.push(`/search?query=${query}&category=${provider}`);
+      }}
+      ref={ref}
+    />
+  );
+};
+
 const Framework = ({ user, children, activeTab }: FrameworkProps) => {
   const { classes, theme, cx } = useStyles();
   const [opened, { toggle }] = useDisclosure(false);
@@ -167,6 +226,12 @@ const Framework = ({ user, children, activeTab }: FrameworkProps) => {
       href: "/invent",
       icon: <HiLightBulb />,
       color: "teal",
+    },
+    {
+      label: "Friends",
+      href: "/friends",
+      icon: <HiUsers />,
+      color: "green",
     },
     {
       label: "Avatar",
@@ -223,10 +288,15 @@ const Framework = ({ user, children, activeTab }: FrameworkProps) => {
       <Menu.Dropdown>
         <Menu.Item icon={<HiUser />}>Profile</Menu.Item>
         <Menu.Divider />
-        <Menu.Item sx={{ fontWeight: 500 }} color="red" icon={<HiLogout />} onClick={() => {
-          setCookie(".frameworksession", "", -365);
-          router.push("/invite");
-        }}>
+        <Menu.Item
+          sx={{ fontWeight: 500 }}
+          color="red"
+          icon={<HiLogout />}
+          onClick={() => {
+            setCookie(".frameworksession", "", -365);
+            router.push("/login");
+          }}
+        >
           Logout
         </Menu.Item>
       </Menu.Dropdown>
@@ -264,6 +334,9 @@ const Framework = ({ user, children, activeTab }: FrameworkProps) => {
     </Menu>
   );
 
+  const searchRef = useRef<HTMLInputElement>(null);
+  const [searchPopoverOpen, setSearchPopoverOpen] = useState(false);
+
   return (
     <>
       <div className={classes.header}>
@@ -287,23 +360,46 @@ const Framework = ({ user, children, activeTab }: FrameworkProps) => {
           </Group>
         </Container>
         {!mobile && (
-          <Container>
-            <Tabs
-              defaultValue={activeTab}
-              variant="outline"
-              classNames={{
-                tabsList: classes.tabsList,
-                tab: classes.tab,
-              }}
-            >
-              <Tabs.List>{items}</Tabs.List>
-            </Tabs>
+          <Container mt={10}>
+            <Group position="apart">
+              <Tabs
+                defaultValue={activeTab}
+                variant="outline"
+                classNames={{
+                  tabsList: classes.tabsList,
+                  tab: classes.tab,
+                }}
+              >
+                <Tabs.List>{items}</Tabs.List>
+              </Tabs>
+
+              <Popover
+                transition="pop-top-right"
+                position="bottom-end"
+                shadow={"md"}
+                opened={searchPopoverOpen}
+                onChange={setSearchPopoverOpen}
+              >
+                <Popover.Target>
+                  <ActionIcon
+                    variant="subtle"
+                    onClick={() => setSearchPopoverOpen(!searchPopoverOpen)}
+                  >
+                    <HiSearch />
+                  </ActionIcon>
+                </Popover.Target>
+
+                <Popover.Dropdown>
+                  <Search ref={searchRef} />
+                </Popover.Dropdown>
+              </Popover>
+            </Group>
           </Container>
         )}
 
         <Drawer opened={opened} onClose={toggle} position="right">
           <Container>
-            <Stack spacing={16} mb={24}>
+            <Stack spacing={24} mb={32}>
               {tabs.map((tab) => (
                 <Group
                   onClick={() => {
@@ -313,16 +409,35 @@ const Framework = ({ user, children, activeTab }: FrameworkProps) => {
                   key={tab.label}
                   sx={{ cursor: "pointer" }}
                 >
-                  <ThemeIcon variant="outline" color={tab.color} size={24}>
+                  <ThemeIcon
+                    variant="outline"
+                    color={tab.color}
+                    size={24}
+                    sx={(theme) => ({
+                      boxShadow: `0 0 17px ${
+                        theme.colors[tab.color][9] + "70"
+                      }`,
+                    })}
+                  >
                     {tab.icon}
                   </ThemeIcon>
                   <Text
                     color={tab.color}
                     sx={(theme) => ({
-                      textDecoration: `underline ${
-                        theme.colors[tab.color][3]
-                      } 3px`,
-                      textDecorationColor: theme.colors[tab.color][3],
+                      color: theme.colors[tab.color][4] + "100",
+                      borderBottom:
+                        "3px solid " + theme.colors[tab.color][9] + "95",
+                      transition: "all 0.3s ease-in-out",
+                      "&:before": {
+                        transition: "all 0.3s ease-in-out",
+                      },
+                      "&:hover": {
+                        borderBottom:
+                          "3px solid " + theme.colors[tab.color][9] + "90",
+                      },
+                      textShadow: `0 0 27px ${
+                        theme.colors[tab.color][9] + "75"
+                      }`,
                     })}
                   >
                     {tab.label}

@@ -10,6 +10,7 @@ import {
   Container,
   Group,
   Button,
+  Stack,
 } from "@mantine/core";
 import Link from "next/link";
 import authorizedRoute from "../util/authorizedRoute";
@@ -18,51 +19,58 @@ import { setCookie } from "../util/cookies";
 import { useRouter } from "next/router";
 
 interface FormValues {
-  code: string;
-  remainLoggedIn: boolean;
+  username: string;
+  password: string;
+  rememberMe: boolean;
 }
 
-const Invite: NextPage = () => {
+const Login: NextPage = () => {
   const router = useRouter();
   const form = useForm<FormValues>({
     initialValues: {
-      code: "",
-      remainLoggedIn: false,
+      username: "",
+      password: "",
+      rememberMe: false,
     },
     validate: {
-      code: (value) =>
-        value.length !== 19
-          ? "Code must be 19 digits long (including dashes)"
-          : value.split("-").every((part) => part.length === 4)
+      username: (value) =>
+        value.length < 3 || value.length > 29
+          ? "Username must be between 3 and 29 characters"
+          : value.match(/^[a-zA-Z0-9_]+$/)
           ? undefined
-          : "Code must be in this format: 0000-0000-0000-0000",
+          : "Username must be alphanumeric and underscores only",
+      password: (value) =>
+        value.length < 6 ? "Password must be at least 6 characters" : undefined,
     },
   });
 
-  const handleInviteSubmit = async (values: FormValues) => {
-    fetch("/api/invite", {
+  const handleLogin = async (values: FormValues) => {
+    fetch("/api/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        inviteCode: String(values.code),
+        username: String(values.username),
+        password: String(values.password),
       }),
     })
       .then((res) => res.json())
       .then((res) => {
         if (res.success) {
-          setCookie(".frameworksession", form.values.code, 365);
+          setCookie(".frameworksession", res.token, 60);
           router.push("/");
         } else {
           form.setErrors({
-            code: "Invalid code",
+            username: "Invalid login",
+            password: "Invalid login",
           });
         }
       })
-      .catch((err) => {
+      .catch(() => {
         form.setErrors({
-          code: "An unknown error occurred",
+          username: "An unknown error occurred",
+          password: "An unknown error occurred",
         });
       });
   };
@@ -71,30 +79,34 @@ const Invite: NextPage = () => {
     <Container size={420} my={40}>
       <Title align="center">Framework</Title>
       <Text color="dimmed" size="sm" align="center" mt={5}>
-        Framework is in alpha and requires an invite code to join.
+        Framework is in alpha and requires an invite code to join.{" "}
+        <Link href="/register">
+          <Anchor>Have a code? Register for a Framework account.</Anchor>
+        </Link>
       </Text>
 
       <Paper withBorder shadow="md" p={30} mt={30} radius="md" mb={30}>
-        <form onSubmit={form.onSubmit((values) => handleInviteSubmit(values))}>
-          <TextInput
-            label="Invite code"
-            description="You should've received this in your email. If you cannot locate your invite code, please contact us."
-            placeholder="0000-0000-0000-0000"
-            required
-            {...form.getInputProps("code")}
-          />
+        <form onSubmit={form.onSubmit((values) => handleLogin(values))}>
+          <Stack spacing={12}>
+            <TextInput
+              label="Username"
+              placeholder="Framework"
+              required
+              {...form.getInputProps("username")}
+            />
+            <TextInput
+              label="Password"
+              type="password"
+              placeholder="balllicker935"
+              required
+              {...form.getInputProps("password")}
+            />
+          </Stack>
           <Group position="apart" mt="md">
             <Checkbox
               label="Remember me"
-              {...form.getInputProps("remainLoggedIn")}
+              {...form.getInputProps("rememberMe")}
             />
-            <Anchor<"a">
-              onClick={(event) => event.preventDefault()}
-              href="#"
-              size="sm"
-            >
-              Recover invite code
-            </Anchor>
           </Group>
           <Button fullWidth mt="xl" type="submit">
             Sign in
@@ -133,4 +145,4 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   return await authorizedRoute(ctx, false, true);
 }
 
-export default Invite;
+export default Login;

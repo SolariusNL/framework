@@ -10,13 +10,105 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  ADMIN
+  USER
+}
+
 model User {
-  id         Int      @id @default(autoincrement())
-  username   String
-  email      String
-  inviteCode String   @unique
-  tickets    Int      @default(500)
-  premium    Boolean  @default(false)
+  id                     Int             @id @default(autoincrement())
+  username               String
+  email                  String
+  password               String
+  tickets                Int             @default(500)
+  premium                Boolean         @default(false)
+  createdAt              DateTime        @default(now())
+  updatedAt              DateTime        @default(now())
+  role                   Role            @default(USER)
+  outboundFriendRequests FriendRequest[] @relation("outboundFriendRequests")
+  inboundFriendRequests  FriendRequest[] @relation("inboundFriendRequests")
+  friends                User[]          @relation("friends")
+  friendsRelation        User[]          @relation("friends")
+  sessions               Session[]       @relation("userSessions")
+  games                  Game[]          @relation("gameAuthor")
+  avatarUri              String          @default("https://avatars.dicebear.com/api/identicon/framework.svg")
+  likedGames             Game[]          @relation("likedGames")
+  dislikedGames          Game[]          @relation("dislikedGames")
+}
+
+model Invite {
+  id   String  @id @default(uuid())
+  code String
+  used Boolean @default(false)
+}
+
+model Session {
+  id     String @id @default(uuid())
+  user   User   @relation("userSessions", fields: [userId], references: [id])
+  userId Int
+  token  String @unique
+}
+
+model FriendRequest {
+  id         String   @id @default(uuid())
+  sender     User     @relation("outboundFriendRequests", fields: [senderId], references: [id])
+  senderId   Int
+  receiver   User     @relation("inboundFriendRequests", fields: [receiverId], references: [id])
+  receiverId Int
   createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now())
+}
+
+enum GameGenre {
+  ACTION
+  ADVENTURE
+  RPG
+  STRATEGY
+  SIMULATION
+  SPORTS
+  PUZZLE
+  RACING
+  ROLE_PLAYING
+  HORROR
+  FANTASY
+  MMO
+  SHOOTER
+  OTHER
+}
+
+model Game {
+  id                   Int          @id @default(autoincrement())
+  name                 String
+  genre                GameGenre
+  description          String
+  maxPlayersPerSession Int          @default(15)
+  connectData          ConnectData? @relation("gameConnectData")
+  connectDataId        String
+  updates              Update[]     @relation("updates")
+  author               User         @relation("gameAuthor", fields: [authorId], references: [id])
+  authorId             Int
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @default(now())
+  iconUri              String
+  gallery              String[]
+  likedBy              User[]       @relation("likedGames")
+  dislikedBy           User[]       @relation("dislikedGames")
+  visits               Int          @default(0)
+}
+
+model ConnectData {
+  id     String @id @default(uuid())
+  game   Game   @relation("gameConnectData", fields: [gameId], references: [id])
+  gameId Int    @unique
+
+  ip   String
+  port Int
+}
+
+model Update {
+  id          Int      @id @default(autoincrement())
+  game        Game     @relation("updates", fields: [gameId], references: [id])
+  gameId      Int
+  tag         String
+  description String
+  releaseDate DateTime @default(now())
 }
