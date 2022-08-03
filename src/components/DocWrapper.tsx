@@ -1,10 +1,20 @@
-import { Anchor, Container, Divider, Grid, Group, Text, createStyles, Box } from "@mantine/core";
+import {
+  Anchor,
+  Container,
+  Divider,
+  Grid,
+  Group,
+  Text,
+  createStyles,
+  Box,
+} from "@mantine/core";
 import Link from "next/link";
 import React from "react";
 import { HiChevronLeft, HiSearch } from "react-icons/hi";
 import useMediaQuery from "../util/useMediaQuery";
 import { renderToString } from "react-dom/server";
 import { useState } from "react";
+import MinimalFooter from "./MinimalFooter";
 
 const LINK_HEIGHT = 38;
 const INDICATOR_SIZE = 10;
@@ -26,13 +36,17 @@ const useStyles = createStyles((theme) => ({
     }`,
 
     "&:hover": {
-      backgroundColor: theme.colorScheme === "dark" ? theme.colors.dark[6] : theme.colors.gray[0],
+      backgroundColor:
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[6]
+          : theme.colors.gray[0],
     },
   },
 
   linkActive: {
     fontWeight: 500,
-    color: theme.colors[theme.primaryColor][theme.colorScheme === "dark" ? 3 : 7],
+    color:
+      theme.colors[theme.primaryColor][theme.colorScheme === "dark" ? 3 : 7],
   },
 
   links: {
@@ -41,8 +55,11 @@ const useStyles = createStyles((theme) => ({
 
   indicator: {
     transition: "transform 150ms ease",
-    border: `2px solid ${theme.colors[theme.primaryColor][theme.colorScheme === "dark" ? 3 : 7]}`,
-    backgroundColor: theme.colorScheme === "dark" ? theme.colors.dark[7] : theme.white,
+    border: `2px solid ${
+      theme.colors[theme.primaryColor][theme.colorScheme === "dark" ? 3 : 7]
+    }`,
+    backgroundColor:
+      theme.colorScheme === "dark" ? theme.colors.dark[7] : theme.white,
     height: INDICATOR_SIZE,
     width: INDICATOR_SIZE,
     borderRadius: INDICATOR_SIZE,
@@ -91,7 +108,7 @@ const DocWrapper = ({ children, meta }: DocWrapperProps) => {
 
   const { classes, cx } = useStyles();
   const [active, setActive] = useState(0);
-  
+
   const contentString = renderToString(children as React.ReactElement);
 
   const getHeadings = (source: string) => {
@@ -114,7 +131,7 @@ const DocWrapper = ({ children, meta }: DocWrapperProps) => {
   };
 
   const headings = getHeadings(contentString);
-  
+
   React.useEffect(() => {
     if (typeof window !== "undefined") {
       const h2s = Array.from(document.querySelectorAll("h2"));
@@ -145,6 +162,17 @@ const DocWrapper = ({ children, meta }: DocWrapperProps) => {
           <Text size="sm">Last updated: {meta.lastModified}</Text>
 
           {children}
+
+          <Group
+            mt={30}
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <MinimalFooter />
+          </Group>
         </Grid.Col>
 
         <Grid.Col span={mobile ? 24 : 8}>
@@ -157,7 +185,11 @@ const DocWrapper = ({ children, meta }: DocWrapperProps) => {
             <div className={classes.links}>
               <div
                 className={classes.indicator}
-                style={{ transform: `translateY(${active * LINK_HEIGHT + INDICATOR_OFFSET}px)` }}
+                style={{
+                  transform: `translateY(${
+                    active * LINK_HEIGHT + INDICATOR_OFFSET
+                  }px)`,
+                }}
               />
 
               {headings?.map((heading, index) => (
@@ -168,7 +200,10 @@ const DocWrapper = ({ children, meta }: DocWrapperProps) => {
                   onClick={(e) => {
                     setActive(index);
                   }}
-                  className={cx(classes.link, active === index && classes.linkActive)}
+                  className={cx(
+                    classes.link,
+                    active === index && classes.linkActive
+                  )}
                   sx={(theme) => ({ paddingLeft: 1 * theme.spacing.lg })}
                 >
                   {heading.text}

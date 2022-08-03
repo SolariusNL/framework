@@ -17,6 +17,7 @@ import authorizedRoute from "../util/authorizedRoute";
 import { useForm } from "@mantine/form";
 import { setCookie } from "../util/cookies";
 import { useRouter } from "next/router";
+import MinimalFooter from "../components/MinimalFooter";
 
 interface FormValues {
   username: string;
@@ -114,29 +115,7 @@ const Login: NextPage = () => {
         </form>
       </Paper>
 
-      <Text size="sm" align="center" mb={5} weight={500} color="dimmed">
-        Copyright © 2022 Soodam.re. All rights reserved.
-      </Text>
-
-      <Group
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-        }}
-        spacing={14}
-      >
-        <Link href="/privacy">
-          <Anchor size="sm">Privacy</Anchor>
-        </Link>
-
-        <Link href="/tos">
-          <Anchor size="sm">Terms of Service</Anchor>
-        </Link>
-
-        <Link href="/guidelines">
-          <Anchor size="sm">Guidelines</Anchor>
-        </Link>
-      </Group>
+      <MinimalFooter />
     </Container>
   );
 };
