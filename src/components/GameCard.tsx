@@ -2,6 +2,7 @@ import {
   ActionIcon,
   Avatar,
   Badge,
+  Button,
   Card,
   createStyles,
   Group,
@@ -12,6 +13,7 @@ import {
 } from "@mantine/core";
 import { useRouter } from "next/router";
 import {
+  HiChevronRight,
   HiOutlineBookmark,
   HiOutlineThumbDown,
   HiOutlineThumbUp,
@@ -47,17 +49,7 @@ const GameCard = ({ game }: GameCardProps) => {
   const router = useRouter();
 
   return (
-    <Card
-      shadow="md"
-      withBorder
-      p="lg"
-      radius="md"
-      className={classes.card}
-      sx={{
-        cursor: "pointer",
-      }}
-      onClick={() => router.push(`/game/${game.id}`)}
-    >
+    <Card shadow="md" withBorder p="lg" radius="md" className={classes.card}>
       <Card.Section mb="sm">
         {game.iconUri ? (
           <Image src={game.iconUri} alt={game.name} height={180} />
@@ -72,7 +64,7 @@ const GameCard = ({ game }: GameCardProps) => {
         {game.name}
       </Text>
 
-      <Group mt="lg">
+      <Group mt="lg" mb="md">
         <Avatar
           src={`https://avatars.dicebear.com/api/identicon/${game.author.id}.png`}
           radius={999}
@@ -84,6 +76,15 @@ const GameCard = ({ game }: GameCardProps) => {
           </Text>
         </div>
       </Group>
+
+      <Button
+        mb="sm"
+        onClick={() => router.push(`/game/${game.id}`)}
+        leftIcon={<HiChevronRight />}
+        fullWidth
+      >
+        View
+      </Button>
 
       <Card.Section className={classes.footer}>
         <Group position="apart">

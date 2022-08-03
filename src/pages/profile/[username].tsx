@@ -1,24 +1,34 @@
 import {
   Avatar,
   Button,
+  Container,
   Divider,
   Grid,
   Group,
+  Image,
   Paper,
+  Progress,
   Stack,
   Text,
+  Title,
 } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
 import React from "react";
-import { HiShieldCheck, HiSparkles } from "react-icons/hi";
+import { HiPlay, HiShieldCheck, HiSparkles } from "react-icons/hi";
 import AdminBadge from "../../components/Badges/Admin";
 import AlphaBadge from "../../components/Badges/Alpha";
 import PremiumBadge from "../../components/Badges/Premium";
 import Framework from "../../components/Framework";
+import ThumbnailCarousel from "../../components/ImageCarousel";
+import PlaceholderGameResource from "../../components/PlaceholderGameResource";
 import authorizedRoute from "../../util/authorizedRoute";
 import { exclude } from "../../util/exclude";
 import prisma from "../../util/prisma";
-import { nonCurrentUserSelect, User } from "../../util/prisma-types";
+import {
+  nonCurrentUserSelect,
+  User,
+  userSelect,
+} from "../../util/prisma-types";
 import { sendFriendRequest } from "../../util/universe/friends";
 import useMediaQuery from "../../util/useMediaQuery";
 
@@ -139,7 +149,55 @@ const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
         </Grid.Col>
 
         <Grid.Col span={mobile ? 24 : 10}>
-          <Button fullWidth>Hi</Button>
+          <ThumbnailCarousel
+            p={8}
+            slides={viewing.games.map((g, i) => (
+              <Paper withBorder p={12} radius="md" key={i}>
+                <Container p={0} mb={16}>
+                  {g.gallery.length > 0 && (
+                    <ThumbnailCarousel
+                      slides={g.gallery.map((gal, j) => (
+                        <Image height={180} src={gal} key={j} alt={g.name} />
+                      ))}
+                    />
+                  )}
+
+                  {g.gallery.length == 0 && (
+                    <PlaceholderGameResource height={180} radius={6} />
+                  )}
+                </Container>
+
+                <Title order={3}>{g.name}</Title>
+                <Text size="sm" color="dimmed" mb={16}>
+                  @{g.author.username}
+                </Text>
+
+                <Progress
+                  sections={[
+                    {
+                      value:
+                        (g.likedBy.length / g.likedBy.length +
+                          g.dislikedBy.length) *
+                        100,
+                      color: "green",
+                    },
+                    {
+                      value:
+                        (g.likedBy.length / g.likedBy.length +
+                          g.dislikedBy.length) *
+                        100,
+                      color: "red",
+                    },
+                  ]}
+                  mb="md"
+                />
+
+                <Button fullWidth color="green" leftIcon={<HiPlay />}>
+                  Play
+                </Button>
+              </Paper>
+            ))}
+          />
         </Grid.Col>
       </Grid>
 
@@ -201,22 +259,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     where: {
       username: username as string,
     },
-    include: {
-      friends: nonCurrentUserSelect,
-      friendsRelation: nonCurrentUserSelect,
-      outboundFriendRequests: {
-        select: {
-          sender: nonCurrentUserSelect,
-          receiver: nonCurrentUserSelect,
-        },
-      },
-      inboundFriendRequests: {
-        select: {
-          sender: nonCurrentUserSelect,
-          receiver: nonCurrentUserSelect,
-        },
-      },
-    },
+    select: userSelect,
   });
 
   if (!viewing) {

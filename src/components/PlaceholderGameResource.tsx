@@ -2,9 +2,10 @@ import { useMantineTheme } from "@mantine/core";
 
 interface PlaceholderGameResourceProps {
   height: number;
+  radius?: number;
 }
 
-const PlaceholderGameResource = ({ height }: PlaceholderGameResourceProps) => {
+const PlaceholderGameResource = ({ height, radius }: PlaceholderGameResourceProps) => {
   const theme = useMantineTheme();
 
   return (
@@ -16,7 +17,8 @@ const PlaceholderGameResource = ({ height }: PlaceholderGameResourceProps) => {
           ${theme.colors.indigo[5]},
           ${theme.colors.green[3]}
         )`,
-        height: `${height}px`
+        height: `${height}px`,
+        ...(radius ? { borderRadius: `${radius}px` } : {}),
       }}
     />
   );

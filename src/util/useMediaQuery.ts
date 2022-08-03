@@ -3,7 +3,7 @@ import * as React from "react";
 const useIsomorphicLayoutEffect =
   typeof window !== "undefined" ? React.useLayoutEffect : React.useEffect;
 
-const useMediaQuery = (width : any) => {
+const useMediaQuery = (width: any): boolean => {
   const [targetReached, setTargetReached] = React.useState(false);
 
   const updateTarget = React.useCallback((e: any) => {

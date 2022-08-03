@@ -134,26 +134,34 @@ const Game: NextPage<GameViewProps> = ({ game, user }) => {
           </Tabs>
         </Grid.Col>
         <Grid.Col span={mobile ? 24 : 8} p={10}>
-          <Paper withBorder shadow="md" p={10} mb="sm">
-            <Group position="apart" pl={16} pr={16}>
-              <Group>
-                <Avatar
-                  src={`https://avatars.dicebear.com/api/identicon/${game.authorId}.png`}
-                  alt={game.author.username}
-                  radius="xl"
-                  size={20}
-                  onClick={() =>
-                    router.push(`/profile/${game.author.username}`)
-                  }
-                />
-                <Text weight={700}>{game.author.username}</Text>
-              </Group>
-
-              <Group>
-                <Text color="dimmed">@{game.author.username}</Text>
-              </Group>
+          <Group
+            position="apart"
+            pl={16}
+            pr={16}
+            p={10}
+            mb="lg"
+            onClick={() => {
+              router.push(`/profile/${game.author.username}`);
+            }}
+            sx={{
+              cursor: "pointer",
+            }}
+          >
+            <Group>
+              <Avatar
+                src={`https://avatars.dicebear.com/api/identicon/${game.authorId}.png`}
+                alt={game.author.username}
+                radius="xl"
+                size={20}
+                onClick={() => router.push(`/profile/${game.author.username}`)}
+              />
+              <Text weight={700}>{game.author.username}</Text>
             </Group>
-          </Paper>
+
+            <Group>
+              <Text color="dimmed">@{game.author.username}</Text>
+            </Group>
+          </Group>
 
           <Button
             color="green"
@@ -197,7 +205,9 @@ const Game: NextPage<GameViewProps> = ({ game, user }) => {
               color="green"
               leftIcon={<HiThumbUp />}
               size="sm"
-              disabled={game.dislikedBy.find((u) => u.id == user.id) ? true : false}
+              disabled={
+                game.dislikedBy.find((u) => u.id == user.id) ? true : false
+              }
             >
               Like{game.likedBy.find((u) => u.id == user.id) ? "d" : ""}
             </Button>
@@ -205,7 +215,9 @@ const Game: NextPage<GameViewProps> = ({ game, user }) => {
               color="red"
               leftIcon={<HiThumbDown />}
               size="sm"
-              disabled={game.likedBy.find((u) => u.id == user.id) ? true : false}
+              disabled={
+                game.likedBy.find((u) => u.id == user.id) ? true : false
+              }
             >
               Dislike{game.dislikedBy.find((u) => u.id == user.id) ? "d" : ""}
             </Button>

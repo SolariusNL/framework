@@ -1,5 +1,12 @@
 import { Prisma } from "@prisma/client";
 
+export const nonCurrentUserSelect = {
+  select: {
+    id: true,
+    username: true,
+  }
+};
+
 const user = Prisma.validator<Prisma.UserArgs>()({
   include: {
     friends: true,
@@ -8,18 +15,14 @@ const user = Prisma.validator<Prisma.UserArgs>()({
     inboundFriendRequests: true,
     games: {
       include: {
-        updates: true
+        updates: true,
+        author: nonCurrentUserSelect,
+        likedBy: nonCurrentUserSelect,
+        dislikedBy: nonCurrentUserSelect,
       }
     },
   }
 });
-
-export const nonCurrentUserSelect = {
-  select: {
-    id: true,
-    username: true,
-  }
-};
 
 export const userSelect: Prisma.UserSelect = {
   password: false,
@@ -47,8 +50,12 @@ export const userSelect: Prisma.UserSelect = {
   games: {
     include: {
       updates: true,
+      author: nonCurrentUserSelect,
+      likedBy: nonCurrentUserSelect,
+      dislikedBy: nonCurrentUserSelect,
     }
   },
+  role: true,
 };
 
 export const gameSelect: Prisma.GameSelect = {
