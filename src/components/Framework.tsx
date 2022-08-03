@@ -194,6 +194,78 @@ const Search = ({ ref }: { ref: React.RefObject<HTMLInputElement> }) => {
   );
 };
 
+const UserMenu = ({ classes, userMenuOpened, user, cx, router }: any) => (
+  <Menu transition="pop-top-right">
+    <Menu.Target>
+      <UnstyledButton
+        className={cx(classes.user, {
+          [classes.userActive]: userMenuOpened,
+        })}
+      >
+        <Group spacing={12}>
+          <Avatar
+            src={`https://avatars.dicebear.com/api/identicon/${user.id}.png`}
+            alt={user.username}
+            radius="xl"
+            size={20}
+          />
+          <Text weight={500} size="sm" sx={{ lineHeight: 1 }} mr={3}>
+            {user.username}
+          </Text>
+          <HiChevronDown size={12} stroke="1.5" />
+        </Group>
+      </UnstyledButton>
+    </Menu.Target>
+
+    <Menu.Dropdown>
+      <Menu.Item icon={<HiUser />}>Profile</Menu.Item>
+      <Menu.Divider />
+      <Menu.Item
+        sx={{ fontWeight: 500 }}
+        color="red"
+        icon={<HiLogout />}
+        onClick={() => {
+          setCookie(".frameworksession", "", -365);
+          router.push("/login");
+        }}
+      >
+        Logout
+      </Menu.Item>
+    </Menu.Dropdown>
+  </Menu>
+);
+
+const CurrencyMenu = ({ cx, classes, currencyMenuOpened, theme, user }: any) => (
+  <Menu transition="pop-top-right">
+    <Menu.Target>
+      <UnstyledButton
+        className={cx(classes.currency, {
+          [classes.currencyActive]: currencyMenuOpened,
+        })}
+      >
+        <Group spacing={6}>
+          <HiCurrencyDollar color={theme.colors.green[3]} />
+          <Text
+            color={theme.colors.green[4]}
+            weight={500}
+            size="sm"
+            sx={{ lineHeight: 1 }}
+          >
+            {user.tickets}
+          </Text>
+        </Group>
+      </UnstyledButton>
+    </Menu.Target>
+
+    <Menu.Dropdown>
+      <Menu.Label>You have {user.tickets} tickets</Menu.Label>
+
+      <Menu.Item icon={<HiShoppingBag />}>Purchase tickets</Menu.Item>
+      <Menu.Item icon={<HiViewList />}>Transaction history</Menu.Item>
+    </Menu.Dropdown>
+  </Menu>
+);
+
 const Framework = ({ user, children, activeTab }: FrameworkProps) => {
   const { classes, theme, cx } = useStyles();
   const [opened, { toggle }] = useDisclosure(false);
@@ -262,78 +334,6 @@ const Framework = ({ user, children, activeTab }: FrameworkProps) => {
     </Tabs.Tab>
   ));
 
-  const UserMenu = () => (
-    <Menu transition="pop-top-right">
-      <Menu.Target>
-        <UnstyledButton
-          className={cx(classes.user, {
-            [classes.userActive]: userMenuOpened,
-          })}
-        >
-          <Group spacing={12}>
-            <Avatar
-              src={`https://avatars.dicebear.com/api/identicon/${user.id}.png`}
-              alt={user.username}
-              radius="xl"
-              size={20}
-            />
-            <Text weight={500} size="sm" sx={{ lineHeight: 1 }} mr={3}>
-              {user.username}
-            </Text>
-            <HiChevronDown size={12} stroke="1.5" />
-          </Group>
-        </UnstyledButton>
-      </Menu.Target>
-
-      <Menu.Dropdown>
-        <Menu.Item icon={<HiUser />}>Profile</Menu.Item>
-        <Menu.Divider />
-        <Menu.Item
-          sx={{ fontWeight: 500 }}
-          color="red"
-          icon={<HiLogout />}
-          onClick={() => {
-            setCookie(".frameworksession", "", -365);
-            router.push("/login");
-          }}
-        >
-          Logout
-        </Menu.Item>
-      </Menu.Dropdown>
-    </Menu>
-  );
-
-  const CurrencyMenu = () => (
-    <Menu transition="pop-top-right">
-      <Menu.Target>
-        <UnstyledButton
-          className={cx(classes.currency, {
-            [classes.currencyActive]: currencyMenuOpened,
-          })}
-        >
-          <Group spacing={6}>
-            <HiCurrencyDollar color={theme.colors.green[3]} />
-            <Text
-              color={theme.colors.green[4]}
-              weight={500}
-              size="sm"
-              sx={{ lineHeight: 1 }}
-            >
-              {user.tickets}
-            </Text>
-          </Group>
-        </UnstyledButton>
-      </Menu.Target>
-
-      <Menu.Dropdown>
-        <Menu.Label>You have {user.tickets} tickets</Menu.Label>
-
-        <Menu.Item icon={<HiShoppingBag />}>Purchase tickets</Menu.Item>
-        <Menu.Item icon={<HiViewList />}>Transaction history</Menu.Item>
-      </Menu.Dropdown>
-    </Menu>
-  );
-
   const searchRef = useRef<HTMLInputElement>(null);
   const [searchPopoverOpen, setSearchPopoverOpen] = useState(false);
 
@@ -353,8 +353,8 @@ const Framework = ({ user, children, activeTab }: FrameworkProps) => {
             {mobile && <Burger opened={opened} onClick={toggle} size="sm" />}
             {!mobile && (
               <Group>
-                <CurrencyMenu />
-                <UserMenu />
+                <CurrencyMenu cx={cx} classes={classes} currencyMenuOpened={currencyMenuOpened} theme={theme} user={user} />
+                <UserMenu cx={cx} classes={classes} userMenuOpened={userMenuOpened} user={user} router={router} />
               </Group>
             )}
           </Group>
@@ -447,8 +447,8 @@ const Framework = ({ user, children, activeTab }: FrameworkProps) => {
             </Stack>
 
             <Group>
-              <CurrencyMenu />
-              <UserMenu />
+              <CurrencyMenu cx={cx} classes={classes} currencyMenuOpened={currencyMenuOpened} theme={theme} user={user} />
+              <UserMenu cx={cx} classes={classes} userMenuOpened={userMenuOpened} user={user} router={router} />
             </Group>
           </Container>
         </Drawer>

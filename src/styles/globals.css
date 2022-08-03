@@ -16,3 +16,15 @@ h5,
 h6 {
   font-family: Inter var!important;
 }
+
+.embla {
+  overflow: hidden;
+  border-radius: 16px;
+}
+.embla__container {
+  display: flex;
+}
+.embla__slide {
+  position: relative;
+  flex: 0 0 100%;
+}

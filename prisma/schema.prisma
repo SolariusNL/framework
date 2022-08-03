@@ -81,8 +81,6 @@ model Game {
   genre                GameGenre
   description          String
   maxPlayersPerSession Int          @default(15)
-  connectData          ConnectData? @relation("gameConnectData")
-  connectDataId        String
   updates              Update[]     @relation("updates")
   author               User         @relation("gameAuthor", fields: [authorId], references: [id])
   authorId             Int
@@ -93,15 +91,6 @@ model Game {
   likedBy              User[]       @relation("likedGames")
   dislikedBy           User[]       @relation("dislikedGames")
   visits               Int          @default(0)
-}
-
-model ConnectData {
-  id     String @id @default(uuid())
-  game   Game   @relation("gameConnectData", fields: [gameId], references: [id])
-  gameId Int    @unique
-
-  ip   String
-  port Int
 }
 
 model Update {

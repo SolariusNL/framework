@@ -53,7 +53,6 @@ export const userSelect: Prisma.UserSelect = {
 
 export const gameSelect: Prisma.GameSelect = {
   updates: true,
-  connectData: true,
   gallery: true,
   id: true,
   author: nonCurrentUserSelect,

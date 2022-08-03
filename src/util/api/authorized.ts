@@ -21,7 +21,7 @@ const AuthorizedBase = async (req: NextApiRequest, res: NextApiResponse) => {
     });
   }
 
-  return player;
+  return player as any;
 };
 
 export const Account = createParamDecorator<any>((req: NextApiRequest) => {

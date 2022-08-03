@@ -6,6 +6,7 @@ import {
   Image,
   Menu,
   Paper,
+  ScrollArea,
   Stack,
   Tabs,
   Text,
@@ -59,47 +60,57 @@ const Invent: NextPage<InventProps> = ({ user }) => {
         orientation={mobile ? "horizontal" : "vertical"}
         defaultValue="games"
       >
-        <Tabs.List>
-          <Tabs.Tab value="games" icon={<HiViewGrid />}>
-            Games
-          </Tabs.Tab>
+        <ScrollArea offsetScrollbars>
+          <Tabs.List>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                flex: 1,
+              }}
+            >
+              <Tabs.Tab value="games" icon={<HiViewGrid />}>
+                Games
+              </Tabs.Tab>
 
-          <Tabs.Tab value="plugins" icon={<HiLightningBolt />}>
-            Plugins
-          </Tabs.Tab>
+              <Tabs.Tab value="plugins" icon={<HiLightningBolt />}>
+                Plugins
+              </Tabs.Tab>
 
-          <Tabs.Tab value="sounds" icon={<HiMusicNote />}>
-            Sounds
-          </Tabs.Tab>
+              <Tabs.Tab value="sounds" icon={<HiMusicNote />}>
+                Sounds
+              </Tabs.Tab>
 
-          <Tabs.Tab value="gamepasses" icon={<HiTicket />}>
-            Game Passes
-          </Tabs.Tab>
+              <Tabs.Tab value="gamepasses" icon={<HiTicket />}>
+                Game Passes
+              </Tabs.Tab>
 
-          <Tabs.Tab value="shirts" icon={<HiShoppingCart />}>
-            Shirts
-          </Tabs.Tab>
+              <Tabs.Tab value="shirts" icon={<HiShoppingCart />}>
+                Shirts
+              </Tabs.Tab>
 
-          <Tabs.Tab value="advertisements" icon={<HiFilm />}>
-            Advertisements
-          </Tabs.Tab>
+              <Tabs.Tab value="advertisements" icon={<HiFilm />}>
+                Advertisements
+              </Tabs.Tab>
 
-          <Tabs.Tab value="updates" icon={<HiCloud />}>
-            Game update logs
-          </Tabs.Tab>
+              <Tabs.Tab value="updates" icon={<HiCloud />}>
+                Game update logs
+              </Tabs.Tab>
 
-          <Tabs.Tab value="developer" icon={<HiIdentification />}>
-            Developer Profile
-          </Tabs.Tab>
+              <Tabs.Tab value="developer" icon={<HiIdentification />}>
+                Developer Profile
+              </Tabs.Tab>
 
-          <Tabs.Tab value="connections" icon={<HiKey />}>
-            Connections
-          </Tabs.Tab>
+              <Tabs.Tab value="connections" icon={<HiKey />}>
+                Connections
+              </Tabs.Tab>
 
-          <Tabs.Tab value="secrets" icon={<HiLockClosed />}>
-            Secrets
-          </Tabs.Tab>
-        </Tabs.List>
+              <Tabs.Tab value="secrets" icon={<HiLockClosed />}>
+                Secrets
+              </Tabs.Tab>
+            </div>
+          </Tabs.List>
+        </ScrollArea>
 
         <Games user={user} />
         <Plugins user={user} />

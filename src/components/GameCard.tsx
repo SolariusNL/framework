@@ -10,6 +10,7 @@ import {
   Text,
   TextInput,
 } from "@mantine/core";
+import { useRouter } from "next/router";
 import {
   HiOutlineBookmark,
   HiOutlineThumbDown,
@@ -20,6 +21,7 @@ import {
 import abbreviate from "../util/abbreviate";
 import { Game } from "../util/prisma-types";
 import { getGenreText } from "../util/universe/genre";
+import PlaceholderGameResource from "./PlaceholderGameResource";
 
 interface GameCardProps {
   game: Game;
@@ -42,10 +44,26 @@ const useStyles = createStyles((theme) => ({
 
 const GameCard = ({ game }: GameCardProps) => {
   const { classes, theme } = useStyles();
+  const router = useRouter();
+
   return (
-    <Card shadow="md" withBorder p="lg" radius="md" className={classes.card}>
+    <Card
+      shadow="md"
+      withBorder
+      p="lg"
+      radius="md"
+      className={classes.card}
+      sx={{
+        cursor: "pointer",
+      }}
+      onClick={() => router.push(`/game/${game.id}`)}
+    >
       <Card.Section mb="sm">
-        <Image src={game.iconUri} alt={game.name} height={180} />
+        {game.iconUri ? (
+          <Image src={game.iconUri} alt={game.name} height={180} />
+        ) : (
+          <PlaceholderGameResource height={180} />
+        )}
       </Card.Section>
 
       <Badge>{getGenreText(game.genre)}</Badge>

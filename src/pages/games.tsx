@@ -58,7 +58,7 @@ const Games: NextPage<GamesProps> = ({ user, initialGames }) => {
     })
       .then((res) => res.json())
       .then((res) => {
-        setGames(res.games);
+        setGames(res);
       })
       .catch((err) => {
         alert(err + "\nPlease report this to Soodam.re");
@@ -68,20 +68,6 @@ const Games: NextPage<GamesProps> = ({ user, initialGames }) => {
   return (
     <Framework user={user} activeTab="games">
       <Grid columns={24}>
-        <Grid.Col span={mobile ? 24 : 19}>
-          <Title mb={24}>Games</Title>
-          <Grid>
-            {games.map((game) => (
-              <Grid.Col md={6} sm={6} lg={4} key={game.id}>
-                <GameCard game={game} />
-              </Grid.Col>
-            ))}
-            {games.length == 0 && (
-              <EmptyState title="No games" body="No games found" />
-            )}
-          </Grid>
-        </Grid.Col>
-
         <Grid.Col span={mobile ? 24 : 5}>
           <Title mb={24} order={3}>
             Filter
@@ -119,6 +105,21 @@ const Games: NextPage<GamesProps> = ({ user, initialGames }) => {
               Update
             </Button>
           </Stack>
+        </Grid.Col>
+        <Grid.Col span={mobile ? 24 : 19}>
+          <Title mb={24}>Games</Title>
+          <Grid>
+            {games.length > 0 &&
+              games.map((game) => (
+                <Grid.Col md={6} sm={6} lg={4} key={game.id}>
+                  <GameCard game={game} />
+                </Grid.Col>
+              ))}
+            {!games ||
+              (games.length == 0 && (
+                <EmptyState title="No games" body="No games found" />
+              ))}
+          </Grid>
         </Grid.Col>
       </Grid>
     </Framework>
