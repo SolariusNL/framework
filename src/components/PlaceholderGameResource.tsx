@@ -16,8 +16,7 @@ const PlaceholderGameResource = ({ height }: PlaceholderGameResourceProps) => {
           ${theme.colors.indigo[5]},
           ${theme.colors.green[3]}
         )`,
-        height: `${height}px`,
-        borderRadius: "5px"
+        height: `${height}px`
       }}
     />
   );
