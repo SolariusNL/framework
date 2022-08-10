@@ -1,17 +1,4 @@
-import {
-  ActionIcon,
-  Button,
-  Grid,
-  Group,
-  Image,
-  Menu,
-  Paper,
-  ScrollArea,
-  Stack,
-  Tabs,
-  Text,
-  Title,
-} from "@mantine/core";
+import { ScrollArea, Tabs, Title } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
 import {
   HiCloud,
@@ -21,12 +8,8 @@ import {
   HiLightningBolt,
   HiLockClosed,
   HiMusicNote,
-  HiPencil,
-  HiPencilAlt,
-  HiPlus,
   HiShoppingCart,
   HiTicket,
-  HiTrash,
   HiViewGrid,
 } from "react-icons/hi";
 import Framework from "../components/Framework";
