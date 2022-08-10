@@ -53,23 +53,19 @@ const CreateGame: NextPage<CreateGameProps> = ({ user }) => {
           ? "Description must be between 3 and 526 characters"
           : null,
       maxPlayers: (value) =>
-        value < 1 || value > 50
-          ? "Max players must be between 1 and 50"
-          : null,
+        value < 1 || value > 50 ? "Max players must be between 1 and 50" : null,
     },
   });
 
   const onSubmit = async (values: CreateGameForm) => {
     console.log(values);
     if (values.communityGuidelines == false) {
-      form.setErrors(
-        { 
-          gameName: "You must accept the community guidelines", 
-          genre: "You must accept the community guidelines",
-          description: "You must accept the community guidelines",
-          maxPlayers: "You must accept the community guidelines",
-        }
-      );
+      form.setErrors({
+        gameName: "You must accept the community guidelines",
+        genre: "You must accept the community guidelines",
+        description: "You must accept the community guidelines",
+        maxPlayers: "You must accept the community guidelines",
+      });
       return;
     }
 
@@ -77,34 +73,30 @@ const CreateGame: NextPage<CreateGameProps> = ({ user }) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `${getCookie(".frameworksession")}`,
+        Authorization: `${getCookie(".frameworksession")}`,
       },
       body: JSON.stringify(values),
     })
       .then((res) => res.json())
       .then((res) => {
         if (res.success) {
-          router.push(`/games/${res.game.id}`);
+          router.push(`/game/${res.game.id}`);
         } else {
-          form.setErrors(
-            {
-              gameName: "Unable to create game",
-              genre: "Unable to create game",
-              description: "Unable to create game",
-              maxPlayers: "Unable to create game",
-            }
-          );
-        }
-      })
-      .catch((err) => {
-        form.setErrors(
-          {
+          form.setErrors({
             gameName: "Unable to create game",
             genre: "Unable to create game",
             description: "Unable to create game",
             maxPlayers: "Unable to create game",
-          }
-        );
+          });
+        }
+      })
+      .catch((err) => {
+        form.setErrors({
+          gameName: "Unable to create game",
+          genre: "Unable to create game",
+          description: "Unable to create game",
+          maxPlayers: "Unable to create game",
+        });
       });
   };
 
@@ -158,6 +150,11 @@ const CreateGame: NextPage<CreateGameProps> = ({ user }) => {
         <Grid columns={3} mt={25} key="description_submit">
           <Grid.Col span={mobile ? 3 : 2} key="description_area">
             <RichText
+              styles={() => ({
+                root: {
+                  height: "200px",
+                },
+              })}
               label="Description"
               description="A description of your game."
               placeholder="A short description of your game."
@@ -177,7 +174,9 @@ const CreateGame: NextPage<CreateGameProps> = ({ user }) => {
             <Checkbox
               key="communityGuidelines"
               label="I agree to the Framework community guidelines"
-              {...form.getInputProps("communityGuidelines", { type: "checkbox"})}
+              {...form.getInputProps("communityGuidelines", {
+                type: "checkbox",
+              })}
               mb={10}
             />
             <Button fullWidth type="submit">

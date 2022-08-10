@@ -22,17 +22,9 @@ interface GameCreateBody {
 class GameRouter {
   @Post("/create")
   @Authorized()
-  async createGame(
-    @Body() body: GameCreateBody,
-    @Account() account: User
-  ) {
-    const {
-      gameName,
-      description,
-      genre,
-      maxPlayers,
-      communityGuidelines,
-    } = body;
+  async createGame(@Body() body: GameCreateBody, @Account() account: User) {
+    const { gameName, description, genre, maxPlayers, communityGuidelines } =
+      body;
 
     if (
       !gameName ||
@@ -56,7 +48,7 @@ class GameRouter {
         author: {
           connect: {
             id: account.id,
-          }
+          },
         },
         iconUri: "",
       },
@@ -101,7 +93,7 @@ class GameRouter {
         },
       ],
       take: 10,
-      select: gameSelect
+      select: gameSelect,
     });
 
     return results;

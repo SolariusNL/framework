@@ -16,9 +16,7 @@ interface RegisterBody {
 
 class AuthRouter {
   @Post("/login")
-  public async login(
-    @Body() body: LoginBody
-  ) {
+  public async login(@Body() body: LoginBody) {
     const { username, password } = body;
     if (!username || !password) {
       return {
@@ -31,7 +29,7 @@ class AuthRouter {
       where: {
         username: String(username),
         password: String(password),
-      }
+      },
     });
 
     if (!account) {
@@ -46,10 +44,10 @@ class AuthRouter {
         user: {
           connect: {
             id: Number(account.id),
-          }
+          },
         },
         token: Math.random().toString(36).substring(2),
-      }
+      },
     });
 
     return {
@@ -59,15 +57,8 @@ class AuthRouter {
   }
 
   @Post("/register")
-  public async register(
-    @Body() body: RegisterBody
-  ) {
-    const {
-      inviteCode,
-      username,
-      password,
-      email,
-    } = body;
+  public async register(@Body() body: RegisterBody) {
+    const { inviteCode, username, password, email } = body;
 
     if (!inviteCode || !username || !password || !email) {
       return {
@@ -79,7 +70,7 @@ class AuthRouter {
     const invite = await prisma.invite.findFirst({
       where: {
         code: String(inviteCode),
-      }
+      },
     });
 
     if (!invite) {
@@ -98,11 +89,8 @@ class AuthRouter {
 
     const userAlreadyExists = await prisma.user.findFirst({
       where: {
-        OR: [
-          { email: String(email) },
-          { username: String(username) },
-        ],
-      }
+        OR: [{ email: String(email) }, { username: String(username) }],
+      },
     });
 
     if (userAlreadyExists) {
@@ -119,7 +107,8 @@ class AuthRouter {
             username: String(username),
             password: String(password),
             email: String(email),
-          }
+            avatarUri: "",
+          },
         },
         token: Math.random().toString(36).substring(2),
       },
