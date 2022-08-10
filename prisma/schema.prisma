@@ -31,7 +31,7 @@ model User {
   friendsRelation        User[]          @relation("friends")
   sessions               Session[]       @relation("userSessions")
   games                  Game[]          @relation("gameAuthor")
-  avatarUri              String          @default("https://avatars.dicebear.com/api/identicon/framework.svg")
+  avatarUri              String
   likedGames             Game[]          @relation("likedGames")
   dislikedGames          Game[]          @relation("dislikedGames")
 }
@@ -76,21 +76,21 @@ enum GameGenre {
 }
 
 model Game {
-  id                   Int          @id @default(autoincrement())
+  id                   Int       @id @default(autoincrement())
   name                 String
   genre                GameGenre
   description          String
-  maxPlayersPerSession Int          @default(15)
-  updates              Update[]     @relation("updates")
-  author               User         @relation("gameAuthor", fields: [authorId], references: [id])
+  maxPlayersPerSession Int       @default(15)
+  updates              Update[]  @relation("updates")
+  author               User      @relation("gameAuthor", fields: [authorId], references: [id])
   authorId             Int
-  createdAt            DateTime     @default(now())
-  updatedAt            DateTime     @default(now())
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @default(now())
   iconUri              String
   gallery              String[]
-  likedBy              User[]       @relation("likedGames")
-  dislikedBy           User[]       @relation("dislikedGames")
-  visits               Int          @default(0)
+  likedBy              User[]    @relation("likedGames")
+  dislikedBy           User[]    @relation("dislikedGames")
+  visits               Int       @default(0)
 }
 
 model Update {
