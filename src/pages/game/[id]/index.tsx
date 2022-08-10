@@ -1,12 +1,15 @@
 import {
   ActionIcon,
+  Alert,
   Avatar,
+  Badge,
   Button,
   Divider,
   Grid,
   Group,
   Image,
   Progress,
+  Table,
   Tabs,
   Text,
   Title,
@@ -20,6 +23,7 @@ import {
   HiInformationCircle,
   HiLockClosed,
   HiPlay,
+  HiPlus,
   HiServer,
   HiThumbDown,
   HiThumbUp,
@@ -48,6 +52,17 @@ const Game: NextPage<GameViewProps> = ({ game, user }) => {
 
   return (
     <Framework user={user} activeTab="none">
+      {game.author.id == user.id && game.connection.length == 0 && (
+        <Alert
+          title="No servers"
+          color="red"
+          mb={16}
+          icon={<HiServer size="28" />}
+        >
+          This game has no servers, meaning it cannot be played. You must add a
+          server to play this game.
+        </Alert>
+      )}
       <Grid columns={24}>
         <Grid.Col span={mobile ? 24 : 16}>
           <Title mb={16}>{game.name}</Title>
@@ -122,7 +137,50 @@ const Game: NextPage<GameViewProps> = ({ game, user }) => {
             </Tabs.Panel>
 
             <Tabs.Panel value="connection" pt="md">
-              <Title order={3}>Connection Information</Title>
+              <Title order={3} mb={16}>
+                Connection Information
+              </Title>
+
+              <Table highlightOnHover mb={10}>
+                <thead>
+                  <tr>
+                    <th>IP Address</th>
+                    <th>Port</th>
+                    <th>Online</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {game.connection.map((connection, i) => (
+                    <tr key={i}>
+                      <td>{connection.ip}</td>
+                      <td>{connection.port}</td>
+                      <td>
+                        {connection.online ? (
+                          <Badge variant="dot" color="green">
+                            Online
+                          </Badge>
+                        ) : (
+                          <Badge variant="dot" color="red">
+                            Offline
+                          </Badge>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+
+              {game.author.id == user.id && (
+                <Button
+                  variant="subtle"
+                  size="xs"
+                  leftIcon={<HiPlus />}
+                  onClick={() => router.push(`/game/${game.id}/connection/add`)}
+                >
+                  Add server
+                </Button>
+              )}
             </Tabs.Panel>
 
             <Tabs.Panel value="servers" pt="md">
@@ -173,11 +231,18 @@ const Game: NextPage<GameViewProps> = ({ game, user }) => {
             fullWidth
             size="xl"
             mb="xs"
+            disabled={game.connection.length == 0}
           >
             Play
           </Button>
 
-          <Button leftIcon={<HiLockClosed />} fullWidth size="lg" mb="md">
+          <Button
+            leftIcon={<HiLockClosed />}
+            fullWidth
+            size="lg"
+            mb="md"
+            disabled={game.connection.length == 0}
+          >
             Play in Private Server
           </Button>
 

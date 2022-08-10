@@ -34,6 +34,7 @@ model User {
   avatarUri              String
   likedGames             Game[]          @relation("likedGames")
   dislikedGames          Game[]          @relation("dislikedGames")
+  nucleusKeys            NucleusKey[]    @relation("nucleusKeys")
 }
 
 model Invite {
@@ -76,21 +77,38 @@ enum GameGenre {
 }
 
 model Game {
-  id                   Int       @id @default(autoincrement())
+  id                   Int          @id @default(autoincrement())
   name                 String
   genre                GameGenre
   description          String
-  maxPlayersPerSession Int       @default(15)
-  updates              Update[]  @relation("updates")
-  author               User      @relation("gameAuthor", fields: [authorId], references: [id])
+  maxPlayersPerSession Int          @default(15)
+  updates              Update[]     @relation("updates")
+  author               User         @relation("gameAuthor", fields: [authorId], references: [id])
   authorId             Int
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @default(now())
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @default(now())
   iconUri              String
   gallery              String[]
-  likedBy              User[]    @relation("likedGames")
-  dislikedBy           User[]    @relation("dislikedGames")
-  visits               Int       @default(0)
+  likedBy              User[]       @relation("likedGames")
+  dislikedBy           User[]       @relation("dislikedGames")
+  visits               Int          @default(0)
+  connection           Connection[] @relation("gameConnection")
+}
+
+model NucleusKey {
+  id     String @id @default(uuid())
+  user   User   @relation("nucleusKeys", fields: [userId], references: [id])
+  userId Int
+  key    String @default(uuid())
+}
+
+model Connection {
+  id     String  @id @default(uuid())
+  game   Game    @relation("gameConnection", fields: [gameId], references: [id])
+  gameId Int
+  ip     String
+  port   Int
+  online Boolean @default(false)
 }
 
 model Update {

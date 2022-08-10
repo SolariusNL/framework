@@ -4,7 +4,7 @@ export const nonCurrentUserSelect = {
   select: {
     id: true,
     username: true,
-  }
+  },
 };
 
 const user = Prisma.validator<Prisma.UserArgs>()({
@@ -19,9 +19,9 @@ const user = Prisma.validator<Prisma.UserArgs>()({
         author: nonCurrentUserSelect,
         likedBy: nonCurrentUserSelect,
         dislikedBy: nonCurrentUserSelect,
-      }
+      },
     },
-  }
+  },
 });
 
 export const userSelect: Prisma.UserSelect = {
@@ -29,14 +29,14 @@ export const userSelect: Prisma.UserSelect = {
   outboundFriendRequests: {
     select: {
       sender: nonCurrentUserSelect,
-      receiver: nonCurrentUserSelect
-    }
+      receiver: nonCurrentUserSelect,
+    },
   },
   inboundFriendRequests: {
     select: {
       sender: nonCurrentUserSelect,
-      receiver: nonCurrentUserSelect
-    }
+      receiver: nonCurrentUserSelect,
+    },
   },
   friends: nonCurrentUserSelect,
   friendsRelation: nonCurrentUserSelect,
@@ -53,7 +53,7 @@ export const userSelect: Prisma.UserSelect = {
       author: nonCurrentUserSelect,
       likedBy: nonCurrentUserSelect,
       dislikedBy: nonCurrentUserSelect,
-    }
+    },
   },
   role: true,
 };
@@ -73,6 +73,7 @@ export const gameSelect: Prisma.GameSelect = {
   visits: true,
   likedBy: nonCurrentUserSelect,
   dislikedBy: nonCurrentUserSelect,
+  connection: true,
 };
 
 const game = Prisma.validator<Prisma.GameArgs>()({
@@ -81,7 +82,8 @@ const game = Prisma.validator<Prisma.GameArgs>()({
     likedBy: nonCurrentUserSelect,
     dislikedBy: nonCurrentUserSelect,
     author: nonCurrentUserSelect,
-  }
+    connection: true,
+  },
 });
 
 export type User = Prisma.UserGetPayload<typeof user>;
