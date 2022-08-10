@@ -14,6 +14,7 @@ import { useRouter } from "next/router";
 import { HiPencil, HiPencilAlt, HiPlus, HiTrash } from "react-icons/hi";
 import { User } from "../../util/prisma-types";
 import EmptyState from "../EmptyState";
+import PlaceholderGameResource from "../PlaceholderGameResource";
 import InventTab from "./InventTab";
 
 interface GamesProps {
@@ -28,7 +29,11 @@ const Games = ({ user }: GamesProps) => {
       tabTitle="Games"
       actions={
         <>
-          <Button leftIcon={<HiPlus />} variant="outline" onClick={() => router.push("/game/create")}>
+          <Button
+            leftIcon={<HiPlus />}
+            variant="outline"
+            onClick={() => router.push("/game/create")}
+          >
             Create a Game
           </Button>
         </>
@@ -41,20 +46,31 @@ const Games = ({ user }: GamesProps) => {
       <Paper withBorder shadow="md" p={12} radius="md" mb={30}>
         <Grid grow>
           {user.games.length == 0 && (
-            <EmptyState title="No games" body="You don't have any games on your account." />
+            <EmptyState
+              title="No games"
+              body="You don't have any games on your account."
+            />
           )}
           {user.games.map((game) => (
             <Grid.Col span={12} key={game.id}>
               <Group position="apart">
                 <Group>
                   <Group>
-                    <Image
-                      src={game.iconUri}
-                      width={48}
-                      height={48}
-                      radius={"md"}
-                      alt={game.name}
-                    />
+                    {game.iconUri ? (
+                      <Image
+                        src={game.iconUri}
+                        width={48}
+                        height={48}
+                        radius={8}
+                        alt={game.name}
+                      />
+                    ) : (
+                      <PlaceholderGameResource
+                        height={48}
+                        width={48}
+                        radius={8}
+                      />
+                    )}
                     <Stack spacing={5}>
                       <Text weight={550} size="lg">
                         {game.name}

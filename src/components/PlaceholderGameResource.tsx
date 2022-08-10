@@ -3,9 +3,14 @@ import { useMantineTheme } from "@mantine/core";
 interface PlaceholderGameResourceProps {
   height: number;
   radius?: number;
+  width?: number;
 }
 
-const PlaceholderGameResource = ({ height, radius }: PlaceholderGameResourceProps) => {
+const PlaceholderGameResource = ({
+  height,
+  radius,
+  width,
+}: PlaceholderGameResourceProps) => {
   const theme = useMantineTheme();
 
   return (
@@ -18,6 +23,7 @@ const PlaceholderGameResource = ({ height, radius }: PlaceholderGameResourceProp
           ${theme.colors.green[3]}
         )`,
         height: `${height}px`,
+        width: `${width}px`,
         ...(radius ? { borderRadius: `${radius}px` } : {}),
       }}
     />
