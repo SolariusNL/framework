@@ -27,7 +27,7 @@ function rateLimitedResource(
 
   if (data.requests > maxRequestsPerMinute) {
     res.status(429).json({
-      error: "Too many requests",
+      message: "Too many requests",
       success: false,
       userFacing: {
         message:

@@ -115,7 +115,12 @@ class GameRouter {
     @Res() res: NextApiResponse
   ) {
     const { body: commentBody } = body;
-    rateLimitedResource(req, res, 6);
+    if (rateLimitedResource(req, res, 6) == 0) {
+      return {
+        success: false,
+        message: "You are being rate limited",
+      };
+    }
 
     const game = await prisma.game.findFirst({
       where: {

@@ -26,12 +26,12 @@ const Framework = ({ Component, pageProps }: AppProps) => {
           defaultRadius: "md",
         }}
       >
-        <NextNProgress />
-        <NotificationsProvider position="top-center">
-          <ModalsProvider>
+        <ModalsProvider>
+          <NotificationsProvider position="top-center">
+            <NextNProgress />
             <Component {...pageProps} />
-          </ModalsProvider>
-        </NotificationsProvider>
+          </NotificationsProvider>
+        </ModalsProvider>
       </MantineProvider>
     </>
   );

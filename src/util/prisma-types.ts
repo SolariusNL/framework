@@ -22,6 +22,7 @@ const user = Prisma.validator<Prisma.UserArgs>()({
         dislikedBy: nonCurrentUserSelect,
       },
     },
+    nucleusKeys: true,
   },
 });
 
@@ -65,6 +66,7 @@ export const userSelect: Prisma.UserSelect = {
     },
   },
   role: true,
+  nucleusKeys: true,
 };
 
 export const gameSelect: Prisma.GameSelect = {

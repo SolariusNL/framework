@@ -8,6 +8,7 @@ import {
   HiLightningBolt,
   HiLockClosed,
   HiMusicNote,
+  HiServer,
   HiShoppingCart,
   HiTicket,
   HiViewGrid,
@@ -19,6 +20,7 @@ import DeveloperProfile from "../components/Invent/DeveloperProfile";
 import GamePasses from "../components/Invent/GamePasses";
 import Games from "../components/Invent/Games";
 import GameUpdates from "../components/Invent/GameUpdates";
+import Nucleus from "../components/Invent/Nucleus";
 import Plugins from "../components/Invent/Plugins";
 import Secrets from "../components/Invent/Secrets";
 import Shirts from "../components/Invent/Shirts";
@@ -84,8 +86,12 @@ const Invent: NextPage<InventProps> = ({ user }) => {
                 Developer Profile
               </Tabs.Tab>
 
-              <Tabs.Tab value="connections" icon={<HiKey />}>
+              <Tabs.Tab value="connections" icon={<HiServer />}>
                 Connections
+              </Tabs.Tab>
+
+              <Tabs.Tab value="nucleus" icon={<HiKey />}>
+                Nucleus
               </Tabs.Tab>
 
               <Tabs.Tab value="secrets" icon={<HiLockClosed />}>
@@ -104,6 +110,7 @@ const Invent: NextPage<InventProps> = ({ user }) => {
         <GameUpdates user={user} />
         <DeveloperProfile user={user} />
         <Connections user={user} />
+        <Nucleus user={user} />
         <Secrets user={user} />
       </Tabs>
     </Framework>

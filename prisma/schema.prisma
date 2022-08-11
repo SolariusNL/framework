@@ -113,6 +113,7 @@ model NucleusKey {
   user   User   @relation("nucleusKeys", fields: [userId], references: [id])
   userId Int
   key    String @default(uuid())
+  name   String @default("Nucleus key")
 }
 
 model Connection {
