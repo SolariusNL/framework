@@ -213,14 +213,36 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   }
 
   const { id } = ctx.query;
-  const game = await prisma.game.findFirst({
-    where: { id: Number(id) },
-    select: gameSelect,
-  });
+  const game: Game = JSON.parse(
+    JSON.stringify(
+      await prisma.game.findFirst({
+        where: { id: Number(id) },
+        select: gameSelect,
+      })
+    )
+  );
+
+  if (!game) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+
+  if (game.author.id != auth.props.user?.id) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
 
   return {
     props: {
-      game: JSON.parse(JSON.stringify(game)),
+      game: game,
       user: auth?.props?.user,
     },
   };

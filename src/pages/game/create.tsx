@@ -152,7 +152,7 @@ const CreateGame: NextPage<CreateGameProps> = ({ user }) => {
             <RichText
               styles={() => ({
                 root: {
-                  height: "200px",
+                  height: "auto",
                 },
               })}
               label="Description"
@@ -162,7 +162,6 @@ const CreateGame: NextPage<CreateGameProps> = ({ user }) => {
               controls={[
                 ["bold", "italic", "underline", "link"],
                 ["h1", "h2", "h3", "h4"],
-                ["alignCenter", "alignLeft", "alignRight"],
                 ["blockquote"],
                 ["code", "codeBlock"],
               ]}

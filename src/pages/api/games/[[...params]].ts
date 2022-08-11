@@ -10,6 +10,7 @@ import {
 import Authorized, { Account } from "../../../util/api/authorized";
 import prisma from "../../../util/prisma";
 import { gameSelect, type User } from "../../../util/prisma-types";
+import sanitizeHtml from "sanitize-html";
 
 interface GameCreateBody {
   gameName: string;
@@ -42,7 +43,39 @@ class GameRouter {
     const game = await prisma.game.create({
       data: {
         name: gameName,
-        description,
+        description: sanitizeHtml(description, {
+          allowedTags: [
+            "b",
+            "i",
+            "strong",
+            "u",
+            "a",
+            "code",
+            "h1",
+            "h2",
+            "h3",
+            "h4",
+            "blockquote",
+            "span",
+          ],
+          allowedAttributes: {
+            a: ["href"],
+          },
+          transformTags: {
+            a: (tagName, attribs) => {
+              if (attribs.href) {
+                return {
+                  tagName,
+                  attribs: {
+                    ...attribs,
+                    href: `https://framework.soodam.rocks/link?dest=${attribs.href}`,
+                  },
+                };
+              }
+              return { tagName, attribs };
+            },
+          },
+        }),
         genre,
         maxPlayersPerSession: maxPlayers,
         author: {
