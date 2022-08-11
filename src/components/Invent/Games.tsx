@@ -98,7 +98,9 @@ const Games = ({ user }: GamesProps) => {
                   </Group>
                   <Menu shadow="md">
                     <Menu.Target>
-                      <ActionIcon>
+                      <ActionIcon
+                        onClick={() => router.push(`/game/${game.id}/edit`)}
+                      >
                         <HiPencilAlt />
                       </ActionIcon>
                     </Menu.Target>
