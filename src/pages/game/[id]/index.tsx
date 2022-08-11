@@ -18,6 +18,7 @@ import {
 import { GetServerSidePropsContext, NextPage } from "next";
 import { useRouter } from "next/router";
 import {
+  HiChat,
   HiDotsVertical,
   HiFolder,
   HiInformationCircle,
@@ -30,6 +31,7 @@ import {
   HiViewList,
 } from "react-icons/hi";
 import Framework from "../../../components/Framework";
+import GameComments from "../../../components/GameComments";
 import ThumbnailCarousel from "../../../components/ImageCarousel";
 import PlaceholderGameResource from "../../../components/PlaceholderGameResource";
 import authorizedRoute from "../../../util/authorizedRoute";
@@ -89,7 +91,7 @@ const Game: NextPage<GameViewProps> = ({ game, user }) => {
 
           <Divider mt={28} mb={28} />
 
-          <Tabs variant="pills" defaultValue="info">
+          <Tabs variant="pills" defaultValue="info" mb={30}>
             <Tabs.List grow>
               <div
                 style={{
@@ -191,6 +193,8 @@ const Game: NextPage<GameViewProps> = ({ game, user }) => {
               <Title order={3}>Update Log</Title>
             </Tabs.Panel>
           </Tabs>
+
+          <GameComments user={user} game={game} />
         </Grid.Col>
         <Grid.Col span={mobile ? 24 : 8} p={10}>
           <Group position="apart" pl={0} pr={0} p={10} mb="lg">

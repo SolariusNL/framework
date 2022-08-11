@@ -35,6 +35,7 @@ model User {
   likedGames             Game[]          @relation("likedGames")
   dislikedGames          Game[]          @relation("dislikedGames")
   nucleusKeys            NucleusKey[]    @relation("nucleusKeys")
+  gameComments           GameComment[]   @relation("userGameComments")
 }
 
 model Invite {
@@ -77,22 +78,34 @@ enum GameGenre {
 }
 
 model Game {
-  id                   Int          @id @default(autoincrement())
+  id                   Int           @id @default(autoincrement())
   name                 String
   genre                GameGenre
   description          String
-  maxPlayersPerSession Int          @default(15)
-  updates              Update[]     @relation("updates")
-  author               User         @relation("gameAuthor", fields: [authorId], references: [id])
+  maxPlayersPerSession Int           @default(15)
+  updates              Update[]      @relation("updates")
+  author               User          @relation("gameAuthor", fields: [authorId], references: [id])
   authorId             Int
-  createdAt            DateTime     @default(now())
-  updatedAt            DateTime     @default(now())
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @default(now())
   iconUri              String
   gallery              String[]
-  likedBy              User[]       @relation("likedGames")
-  dislikedBy           User[]       @relation("dislikedGames")
-  visits               Int          @default(0)
-  connection           Connection[] @relation("gameConnection")
+  likedBy              User[]        @relation("likedGames")
+  dislikedBy           User[]        @relation("dislikedGames")
+  visits               Int           @default(0)
+  connection           Connection[]  @relation("gameConnection")
+  comments             GameComment[] @relation("gameComments")
+}
+
+model GameComment {
+  id        String   @id @default(uuid())
+  game      Game     @relation("gameComments", fields: [gameId], references: [id])
+  gameId    Int
+  user      User     @relation("userGameComments", fields: [userId], references: [id])
+  userId    Int
+  text      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
 
 model NucleusKey {

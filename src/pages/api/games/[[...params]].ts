@@ -6,11 +6,19 @@ import {
   Param,
   Post,
   Query,
+  Req,
+  Res,
 } from "@storyofams/next-api-decorators";
+import type { NextApiRequest, NextApiResponse } from "next";
+import sanitizeHtml from "sanitize-html";
 import Authorized, { Account } from "../../../util/api/authorized";
 import prisma from "../../../util/prisma";
-import { gameSelect, type User } from "../../../util/prisma-types";
-import sanitizeHtml from "sanitize-html";
+import {
+  gameSelect,
+  nonCurrentUserSelect,
+  type User,
+} from "../../../util/prisma-types";
+import rateLimitedResource from "../../../util/rateLimit";
 
 interface GameCreateBody {
   gameName: string;
@@ -18,6 +26,10 @@ interface GameCreateBody {
   genre: GameGenre;
   maxPlayers: number;
   communityGuidelines: boolean;
+}
+
+interface GameCommentBody {
+  body: string;
 }
 
 class GameRouter {
@@ -90,6 +102,69 @@ class GameRouter {
     return {
       success: true,
       game,
+    };
+  }
+
+  @Post("/:id/comment")
+  @Authorized()
+  async comment(
+    @Account() user: User,
+    @Body() body: GameCommentBody,
+    @Param("id") id: string,
+    @Req() req: NextApiRequest,
+    @Res() res: NextApiResponse
+  ) {
+    const { body: commentBody } = body;
+    rateLimitedResource(req, res, 6);
+
+    const game = await prisma.game.findFirst({
+      where: {
+        id: Number(id),
+      },
+    });
+
+    if (!game) {
+      return {
+        error: "Game not found",
+      };
+    }
+
+    if (!commentBody) {
+      return {
+        error: "Invalid comment body",
+      };
+    }
+
+    if (commentBody.length > 256) {
+      return {
+        error: "Comment body too long",
+      };
+    }
+
+    const comment = await prisma.gameComment.create({
+      data: {
+        text: commentBody,
+        user: {
+          connect: {
+            id: user.id,
+          },
+        },
+        game: {
+          connect: {
+            id: game.id,
+          },
+        },
+      },
+      select: {
+        text: true,
+        user: nonCurrentUserSelect,
+        createdAt: true,
+      },
+    });
+
+    return {
+      success: true,
+      comment,
     };
   }
 
