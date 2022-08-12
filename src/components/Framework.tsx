@@ -149,7 +149,7 @@ const useStyles = createStyles((theme) => ({
           ? theme.colors.dark[7]
           : theme.colors.gray[2],
       fontWeight: 500,
-      color: theme.colors.dark[7],
+      color: theme.colorScheme === "dark" ? theme.colors.dark[1] : theme.colors.dark[7],
     },
   },
 }));
