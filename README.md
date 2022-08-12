@@ -32,10 +32,15 @@ Framework is built on the following technologies:
 
 Framework is very easy to set up and deploy.
 
+- **Set up** PostgreSQL
+  - Go to the [PostgreSQL website](https://www.postgresql.org/download/) and download the latest version for your operating system.
+  - Install PostgreSQL.
 - **Clone** the repository
   - Run `git clone https://invent.soodam.rocks/Seeun/framework.git` to clone the repository to your local machine.
 - **Install** the dependencies
   - Run `yarn install` to install the dependencies.
+- **Seed** the database
+  - Run `yarn run seed` to generate Prisma types and seed the database with initial data.
 - **Build** the application
   - Run `yarn build` to build the application. This will create a `dist` directory with the compiled application.
 - **Deploy** the application
