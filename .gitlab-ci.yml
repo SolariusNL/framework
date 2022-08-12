@@ -3,7 +3,7 @@ default:
 
 stages:
   - dependencies
-  - build_status
+  - buildstatus
 
 dependencies:
   stage: dependencies
@@ -13,8 +13,8 @@ dependencies:
     paths:
       - node_modules
 
-build_status:
-  stage: build_status
+buildstatus:
+  stage: buildstatus
   script: yarn run build || exit 1
   only:
     - success
