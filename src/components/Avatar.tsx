@@ -28,30 +28,12 @@ const Avatar = ({ user }: AvatarProps) => {
     }${additional}`;
   };
 
-  const head = useLoader(
-    OBJLoader,
-    getBaseUri("/obj/Head.obj")
-  );
-  const leftArm = useLoader(
-    OBJLoader,
-    getBaseUri("/obj/LeftArm.obj")
-  );
-  const leftLeg = useLoader(
-    OBJLoader,
-    getBaseUri("/obj/LeftLeg.obj")
-  );
-  const rightArm = useLoader(
-    OBJLoader,
-    getBaseUri("/obj/RightArm.obj")
-  );
-  const rightLeg = useLoader(
-    OBJLoader,
-    getBaseUri("/obj/RightLeg.obj")
-  );
-  const torso = useLoader(
-    OBJLoader,
-    getBaseUri("/obj/Torso.obj")
-  );
+  const head = useLoader(OBJLoader, getBaseUri("/obj/Head.obj"));
+  const leftArm = useLoader(OBJLoader, getBaseUri("/obj/LeftArm.obj"));
+  const leftLeg = useLoader(OBJLoader, getBaseUri("/obj/LeftLeg.obj"));
+  const rightArm = useLoader(OBJLoader, getBaseUri("/obj/RightArm.obj"));
+  const rightLeg = useLoader(OBJLoader, getBaseUri("/obj/RightLeg.obj"));
+  const torso = useLoader(OBJLoader, getBaseUri("/obj/Torso.obj"));
 
   return (
     <div>
