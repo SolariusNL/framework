@@ -10,7 +10,8 @@
     "migrate": "npx prisma migrate dev && npx prisma generate",
     "studio": "npx prisma studio",
     "start:prod": "next start --port=80",
-    "generate": "npx prisma generate"
+    "generate": "npx prisma generate",
+    "seed": "ts-node --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\" scripts/seed.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.9.3",
@@ -41,7 +42,8 @@
     "react-dom": "18.2.0",
     "react-icons": "^4.4.0",
     "react-image-crop": "^10.0.6",
-    "sanitize-html": "^2.7.1"
+    "sanitize-html": "^2.7.1",
+    "ts-node": "^10.9.1"
   },
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^4.1.3",
