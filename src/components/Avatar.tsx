@@ -20,18 +20,38 @@ interface Object3DWithGeometry extends Object3D {
 }
 
 const Avatar = ({ user }: AvatarProps) => {
-  const head = useLoader(OBJLoader, "http://127.0.0.1:3000/obj/Head.obj");
-  const leftArm = useLoader(OBJLoader, "http://127.0.0.1:3000/obj/LeftArm.obj");
-  const leftLeg = useLoader(OBJLoader, "http://127.0.0.1:3000/obj/LeftLeg.obj");
+  const getBaseUri = (additional: string) => {
+    return `${
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:3000"
+        : "https://framework.soodam.rocks/"
+    }${additional}`;
+  };
+
+  const head = useLoader(
+    OBJLoader,
+    getBaseUri("/obj/Head.obj")
+  );
+  const leftArm = useLoader(
+    OBJLoader,
+    getBaseUri("/obj/LeftArm.obj")
+  );
+  const leftLeg = useLoader(
+    OBJLoader,
+    getBaseUri("/obj/LeftLeg.obj")
+  );
   const rightArm = useLoader(
     OBJLoader,
-    "http://127.0.0.1:3000/obj/RightArm.obj"
+    getBaseUri("/obj/RightArm.obj")
   );
   const rightLeg = useLoader(
     OBJLoader,
-    "http://127.0.0.1:3000/obj/RightLeg.obj"
+    getBaseUri("/obj/RightLeg.obj")
   );
-  const torso = useLoader(OBJLoader, "http://127.0.0.1:3000/obj/Torso.obj");
+  const torso = useLoader(
+    OBJLoader,
+    getBaseUri("/obj/Torso.obj")
+  );
 
   return (
     <div>
@@ -46,9 +66,7 @@ const Avatar = ({ user }: AvatarProps) => {
         }}
       >
         <Suspense fallback={null}>
-          <pointLight position={[-13, -45, -1.8]}
-            intensity={0.1}
-          />
+          <pointLight position={[-13, -45, -1.8]} intensity={0.1} />
           <primitive
             object={
               new Mesh(
@@ -59,7 +77,7 @@ const Avatar = ({ user }: AvatarProps) => {
                 })
               )
             }
-            position={[0, 1.5, 0]}
+            position={[0, -2.4, 0]}
             scale={[2, 2, 2]}
           />
           <primitive
@@ -72,7 +90,7 @@ const Avatar = ({ user }: AvatarProps) => {
                 })
               )
             }
-            position={[0, 1.5, 0]}
+            position={[0, -2.4, 0]}
             scale={[2, 2, 2]}
           />
           <primitive
@@ -85,7 +103,7 @@ const Avatar = ({ user }: AvatarProps) => {
                 })
               )
             }
-            position={[0, 1.5, 0]}
+            position={[0, -2.4, 0]}
             scale={[2, 2, 2]}
           />
           <primitive
@@ -98,7 +116,7 @@ const Avatar = ({ user }: AvatarProps) => {
                 })
               )
             }
-            position={[0, 1.5, 0]}
+            position={[0, -2.4, 0]}
             scale={[2, 2, 2]}
           />
           <primitive
@@ -111,7 +129,7 @@ const Avatar = ({ user }: AvatarProps) => {
                 })
               )
             }
-            position={[0, 1.5, 0]}
+            position={[0, -2.4, 0]}
             scale={[2, 2, 2]}
           />
           <primitive
@@ -124,7 +142,7 @@ const Avatar = ({ user }: AvatarProps) => {
                 })
               )
             }
-            position={[0, 1.5, 0]}
+            position={[0, -2.4, 0]}
             scale={[2, 2, 2]}
           />
           <OrbitControls />
