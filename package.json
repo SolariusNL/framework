@@ -40,6 +40,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.4.0",
+    "react-image-crop": "^10.0.6",
     "sanitize-html": "^2.7.1"
   },
   "devDependencies": {

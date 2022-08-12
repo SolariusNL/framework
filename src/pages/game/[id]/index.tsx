@@ -207,7 +207,10 @@ const Game: NextPage<GameViewProps> = ({ game, user }) => {
               }}
             >
               <Avatar
-                src={`https://avatars.dicebear.com/api/identicon/${game.authorId}.png`}
+                src={
+                  game.author.avatarUri ||
+                  `https://avatars.dicebear.com/api/identicon/${game.authorId}.png`
+                }
                 alt={game.author.username}
                 radius="xl"
                 size={20}

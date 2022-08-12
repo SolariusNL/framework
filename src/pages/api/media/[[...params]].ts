@@ -1,14 +1,13 @@
 import {
   createHandler,
   Post,
-  UploadedFile,
   UseMiddleware,
 } from "@storyofams/next-api-decorators";
 import multer from "multer";
-import { NextApiRequest } from "next";
 import path from "path";
 import Authorized, { Account } from "../../../util/api/authorized";
 import { getAccountFromSession } from "../../../util/authorizedRoute";
+import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
 
 const imageOnly = (req: any, file: any, callback: any) => {
@@ -32,6 +31,12 @@ const avatars = multer({
         String(req.headers["authorization"])
       );
 
+      await prisma.user.update({
+        where: { id: user?.id },
+        data: {
+          avatarUri: `/avatars/${String(user?.username)}.png`,
+        },
+      });
       cb(null, user?.username + ".png");
     },
   }),
@@ -42,7 +47,7 @@ class MediaRouter {
   @Post("/upload/avatar")
   @Authorized()
   @UseMiddleware(avatars)
-  async uploadAvatar(@Account() account: User, @UploadedFile() avatar: any) {
+  async uploadAvatar(@Account() account: User) {
     return {
       avatar: `/avatars/${account.username}.png`,
       success: true,

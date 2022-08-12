@@ -204,7 +204,10 @@ const UserMenu = ({ classes, userMenuOpened, user, cx, router }: any) => (
       >
         <Group spacing={12}>
           <Avatar
-            src={`https://avatars.dicebear.com/api/identicon/${user.id}.png`}
+            src={
+              user.avatarUri ||
+              `https://avatars.dicebear.com/api/identicon/${user.id}.png`
+            }
             alt={user.username}
             radius="xl"
             size={20}
@@ -235,7 +238,13 @@ const UserMenu = ({ classes, userMenuOpened, user, cx, router }: any) => (
   </Menu>
 );
 
-const CurrencyMenu = ({ cx, classes, currencyMenuOpened, theme, user }: any) => (
+const CurrencyMenu = ({
+  cx,
+  classes,
+  currencyMenuOpened,
+  theme,
+  user,
+}: any) => (
   <Menu transition="pop-top-right">
     <Menu.Target>
       <UnstyledButton
@@ -353,8 +362,20 @@ const Framework = ({ user, children, activeTab }: FrameworkProps) => {
             {mobile && <Burger opened={opened} onClick={toggle} size="sm" />}
             {!mobile && (
               <Group>
-                <CurrencyMenu cx={cx} classes={classes} currencyMenuOpened={currencyMenuOpened} theme={theme} user={user} />
-                <UserMenu cx={cx} classes={classes} userMenuOpened={userMenuOpened} user={user} router={router} />
+                <CurrencyMenu
+                  cx={cx}
+                  classes={classes}
+                  currencyMenuOpened={currencyMenuOpened}
+                  theme={theme}
+                  user={user}
+                />
+                <UserMenu
+                  cx={cx}
+                  classes={classes}
+                  userMenuOpened={userMenuOpened}
+                  user={user}
+                  router={router}
+                />
               </Group>
             )}
           </Group>
@@ -447,8 +468,20 @@ const Framework = ({ user, children, activeTab }: FrameworkProps) => {
             </Stack>
 
             <Group>
-              <CurrencyMenu cx={cx} classes={classes} currencyMenuOpened={currencyMenuOpened} theme={theme} user={user} />
-              <UserMenu cx={cx} classes={classes} userMenuOpened={userMenuOpened} user={user} router={router} />
+              <CurrencyMenu
+                cx={cx}
+                classes={classes}
+                currencyMenuOpened={currencyMenuOpened}
+                theme={theme}
+                user={user}
+              />
+              <UserMenu
+                cx={cx}
+                classes={classes}
+                userMenuOpened={userMenuOpened}
+                user={user}
+                router={router}
+              />
             </Group>
           </Container>
         </Drawer>

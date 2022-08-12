@@ -66,7 +66,10 @@ const GameCard = ({ game }: GameCardProps) => {
 
       <Group mt="lg" mb="md">
         <Avatar
-          src={`https://avatars.dicebear.com/api/identicon/${game.author.id}.png`}
+          src={
+            game.author.avatarUri ||
+            `https://avatars.dicebear.com/api/identicon/${game.author.id}.png`
+          }
           radius={999}
         />
         <div>

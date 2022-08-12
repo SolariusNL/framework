@@ -67,6 +67,7 @@ export const userSelect: Prisma.UserSelect = {
   },
   role: true,
   nucleusKeys: true,
+  avatarUri: true,
 };
 
 export const gameSelect: Prisma.GameSelect = {

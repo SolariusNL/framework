@@ -88,7 +88,10 @@ const GameComments = ({ user, game }: GameCommentsProps) => {
           }}
         >
           <Avatar
-            src={`https://avatars.dicebear.com/api/identicon/${user.id}.png`}
+            src={
+              user.avatarUri ||
+              `https://avatars.dicebear.com/api/identicon/${user.id}.png`
+            }
             alt={user.username}
             radius="xl"
             size={32}

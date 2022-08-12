@@ -45,9 +45,12 @@ const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
       <Group position="apart">
         <Group spacing={36}>
           <Avatar
-            src={`https://avatars.dicebear.com/api/identicon/${viewing.id}.png`}
+            src={
+              viewing.avatarUri ||
+              `https://avatars.dicebear.com/api/identicon/${viewing.id}.png`
+            }
             alt={viewing.username}
-            radius="xl"
+            radius={999}
             size={80}
           />
 
