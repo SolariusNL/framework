@@ -2,7 +2,9 @@ import {
   ActionIcon,
   Autocomplete,
   Avatar,
+  Badge,
   Burger,
+  ColorScheme,
   Container,
   createStyles,
   Drawer,
@@ -16,7 +18,7 @@ import {
   ThemeIcon,
   UnstyledButton,
 } from "@mantine/core";
-import { useDisclosure, useHotkeys } from "@mantine/hooks";
+import { useDisclosure, useHotkeys, useLocalStorage } from "@mantine/hooks";
 import { useRouter } from "next/router";
 import React, { useRef, useState } from "react";
 import {
@@ -26,9 +28,11 @@ import {
   HiHome,
   HiLightBulb,
   HiLogout,
+  HiMoon,
   HiSearch,
   HiSearchCircle,
   HiShoppingBag,
+  HiSun,
   HiUser,
   HiUsers,
   HiViewGrid,
@@ -194,49 +198,68 @@ const Search = ({ ref }: { ref: React.RefObject<HTMLInputElement> }) => {
   );
 };
 
-const UserMenu = ({ classes, userMenuOpened, user, cx, router }: any) => (
-  <Menu transition="pop-top-right">
-    <Menu.Target>
-      <UnstyledButton
-        className={cx(classes.user, {
-          [classes.userActive]: userMenuOpened,
-        })}
-      >
-        <Group spacing={12}>
-          <Avatar
-            src={
-              user.avatarUri ||
-              `https://avatars.dicebear.com/api/identicon/${user.id}.png`
-            }
-            alt={user.username}
-            radius="xl"
-            size={20}
-          />
-          <Text weight={500} size="sm" sx={{ lineHeight: 1 }} mr={3}>
-            {user.username}
-          </Text>
-          <HiChevronDown size={12} stroke="1.5" />
-        </Group>
-      </UnstyledButton>
-    </Menu.Target>
+const UserMenu = ({ classes, userMenuOpened, user, cx, router }: any) => {
+  const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
+    key: "mantine-color-scheme",
+  });
 
-    <Menu.Dropdown>
-      <Menu.Item icon={<HiUser />}>Profile</Menu.Item>
-      <Menu.Divider />
-      <Menu.Item
-        sx={{ fontWeight: 500 }}
-        color="red"
-        icon={<HiLogout />}
-        onClick={() => {
-          setCookie(".frameworksession", "", -365);
-          router.push("/login");
-        }}
-      >
-        Logout
-      </Menu.Item>
-    </Menu.Dropdown>
-  </Menu>
-);
+  const toggleColorScheme = () =>
+    setColorScheme((current) => (current === "dark" ? "light" : "dark"));
+
+  return (
+    <Menu transition="pop-top-right">
+      <Menu.Target>
+        <UnstyledButton
+          className={cx(classes.user, {
+            [classes.userActive]: userMenuOpened,
+          })}
+        >
+          <Group spacing={12}>
+            <Avatar
+              src={
+                user.avatarUri ||
+                `https://avatars.dicebear.com/api/identicon/${user.id}.png`
+              }
+              alt={user.username}
+              radius="xl"
+              size={20}
+            />
+            <Text weight={500} size="sm" sx={{ lineHeight: 1 }} mr={3}>
+              {user.username}
+            </Text>
+            <HiChevronDown size={12} stroke="1.5" />
+          </Group>
+        </UnstyledButton>
+      </Menu.Target>
+
+      <Menu.Dropdown>
+        <Menu.Item icon={<HiUser />}>Profile</Menu.Item>
+        <Menu.Item
+          icon={
+            colorScheme === "dark" ? <HiMoon size={18} /> : <HiSun size={18} />
+          }
+          color={colorScheme === "dark" ? "yellow" : "blue"}
+          onClick={toggleColorScheme}
+        >
+          Change theme{" "}
+          <Badge color={colorScheme === "dark" ? "yellow" : "blue"}>WIP</Badge>
+        </Menu.Item>
+        <Menu.Divider />
+        <Menu.Item
+          sx={{ fontWeight: 500 }}
+          color="red"
+          icon={<HiLogout />}
+          onClick={() => {
+            setCookie(".frameworksession", "", -365);
+            router.push("/login");
+          }}
+        >
+          Logout
+        </Menu.Item>
+      </Menu.Dropdown>
+    </Menu>
+  );
+};
 
 const CurrencyMenu = ({
   cx,
