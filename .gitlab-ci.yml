@@ -12,3 +12,8 @@ build status:
   cache:
     paths:
       - node_modules
+  artifacts:
+    paths:
+      - .next
+      - build
+    expire_in: 1 day
