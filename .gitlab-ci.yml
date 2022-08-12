@@ -1,0 +1,22 @@
+default:
+  image: node:latest
+
+stages:
+  - dependencies
+  - build_status
+
+dependencies:
+  stage: dependencies
+  script:
+    - yarn
+  cache:
+    paths:
+      - node_modules
+
+build_status:
+  stage: build_status
+  script: yarn run build || exit 1
+  only:
+    - success
+  except:
+    - failed
