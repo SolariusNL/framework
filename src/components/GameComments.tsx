@@ -9,7 +9,7 @@ import {
   TextInput,
 } from "@mantine/core";
 import { usePagination } from "@mantine/hooks";
-import { GameComment } from "@prisma/client";
+import { Avatar as AvatarDB, GameComment } from "@prisma/client";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { HiChat } from "react-icons/hi";
@@ -28,6 +28,7 @@ interface Comment {
     id: number;
     username: string;
     avatarUri: string;
+    avatar: AvatarDB | null;
   };
   text: string;
   createdAt: Date;
