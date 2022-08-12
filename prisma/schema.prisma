@@ -36,6 +36,19 @@ model User {
   dislikedGames          Game[]          @relation("dislikedGames")
   nucleusKeys            NucleusKey[]    @relation("nucleusKeys")
   gameComments           GameComment[]   @relation("userGameComments")
+  avatar                 Avatar?         @relation("avatar")
+}
+
+model Avatar {
+  id            String @id @default(uuid())
+  user          User   @relation("avatar", references: [id], fields: [userId])
+  userId        Int    @unique
+  headColor     String @default("rgb(244, 204, 67)")
+  leftArmColor  String @default("rgb(244, 204, 67)")
+  leftLegColor  String @default("rgb(165, 188, 80)")
+  rightArmColor String @default("rgb(244, 204, 67)")
+  rightLegColor String @default("rgb(165, 188, 80)")
+  torsoColor    String @default("rgb(23, 107, 170)")
 }
 
 model Invite {

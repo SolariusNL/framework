@@ -108,6 +108,9 @@ class AuthRouter {
             password: String(password),
             email: String(email),
             avatarUri: "",
+            avatar: {
+              create: {},
+            },
           },
         },
         token: Math.random().toString(36).substring(2),

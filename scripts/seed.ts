@@ -20,6 +20,9 @@ const stages = [
             username: "Framework",
             premium: true,
             avatarUri: "",
+            avatar: {
+              create: {},
+            },
           },
         })
         .then(() => {
