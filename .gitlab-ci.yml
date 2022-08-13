@@ -2,7 +2,12 @@ default:
   image: node:latest
 
 stages:
+  - lint
   - build-status
+
+lint:
+  stage: lint
+  script: yarn run lint
 
 build status:
   stage: build-status
