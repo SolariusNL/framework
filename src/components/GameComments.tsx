@@ -29,6 +29,7 @@ interface Comment {
     username: string;
     avatarUri: string;
     avatar: AvatarDB | null;
+    country: string;
   };
   text: string;
   createdAt: Date;
