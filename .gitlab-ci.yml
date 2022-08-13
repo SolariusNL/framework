@@ -1,10 +1,10 @@
 default:
   image: node:latest
 
-stages: 
+stages:
   - dependencies
-  - build-status
   - lint
+  - build-status
 
 deps:
   stage: dependencies
@@ -14,18 +14,19 @@ deps:
     paths:
       - node_modules
 
+lint:
+  stage: lint
+  needs: [deps]
+  script:
+    - yarn lint
+
 build status:
   stage: build-status
   needs: [deps]
-  
+
   script:
     - yarn build
   cache:
     paths:
       - .next/cache/
     key: ${CI_COMMIT_REF_SLUG}
-
-lint:
-  stage: lint
-  needs: [deps, build status]
-  script: yarn run lint
