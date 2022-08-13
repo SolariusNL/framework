@@ -1,28 +1,24 @@
 default:
   image: node:latest
 
+cache:
+  paths:
+    - node_modules
+
 stages:
-  - dependencies
   - lint
   - build-status
 
-deps:
-  stage: dependencies
-  script:
-    - yarn
-  cache:
-    paths:
-      - node_modules
+before_script:
+  - yarn
 
 lint:
   stage: lint
-  needs: [deps]
   script:
     - yarn lint
 
 build status:
   stage: build-status
-  needs: [deps]
 
   script:
     - yarn build
