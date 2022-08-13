@@ -1,5 +1,6 @@
 import { Title } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
+import { useEffect, useState } from "react";
 import Framework from "../components/Framework";
 import authorizedRoute from "../util/authorizedRoute";
 import { User } from "../util/prisma-types";
@@ -9,11 +10,16 @@ interface HomeProps {
 }
 
 const Home: NextPage<HomeProps> = ({ user }) => {
+  const [timeMessage, setTimeMessage] = useState("");
+
+  useEffect(() => {
+    setTimeMessage(new Date().getHours() > 12 ? "afternoon" : "morning");
+  } , []);
+
   return (
     <Framework user={user} activeTab="home">
       <Title mb={12}>
-        Good {new Date().getHours() > 12 ? "afternoon" : "morning"},{" "}
-        {user.username}
+        Good {timeMessage}, {user.username}!
       </Title>
     </Framework>
   );
