@@ -87,6 +87,31 @@ class AuthRouter {
       };
     }
 
+    const usernameRegex = /^[a-zA-Z0-9_]{3,24}$/;
+    if (!usernameRegex.test(username)) {
+      return {
+        status: 400,
+        message:
+          "Username must be between 3 and 24 characters and can only contain letters, numbers, and underscores",
+      };
+    }
+
+    const emailRegex =
+      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+    if (!emailRegex.test(email)) {
+      return {
+        status: 400,
+        message: "Invalid email",
+      };
+    }
+
+    if (password.length < 3) {
+      return {
+        status: 400,
+        message: "Password must be at least 3 characters",
+      };
+    }
+
     const userAlreadyExists = await prisma.user.findFirst({
       where: {
         OR: [{ email: String(email) }, { username: String(username) }],

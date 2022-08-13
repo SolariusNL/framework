@@ -6,6 +6,7 @@ export const nonCurrentUserSelect = {
     username: true,
     avatarUri: true,
     avatar: true,
+    country: true,
   },
 };
 
@@ -34,6 +35,7 @@ const nonuser = Prisma.validator<Prisma.UserArgs>()({
     username: true,
     avatarUri: true,
     avatar: true,
+    country: true,
   },
 });
 
@@ -72,6 +74,7 @@ export const userSelect: Prisma.UserSelect = {
   nucleusKeys: true,
   avatarUri: true,
   avatar: true,
+  country: true,
 };
 
 export const gameSelect: Prisma.GameSelect = {

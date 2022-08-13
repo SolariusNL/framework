@@ -37,6 +37,7 @@ model User {
   nucleusKeys            NucleusKey[]    @relation("nucleusKeys")
   gameComments           GameComment[]   @relation("userGameComments")
   avatar                 Avatar?         @relation("avatar")
+  country                String          @default("")
 }
 
 model Avatar {

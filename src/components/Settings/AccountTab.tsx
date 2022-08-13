@@ -1,6 +1,20 @@
-import { Avatar, Button, FileButton, Group, Modal, Stack } from "@mantine/core";
+import {
+  Avatar,
+  Button,
+  FileButton,
+  Grid,
+  Group,
+  Modal,
+  Stack,
+  TextInput,
+} from "@mantine/core";
 import { useEffect, useRef, useState } from "react";
-import { HiCheckCircle, HiIdentification, HiTrash } from "react-icons/hi";
+import {
+  HiCheckCircle,
+  HiIdentification,
+  HiTrash,
+  HiUser,
+} from "react-icons/hi";
 import { getCookie } from "../../util/cookies";
 import { User } from "../../util/prisma-types";
 import Descriptive from "../Descriptive";
@@ -8,6 +22,8 @@ import SettingsTab from "./SettingsTab";
 import dynamic from "next/dynamic";
 import { centerCrop, Crop, makeAspectCrop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
+import useMediaQuery from "../../util/useMediaQuery";
+import CountrySelect from "../CountryPicker";
 
 const AvatarCropNoSSR = dynamic(() => import("react-image-crop"), {
   ssr: false,
@@ -36,7 +52,7 @@ export const updateAccount = async (
   })
     .then((res) => res.json())
     .then((res) => {
-      if (res.status == 200) {
+      if (res.success) {
         return setSuccess(true);
       }
 
@@ -110,6 +126,8 @@ const AccountTab = ({ user }: AccountTabProps) => {
     }
   };
 
+  const mobile = useMediaQuery("768");
+
   const getImageFromFile = () => {
     if (!uploadedAvatar) {
       return null;
@@ -169,7 +187,8 @@ const AccountTab = ({ user }: AccountTabProps) => {
         tabTitle="Account"
         saveButtonLabel="Save"
         saveButtonAction={(setLoading, setError) => {
-          updateAccount(setLoading, setError, user, setSuccess);
+          updateAccount(setLoading, setError, updated, setSuccess);
+
           if (uploadedAvatarData) {
             const formData = new FormData();
             const file = new File(
@@ -213,60 +232,80 @@ const AccountTab = ({ user }: AccountTabProps) => {
         success={success}
         setSuccess={setSuccess}
       >
-        <Stack spacing={16}>
-          <Descriptive
-            title="Avatar"
-            description="Your avatar will be displayed next to your name."
-          >
-            <Group spacing={24}>
-              <Avatar
-                src={
-                  uploadedAvatarData
-                    ? uploadedAvatarData
-                    : user.avatarUri ||
-                      `https://avatars.dicebear.com/api/identicon/${user.id}.png`
-                }
-                alt={user.username}
-                radius={999}
-                size={48}
-              />
+        <Grid columns={2}>
+          <Grid.Col span={mobile ? 2 : 1}>
+            <Descriptive
+              title="Avatar"
+              description="Your avatar will be displayed next to your name."
+            >
+              <Group spacing={24}>
+                <Avatar
+                  src={
+                    uploadedAvatarData
+                      ? uploadedAvatarData
+                      : user.avatarUri ||
+                        `https://avatars.dicebear.com/api/identicon/${user.id}.png`
+                  }
+                  alt={user.username}
+                  radius={999}
+                  size={48}
+                />
 
-              <Group>
-                <FileButton
-                  onChange={(file) => {
-                    if (file) {
-                      setUploadedAvatar(file);
-                      setCropModalOpen(true);
-                    } else {
-                      setUploadedAvatar(null);
-                      setUploadedAvatarData(null);
-                    }
-                  }}
-                  accept="image/png,image/jpeg"
-                >
-                  {(props) => (
-                    <Button leftIcon={<HiIdentification />} {...props}>
-                      Change avatar
+                <Group>
+                  <FileButton
+                    onChange={(file) => {
+                      if (file) {
+                        setUploadedAvatar(file);
+                        setCropModalOpen(true);
+                      } else {
+                        setUploadedAvatar(null);
+                        setUploadedAvatarData(null);
+                      }
+                    }}
+                    accept="image/png,image/jpeg"
+                  >
+                    {(props) => (
+                      <Button leftIcon={<HiIdentification />} {...props}>
+                        Change avatar
+                      </Button>
+                    )}
+                  </FileButton>
+
+                  {uploadedAvatar && (
+                    <Button
+                      leftIcon={<HiTrash />}
+                      onClick={() => {
+                        setUploadedAvatar(null);
+                        setUploadedAvatarData(null);
+                      }}
+                      color="red"
+                    >
+                      Remove avatar
                     </Button>
                   )}
-                </FileButton>
-
-                {uploadedAvatar && (
-                  <Button
-                    leftIcon={<HiTrash />}
-                    onClick={() => {
-                      setUploadedAvatar(null);
-                      setUploadedAvatarData(null);
-                    }}
-                    color="red"
-                  >
-                    Remove avatar
-                  </Button>
-                )}
+                </Group>
               </Group>
-            </Group>
-          </Descriptive>
-        </Stack>
+            </Descriptive>
+          </Grid.Col>
+          <Grid.Col span={mobile ? 2 : 1}>
+            <TextInput
+              label="Username"
+              description="Your username represents you on Framework."
+              defaultValue={user.username}
+              onChange={(e) => {
+                update("username", e.target.value);
+              }}
+              icon={<HiUser />}
+            />
+          </Grid.Col>
+          <Grid.Col span={mobile ? 2 : 1}>
+            <Descriptive title="Country" description="Represent your country of Framework!">
+              <CountrySelect defaultValue={user.country} onChange={(code: string) => {
+                update("country", code);
+              }} />
+            </Descriptive>
+          </Grid.Col>
+        </Grid>
       </SettingsTab>
     </>
   );
