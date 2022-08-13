@@ -3,8 +3,8 @@ default:
 
 stages: 
   - dependencies
-  - lint
   - build-status
+  - lint
 
 deps:
   stage: dependencies
@@ -13,11 +13,6 @@ deps:
   cache:
     paths:
       - node_modules
-
-lint:
-  stage: lint
-  needs: [deps]
-  script: yarn run lint
 
 build status:
   stage: build-status
@@ -29,3 +24,8 @@ build status:
     paths:
       - .next/cache/
     key: ${CI_COMMIT_REF_SLUG}
+
+lint:
+  stage: lint
+  needs: [deps, build status]
+  script: yarn run lint
