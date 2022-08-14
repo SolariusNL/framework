@@ -4,12 +4,14 @@ default:
 cache:
   paths:
     - node_modules
+    - .yarn
 
 stages:
   - lint
   - build-status
 
 before_script:
+  - yarn config set cache-folder .yarn
   - yarn
 
 lint:
