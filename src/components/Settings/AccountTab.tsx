@@ -1,6 +1,7 @@
 import {
   Avatar,
   Button,
+  Checkbox,
   FileButton,
   Grid,
   Group,
@@ -303,6 +304,13 @@ const AccountTab = ({ user }: AccountTabProps) => {
               <CountrySelect defaultValue={user.country} onChange={(code: string) => {
                 update("country", code);
               }} />
+            </Descriptive>
+          </Grid.Col>
+          <Grid.Col span={mobile ? 2 : 1}>
+            <Descriptive title="Busy" description="Let other users know you're busy.">
+              <Checkbox label="Enable busy status" defaultChecked={user.busy} onChange={(e) => {
+                update("busy", e.currentTarget.checked);
+              } } />
             </Descriptive>
           </Grid.Col>
         </Grid>

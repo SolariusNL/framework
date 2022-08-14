@@ -11,6 +11,8 @@ import type { User } from "../../../util/prisma-types";
 
 interface UserUpdateBody {
   username?: string;
+  country?: string;
+  busy?: boolean;
 }
 
 class UserRouter {
@@ -35,6 +37,16 @@ class UserRouter {
         verify:
           (value: string) => countries.find(c => c.code === value),
         error: "Invalid country",
+      },
+      {
+        name: "bio",
+        regex: /^.{0,255}$/,
+        error: "Bio must be less than 255 characters",
+      },
+      {
+        name: "busy",
+        regex: /^(true|false)$/,
+        error: "Busy must be true or false",
       }
     ];
 

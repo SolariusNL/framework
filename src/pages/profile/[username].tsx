@@ -2,6 +2,7 @@ import {
   ActionIcon,
   Anchor,
   Avatar,
+  Badge,
   Button,
   Center,
   Container,
@@ -19,6 +20,7 @@ import {
 } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
 import React from "react";
+import ReactCountryFlag from "react-country-flag";
 import {
   HiCheck,
   HiClipboardCopy,
@@ -78,9 +80,15 @@ const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
               flexDirection: "row",
             }}
           >
-            <Text weight={500} size="xl" align="center">
-              {viewing.username}
-            </Text>
+            <Group>
+              {viewing.country && (
+                <ReactCountryFlag style={{borderRadius: "6px"}} countryCode={viewing.country} svg />
+              )}
+              <Text weight={500} size="xl" align="center">
+                {viewing.username}
+              </Text>
+              {viewing.busy && <Badge>Busy</Badge>}
+            </Group>
 
             <Group spacing={4} ml={6}>
               {viewing.premium && <HiSparkles />}
@@ -150,15 +158,7 @@ const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
             About {viewing.username}
           </Text>
 
-          <Text>
-            This is a placeholder for the about section. Lorem ipsum dolor sit
-            amet, consectetur adipiscing elit. Donec euismod, nisi eu
-            consectetur consectetur, nisl nisl consectetur nisl, euismod nisi
-            nisl euismod nisl. Donec euismod, nisi eu consectetur consectetur,
-            nisl nisl consectetur nisl, euismod nisi nisl euismod nisl. Donec
-            euismod, nisi eu consectetur consectetur, nisl nisl consectetur
-            nisl, euismod nisi nisl euismod nisl.
-          </Text>
+          <Text>{viewing.bio}</Text>
 
           <Divider mt={16} mb={16} />
 
@@ -313,6 +313,9 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       createdAt: true,
       username: true,
       id: true,
+      bio: true,
+      busy: true,
+      country: true,
     },
   });
 

@@ -39,6 +39,8 @@ model User {
   avatar                 Avatar?         @relation("avatar")
   country                String          @default("")
   snippets               CodeSnippet[]   @relation("userCodeSnippets")
+  bio                    String          @default("This user has not yet written a bio.")
+  busy                   Boolean         @default(false)
 }
 
 model Avatar {
