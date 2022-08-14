@@ -54,6 +54,7 @@ interface FrameworkProps {
     | "settings"
     | "friends"
     | "none";
+  noPadding?: boolean;
 }
 
 const HeaderStyle = {
@@ -149,7 +150,10 @@ const useStyles = createStyles((theme) => ({
           ? theme.colors.dark[7]
           : theme.colors.gray[2],
       fontWeight: 500,
-      color: theme.colorScheme === "dark" ? theme.colors.dark[1] : theme.colors.dark[7],
+      color:
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[1]
+          : theme.colors.dark[7],
     },
   },
 }));
@@ -298,7 +302,12 @@ const CurrencyMenu = ({
   </Menu>
 );
 
-const Framework = ({ user, children, activeTab }: FrameworkProps) => {
+const Framework = ({
+  user,
+  children,
+  activeTab,
+  noPadding,
+}: FrameworkProps) => {
   const { classes, theme, cx } = useStyles();
   const [opened, { toggle }] = useDisclosure(false);
   const [userMenuOpened, setUserMenuOpened] = useState(false);
@@ -510,7 +519,7 @@ const Framework = ({ user, children, activeTab }: FrameworkProps) => {
         </Drawer>
       </div>
 
-      <Container mt={26}>{children}</Container>
+      {!noPadding ? <Container mt={26}>{children}</Container> : <div>{ children }</div>}
     </>
   );
 };

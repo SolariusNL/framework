@@ -8,6 +8,7 @@ import {
   HiLightningBolt,
   HiLockClosed,
   HiMusicNote,
+  HiScissors,
   HiServer,
   HiShoppingCart,
   HiTicket,
@@ -24,6 +25,7 @@ import Nucleus from "../components/Invent/Nucleus";
 import Plugins from "../components/Invent/Plugins";
 import Secrets from "../components/Invent/Secrets";
 import Shirts from "../components/Invent/Shirts";
+import Snippets from "../components/Invent/Snippets";
 import Sounds from "../components/Invent/Sounds";
 import authorizedRoute from "../util/authorizedRoute";
 import { User } from "../util/prisma-types";
@@ -94,6 +96,10 @@ const Invent: NextPage<InventProps> = ({ user }) => {
                 Nucleus
               </Tabs.Tab>
 
+              <Tabs.Tab value="snippets" icon={<HiScissors />}>
+                Code Snippets
+              </Tabs.Tab>
+
               <Tabs.Tab value="secrets" icon={<HiLockClosed />}>
                 Secrets
               </Tabs.Tab>
@@ -111,6 +117,7 @@ const Invent: NextPage<InventProps> = ({ user }) => {
         <DeveloperProfile user={user} />
         <Connections user={user} />
         <Nucleus user={user} />
+        <Snippets user={user} />
         <Secrets user={user} />
       </Tabs>
     </Framework>

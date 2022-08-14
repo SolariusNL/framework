@@ -26,6 +26,7 @@ const user = Prisma.validator<Prisma.UserArgs>()({
     },
     nucleusKeys: true,
     avatar: true,
+    snippets: true,
   },
 });
 
@@ -75,6 +76,7 @@ export const userSelect: Prisma.UserSelect = {
   avatarUri: true,
   avatar: true,
   country: true,
+  snippets: true,
 };
 
 export const gameSelect: Prisma.GameSelect = {

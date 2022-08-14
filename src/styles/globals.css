@@ -28,3 +28,9 @@ h6 {
   position: relative;
   flex: 0 0 100%;
 }
+
+.monaco-editor {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}

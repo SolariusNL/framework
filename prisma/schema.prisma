@@ -38,6 +38,7 @@ model User {
   gameComments           GameComment[]   @relation("userGameComments")
   avatar                 Avatar?         @relation("avatar")
   country                String          @default("")
+  snippets               CodeSnippet[]   @relation("userCodeSnippets")
 }
 
 model Avatar {
@@ -50,6 +51,17 @@ model Avatar {
   rightArmColor String @default("rgb(244, 204, 67)")
   rightLegColor String @default("rgb(165, 188, 80)")
   torsoColor    String @default("rgb(23, 107, 170)")
+}
+
+model CodeSnippet {
+  id          String   @id @default(uuid())
+  user        User     @relation("userCodeSnippets", references: [id], fields: [userId])
+  userId      Int      @unique
+  code        String
+  name        String
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
 }
 
 model Invite {
