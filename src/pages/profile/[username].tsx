@@ -1,7 +1,11 @@
 import {
+  ActionIcon,
+  Anchor,
   Avatar,
   Button,
+  Center,
   Container,
+  CopyButton,
   Divider,
   Grid,
   Group,
@@ -11,10 +15,18 @@ import {
   Stack,
   Text,
   Title,
+  Tooltip,
 } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
 import React from "react";
-import { HiPlay, HiShieldCheck, HiSparkles } from "react-icons/hi";
+import {
+  HiCheck,
+  HiClipboardCopy,
+  HiPlay,
+  HiShieldCheck,
+  HiSparkles,
+  HiUsers,
+} from "react-icons/hi";
 import AdminBadge from "../../components/Badges/Admin";
 import AlphaBadge from "../../components/Badges/Alpha";
 import PremiumBadge from "../../components/Badges/Premium";
@@ -26,6 +38,7 @@ import { exclude } from "../../util/exclude";
 import prisma from "../../util/prisma";
 import {
   nonCurrentUserSelect,
+  NonUser,
   User,
   userSelect,
 } from "../../util/prisma-types";
@@ -42,8 +55,12 @@ const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
 
   return (
     <Framework user={user} activeTab="none">
-      <Group position="apart">
-        <Group spacing={36}>
+      <Center
+        sx={{
+          width: "100vw / 2",
+        }}
+      >
+        <Stack align="center">
           <Avatar
             src={
               viewing.avatarUri ||
@@ -51,67 +68,81 @@ const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
             }
             alt={viewing.username}
             radius={999}
-            size={80}
+            size={100}
+            mb={16}
           />
 
-          <Stack spacing={6}>
-            <Group spacing={6}>
-              <Text weight={500} size="xl" sx={{ lineHeight: 1 }} mr={4}>
-                {viewing.username}
-              </Text>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+            }}
+          >
+            <Text weight={500} size="xl" align="center">
+              {viewing.username}
+            </Text>
 
+            <Group spacing={4} ml={6}>
               {viewing.premium && <HiSparkles />}
-
               {viewing.role == "ADMIN" && <HiShieldCheck />}
             </Group>
+          </div>
 
-            <Text size="sm" color="dimmed">
-              @{viewing.username}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+            }}
+          >
+            <Group spacing={3}>
+              <Text color="dimmed">
+                User ID: <strong>{viewing.id}</strong>
+              </Text>
+              <CopyButton value={String(viewing.id)} timeout={2000}>
+                {({ copied, copy }) => (
+                  <Tooltip
+                    label={copied ? "Copied" : "Copy"}
+                    withArrow
+                    position="right"
+                  >
+                    <ActionIcon color={copied ? "teal" : "gray"} onClick={copy}>
+                      {copied ? (
+                        <HiCheck size={16} />
+                      ) : (
+                        <HiClipboardCopy size={16} />
+                      )}
+                    </ActionIcon>
+                  </Tooltip>
+                )}
+              </CopyButton>
+            </Group>
+
+            <Text color="dimmed" pl={8} pr={8}>
+              ·
             </Text>
-          </Stack>
-        </Group>
 
-        {!(viewing.id == user.id) && (
-          <Group sx={{ justifyContent: "flex-end" }}>
-            <Button variant="outline" color="red">
-              Report
-            </Button>
-            <Button variant="outline">Message</Button>
-            <Button variant="outline">Send friend request</Button>
-          </Group>
-        )}
-      </Group>
+            <Text color="dimmed">@{viewing.username}</Text>
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+            }}
+          >
+            <Group spacing={3}>
+              <HiUsers color="#868e96" style={{ marginRight: 5 }} />
+              <Anchor>0 followers</Anchor>
+              <Text color="dimmed" pl={8} pr={8}>
+                ·
+              </Text>
+              <Anchor>0 following</Anchor>
+            </Group>
+          </div>
+        </Stack>
+      </Center>
 
       <Divider mt={25} mb={25} />
-
-      <Group position="center" spacing={26} mb={26}>
-        <Stack align="center" spacing={4}>
-          <Text weight={500} size="lg" sx={{ lineHeight: 1 }}>
-            0
-          </Text>
-          <Text size="sm" color="dimmed">
-            Following
-          </Text>
-        </Stack>
-
-        <Stack align="center" spacing={4}>
-          <Text weight={500} size="lg" sx={{ lineHeight: 1 }}>
-            0
-          </Text>
-          <Text size="sm" color="dimmed">
-            Followers
-          </Text>
-        </Stack>
-
-        <Stack align="center" spacing={4}>
-          <Text weight={500} size="lg" sx={{ lineHeight: 1 }}>
-            {viewing.friends.length + viewing.friendsRelation.length}
-          </Text>
-          <Text size="sm" color="dimmed">
-            Friends
-          </Text>
-        </Stack>
-      </Group>
 
       <Grid columns={24}>
         <Grid.Col span={mobile ? 24 : 14}>
@@ -262,7 +293,27 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     where: {
       username: username as string,
     },
-    select: userSelect,
+    select: {
+      friends: nonCurrentUserSelect,
+      friendsRelation: nonCurrentUserSelect,
+      games: {
+        include: {
+          updates: true,
+          author: nonCurrentUserSelect,
+          likedBy: nonCurrentUserSelect,
+          dislikedBy: nonCurrentUserSelect,
+        },
+      },
+      nucleusKeys: true,
+      avatar: true,
+      snippets: true,
+      avatarUri: true,
+      premium: true,
+      role: true,
+      createdAt: true,
+      username: true,
+      id: true,
+    },
   });
 
   if (!viewing) {
