@@ -12,7 +12,7 @@ stages:
 
 before_script:
   - yarn config set cache-folder .yarn
-  - yarn
+  - yarn install --cache-folder .yarn
 
 lint:
   stage: lint
