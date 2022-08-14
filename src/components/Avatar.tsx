@@ -59,7 +59,7 @@ const Avatar = ({ user }: AvatarProps) => {
                 })
               )
             }
-            position={[0, -2.4, 0]}
+            position={[0, -3.5, 0]}
             scale={[2, 2, 2]}
           />
           <primitive
@@ -72,7 +72,7 @@ const Avatar = ({ user }: AvatarProps) => {
                 })
               )
             }
-            position={[0, -2.4, 0]}
+            position={[0, -3.5, 0]}
             scale={[2, 2, 2]}
           />
           <primitive
@@ -85,7 +85,7 @@ const Avatar = ({ user }: AvatarProps) => {
                 })
               )
             }
-            position={[0, -2.4, 0]}
+            position={[0, -3.5, 0]}
             scale={[2, 2, 2]}
           />
           <primitive
@@ -98,7 +98,7 @@ const Avatar = ({ user }: AvatarProps) => {
                 })
               )
             }
-            position={[0, -2.4, 0]}
+            position={[0, -3.5, 0]}
             scale={[2, 2, 2]}
           />
           <primitive
@@ -111,7 +111,7 @@ const Avatar = ({ user }: AvatarProps) => {
                 })
               )
             }
-            position={[0, -2.4, 0]}
+            position={[0, -3.5, 0]}
             scale={[2, 2, 2]}
           />
           <primitive
@@ -124,7 +124,7 @@ const Avatar = ({ user }: AvatarProps) => {
                 })
               )
             }
-            position={[0, -2.4, 0]}
+            position={[0, -3.5, 0]}
             scale={[2, 2, 2]}
           />
           <OrbitControls />
