@@ -2,20 +2,34 @@ import "../styles/globals.css";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import {
+  Anchor,
+  Button,
   ColorScheme,
   ColorSchemeProvider,
+  Dialog,
+  Group,
   MantineProvider,
+  Text,
 } from "@mantine/core";
 import NextNProgress from "nextjs-progressbar";
 import { NotificationsProvider } from "@mantine/notifications";
 import { ModalsProvider } from "@mantine/modals";
 import { useLocalStorage } from "@mantine/hooks";
+import Link from "next/link";
 
 const Framework = ({ Component, pageProps }: AppProps) => {
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
     key: "mantine-color-scheme",
     defaultValue: "light",
     getInitialValueInEffect: true,
+  });
+
+  const [cookieConsent, setCookieConsent] = useLocalStorage<{
+    accepted: boolean;
+    rejected: boolean;
+  }>({
+    key: "soodam-cookie-consent",
+    defaultValue: { accepted: false, rejected: false },
   });
 
   const toggleColorScheme = (value?: ColorScheme) =>
@@ -48,6 +62,38 @@ const Framework = ({ Component, pageProps }: AppProps) => {
             <NotificationsProvider position="top-center">
               <NextNProgress />
               <Component {...pageProps} />
+              <Dialog
+                opened={!cookieConsent.accepted && !cookieConsent.rejected}
+              >
+                <Text size="sm" mb={12}>
+                  Framework and other Soodam.re services use cookies to help us
+                  provide you the best experience. By continuing to use our
+                  services, you agree to our use of cookies. Read our{" "}
+                  <Anchor>
+                    <Link href="/privacy">Privacy Policy</Link>
+                  </Anchor>{" "}
+                  for more information regarding your privacy and how we use
+                  cookies.
+                </Text>
+
+                <Group grow>
+                  <Button
+                    onClick={() =>
+                      setCookieConsent({ accepted: true, rejected: false })
+                    }
+                  >
+                    I agree
+                  </Button>
+
+                  <Button
+                    onClick={() =>
+                      setCookieConsent({ accepted: false, rejected: true })
+                    }
+                  >
+                    I do not agree
+                  </Button>
+                </Group>
+              </Dialog>
             </NotificationsProvider>
           </ModalsProvider>
         </MantineProvider>
