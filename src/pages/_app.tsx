@@ -18,6 +18,7 @@ import { ModalsProvider } from "@mantine/modals";
 import { useLocalStorage } from "@mantine/hooks";
 import Link from "next/link";
 import { setCookie } from "../util/cookies";
+import { useRouter } from "next/router";
 
 const Framework = ({ Component, pageProps }: AppProps) => {
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
@@ -36,6 +37,8 @@ const Framework = ({ Component, pageProps }: AppProps) => {
 
   const toggleColorScheme = (value?: ColorScheme) =>
     setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
+
+  const router = useRouter();
 
   return (
     <>
@@ -81,7 +84,10 @@ const Framework = ({ Component, pageProps }: AppProps) => {
                   <strong>{pageProps.user && pageProps.user.banReason}</strong>
                 </Text>
 
-                <Button fullWidth onClick={() => setCookie(".frameworksession", "", -365)}>
+                <Button fullWidth onClick={() => {
+                  setCookie(".frameworksession", "", -365);
+                  router.push("/login");
+                }}>
                   Logout
                 </Button>
               </Modal>
