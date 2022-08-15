@@ -17,6 +17,7 @@ import { NotificationsProvider } from "@mantine/notifications";
 import { ModalsProvider } from "@mantine/modals";
 import { useLocalStorage } from "@mantine/hooks";
 import Link from "next/link";
+import { setCookie } from "../util/cookies";
 
 const Framework = ({ Component, pageProps }: AppProps) => {
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
@@ -75,10 +76,14 @@ const Framework = ({ Component, pageProps }: AppProps) => {
                   accounts. This action is irreversible.
                 </Text>
 
-                <Text>
+                <Text mb={24}>
                   Ban reason:{" "}
                   <strong>{pageProps.user && pageProps.user.banReason}</strong>
                 </Text>
+
+                <Button fullWidth onClick={() => setCookie(".frameworksession", "", -365)}>
+                  Logout
+                </Button>
               </Modal>
 
               <Dialog
