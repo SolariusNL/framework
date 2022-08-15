@@ -8,13 +8,14 @@ import {
   Res,
 } from "@storyofams/next-api-decorators";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { Account } from "../../../util/api/authorized";
+import Authorized, { Account } from "../../../util/api/authorized";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
 import rateLimitedResource from "../../../util/rateLimit";
 
 class NucleusRouter {
   @Post("/auth")
+  @Authorized()
   public async authorize(@Header("authorization") authorization: string) {
     const match = await prisma.nucleusKey.findFirst({
       where: {

@@ -83,6 +83,8 @@ export const userSelect: Prisma.UserSelect = {
   snippets: true,
   bio: true,
   busy: true,
+  banned: true,
+  banReason: true,
 };
 
 export const gameSelect: Prisma.GameSelect = {

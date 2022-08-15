@@ -9,6 +9,7 @@ import {
   Dialog,
   Group,
   MantineProvider,
+  Modal,
   Text,
 } from "@mantine/core";
 import NextNProgress from "nextjs-progressbar";
@@ -62,6 +63,24 @@ const Framework = ({ Component, pageProps }: AppProps) => {
             <NotificationsProvider position="top-center">
               <NextNProgress />
               <Component {...pageProps} />
+              <Modal
+                withCloseButton={false}
+                opened={pageProps.user && pageProps.user.banned}
+                onClose={() => null}
+              >
+                <Text mb={16}>
+                  You have been permanently banned from Framework for violations
+                  of our Terms of Service and/or our Community Guidelines. You
+                  are not allowed to use Framework or create any additional
+                  accounts. This action is irreversible.
+                </Text>
+
+                <Text>
+                  Ban reason:{" "}
+                  <strong>{pageProps.user && pageProps.user.banReason}</strong>
+                </Text>
+              </Modal>
+
               <Dialog
                 opened={!cookieConsent.accepted && !cookieConsent.rejected}
               >
