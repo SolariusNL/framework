@@ -30,6 +30,8 @@ interface Comment {
     avatarUri: string;
     avatar: AvatarDB | null;
     country: string;
+    bio: string;
+    busy: boolean;
   };
   text: string;
   createdAt: Date;
