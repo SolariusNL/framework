@@ -41,6 +41,7 @@ Framework is very easy to set up and deploy.
   - Run `yarn install` to install the dependencies.
 - **Seed** the database
   - Run `yarn run seed` to generate Prisma types and seed the database with initial data.
+- **Configure** your `.env` file, some important things may be the database connection url, or optional API keys for extended functionality.
 - **Build** the application
   - Run `yarn build` to build the application. This will create a `dist` directory with the compiled application.
 - **Deploy** the application
