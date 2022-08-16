@@ -300,7 +300,7 @@ const AccountTab = ({ user }: AccountTabProps) => {
             />
           </Grid.Col>
           <Grid.Col span={mobile ? 2 : 1}>
-            <Descriptive title="Country" description="Represent your country of Framework!">
+            <Descriptive title="Country" description="Represent your country on Framework!">
               <CountrySelect defaultValue={user.country} onChange={(code: string) => {
                 update("country", code);
               }} />

@@ -99,7 +99,7 @@ const AddGameConnection = ({ user, game }: AddGameConnectionProps) => {
 
     if (!serverChecked) {
       setLoading(false);
-      return setError("Please verifys the server before adding a connection.");
+      return setError("Please verify the server before adding a connection.");
     }
 
     if (
