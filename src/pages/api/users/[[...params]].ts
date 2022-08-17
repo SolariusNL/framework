@@ -8,6 +8,7 @@ import Authorized, { Account } from "../../../util/api/authorized";
 import countries from "../../../util/countries";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
+import { verificationEmail } from "../../../util/templates/verification-email";
 
 interface UserUpdateBody {
   username?: string;
@@ -20,6 +21,26 @@ class UserRouter {
   @Authorized()
   public async getMe(@Account() user: User) {
     return user;
+  }
+
+  @Get("/@me/verify-email")
+  @Authorized()
+  public async sendVerificationEmail(@Account() user: User) {
+    if (user.emailVerified) {
+      return {
+        status: 400,
+        message: "Users email is already verified",
+      };
+    }
+
+    if (process.env.MAIL_ENABLED === "true") {
+      await verificationEmail(user.id, user.email);
+    } else {
+      return {
+        status: 400,
+        message: "Email verification is not enabled on this Framework instance",
+      };
+    }
   }
 
   @Post("/@me/update")

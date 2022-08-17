@@ -16,33 +16,35 @@ enum Role {
 }
 
 model User {
-  id                     Int             @id @default(autoincrement())
-  username               String
-  email                  String
-  password               String
-  tickets                Int             @default(500)
-  premium                Boolean         @default(false)
-  createdAt              DateTime        @default(now())
-  updatedAt              DateTime        @default(now())
-  role                   Role            @default(USER)
-  outboundFriendRequests FriendRequest[] @relation("outboundFriendRequests")
-  inboundFriendRequests  FriendRequest[] @relation("inboundFriendRequests")
-  friends                User[]          @relation("friends")
-  friendsRelation        User[]          @relation("friends")
-  sessions               Session[]       @relation("userSessions")
-  games                  Game[]          @relation("gameAuthor")
-  avatarUri              String
-  likedGames             Game[]          @relation("likedGames")
-  dislikedGames          Game[]          @relation("dislikedGames")
-  nucleusKeys            NucleusKey[]    @relation("nucleusKeys")
-  gameComments           GameComment[]   @relation("userGameComments")
-  avatar                 Avatar?         @relation("avatar")
-  country                String          @default("")
-  snippets               CodeSnippet[]   @relation("userCodeSnippets")
-  bio                    String          @default("This user has not yet written a bio.")
-  busy                   Boolean         @default(false)
-  banned                 Boolean         @default(false)
-  banReason              String          @default("")
+  id                         Int                 @id @default(autoincrement())
+  username                   String
+  email                      String
+  password                   String
+  tickets                    Int                 @default(500)
+  premium                    Boolean             @default(false)
+  createdAt                  DateTime            @default(now())
+  updatedAt                  DateTime            @default(now())
+  role                       Role                @default(USER)
+  outboundFriendRequests     FriendRequest[]     @relation("outboundFriendRequests")
+  inboundFriendRequests      FriendRequest[]     @relation("inboundFriendRequests")
+  friends                    User[]              @relation("friends")
+  friendsRelation            User[]              @relation("friends")
+  sessions                   Session[]           @relation("userSessions")
+  games                      Game[]              @relation("gameAuthor")
+  avatarUri                  String
+  likedGames                 Game[]              @relation("likedGames")
+  dislikedGames              Game[]              @relation("dislikedGames")
+  nucleusKeys                NucleusKey[]        @relation("nucleusKeys")
+  gameComments               GameComment[]       @relation("userGameComments")
+  avatar                     Avatar?             @relation("avatar")
+  country                    String              @default("")
+  snippets                   CodeSnippet[]       @relation("userCodeSnippets")
+  bio                        String              @default("This user has not yet written a bio.")
+  busy                       Boolean             @default(false)
+  banned                     Boolean             @default(false)
+  banReason                  String              @default("")
+  emailVerificationInstances EmailVerification[] @relation("emailVerification")
+  emailVerified              Boolean             @default(false)
 }
 
 model Avatar {
@@ -57,10 +59,18 @@ model Avatar {
   torsoColor    String @default("rgb(23, 107, 170)")
 }
 
+model EmailVerification {
+  id        String   @id @default(uuid())
+  user      User     @relation("emailVerification", references: [id], fields: [userId])
+  userId    Int
+  code      String   @default(uuid())
+  createdAt DateTime @default(now())
+}
+
 model CodeSnippet {
   id          String   @id @default(uuid())
   user        User     @relation("userCodeSnippets", references: [id], fields: [userId])
-  userId      Int      @unique
+  userId      Int
   code        String
   name        String
   description String

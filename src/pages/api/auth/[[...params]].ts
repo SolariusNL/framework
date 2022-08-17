@@ -1,6 +1,8 @@
 import { Body, createHandler, Post } from "@storyofams/next-api-decorators";
 import { randomUUID } from "crypto";
+import { sendMail } from "../../../util/mail";
 import prisma from "../../../util/prisma";
+import { verificationEmail } from "../../../util/templates/verification-email";
 
 interface LoginBody {
   username: string;
@@ -140,6 +142,9 @@ class AuthRouter {
         },
         token: Math.random().toString(36).substring(2),
       },
+      include: {
+        user: true,
+      }
     });
 
     await prisma.invite.update({
@@ -150,6 +155,10 @@ class AuthRouter {
         used: true,
       },
     });
+
+    if (process.env.MAIL_ENABLED === "true") {
+      await verificationEmail(Number(session.user.id), email);
+    }
 
     return {
       success: true,
