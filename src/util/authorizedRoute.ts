@@ -103,7 +103,10 @@ export async function getAccountFromSession(token: string): Promise<User | undef
         where: {
           id: session.userId,
         },
-        select: userSelect,
+        select: {
+          ...userSelect,
+          password: true,
+        },
       })
     )
   );

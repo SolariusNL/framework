@@ -233,7 +233,7 @@ const AccountTab = ({ user }: AccountTabProps) => {
         success={success}
         setSuccess={setSuccess}
       >
-        <Grid columns={2}>
+        <Grid columns={2} gutter="xl">
           <Grid.Col span={mobile ? 2 : 1}>
             <Descriptive
               title="Avatar"

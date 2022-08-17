@@ -16,6 +16,15 @@ interface UserUpdateBody {
   busy?: boolean;
 }
 
+interface ChangePasswordBody {
+  oldPassword: string;
+  newPassword: string;
+}
+
+interface ChangeEmailBody {
+  newEmail: string;
+}
+
 class UserRouter {
   @Get("/@me")
   @Authorized()
@@ -41,6 +50,87 @@ class UserRouter {
         message: "Email verification is not enabled on this Framework instance",
       };
     }
+  }
+
+  @Post("/@me/change-password")
+  @Authorized()
+  public async changePassword(
+    @Account() user: User,
+    @Body() data: ChangePasswordBody,
+  ) {
+    const { oldPassword, newPassword } = data;
+
+    if (!oldPassword || !newPassword) {
+      return {
+        status: 400,
+        message: "Missing oldPassword or newPassword",
+      };
+    }
+
+    if (oldPassword === newPassword) {
+      return {
+        status: 400,
+        message: "New password is the same as the current password",
+      };
+    }
+
+    if (oldPassword != user.password) {
+      return {
+        status: 400,
+        message: "Old password is not correct",
+      };
+    }
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { password: newPassword },
+    });
+
+    await prisma.session.deleteMany({
+      where: { userId: user.id },
+    });
+
+    return {
+      success: true,
+      message: "Password changed successfully",
+    };
+  }
+
+  @Post("/@me/change-email")
+  @Authorized()
+  public async changeEmail(
+    @Account() user: User,
+    @Body() data: ChangeEmailBody,
+  ) {
+    const { newEmail } = data;
+
+    if (!newEmail) {
+      return {
+        status: 400,
+        message: "Missing newEmail",
+      };
+    }
+
+    if (user.email === newEmail) {
+      return {
+        status: 400,
+        message: "New email is the same as the current email",
+      };
+    }
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { email: newEmail, emailVerified: false },
+    });
+
+    if (process.env.MAIL_ENABLED === "true") {
+      await verificationEmail(user.id, newEmail);
+    }
+
+    return {
+      success: true,
+      message: "Email changed successfully",
+    };
   }
 
   @Post("/@me/update")
