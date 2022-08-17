@@ -14,7 +14,7 @@ async function cron() {
         // do something every 5 seconds
       });
     })
-    .catch((e) => {
+    .catch((e: unknown) => {
       console.log(`Failed to connect to Framework database: ${e}`);
     });
 }

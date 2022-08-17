@@ -11,7 +11,8 @@
     "studio": "npx prisma studio",
     "start:prod": "concurrently \"cd cron && yarn run start\" \"next start --port=80\"",
     "generate": "npx prisma generate",
-    "seed": "ts-node --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\" scripts/seed.ts"
+    "seed": "ts-node --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\" scripts/seed.ts",
+    "postinstall": "cp node_modules/.prisma/client/* cron/node_modules/.prisma/client"
   },
   "dependencies": {
     "@emotion/react": "^11.9.3",
