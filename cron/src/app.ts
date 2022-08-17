@@ -11,7 +11,7 @@ async function cron() {
   await client.$connect()
     .then(() => {
       schedule("*/5 * * * * *", async () => {
-        console.log("running a task every 5 seconds");
+        // do something every 5 seconds
       });
     })
     .catch((e) => {
