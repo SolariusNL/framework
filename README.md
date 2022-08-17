@@ -18,10 +18,13 @@ Framework is built on the following technologies:
 ## Directory Structure
 
 - **.vscode** - Visual Studio Code settings
+- **cron** - Node.js application that runs scheduled tasks necessary for the application to run
 - **prisma** - Prisma migrations, schema
   - **migrations** - Prisma migrations
   - **schema.prisma** - Prisma schema
 - **public** - Static assets set up by Next.js
+- **scripts** - Scripts for building and deploying the application
+  - **seed.ts** - Seed database with required data
 - **src** - Main source code
   - **components** - Reusable React components
   - **pages** - Next.js routes
