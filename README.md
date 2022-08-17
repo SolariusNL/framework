@@ -41,7 +41,7 @@ Framework is very easy to set up and deploy.
 - **Clone** the repository
   - Run `git clone https://invent.soodam.rocks/Seeun/framework.git` to clone the repository to your local machine.
 - **Install** the dependencies
-  - Run `yarn install` to install the dependencies.
+  - Run `yarn setup-projects` to install dependencies for all the projects.
 - **Seed** the database
   - Run `yarn run seed` to generate Prisma types and seed the database with initial data.
 - **Configure** your `.env` file, some important things may be the database connection url, or optional API keys for extended functionality.
