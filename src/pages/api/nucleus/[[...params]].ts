@@ -16,7 +16,6 @@ import rateLimitedResource, { RateLimitMiddleware } from "../../../util/rateLimi
 
 class NucleusRouter {
   @Post("/auth")
-  @Authorized()
   public async authorize(@Header("authorization") authorization: string) {
     const match = await prisma.nucleusKey.findFirst({
       where: {
