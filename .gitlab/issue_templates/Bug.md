@@ -8,7 +8,7 @@
 
 ## Example Project
 
-(If possible, please create an example project (here)[https://invent.soodam.rocks] that exhibits the problematic
+(If possible, please create an example project [here](https://invent.soodam.rocks) that exhibits the problematic
 behavior, and link to it here in the bug report.
 If you are using an older version of Framework, this will also determine whether the bug has been fixed
 in a more recent version)
