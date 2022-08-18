@@ -237,7 +237,12 @@ const UserMenu = ({ classes, userMenuOpened, user, cx, router }: any) => {
       </Menu.Target>
 
       <Menu.Dropdown>
-        <Menu.Item icon={<HiUser />}>Profile</Menu.Item>
+        <Menu.Item
+          icon={<HiUser />}
+          onClick={() => router.push(`/profile/${user.username}`)}
+        >
+          Profile
+        </Menu.Item>
         <Menu.Item
           icon={
             colorScheme === "dark" ? <HiMoon size={18} /> : <HiSun size={18} />
@@ -247,6 +252,19 @@ const UserMenu = ({ classes, userMenuOpened, user, cx, router }: any) => {
         >
           Change theme{" "}
           <Badge color={colorScheme === "dark" ? "yellow" : "blue"}>WIP</Badge>
+        </Menu.Item>
+        <Menu.Divider />
+        <Menu.Item
+          icon={<HiCog size={18} />}
+          onClick={() => router.push("/settings")}
+        >
+          Settings
+        </Menu.Item>
+        <Menu.Item
+          icon={<HiUser size={18} />}
+          onClick={() => router.push("/avatar")}
+        >
+          Avatar
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item
@@ -519,7 +537,11 @@ const Framework = ({
         </Drawer>
       </div>
 
-      {!noPadding ? <Container mt={26}>{children}</Container> : <div>{ children }</div>}
+      {!noPadding ? (
+        <Container mt={26}>{children}</Container>
+      ) : (
+        <div>{children}</div>
+      )}
     </>
   );
 };
