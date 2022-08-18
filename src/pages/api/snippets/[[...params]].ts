@@ -1,9 +1,9 @@
-import { Body, createHandler, Param, Post, Req, Res } from "@storyofams/next-api-decorators";
+import { Body, createHandler, Param, Post, Req, Res, UseMiddleware } from "@storyofams/next-api-decorators";
 import type { NextApiRequest, NextApiResponse } from "next";
 import Authorized, { Account } from "../../../util/api/authorized";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
-import rateLimitedResource from "../../../util/rateLimit";
+import rateLimitedResource, { RateLimitMiddleware } from "../../../util/rateLimit";
 
 interface SnippetCreateBody {
   name: string;
@@ -44,6 +44,13 @@ class SnippetsRouter {
         message: "Snippet not found",
       };
     }
+
+    if (code.length > 10000) {
+      return {
+        success: false,
+        message: "Code too long",
+      };
+    }
     
     await prisma.codeSnippet.update({
       where: {
@@ -62,6 +69,7 @@ class SnippetsRouter {
   
   @Post("/create")
   @Authorized()
+  @UseMiddleware(RateLimitMiddleware(5))
   public async createSnippet(
     @Account() user: User,
     @Body() body: SnippetCreateBody,

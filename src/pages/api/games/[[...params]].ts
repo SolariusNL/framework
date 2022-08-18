@@ -8,6 +8,7 @@ import {
   Query,
   Req,
   Res,
+  UseMiddleware,
 } from "@storyofams/next-api-decorators";
 import type { NextApiRequest, NextApiResponse } from "next";
 import sanitizeHtml from "sanitize-html";
@@ -18,7 +19,7 @@ import {
   nonCurrentUserSelect,
   type User,
 } from "../../../util/prisma-types";
-import rateLimitedResource from "../../../util/rateLimit";
+import { RateLimitMiddleware } from "../../../util/rateLimit";
 
 interface GameCreateBody {
   gameName: string;
@@ -35,6 +36,7 @@ interface GameCommentBody {
 class GameRouter {
   @Post("/create")
   @Authorized()
+  @UseMiddleware(RateLimitMiddleware(3))
   async createGame(@Body() body: GameCreateBody, @Account() account: User) {
     const { gameName, description, genre, maxPlayers, communityGuidelines } =
       body;
@@ -107,20 +109,13 @@ class GameRouter {
 
   @Post("/:id/comment")
   @Authorized()
+  @UseMiddleware(RateLimitMiddleware(5))
   async comment(
     @Account() user: User,
     @Body() body: GameCommentBody,
     @Param("id") id: string,
-    @Req() req: NextApiRequest,
-    @Res() res: NextApiResponse
   ) {
     const { body: commentBody } = body;
-    if (rateLimitedResource(req, res, 6) == 0) {
-      return {
-        success: false,
-        message: "You are being rate limited",
-      };
-    }
 
     const game = await prisma.game.findFirst({
       where: {

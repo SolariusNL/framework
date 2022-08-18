@@ -6,12 +6,13 @@ import {
   Post,
   Req,
   Res,
+  UseMiddleware,
 } from "@storyofams/next-api-decorators";
 import type { NextApiRequest, NextApiResponse } from "next";
 import Authorized, { Account } from "../../../util/api/authorized";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
-import rateLimitedResource from "../../../util/rateLimit";
+import rateLimitedResource, { RateLimitMiddleware } from "../../../util/rateLimit";
 
 class NucleusRouter {
   @Post("/auth")
@@ -78,6 +79,7 @@ class NucleusRouter {
   }
 
   @Post("/create")
+  @UseMiddleware(RateLimitMiddleware(10))
   public async create(
     @Account() user: User,
     @Req() request: NextApiRequest,
