@@ -98,15 +98,18 @@ const Games = ({ user }: GamesProps) => {
                   </Group>
                   <Menu shadow="md">
                     <Menu.Target>
-                      <ActionIcon
-                        onClick={() => router.push(`/game/${game.id}/edit`)}
-                      >
+                      <ActionIcon>
                         <HiPencilAlt />
                       </ActionIcon>
                     </Menu.Target>
 
                     <Menu.Dropdown>
-                      <Menu.Item icon={<HiPencil />}>Edit</Menu.Item>
+                      <Menu.Item
+                        icon={<HiPencil />}
+                        onClick={() => router.push(`/game/${game.id}/edit`)}
+                      >
+                        Edit
+                      </Menu.Item>
                       <Menu.Item color="red" icon={<HiTrash />}>
                         Disable game
                       </Menu.Item>
