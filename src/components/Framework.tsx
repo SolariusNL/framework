@@ -1,5 +1,7 @@
 import {
   ActionIcon,
+  Alert,
+  Anchor,
   Autocomplete,
   Avatar,
   Badge,
@@ -19,12 +21,14 @@ import {
   UnstyledButton,
 } from "@mantine/core";
 import { useDisclosure, useHotkeys, useLocalStorage } from "@mantine/hooks";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useRef, useState } from "react";
 import {
   HiChevronDown,
   HiCog,
   HiCurrencyDollar,
+  HiExclamationCircle,
   HiHome,
   HiLightBulb,
   HiLogout,
@@ -41,6 +45,7 @@ import {
 import { setCookie } from "../util/cookies";
 import { User } from "../util/prisma-types";
 import useMediaQuery from "../util/useMediaQuery";
+import EmailReminder from "./EmailReminder";
 
 interface FrameworkProps {
   user: User;
@@ -378,6 +383,17 @@ const Framework = ({
     },
   ];
 
+  const [warningSeen, setEmailWarningSeen] = useLocalStorage({
+    key: "email-warning-seen",
+    defaultValue: false,
+  });
+
+  const [isSSR, setIsSSR] = useState(true);
+
+  React.useEffect(() => {
+    setIsSSR(false);
+  }, []);
+
   const items = tabs.map((tab) => (
     <Tabs.Tab
       value={tab.label.toLowerCase()}
@@ -538,7 +554,12 @@ const Framework = ({
       </div>
 
       {!noPadding ? (
-        <Container mt={26}>{children}</Container>
+        <Container mt={26}>
+          {user && !user.emailVerified && !warningSeen && !isSSR && (
+            <EmailReminder setWarningSeen={setEmailWarningSeen} />
+          )}
+          {children}
+        </Container>
       ) : (
         <div>{children}</div>
       )}
