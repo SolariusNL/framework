@@ -14,7 +14,11 @@ const VerifyEmail = ({ user }: VerifyEmailProps) => {
   return (
     <Container size={460} my={30}>
       <Paper withBorder shadow="md" p={30} radius="md" mt="xl">
-        <Alert title="Email verified" color="green" icon={<HiCheckCircle size={24} />}>
+        <Alert
+          title="Email verified"
+          color="green"
+          icon={<HiCheckCircle size={24} />}
+        >
           Your email has been verified!
         </Alert>
       </Paper>
@@ -27,27 +31,30 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { id } = context.query;
   const verification = await prisma.emailVerification.findFirst({
     where: {
-      id: String(id)
-    }
+      id: String(id),
+    },
   });
 
   if (auth.redirect) return auth;
-  if (!verification) return { redirect: { destination: "/", permanent: false } };
-  if (verification.userId != auth.props.user?.id) return { redirect: { destination: "/", permanent: false } };
-  if (auth.props.user?.emailVerified) return { redirect: { destination: "/", permanent: false } };
+  if (!verification)
+    return { redirect: { destination: "/", permanent: false } };
+  if (verification.userId != auth.props.user?.id)
+    return { redirect: { destination: "/", permanent: false } };
+  if (auth.props.user?.emailVerified)
+    return { redirect: { destination: "/", permanent: false } };
 
   await prisma.user.update({
     where: {
-      id: auth.props.user?.id
+      id: auth.props.user?.id,
     },
     data: {
-      emailVerified: true
-    }
+      emailVerified: true,
+    },
   });
 
   await prisma.emailVerification.delete({
     where: {
-      id: String(id)
+      id: String(id),
     },
   });
 
@@ -59,8 +66,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   return {
     props: {
-      user: auth.props.user
-    }
+      user: auth.props.user,
+    },
   };
 }
 
