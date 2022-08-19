@@ -13,7 +13,8 @@
     "generate": "npx prisma generate",
     "seed": "ts-node --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\" scripts/seed.ts",
     "postinstall": "cp-cli node_modules/.prisma/client/ cron/node_modules/.prisma/client",
-    "setup-projects": "cd cron && yarn && cd .. && yarn run generate && yarn"
+    "setup-projects": "cd cron && yarn && cd .. && yarn run generate && yarn",
+    "analyze": "cross-env ANALYZE=true yarn run build"
   },
   "dependencies": {
     "@emotion/react": "^11.9.3",
@@ -27,6 +28,7 @@
     "@mantine/rte": "^5.0.2",
     "@mdx-js/loader": "^2.1.2",
     "@monaco-editor/react": "^4.4.5",
+    "@next/bundle-analyzer": "^12.2.5",
     "@next/mdx": "^12.2.3",
     "@prisma/client": "^4.1.1",
     "@react-three/drei": "^9.21.0",
@@ -40,6 +42,7 @@
     "clsx": "^1.2.1",
     "concurrently": "^7.3.0",
     "cp-cli": "^2.0.0",
+    "cross-env": "^7.0.3",
     "embla-carousel-autoplay": "^7.0.0",
     "embla-carousel-react": "^7.0.0",
     "monaco-editor": "^0.34.0",

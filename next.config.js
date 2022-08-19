@@ -13,7 +13,13 @@ const withMDX = require("@next/mdx")({
   },
 });
 
-module.exports = withMDX({
-  ...nextConfig,
-  pageExtensions: ["ts", "tsx", "js", "jsx", "md", "mdx"],
+const withBundleAnalyzer = require("@next/bundle-analyzer")({
+  enabled: process.env.ANALYZE === "true",
 });
+
+module.exports = withBundleAnalyzer(
+  withMDX({
+    ...nextConfig,
+    pageExtensions: ["ts", "tsx", "js", "jsx", "md", "mdx"],
+  })
+);
