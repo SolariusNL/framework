@@ -109,7 +109,7 @@ const GameCard = ({ game }: GameCardProps) => {
             <Group spacing={3}>
               <HiOutlineUsers size={12} color={theme.colors.gray[6]} />
               <Text size="xs" color="dimmed">
-                {abbreviate(game.visits)}
+                {abbreviate(game.playing)}
               </Text>
             </Group>
           </Group>

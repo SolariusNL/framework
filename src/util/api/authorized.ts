@@ -1,3 +1,4 @@
+import { NucleusKey } from "@prisma/client";
 import {
   createMiddlewareDecorator,
   createParamDecorator,
@@ -5,6 +6,7 @@ import {
 import { NextApiRequest, NextApiResponse } from "next";
 import { getAccountFromSession } from "../authorizedRoute";
 import prisma from "../prisma";
+import { nucleusKeySelect } from "../prisma-types";
 
 const AuthorizedBase = async (req: NextApiRequest, res: NextApiResponse) => {
   const token = req.headers["authorization"];
@@ -62,7 +64,19 @@ export const Account = createParamDecorator<any>((req: NextApiRequest) => {
   return getAccountFromSession(String(req.headers["authorization"]));
 });
 
-export const NucleusAuthorized = createMiddlewareDecorator(NucleusAuthorization);
+export const NucleusAuthorized =
+  createMiddlewareDecorator(NucleusAuthorization);
+
+export const Nucleus = createParamDecorator<NucleusKey | null>((async (
+  req: NextApiRequest
+) => {
+  return (await prisma.nucleusKey.findFirst({
+    where: {
+      key: String(req.headers["authorization"]),
+    },
+    select: nucleusKeySelect,
+  })) as NucleusKey | null;
+}) as any);
 
 export const Session = createParamDecorator<string>((req: NextApiRequest) => {
   return String(req.headers["authorization"]);

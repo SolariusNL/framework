@@ -33,7 +33,7 @@ const user = Prisma.validator<Prisma.UserArgs>()({
         name: true,
         description: true,
         id: true,
-      }
+      },
     },
     emailVerificationInstances: true,
   },
@@ -92,7 +92,7 @@ export const userSelect: Prisma.UserSelect = {
       name: true,
       description: true,
       id: true,
-    }
+    },
   },
   bio: true,
   busy: true,
@@ -125,6 +125,7 @@ export const gameSelect: Prisma.GameSelect = {
       createdAt: true,
     },
   },
+  playing: true,
 };
 
 const game = Prisma.validator<Prisma.GameArgs>()({
@@ -144,6 +145,31 @@ const game = Prisma.validator<Prisma.GameArgs>()({
   },
 });
 
+export const nucleusKeySelect: Prisma.NucleusKeySelect = {
+  connection: {
+    select: {
+      game: true,
+    },
+  },
+  user: true,
+  key: true,
+  id: true,
+};
+
+const nucleusKey = Prisma.validator<Prisma.NucleusKeyArgs>()({
+  select: {
+    connection: {
+      select: {
+        game: true,
+      },
+    },
+    user: true,
+    key: true,
+    id: true,
+  },
+});
+
 export type User = Prisma.UserGetPayload<typeof user>;
 export type Game = Prisma.GameGetPayload<typeof game>;
 export type NonUser = Prisma.UserGetPayload<typeof nonuser>;
+export type NucleusKey = Prisma.NucleusKeyGetPayload<typeof nucleusKey>;

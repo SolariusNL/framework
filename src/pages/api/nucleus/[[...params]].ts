@@ -11,11 +11,13 @@ import {
 import type { NextApiRequest, NextApiResponse } from "next";
 import Authorized, {
   Account,
+  Nucleus,
   NucleusAuthorized,
 } from "../../../util/api/authorized";
 import prisma from "../../../util/prisma";
 import { nonCurrentUserSelect } from "../../../util/prisma-types";
 import type { User } from "../../../util/prisma-types";
+import type { NucleusKey } from "../../../util/prisma-types";
 import rateLimitedResource, {
   RateLimitMiddleware,
 } from "../../../util/rateLimit";
@@ -123,7 +125,10 @@ class NucleusRouter {
 
   @Post("/:ticket/fulfill")
   @NucleusAuthorized()
-  public async fulfillAuthTicket(@Param("ticket") ticket: string) {
+  public async fulfillAuthTicket(
+    @Param("ticket") ticket: string,
+    @Nucleus() nucleus: NucleusKey
+  ) {
     const match = await prisma.nucleusAuthTicket.findFirst({
       where: {
         ticket: String(ticket),
@@ -149,6 +154,17 @@ class NucleusRouter {
       },
     });
 
+    await prisma.game.update({
+      where: {
+        id: nucleus.connection.game.id,
+      },
+      data: {
+        playing: {
+          increment: 1,
+        },
+      },
+    });
+
     return {
       success: true,
       message: "Ticket fulfilled",
@@ -158,10 +174,13 @@ class NucleusRouter {
 
   @Post("/:ticket/invalidate")
   @NucleusAuthorized()
-  public async invalidateTicket(@Param("ticket") ticket: string) {
+  public async invalidateTicket(
+    @Param("ticket") ticket: string,
+    @Nucleus() nucleus: NucleusKey
+  ) {
     const match = await prisma.nucleusAuthTicket.findFirst({
       where: {
-        id: String(ticket),
+        ticket: String(ticket),
       },
     });
 
@@ -175,6 +194,17 @@ class NucleusRouter {
     await prisma.nucleusAuthTicket.delete({
       where: {
         id: match.id,
+      },
+    });
+
+    await prisma.game.update({
+      where: {
+        id: nucleus.connection.game.id,
+      },
+      data: {
+        playing: {
+          decrement: 1,
+        },
       },
     });
 

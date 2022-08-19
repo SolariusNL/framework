@@ -136,6 +136,7 @@ model Game {
   visits               Int           @default(0)
   connection           Connection[]  @relation("gameConnection")
   comments             GameComment[] @relation("gameComments")
+  playing              Int           @default(0)
 }
 
 model GameComment {
