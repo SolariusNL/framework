@@ -63,7 +63,7 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
   };
 
   const changeEmail = async () => {
-    await fetch("/api/users/@me/change-email", {
+    await fetch("/api/users/@me/changeemail", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
