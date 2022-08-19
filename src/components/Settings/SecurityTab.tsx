@@ -28,7 +28,7 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
   const router = useRouter();
 
   const sendEmailVerification = async () => {
-    await fetch("/api/users/@me/verify-email", {
+    await fetch("/api/users/@me/verifyemail", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -38,7 +38,7 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
   };
 
   const changePassword = async () => {
-    await fetch("/api/users/@me/change-password", {
+    await fetch("/api/users/@me/changepassword", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -105,7 +105,12 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
           type="password"
           onChange={(e) => setNewPassword(e.target.value)}
         />
-        <Alert color="orange" title="Warning" icon={<HiXCircle size={18} />} mb={12}>
+        <Alert
+          color="orange"
+          title="Warning"
+          icon={<HiXCircle size={18} />}
+          mb={12}
+        >
           You will be logged out after changing your password.
         </Alert>
         <Button onClick={changePassword}>Confirm</Button>

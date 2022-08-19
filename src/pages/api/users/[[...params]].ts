@@ -33,7 +33,7 @@ class UserRouter {
     return user;
   }
 
-  @Get("/@me/verify-email")
+  @Post("/@me/verifyemail")
   @Authorized()
   public async sendVerificationEmail(@Account() user: User) {
     if (user.emailVerified) {
@@ -53,11 +53,11 @@ class UserRouter {
     }
   }
 
-  @Post("/@me/change-password")
+  @Post("/@me/changepassword")
   @Authorized()
   public async changePassword(
     @Account() user: User,
-    @Body() data: ChangePasswordBody,
+    @Body() data: ChangePasswordBody
   ) {
     const { oldPassword, newPassword } = data;
 
@@ -101,7 +101,7 @@ class UserRouter {
   @Authorized()
   public async changeEmail(
     @Account() user: User,
-    @Body() data: ChangeEmailBody,
+    @Body() data: ChangeEmailBody
   ) {
     const { newEmail } = data;
 
@@ -146,8 +146,7 @@ class UserRouter {
       },
       {
         name: "country",
-        verify:
-          (value: string) => countries.find(c => c.code === value),
+        verify: (value: string) => countries.find((c) => c.code === value),
         error: "Invalid country",
       },
       {
@@ -159,14 +158,16 @@ class UserRouter {
         name: "busy",
         regex: /^(true|false)$/,
         error: "Busy must be true or false",
-      }
+      },
     ];
 
     for (const field of updatable) {
       if (data[field.name as keyof UserUpdateBody]) {
         if (field.regex) {
           if (
-            !field.regex.test(data[field.name as keyof UserUpdateBody] as string)
+            !field.regex.test(
+              data[field.name as keyof UserUpdateBody] as string
+            )
           ) {
             return {
               error: field.error,
@@ -174,7 +175,9 @@ class UserRouter {
             };
           }
         } else {
-          if (!field.verify(data[field.name as keyof UserUpdateBody] as string)) {
+          if (
+            !field.verify(data[field.name as keyof UserUpdateBody] as string)
+          ) {
             return {
               error: field.error,
               status: 400,
