@@ -4,6 +4,7 @@ import {
 } from "@storyofams/next-api-decorators";
 import { NextApiRequest, NextApiResponse } from "next";
 import { getAccountFromSession } from "../authorizedRoute";
+import prisma from "../prisma";
 
 const AuthorizedBase = async (req: NextApiRequest, res: NextApiResponse) => {
   const token = req.headers["authorization"];
@@ -30,9 +31,38 @@ const AuthorizedBase = async (req: NextApiRequest, res: NextApiResponse) => {
   return player as any;
 };
 
+const NucleusAuthorization = async (
+  req: NextApiRequest,
+  res: NextApiResponse
+) => {
+  const token = req.headers["authorization"];
+
+  if (!token) {
+    return res.status(401).json({
+      error: "You are not authorized to access this resource",
+    });
+  }
+
+  const key = await prisma.nucleusKey.findFirst({
+    where: {
+      key: String(token),
+    },
+  });
+
+  if (!key) {
+    return res.status(401).json({
+      error: "You are not authorized to access this resource",
+    });
+  }
+
+  return key as any;
+};
+
 export const Account = createParamDecorator<any>((req: NextApiRequest) => {
   return getAccountFromSession(String(req.headers["authorization"]));
 });
+
+export const NucleusAuthorized = createMiddlewareDecorator(NucleusAuthorization);
 
 export const Session = createParamDecorator<string>((req: NextApiRequest) => {
   return String(req.headers["authorization"]);

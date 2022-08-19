@@ -50,11 +50,4 @@ function rateLimitedResource(
   }, 60000);
 }
 
-export const RateLimitMiddleware = (requests: number) => createMiddlewareDecorator(
-  (req: NextApiRequest, res: NextApiResponse, next: NextFunction) => {
-    rateLimitedResource(req, res, requests);
-    next();
-  }
-);
-
 export default rateLimitedResource;

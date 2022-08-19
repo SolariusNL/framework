@@ -9,18 +9,33 @@ import {
   UseMiddleware,
 } from "@storyofams/next-api-decorators";
 import type { NextApiRequest, NextApiResponse } from "next";
-import Authorized, { Account } from "../../../util/api/authorized";
+import Authorized, {
+  Account,
+  NucleusAuthorized,
+} from "../../../util/api/authorized";
 import prisma from "../../../util/prisma";
+import { nonCurrentUserSelect } from "../../../util/prisma-types";
 import type { User } from "../../../util/prisma-types";
-import rateLimitedResource, { RateLimitMiddleware } from "../../../util/rateLimit";
+import rateLimitedResource from "../../../util/rateLimit";
 
 class NucleusRouter {
   @Post("/auth")
-  public async authorize(@Header("authorization") authorization: string) {
+  public async authorize(
+    @Header("authorization") authorization: string,
+    @Req() request: NextApiRequest,
+    @Res() response: NextApiResponse
+  ) {
     const match = await prisma.nucleusKey.findFirst({
       where: {
         key: authorization,
       },
+      include: {
+        connection: {
+          include: {
+            game: true,
+          }
+        },
+      }
     });
 
     if (!match) {
@@ -32,6 +47,10 @@ class NucleusRouter {
       return {
         success: true,
         message: "Authorized with Nucleus",
+        game: {
+          id: match.connection.gameId,
+          name: match.connection.game.name,
+        },
       };
     }
   }
@@ -65,6 +84,12 @@ class NucleusRouter {
       };
     }
 
+    await prisma.connection.delete({
+      where: {
+        id: match.connectionId,
+      },
+    });
+
     await prisma.nucleusKey.delete({
       where: {
         id: match.id,
@@ -77,50 +102,82 @@ class NucleusRouter {
     };
   }
 
-  @Post("/create")
-  @UseMiddleware(RateLimitMiddleware(10))
-  public async create(
-    @Account() user: User,
-    @Req() request: NextApiRequest,
-    @Res() response: NextApiResponse,
-    @Body() keyCreateBody: { name: string }
-  ) {
-    if (rateLimitedResource(request, response, 5) == 0) {
-      return {
-        success: false,
-        message: "Too many requests",
-      };
-    }
-
-    if (!keyCreateBody.name) {
-      return {
-        success: false,
-        message: "No name provided",
-      };
-    }
-
-    if (user.nucleusKeys.length >= 25) {
-      return {
-        success: false,
-        message: "You have reached the maximum number of keys",
-      };
-    }
-
-    const key = await prisma.nucleusKey.create({
+  @Post("/create-auth-ticket")
+  @Authorized()
+  public async createAuthTicket(@Account() user: User) {
+    const ticket = await prisma.nucleusAuthTicket.create({
       data: {
         user: {
           connect: {
             id: user.id,
           },
         },
-        name: String(keyCreateBody.name) || "Nucleus key",
+      },
+    });
+
+    return ticket;
+  }
+
+  @Post("/:ticket/fulfill")
+  @NucleusAuthorized()
+  public async fulfillAuthTicket(@Param("ticket") ticket: string) {
+    const match = await prisma.nucleusAuthTicket.findFirst({
+      where: {
+        ticket: String(ticket),
+      },
+    });
+
+    if (!match) {
+      return {
+        success: false,
+        message: "Invalid ticket",
+      };
+    }
+
+    const res = await prisma.nucleusAuthTicket.update({
+      where: {
+        id: match.id,
+      },
+      data: {
+        fulfilled: true,
+      },
+      select: {
+        user: nonCurrentUserSelect,
+      }
+    });
+
+    return {
+      success: true,
+      message: "Ticket fulfilled",
+      user: res.user,
+    };
+  }
+
+  @Post("/:ticket/invalidate")
+  @NucleusAuthorized()
+  public async invalidateTicket(@Param("ticket") ticket: string) {
+    const match = await prisma.nucleusAuthTicket.findFirst({
+      where: {
+        id: String(ticket),
+      },
+    });
+
+    if (!match) {
+      return {
+        success: false,
+        message: "Invalid ticket",
+      };
+    }
+
+    await prisma.nucleusAuthTicket.delete({
+      where: {
+        id: match.id,
       },
     });
 
     return {
       success: true,
-      message: "Key created",
-      key,
+      message: "Ticket invalidated",
     };
   }
 }

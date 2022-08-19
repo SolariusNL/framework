@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import Authorized, { Account } from "../../../util/api/authorized";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
-import rateLimitedResource, { RateLimitMiddleware } from "../../../util/rateLimit";
+import rateLimitedResource from "../../../util/rateLimit";
 
 interface SnippetCreateBody {
   name: string;
@@ -69,7 +69,6 @@ class SnippetsRouter {
   
   @Post("/create")
   @Authorized()
-  @UseMiddleware(RateLimitMiddleware(5))
   public async createSnippet(
     @Account() user: User,
     @Body() body: SnippetCreateBody,
