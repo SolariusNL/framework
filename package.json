@@ -12,7 +12,7 @@
     "start:prod": "concurrently \"cd cron && yarn run start\" \"next start --port=80\"",
     "generate": "npx prisma generate",
     "seed": "ts-node --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\" scripts/seed.ts",
-    "postinstall": "cp node_modules/.prisma/client/* cron/node_modules/.prisma/client",
+    "postinstall": "cp-cli node_modules/.prisma/client/ cron/node_modules/.prisma/client",
     "setup-projects": "cd cron && yarn && cd .. && yarn run generate && yarn"
   },
   "dependencies": {
@@ -39,6 +39,7 @@
     "@types/three": "^0.143.0",
     "clsx": "^1.2.1",
     "concurrently": "^7.3.0",
+    "cp-cli": "^2.0.0",
     "embla-carousel-autoplay": "^7.0.0",
     "embla-carousel-react": "^7.0.0",
     "monaco-editor": "^0.34.0",

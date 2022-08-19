@@ -48,6 +48,15 @@ class NucleusRouter {
         message: "Invalid authorization key",
       };
     } else {
+      await prisma.connection.update({
+        where: {
+          id: match.connectionId,
+        },
+        data: {
+          online: true,
+        },
+      });
+
       return {
         success: true,
         message: "Authorized with Nucleus",

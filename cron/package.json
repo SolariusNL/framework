@@ -30,6 +30,7 @@
     "@types/node": "^18.7.1",
     "@types/node-cron": "^3.0.2",
     "@types/node-fetch": "^2.6.2",
+    "axios": "^0.27.2",
     "cors": "^2.8.5",
     "cross-env": "^7.0.3",
     "dotenv": "^16.0.1",
