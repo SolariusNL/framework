@@ -84,15 +84,15 @@ class NucleusRouter {
       };
     }
 
-    await prisma.connection.delete({
-      where: {
-        id: match.connectionId,
-      },
-    });
-
     await prisma.nucleusKey.delete({
       where: {
         id: match.id,
+      },
+    });
+
+    await prisma.connection.delete({
+      where: {
+        id: match.connectionId,
       },
     });
 
