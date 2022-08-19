@@ -17,6 +17,7 @@ import {
 } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { useRouter } from "next/router";
+import { useState } from "react";
 import {
   HiChat,
   HiDotsVertical,
@@ -33,6 +34,7 @@ import {
 import Framework from "../../../components/Framework";
 import GameComments from "../../../components/GameComments";
 import ThumbnailCarousel from "../../../components/ImageCarousel";
+import Launching from "../../../components/Launching";
 import PlaceholderGameResource from "../../../components/PlaceholderGameResource";
 import authorizedRoute from "../../../util/authorizedRoute";
 import prisma from "../../../util/prisma";
@@ -52,8 +54,12 @@ const Game: NextPage<GameViewProps> = ({ game, user }) => {
   const positive = (game.likedBy.length / totalFeedback) * 100;
   const negative = (game.dislikedBy.length / totalFeedback) * 100;
 
+  const [launchingOpen, setLaunchingOpen] = useState(false);
+
   return (
     <Framework user={user} activeTab="none">
+      <Launching opened={launchingOpen} setOpened={setLaunchingOpen} />
+
       {game.author.id == user.id && game.connection.length == 0 && (
         <Alert
           title="No servers"
@@ -239,6 +245,9 @@ const Game: NextPage<GameViewProps> = ({ game, user }) => {
             size="xl"
             mb="xs"
             disabled={game.connection.length == 0}
+            onClick={() => {
+              setLaunchingOpen(true);
+            }}
           >
             Play
           </Button>
