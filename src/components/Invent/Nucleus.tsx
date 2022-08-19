@@ -5,6 +5,7 @@ import {
   Modal,
   NotificationProps,
   Table,
+  Text,
   TextInput,
   Title,
 } from "@mantine/core";
@@ -21,41 +22,7 @@ interface NucleusProps {
 
 const Nucleus = ({ user }: NucleusProps) => {
   const [keys, setKeys] = React.useState<NucleusKey[]>(user.nucleusKeys);
-  const [enteredKey, setEnteredKey] = React.useState("");
-  const [keyCreateLoading, setKeyCreateLoading] = React.useState(false);
   const [error, setError] = React.useState<NotificationProps | null>(null);
-  const [createModalOpen, setCreateModalOpen] = React.useState(false);
-
-  const handleKeyCreate = async () => {
-    setKeyCreateLoading(true);
-
-    await fetch("/api/nucleus/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: String(getCookie(".frameworksession")),
-      },
-      body: JSON.stringify({
-        name: enteredKey,
-      }),
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.success) {
-          setKeys([...keys, res.key]);
-          setEnteredKey("");
-        } else {
-          setError(res.message || "An error occurred.");
-        }
-      })
-      .catch((err) => {
-        setError(err.message || "An error occurred.");
-      })
-      .finally(() => {
-        setKeyCreateLoading(false);
-        setCreateModalOpen(false);
-      });
-  };
 
   const deleteKey = async (key: string) => {
     const newKeys = keys.filter((k) => k.key !== key);
@@ -83,47 +50,16 @@ const Nucleus = ({ user }: NucleusProps) => {
 
   return (
     <>
-      <Modal
-        opened={createModalOpen}
-        onClose={() => setCreateModalOpen(false)}
-        title="Create Nucelus key"
-      >
-        <TextInput
-          label="Key name"
-          description="This will be the name of the key that will be displayed in the key list for organizational purposes."
-          value={enteredKey}
-          onChange={(e) => setEnteredKey(e.target.value)}
-          mb={16}
-        />
-
-        <Button
-          fullWidth
-          loading={keyCreateLoading}
-          onClick={handleKeyCreate}
-          disabled={enteredKey.length === 0}
-        >
-          Create
-        </Button>
-      </Modal>
-
-      <InventTab
-        tabValue="nucleus"
-        tabTitle="Nucleus"
-        actions={
-          <>
-            <Button
-              leftIcon={<HiPlus />}
-              variant="outline"
-              onClick={() => setCreateModalOpen(true)}
-            >
-              Create Nucleus key
-            </Button>
-          </>
-        }
-      >
+      <InventTab tabValue="nucleus" tabTitle="Nucleus">
         <Title order={4} mb={10}>
           Your Nucleus keys
         </Title>
+
+        <Text color="dimmed" mb={10}>
+          Starting 08/18/22, Nucleus keys are now created alongside game
+          connections. By deleting a Nucleus key, you will also delete the game
+          connection it is associated with.
+        </Text>
 
         {error && (
           <Alert
@@ -140,6 +76,7 @@ const Nucleus = ({ user }: NucleusProps) => {
           <thead>
             <tr>
               <th>Name</th>
+              <th>Connection</th>
               <th>Key</th>
               <th>Actions</th>
             </tr>
@@ -149,6 +86,9 @@ const Nucleus = ({ user }: NucleusProps) => {
             {keys.map((key) => (
               <tr key={key.id}>
                 <td>{key.name}</td>
+                <td>
+                  {key.connectionId.substring(0, 10)}...
+                </td>
                 <td>{key.key}</td>
                 <td>
                   <ActionIcon

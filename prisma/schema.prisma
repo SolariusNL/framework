@@ -45,6 +45,7 @@ model User {
   banReason                  String              @default("")
   emailVerificationInstances EmailVerification[] @relation("emailVerification")
   emailVerified              Boolean             @default(false)
+  authTickets                NucleusAuthTicket[] @relation("authTickets")
 }
 
 model Avatar {
@@ -149,20 +150,31 @@ model GameComment {
 }
 
 model NucleusKey {
-  id     String @id @default(uuid())
-  user   User   @relation("nucleusKeys", fields: [userId], references: [id])
-  userId Int
-  key    String @default(uuid())
-  name   String @default("Nucleus key")
+  id           String     @id @default(uuid())
+  user         User       @relation("nucleusKeys", fields: [userId], references: [id])
+  userId       Int
+  key          String     @default(uuid())
+  name         String     @default("Nucleus key")
+  connection   Connection @relation("nucleusKeyConnection", fields: [connectionId], references: [id])
+  connectionId String
+}
+
+model NucleusAuthTicket {
+  id        String  @id @default(uuid())
+  user      User    @relation("authTickets", fields: [userId], references: [id])
+  userId    Int
+  ticket    String  @default(uuid())
+  fulfilled Boolean @default(false)
 }
 
 model Connection {
-  id     String  @id @default(uuid())
-  game   Game    @relation("gameConnection", fields: [gameId], references: [id])
-  gameId Int
-  ip     String
-  port   Int
-  online Boolean @default(false)
+  id         String       @id @default(uuid())
+  game       Game         @relation("gameConnection", fields: [gameId], references: [id])
+  gameId     Int
+  ip         String
+  port       Int
+  online     Boolean      @default(false)
+  nucleusKey NucleusKey[] @relation("nucleusKeyConnection")
 }
 
 model Update {

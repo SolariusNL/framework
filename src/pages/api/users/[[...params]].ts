@@ -9,7 +9,6 @@ import Authorized, { Account } from "../../../util/api/authorized";
 import countries from "../../../util/countries";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
-import { RateLimitMiddleware } from "../../../util/rateLimit";
 import { verificationEmail } from "../../../util/templates/verification-email";
 
 interface UserUpdateBody {
@@ -36,7 +35,6 @@ class UserRouter {
 
   @Get("/@me/verify-email")
   @Authorized()
-  @UseMiddleware(RateLimitMiddleware(2))
   public async sendVerificationEmail(@Account() user: User) {
     if (user.emailVerified) {
       return {
@@ -57,7 +55,6 @@ class UserRouter {
 
   @Post("/@me/change-password")
   @Authorized()
-  @UseMiddleware(RateLimitMiddleware(1))
   public async changePassword(
     @Account() user: User,
     @Body() data: ChangePasswordBody,
@@ -102,7 +99,6 @@ class UserRouter {
 
   @Post("/@me/change-email")
   @Authorized()
-  @UseMiddleware(RateLimitMiddleware(1))
   public async changeEmail(
     @Account() user: User,
     @Body() data: ChangeEmailBody,
@@ -140,7 +136,6 @@ class UserRouter {
 
   @Post("/@me/update")
   @Authorized()
-  @UseMiddleware(RateLimitMiddleware(10))
   public async updateUser(@Account() user: User, @Body() data: UserUpdateBody) {
     const updatable = [
       {

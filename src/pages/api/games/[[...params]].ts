@@ -19,7 +19,6 @@ import {
   nonCurrentUserSelect,
   type User,
 } from "../../../util/prisma-types";
-import { RateLimitMiddleware } from "../../../util/rateLimit";
 
 interface GameCreateBody {
   gameName: string;
@@ -29,6 +28,11 @@ interface GameCreateBody {
   communityGuidelines: boolean;
 }
 
+interface CreateConnectionBody {
+  ip: string;
+  port: number;
+}
+
 interface GameCommentBody {
   body: string;
 }
@@ -36,8 +40,7 @@ interface GameCommentBody {
 class GameRouter {
   @Post("/create")
   @Authorized()
-  @UseMiddleware(RateLimitMiddleware(3))
-  async createGame(@Body() body: GameCreateBody, @Account() account: User) {
+  public async createGame(@Body() body: GameCreateBody, @Account() account: User) {
     const { gameName, description, genre, maxPlayers, communityGuidelines } =
       body;
 
@@ -109,7 +112,6 @@ class GameRouter {
 
   @Post("/:id/comment")
   @Authorized()
-  @UseMiddleware(RateLimitMiddleware(5))
   async comment(
     @Account() user: User,
     @Body() body: GameCommentBody,
@@ -165,6 +167,77 @@ class GameRouter {
     return {
       success: true,
       comment,
+    };
+  }
+
+  @Post("/:id/connection/add")
+  @Authorized()
+  public async createConnection(
+    @Account() user: User,
+    @Param("id") id: string,
+    @Body() body: CreateConnectionBody,
+  ) {
+    const { ip, port } = body;
+    const game = await prisma.game.findFirst({
+      where: {
+        id: Number(id),
+      },
+    });
+
+    if (!game) {
+      return {
+        error: "Game not found",
+      };
+    }
+
+    if (game.authorId != user.id) {
+      return {
+        error: "You are not the author of this game",
+      };
+    }
+
+    await prisma.connection.create({
+      data: {
+        ip,
+        port,
+        game: {
+          connect: {
+            id: game.id,
+          },
+        },
+        nucleusKey: {
+          create: {
+            name: `"${game.name}" key`,
+            user: {
+              connect: {
+                id: user.id,
+              },
+            }
+          }
+        }
+      },
+    });
+
+    return {
+      success: true,
+    };
+  }
+
+  @Get("/typeahead")
+  public async typeahead(
+    @Query("q") q: string
+  ) {
+    const games = await prisma.game.findMany({
+      where: {
+        name: {
+          contains: q,
+        },
+      },
+      select: gameSelect,
+    });
+
+    return {
+      games,
     };
   }
 

@@ -51,43 +51,8 @@ const AddGameConnection = ({ user, game }: AddGameConnectionProps) => {
 
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
-  const [serverChecked, setServerChecked] = React.useState(false);
-  const [checkedServerIpPortPair, setCheckedServerIpPortPair] =
-    React.useState<any>({});
   const router = useRouter();
   const theme = useMantineTheme();
-
-  const checkServer = async () => {
-    setLoading(true);
-    setError(null);
-
-    await fetch(`http://${form.values.ip}:${form.values.port}/api/server`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.sync == false) {
-          setError(
-            "Your server is configured to not sync with Soodam.re networking. You must enable this in your server's config file."
-          );
-        } else {
-          setServerChecked(true);
-          setCheckedServerIpPortPair({
-            ip: form.values.ip,
-            port: form.values.port,
-          });
-        }
-      })
-      .catch((err) => {
-        setError("Could not connect to server. Check your IP and port.");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
 
   const onSubmit = async (values: AddGameConnectionForm) => {
     if (form.validate().hasErrors) {
@@ -97,21 +62,7 @@ const AddGameConnection = ({ user, game }: AddGameConnectionProps) => {
     setLoading(true);
     setError(null);
 
-    if (!serverChecked) {
-      setLoading(false);
-      return setError("Please verify the server before adding a connection.");
-    }
-
-    if (
-      checkedServerIpPortPair.ip != values.ip ||
-      checkedServerIpPortPair.port != values.port
-    ) {
-      setLoading(false);
-      setServerChecked(false);
-      return setError("Please verify the server before adding a connection.");
-    }
-
-    await fetch(`/games/${game.id}/connection/add`, {
+    await fetch(`/api/games/${game.id}/connection/add`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -173,29 +124,6 @@ const AddGameConnection = ({ user, game }: AddGameConnectionProps) => {
                 {error}
               </Alert>
             )}
-            <Group position="apart" mb={10}>
-              <Group spacing={6}>
-                {serverChecked ? (
-                  <>
-                    <HiCheckCircle color={theme.colors.green[6]} size="16" />
-                    <Text weight={500} color={theme.colors.green[6]} size="sm">
-                      Server verified
-                    </Text>
-                  </>
-                ) : (
-                  <>
-                    <HiXCircle color={theme.colors.red[6]} size="16" />
-                    <Text weight={500} color={theme.colors.red[6]} size="sm">
-                      Server not verified
-                    </Text>
-                  </>
-                )}
-              </Group>
-
-              <Button size="xs" variant="subtle" onClick={checkServer}>
-                Verify Server
-              </Button>
-            </Group>
             <Button type="submit" fullWidth loading={loading}>
               Add Server
             </Button>
