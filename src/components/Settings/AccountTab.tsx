@@ -22,7 +22,6 @@ import Descriptive from "../Descriptive";
 import SettingsTab from "./SettingsTab";
 import dynamic from "next/dynamic";
 import { centerCrop, Crop, makeAspectCrop } from "react-image-crop";
-import "react-image-crop/dist/ReactCrop.css";
 import useMediaQuery from "../../util/useMediaQuery";
 import CountrySelect from "../CountryPicker";
 
