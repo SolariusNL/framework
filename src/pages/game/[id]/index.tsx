@@ -31,6 +31,7 @@ import {
   HiThumbUp,
   HiViewList,
 } from "react-icons/hi";
+import sanitize from "sanitize-html";
 import Framework from "../../../components/Framework";
 import GameComments from "../../../components/GameComments";
 import ThumbnailCarousel from "../../../components/ImageCarousel";
@@ -140,7 +141,24 @@ const Game: NextPage<GameViewProps> = ({ game, user }) => {
                 Description
               </Title>
               <TypographyStylesProvider>
-                <div dangerouslySetInnerHTML={{ __html: game.description }} />
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: sanitize(game.description, {
+                      // replace links to http://framework.soodam.rocks/link?url=
+                      transformTags: {
+                        a: (tagName, attribs) => {
+                          // rewrite links to http://framework.soodam.rocks/link?url=
+                          attribs.href = `http://${
+                            process.env.NODE_ENV === "development"
+                              ? "localhost:3000"
+                              : "framework.soodam.rocks"
+                          }/link?url=${attribs.href}`;
+                          return { tagName, attribs };
+                        },
+                      },
+                    }),
+                  }}
+                />
               </TypographyStylesProvider>
             </Tabs.Panel>
 
