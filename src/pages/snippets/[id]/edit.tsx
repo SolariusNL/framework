@@ -21,8 +21,14 @@ const EditSnippet: NextPage<EditSnippetProps> = ({ user, snippet }) => {
   const [code, setCode] = React.useState(snippet.code);
   const [updatedCode, setUpdatedCode] = React.useState(snippet.code);
 
-  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
+  const { colorScheme } = useMantineColorScheme();
   const dark = colorScheme === "dark";
+
+  const [isSSR, setIsSSR] = React.useState(true);
+
+  React.useEffect(() => {
+    setIsSSR(false);
+  }, []);
 
   globalThis.onbeforeunload = (event: BeforeUnloadEvent) => {
     const message = "You have unsaved changes.";
@@ -114,7 +120,7 @@ const EditSnippet: NextPage<EditSnippetProps> = ({ user, snippet }) => {
             setCode(String(val));
           }}
           options={{
-            theme: dark ? "vs-dark" : "vs",
+            theme: !isSSR && dark ? "vs-dark" : "vs",
           }}
         />
       </Framework>
