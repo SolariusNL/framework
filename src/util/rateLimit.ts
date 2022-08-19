@@ -1,4 +1,7 @@
-import { createMiddlewareDecorator, NextFunction } from "@storyofams/next-api-decorators";
+import {
+  createMiddlewareDecorator,
+  NextFunction,
+} from "@storyofams/next-api-decorators";
 import { NextApiRequest, NextApiResponse } from "next";
 
 const rateLimits = new Map();
@@ -49,5 +52,15 @@ function rateLimitedResource(
     data.requests--;
   }, 60000);
 }
+
+export const RateLimitMiddleware = (requests: number = 100) =>
+  createMiddlewareDecorator(
+    (req: NextApiRequest, res: NextApiResponse, next: NextFunction) => {
+      if (rateLimitedResource(req, res, requests) == 0) {
+        return next(new Error("Too many requests"));
+      }
+      next();
+    }
+  );
 
 export default rateLimitedResource;

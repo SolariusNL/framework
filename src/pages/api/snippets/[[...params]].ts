@@ -1,9 +1,19 @@
-import { Body, createHandler, Param, Post, Req, Res, UseMiddleware } from "@storyofams/next-api-decorators";
+import {
+  Body,
+  createHandler,
+  Param,
+  Post,
+  Req,
+  Res,
+  UseMiddleware,
+} from "@storyofams/next-api-decorators";
 import type { NextApiRequest, NextApiResponse } from "next";
 import Authorized, { Account } from "../../../util/api/authorized";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
-import rateLimitedResource from "../../../util/rateLimit";
+import rateLimitedResource, {
+  RateLimitMiddleware,
+} from "../../../util/rateLimit";
 
 interface SnippetCreateBody {
   name: string;
@@ -17,10 +27,11 @@ interface UpdateSnippetBody {
 class SnippetsRouter {
   @Post("/:id/update")
   @Authorized()
+  @RateLimitMiddleware(20)()
   public async updateSnippet(
     @Account() user: User,
     @Body() body: UpdateSnippetBody,
-    @Param("id") id: string,
+    @Param("id") id: string
   ) {
     const { code } = body;
 
@@ -51,7 +62,7 @@ class SnippetsRouter {
         message: "Code too long",
       };
     }
-    
+
     await prisma.codeSnippet.update({
       where: {
         id,
@@ -66,9 +77,10 @@ class SnippetsRouter {
       id: snippet.id,
     };
   }
-  
+
   @Post("/create")
   @Authorized()
+  @RateLimitMiddleware(5)()
   public async createSnippet(
     @Account() user: User,
     @Body() body: SnippetCreateBody,

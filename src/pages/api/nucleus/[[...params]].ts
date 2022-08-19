@@ -16,7 +16,9 @@ import Authorized, {
 import prisma from "../../../util/prisma";
 import { nonCurrentUserSelect } from "../../../util/prisma-types";
 import type { User } from "../../../util/prisma-types";
-import rateLimitedResource from "../../../util/rateLimit";
+import rateLimitedResource, {
+  RateLimitMiddleware,
+} from "../../../util/rateLimit";
 
 class NucleusRouter {
   @Post("/auth")
@@ -33,9 +35,9 @@ class NucleusRouter {
         connection: {
           include: {
             game: true,
-          }
+          },
         },
-      }
+      },
     });
 
     if (!match) {
@@ -104,6 +106,7 @@ class NucleusRouter {
 
   @Post("/create-auth-ticket")
   @Authorized()
+  @RateLimitMiddleware(20)()
   public async createAuthTicket(@Account() user: User) {
     const ticket = await prisma.nucleusAuthTicket.create({
       data: {
@@ -143,7 +146,7 @@ class NucleusRouter {
       },
       select: {
         user: nonCurrentUserSelect,
-      }
+      },
     });
 
     return {

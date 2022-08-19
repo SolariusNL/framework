@@ -19,6 +19,7 @@ import {
   nonCurrentUserSelect,
   type User,
 } from "../../../util/prisma-types";
+import { RateLimitMiddleware } from "../../../util/rateLimit";
 
 interface GameCreateBody {
   gameName: string;
@@ -40,6 +41,7 @@ interface GameCommentBody {
 class GameRouter {
   @Post("/create")
   @Authorized()
+  @RateLimitMiddleware(10)()
   public async createGame(
     @Body() body: GameCreateBody,
     @Account() account: User
