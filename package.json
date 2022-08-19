@@ -13,7 +13,7 @@
     "generate": "npx prisma generate",
     "seed": "ts-node --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\" scripts/seed.ts",
     "postinstall": "cp node_modules/.prisma/client/* cron/node_modules/.prisma/client",
-    "setup-projects": "cd cron && yarn && cd .. && yarn"
+    "setup-projects": "cd cron && yarn && cd .. && yarn run generate && yarn"
   },
   "dependencies": {
     "@emotion/react": "^11.9.3",
@@ -47,7 +47,7 @@
     "nextjs-progressbar": "^0.0.14",
     "nodemailer": "^6.7.8",
     "path-to-regexp": "^6.2.1",
-    "prisma": "^4.1.1",
+    "prisma": "4.2.1",
     "react": "18.2.0",
     "react-country-flag": "^3.0.2",
     "react-dom": "18.2.0",
