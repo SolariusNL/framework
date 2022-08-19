@@ -19,6 +19,9 @@ import { useLocalStorage } from "@mantine/hooks";
 import Link from "next/link";
 import { setCookie } from "../util/cookies";
 import { useRouter } from "next/router";
+import "../../flags.config";
+import { useFlags } from "@happykit/flags/client";
+import { useEffect } from "react";
 
 const Framework = ({ Component, pageProps }: AppProps) => {
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
@@ -39,6 +42,15 @@ const Framework = ({ Component, pageProps }: AppProps) => {
     setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
 
   const router = useRouter();
+  const { flags } = useFlags();
+
+  useEffect(() => {
+    if (flags?.maintenanceEnabled == true) {
+      if (router.pathname !== "/maintenance") {
+        router.push("/maintenance");
+      }
+    }
+  }), [];
 
   return (
     <>
