@@ -4,21 +4,22 @@ import {
   Badge,
   Button,
   Card,
+  CopyButton,
   createStyles,
   Group,
   Image,
-  Popover,
   Text,
-  TextInput,
+  Tooltip,
 } from "@mantine/core";
 import { useRouter } from "next/router";
 import {
+  HiCheck,
   HiChevronRight,
   HiOutlineBookmark,
+  HiOutlineShare,
   HiOutlineThumbDown,
   HiOutlineThumbUp,
   HiOutlineUsers,
-  HiShare,
 } from "react-icons/hi";
 import abbreviate from "../util/abbreviate";
 import { Game } from "../util/prisma-types";
@@ -118,36 +119,35 @@ const GameCard = ({ game }: GameCardProps) => {
             <ActionIcon>
               <HiOutlineBookmark size={18} color={theme.colors.yellow[6]} />
             </ActionIcon>
-            <Popover
-              transition="pop-top-right"
-              position="bottom-end"
-              shadow={"md"}
+            <CopyButton
+              value={
+                process.env.NODE_ENV === "development"
+                  ? `http://${process.env.NEXT_PUBLIC_HOST || "localhost"}:${
+                      process.env.NEXT_PUBLIC_PORT || "3000"
+                    }/game/${game.id}`
+                  : `https://framework.soodam.rocks/game/${game.id}/`
+              }
+              timeout={2000}
             >
-              <Popover.Target>
-                <ActionIcon>
-                  <HiShare size={18} color={theme.colors.blue[6]} />
-                </ActionIcon>
-              </Popover.Target>
-
-              <Popover.Dropdown>
-                <TextInput
-                  value={`http${
-                    process.env.NODE_ENV === "production" ? "s" : ""
-                  }://${
-                    process.env.NODE_ENV === "production"
-                      ? "framework.soodam.rocks"
-                      : "127.0.0.1:3000"
-                  }/games/${game.id}`}
-                  readOnly
-                  sx={{
-                    width: "20rem",
-                  }}
-                  onClick={(e: React.MouseEvent<HTMLInputElement>) => {
-                    e.currentTarget.select();
-                  }}
-                />
-              </Popover.Dropdown>
-            </Popover>
+              {({ copied, copy }) => (
+                <Tooltip
+                  label={copied ? "Copied" : "Copy"}
+                  withArrow
+                  position="right"
+                >
+                  <ActionIcon
+                    color={copied ? "teal" : theme.colors.blue[6]}
+                    onClick={copy}
+                  >
+                    {copied ? (
+                      <HiCheck size={16} />
+                    ) : (
+                      <HiOutlineShare size={16} />
+                    )}
+                  </ActionIcon>
+                </Tooltip>
+              )}
+            </CopyButton>
           </Group>
         </Group>
       </Card.Section>
