@@ -40,7 +40,10 @@ interface GameCommentBody {
 class GameRouter {
   @Post("/create")
   @Authorized()
-  public async createGame(@Body() body: GameCreateBody, @Account() account: User) {
+  public async createGame(
+    @Body() body: GameCreateBody,
+    @Account() account: User
+  ) {
     const { gameName, description, genre, maxPlayers, communityGuidelines } =
       body;
 
@@ -52,6 +55,12 @@ class GameRouter {
       !communityGuidelines ||
       !Object.values(GameGenre).includes(genre)
     ) {
+      return {
+        error: "Invalid game data",
+      };
+    }
+
+    if (gameName.length > 40 || description.length > 4000 || maxPlayers > 50) {
       return {
         error: "Invalid game data",
       };
@@ -115,7 +124,7 @@ class GameRouter {
   async comment(
     @Account() user: User,
     @Body() body: GameCommentBody,
-    @Param("id") id: string,
+    @Param("id") id: string
   ) {
     const { body: commentBody } = body;
 
@@ -175,7 +184,7 @@ class GameRouter {
   public async createConnection(
     @Account() user: User,
     @Param("id") id: string,
-    @Body() body: CreateConnectionBody,
+    @Body() body: CreateConnectionBody
   ) {
     const { ip, port } = body;
     const game = await prisma.game.findFirst({
@@ -212,9 +221,9 @@ class GameRouter {
               connect: {
                 id: user.id,
               },
-            }
-          }
-        }
+            },
+          },
+        },
       },
     });
 
@@ -224,9 +233,7 @@ class GameRouter {
   }
 
   @Get("/typeahead")
-  public async typeahead(
-    @Query("q") q: string
-  ) {
+  public async typeahead(@Query("q") q: string) {
     const games = await prisma.game.findMany({
       where: {
         name: {

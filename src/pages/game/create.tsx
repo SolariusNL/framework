@@ -49,8 +49,8 @@ const CreateGame: NextPage<CreateGameProps> = ({ user }) => {
           ? "Game name must be between 3 and 40 characters"
           : null,
       description: (value) =>
-        value.length < 3 || value.length > 526
-          ? "Description must be between 3 and 526 characters"
+        value.length < 3 || value.length > 4000
+          ? "Description must be between 3 and 4000 characters"
           : null,
       maxPlayers: (value) =>
         value < 1 || value > 50 ? "Max players must be between 1 and 50" : null,
