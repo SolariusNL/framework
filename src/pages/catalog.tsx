@@ -29,8 +29,8 @@ interface Filter {
 const Catalog: NextPage<CatalogProps> = ({ user }) => {
   const [filter, setFilter] = React.useState<Filter | undefined>({
     unavailableItems: false,
-    limitedItems: false,
-    lowStock: false,
+    limitedItems: true,
+    lowStock: true,
     category: "hats",
   });
 
