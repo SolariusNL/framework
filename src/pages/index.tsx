@@ -14,7 +14,7 @@ const Home: NextPage<HomeProps> = ({ user }) => {
 
   useEffect(() => {
     setTimeMessage(new Date().getHours() > 12 ? "afternoon" : "morning");
-  } , []);
+  }, []);
 
   return (
     <Framework user={user} activeTab="home">
@@ -26,7 +26,21 @@ const Home: NextPage<HomeProps> = ({ user }) => {
 };
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
-  return await authorizedRoute(ctx);
+  const auth = await authorizedRoute(ctx, true, false);
+  if (auth.redirect) {
+    return {
+      redirect: {
+        destination: "/landing",
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {
+      user: auth.props.user,
+    },
+  };
 }
 
 export default Home;
