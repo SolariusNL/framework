@@ -36,6 +36,8 @@ const user = Prisma.validator<Prisma.UserArgs>()({
       },
     },
     emailVerificationInstances: true,
+    receivedMessages: true,
+    sentMessages: true,
   },
 });
 
@@ -100,6 +102,8 @@ export const userSelect: Prisma.UserSelect = {
   banReason: true,
   emailVerificationInstances: true,
   emailVerified: true,
+  receivedMessages: true,
+  sentMessages: true,
 };
 
 export const gameSelect: Prisma.GameSelect = {

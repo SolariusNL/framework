@@ -46,6 +46,8 @@ model User {
   emailVerificationInstances EmailVerification[] @relation("emailVerification")
   emailVerified              Boolean             @default(false)
   authTickets                NucleusAuthTicket[] @relation("authTickets")
+  receivedMessages           Message[]           @relation("messageRecipient")
+  sentMessages               Message[]           @relation("messageSender")
 }
 
 model Avatar {
@@ -90,6 +92,17 @@ model Session {
   user   User   @relation("userSessions", fields: [userId], references: [id])
   userId Int
   token  String @unique
+}
+
+model Message {
+  id          String   @id @default(uuid())
+  sender      User     @relation("messageSender", references: [id], fields: [senderId])
+  senderId    Int
+  recipient   User     @relation("messageRecipient", references: [id], fields: [recipientId])
+  recipientId Int
+  message     String
+  createdAt   DateTime @default(now())
+  system      Boolean  @default(false)
 }
 
 model FriendRequest {

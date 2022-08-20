@@ -1,7 +1,5 @@
 import {
   ActionIcon,
-  Alert,
-  Anchor,
   Autocomplete,
   Avatar,
   Badge,
@@ -20,25 +18,23 @@ import {
   ThemeIcon,
   UnstyledButton,
 } from "@mantine/core";
-import { useDisclosure, useHotkeys, useLocalStorage } from "@mantine/hooks";
-import Link from "next/link";
+import { useDisclosure, useLocalStorage } from "@mantine/hooks";
 import { useRouter } from "next/router";
 import React, { useRef, useState } from "react";
 import {
   HiChevronDown,
   HiCog,
   HiCurrencyDollar,
-  HiExclamationCircle,
   HiHome,
   HiLightBulb,
   HiLogout,
+  HiMail,
   HiMoon,
   HiSearch,
   HiSearchCircle,
   HiShoppingBag,
   HiSun,
   HiUser,
-  HiUsers,
   HiViewGrid,
   HiViewList,
 } from "react-icons/hi";
@@ -57,7 +53,7 @@ interface FrameworkProps {
     | "invent"
     | "avatar"
     | "settings"
-    | "friends"
+    | "messages"
     | "none";
   noPadding?: boolean;
 }
@@ -364,9 +360,9 @@ const Framework = ({
       color: "teal",
     },
     {
-      label: "Friends",
-      href: "/friends",
-      icon: <HiUsers />,
+      label: "Messages",
+      href: "/messages",
+      icon: <HiMail />,
       color: "green",
     },
     {
