@@ -62,7 +62,7 @@ const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
   return (
     <>
       <ReportUser
-        user={user}
+        user={viewing}
         opened={reportOpened}
         setOpened={setReportOpened}
       />

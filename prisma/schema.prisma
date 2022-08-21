@@ -48,6 +48,8 @@ model User {
   authTickets                NucleusAuthTicket[] @relation("authTickets")
   receivedMessages           Message[]           @relation("messageRecipient")
   sentMessages               Message[]           @relation("messageSender")
+  reports                    UserReport[]        @relation("userReportAuthor")
+  reportedBy                 UserReport[]        @relation("userReportedBy")
 }
 
 model Avatar {
@@ -198,4 +200,16 @@ model Update {
   tag         String
   description String
   releaseDate DateTime @default(now())
+}
+
+model UserReport {
+  id          String   @id @default(uuid())
+  user        User     @relation("userReportedBy", fields: [userId], references: [id])
+  userId      Int
+  reason      String
+  description String
+  author      User     @relation("userReportAuthor", fields: [authorId], references: [id])
+  authorId    Int
+  processed   Boolean  @default(false)
+  createdAt   DateTime @default(now())
 }

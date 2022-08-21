@@ -2,9 +2,10 @@ import {
   Body,
   createHandler,
   Get,
+  Param,
   Post,
-  UseMiddleware,
 } from "@storyofams/next-api-decorators";
+import { category } from "../../../components/ReportUser";
 import Authorized, { Account } from "../../../util/api/authorized";
 import countries from "../../../util/countries";
 import prisma from "../../../util/prisma";
@@ -135,6 +136,61 @@ class UserRouter {
     return {
       success: true,
       message: "Email changed successfully",
+    };
+  }
+
+  @Post("/:id/report")
+  @Authorized()
+  @RateLimitMiddleware(5)()
+  public async reportUser(
+    @Account() user: User,
+    @Body() data: { reason: string; description: string },
+    @Param("id") id: number
+  ) {
+    const { reason, description } = data;
+
+    if (
+      !reason ||
+      !description ||
+      description.length > 800 ||
+      !Object.keys(category).find((c) => c === reason)
+    ) {
+      return {
+        success: false,
+        message: "Invalid report",
+      };
+    }
+
+    if (user.id == id) {
+      return {
+        success: false,
+        message: "You cannot report yourself",
+      };
+    }
+
+    const reportingUser = await prisma.user.findFirst({
+      where: { id: Number(id) },
+    });
+
+    if (!reportingUser) {
+      return {
+        success: false,
+        message: "User not found",
+      };
+    }
+
+    await prisma.userReport.create({
+      data: {
+        user: { connect: { id: reportingUser.id } },
+        author: { connect: { id: user.id } },
+        reason,
+        description,
+      },
+    });
+
+    return {
+      success: true,
+      message: "User reported successfully",
     };
   }
 
