@@ -234,6 +234,96 @@ class GameRouter {
     };
   }
 
+  @Post("/:id/like")
+  @Authorized()
+  public async likeGame(@Account() user: User, @Param("id") id: string) {
+    const game = await prisma.game.findFirst({
+      where: {
+        id: Number(id),
+      },
+      include: {
+        likedBy: true,
+      },
+    });
+
+    if (!game) {
+      return {
+        success: false,
+        error: "Game not found",
+      };
+    }
+
+    await prisma.game.update({
+      where: {
+        id: Number(id),
+      },
+      data: {
+        likedBy: {
+          ...(game.likedBy.find((like) => like.id == user.id)
+            ? {
+                disconnect: {
+                  id: user.id,
+                },
+              }
+            : {
+                connect: {
+                  id: user.id,
+                },
+              }),
+        },
+      },
+    });
+
+    return {
+      success: true,
+    };
+  }
+
+  @Post("/:id/dislike")
+  @Authorized()
+  public async dislikeGame(@Account() user: User, @Param("id") id: string) {
+    const game = await prisma.game.findFirst({
+      where: {
+        id: Number(id),
+      },
+      include: {
+        dislikedBy: true,
+      },
+    });
+
+    if (!game) {
+      return {
+        success: false,
+        error: "Game not found",
+      };
+    }
+
+    await prisma.game.update({
+      where: {
+        id: Number(id),
+      },
+      data: {
+        likedBy: {
+          ...(game.dislikedBy.find((dislike) => dislike.id == dislike.id)
+            ? {
+                disconnect: {
+                  id: user.id,
+                },
+              }
+            : {
+                connect: {
+                  id: user.id,
+                },
+              }),
+        },
+      },
+    });
+
+    return {
+      success: true,
+    };
+  }
+
   @Get("/typeahead")
   public async typeahead(@Query("q") q: string) {
     const games = await prisma.game.findMany({

@@ -9,6 +9,7 @@ import {
   Group,
   Image,
   Progress,
+  Stack,
   Table,
   Tabs,
   Text,
@@ -29,6 +30,7 @@ import {
   HiServer,
   HiThumbDown,
   HiThumbUp,
+  HiUsers,
   HiViewList,
 } from "react-icons/hi";
 import sanitize from "sanitize-html";
@@ -38,18 +40,20 @@ import ThumbnailCarousel from "../../../components/ImageCarousel";
 import Launching from "../../../components/Launching";
 import PlaceholderGameResource from "../../../components/PlaceholderGameResource";
 import authorizedRoute from "../../../util/authorizedRoute";
+import { getCookie } from "../../../util/cookies";
 import prisma from "../../../util/prisma";
 import { Game, gameSelect, User } from "../../../util/prisma-types";
 import useMediaQuery from "../../../util/useMediaQuery";
 
 interface GameViewProps {
-  game: Game;
+  gameData: Game;
   user: User;
 }
 
-const Game: NextPage<GameViewProps> = ({ game, user }) => {
+const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
   const mobile = useMediaQuery("768");
   const router = useRouter();
+  const [game, setGame] = useState(gameData);
 
   const totalFeedback = game.likedBy.length + game.dislikedBy.length;
   const positive = (game.likedBy.length / totalFeedback) * 100;
@@ -140,7 +144,7 @@ const Game: NextPage<GameViewProps> = ({ game, user }) => {
               <Title order={5} mb={10}>
                 Description
               </Title>
-              <TypographyStylesProvider>
+              <TypographyStylesProvider mb={26}>
                 <div
                   dangerouslySetInnerHTML={{
                     __html: sanitize(game.description, {
@@ -160,6 +164,40 @@ const Game: NextPage<GameViewProps> = ({ game, user }) => {
                   }}
                 />
               </TypographyStylesProvider>
+
+              <Grid>
+                {[
+                  {
+                    icon: <HiViewList />,
+                    item: "genre",
+                    label: "Genre",
+                  },
+                  {
+                    icon: <HiUsers />,
+                    item: "maxPlayersPerSession",
+                    label: "Max Players",
+                  },
+                  {
+                    icon: <HiServer />,
+                    item: "playing",
+                    label: "Playing",
+                  },
+                ].map((x, i) => (
+                  <Grid.Col md={4} sm={2} key={i}>
+                    <Stack spacing={10} align="center">
+                      {x.icon}
+                      <Text weight={550} mb={6}>
+                        {x.label}
+                      </Text>
+                      {x.item == "genre" ? (
+                        <Badge color="blue">{game.genre}</Badge>
+                      ) : (
+                        <Text>{String(game[x.item as keyof Game])}</Text>
+                      )}
+                    </Stack>
+                  </Grid.Col>
+                ))}
+              </Grid>
             </Tabs.Panel>
 
             <Tabs.Panel value="connection" pt="md">
@@ -276,6 +314,9 @@ const Game: NextPage<GameViewProps> = ({ game, user }) => {
             size="lg"
             mb="md"
             disabled={game.connection.length == 0}
+            onClick={() => {
+              setLaunchingOpen(true);
+            }}
           >
             Play in Private Server
           </Button>
@@ -311,6 +352,32 @@ const Game: NextPage<GameViewProps> = ({ game, user }) => {
               disabled={
                 game.dislikedBy.find((u) => u.id == user.id) ? true : false
               }
+              onClick={() => {
+                // add like if not liked already by us, otherwise remove like
+                setGame({
+                  ...game,
+                  likedBy: game.likedBy.find((u) => u.id == user.id)
+                    ? game.likedBy.filter((u) => u.id != user.id)
+                    : [...game.likedBy, user],
+                });
+
+                fetch(`/api//games/${game.id}/like`, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: String(getCookie(".frameworksession")),
+                  },
+                })
+                  .then((res) => res.json())
+                  .then((res) => {
+                    if (!res.success) {
+                      setGame(gameData);
+                    }
+                  })
+                  .catch((err) => {
+                    setGame(gameData);
+                  });
+              }}
             >
               Like{game.likedBy.find((u) => u.id == user.id) ? "d" : ""}
             </Button>
@@ -321,6 +388,31 @@ const Game: NextPage<GameViewProps> = ({ game, user }) => {
               disabled={
                 game.likedBy.find((u) => u.id == user.id) ? true : false
               }
+              onClick={() => {
+                setGame({
+                  ...game,
+                  dislikedBy: game.dislikedBy.find((u) => u.id == user.id)
+                    ? game.dislikedBy.filter((u) => u.id != user.id)
+                    : [...game.dislikedBy, user],
+                });
+
+                fetch(`/api//games/${game.id}/dislike`, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: String(getCookie(".frameworksession")),
+                  },
+                })
+                  .then((res) => res.json())
+                  .then((res) => {
+                    if (!res.success) {
+                      setGame(gameData);
+                    }
+                  })
+                  .catch((err) => {
+                    setGame(gameData);
+                  });
+              }}
             >
               Dislike{game.dislikedBy.find((u) => u.id == user.id) ? "d" : ""}
             </Button>
@@ -345,7 +437,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   return {
     props: {
-      game: JSON.parse(JSON.stringify(game)),
+      gameData: JSON.parse(JSON.stringify(game)),
       user: auth?.props?.user,
     },
   };
