@@ -4,11 +4,13 @@ import Head from "next/head";
 import {
   Anchor,
   Button,
+  ButtonStylesParams,
   ColorScheme,
   ColorSchemeProvider,
   Dialog,
   Group,
   MantineProvider,
+  MantineTheme,
   Modal,
   Text,
 } from "@mantine/core";
@@ -50,7 +52,8 @@ const Framework = ({ Component, pageProps }: AppProps) => {
         router.push("/maintenance");
       }
     }
-  }), [];
+  }),
+    [];
 
   return (
     <>
@@ -73,6 +76,27 @@ const Framework = ({ Component, pageProps }: AppProps) => {
             colorScheme,
             fontFamily: "Inter var",
             defaultRadius: "md",
+            components: {
+              Button: {
+                styles: (theme, params: ButtonStylesParams) => ({
+                  root: {
+                    ...(params.variant === "filled" && {
+                      border: "1px solid",
+                      borderColor:
+                        theme.colors[params.color || theme.primaryColor][
+                          theme.colorScheme == "dark" ? 2 : 9
+                        ] + "85",
+                      "&:hover": {
+                        borderColor:
+                          theme.colors[params.color || theme.primaryColor][
+                            theme.colorScheme == "dark" ? 2 : 9
+                          ] + "85",
+                      },
+                    }),
+                  },
+                }),
+              },
+            },
           }}
         >
           <ModalsProvider>
@@ -96,10 +120,13 @@ const Framework = ({ Component, pageProps }: AppProps) => {
                   <strong>{pageProps.user && pageProps.user.banReason}</strong>
                 </Text>
 
-                <Button fullWidth onClick={() => {
-                  setCookie(".frameworksession", "", -365);
-                  router.push("/login");
-                }}>
+                <Button
+                  fullWidth
+                  onClick={() => {
+                    setCookie(".frameworksession", "", -365);
+                    router.push("/login");
+                  }}
+                >
                   Logout
                 </Button>
               </Modal>
