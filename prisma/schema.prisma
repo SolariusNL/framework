@@ -25,10 +25,8 @@ model User {
   createdAt                  DateTime            @default(now())
   updatedAt                  DateTime            @default(now())
   role                       Role                @default(USER)
-  outboundFriendRequests     FriendRequest[]     @relation("outboundFriendRequests")
-  inboundFriendRequests      FriendRequest[]     @relation("inboundFriendRequests")
-  friends                    User[]              @relation("friends")
-  friendsRelation            User[]              @relation("friends")
+  following                  User[]              @relation("userFollows")
+  followers                  User[]              @relation("userFollows")
   sessions                   Session[]           @relation("userSessions")
   games                      Game[]              @relation("gameAuthor")
   avatarUri                  String
@@ -105,15 +103,6 @@ model Message {
   message     String
   createdAt   DateTime @default(now())
   system      Boolean  @default(false)
-}
-
-model FriendRequest {
-  id         String   @id @default(uuid())
-  sender     User     @relation("outboundFriendRequests", fields: [senderId], references: [id])
-  senderId   Int
-  receiver   User     @relation("inboundFriendRequests", fields: [receiverId], references: [id])
-  receiverId Int
-  createdAt  DateTime @default(now())
 }
 
 enum GameGenre {

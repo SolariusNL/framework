@@ -194,6 +194,45 @@ class UserRouter {
     };
   }
 
+  @Post("/:id/follow")
+  @Authorized()
+  @RateLimitMiddleware(50)()
+  public async followUser(@Account() user: User, @Param("id") id: number) {
+    const followingUser = await prisma.user.findFirst({
+      where: { id: Number(id) },
+      include: {
+        followers: true,
+      },
+    });
+
+    if (!followingUser) {
+      return {
+        success: false,
+        message: "User not found",
+      };
+    }
+
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        following: {
+          ...(followingUser.followers.find((f) => f.id == user.id)
+            ? { disconnect: { id: followingUser.id } }
+            : { connect: { id: followingUser.id } }),
+        },
+      },
+    });
+
+    return {
+      success: true,
+      message: `User ${
+        followingUser.followers.find((f) => f.id == user.id) ? "un" : ""
+      }followed successfully`,
+    };
+  }
+
   @Post("/@me/update")
   @Authorized()
   @RateLimitMiddleware(20)()

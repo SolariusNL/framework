@@ -14,10 +14,6 @@ export const nonCurrentUserSelect = {
 
 const user = Prisma.validator<Prisma.UserArgs>()({
   include: {
-    friends: true,
-    friendsRelation: true,
-    outboundFriendRequests: true,
-    inboundFriendRequests: true,
     games: {
       include: {
         updates: true,
@@ -38,6 +34,8 @@ const user = Prisma.validator<Prisma.UserArgs>()({
     emailVerificationInstances: true,
     receivedMessages: true,
     sentMessages: true,
+    following: nonCurrentUserSelect,
+    followers: nonCurrentUserSelect,
   },
 });
 
@@ -55,20 +53,6 @@ const nonuser = Prisma.validator<Prisma.UserArgs>()({
 
 export const userSelect: Prisma.UserSelect = {
   password: false,
-  outboundFriendRequests: {
-    select: {
-      sender: nonCurrentUserSelect,
-      receiver: nonCurrentUserSelect,
-    },
-  },
-  inboundFriendRequests: {
-    select: {
-      sender: nonCurrentUserSelect,
-      receiver: nonCurrentUserSelect,
-    },
-  },
-  friends: nonCurrentUserSelect,
-  friendsRelation: nonCurrentUserSelect,
   username: true,
   id: true,
   email: true,
@@ -104,6 +88,8 @@ export const userSelect: Prisma.UserSelect = {
   emailVerified: true,
   receivedMessages: true,
   sentMessages: true,
+  following: nonCurrentUserSelect,
+  followers: nonCurrentUserSelect,
 };
 
 export const gameSelect: Prisma.GameSelect = {

@@ -18,7 +18,9 @@ import {
   Title,
   Tooltip,
 } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import { GetServerSidePropsContext, NextPage } from "next";
+import { useRouter } from "next/router";
 import React from "react";
 import ReactCountryFlag from "react-country-flag";
 import {
@@ -39,6 +41,7 @@ import ThumbnailCarousel from "../../components/ImageCarousel";
 import PlaceholderGameResource from "../../components/PlaceholderGameResource";
 import ReportUser from "../../components/ReportUser";
 import authorizedRoute from "../../util/authorizedRoute";
+import { getCookie } from "../../util/cookies";
 import { exclude } from "../../util/exclude";
 import prisma from "../../util/prisma";
 import {
@@ -58,6 +61,7 @@ interface ProfileProps {
 const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
   const mobile = useMediaQuery("768");
   const [reportOpened, setReportOpened] = React.useState(false);
+  const router = useRouter();
 
   return (
     <>
@@ -157,31 +161,50 @@ const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
             >
               <Group spacing={3}>
                 <HiUsers color="#868e96" style={{ marginRight: 5 }} />
-                <Anchor>0 followers</Anchor>
+                <Anchor>{viewing.followers.length} followers</Anchor>
                 <Text color="dimmed" pl={8} pr={8}>
                   ·
                 </Text>
-                <Anchor>0 following</Anchor>
+                <Anchor>{viewing.following.length} following</Anchor>
               </Group>
             </div>
 
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-              }}
-            >
-              <Button.Group>
-                <Button leftIcon={<HiUser />}>Follow</Button>
-                <Button
-                  leftIcon={<HiFlag />}
-                  color="red"
-                  onClick={() => setReportOpened(true)}
-                >
-                  Report
-                </Button>
-              </Button.Group>
-            </div>
+            {viewing.id != user.id && (
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                }}
+              >
+                <Button.Group>
+                  <Button
+                    leftIcon={<HiUser />}
+                    onClick={() => {
+                      fetch(`/api/users/${viewing.id}/follow`, {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                          Authorization: String(getCookie(".frameworksession")),
+                        },
+                      }).then(() => router.reload());
+                    }}
+                  >
+                    {viewing.followers.some(
+                      (follower) => follower.id == user.id
+                    )
+                      ? "Unfollow"
+                      : "Follow"}
+                  </Button>
+                  <Button
+                    leftIcon={<HiFlag />}
+                    color="red"
+                    onClick={() => setReportOpened(true)}
+                  >
+                    Report
+                  </Button>
+                </Button.Group>
+              </div>
+            )}
           </Stack>
         </Center>
 
@@ -332,8 +355,6 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       username: username as string,
     },
     select: {
-      friends: nonCurrentUserSelect,
-      friendsRelation: nonCurrentUserSelect,
       games: {
         include: {
           updates: true,
@@ -354,6 +375,8 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       bio: true,
       busy: true,
       country: true,
+      followers: nonCurrentUserSelect,
+      following: nonCurrentUserSelect,
     },
   });
 
