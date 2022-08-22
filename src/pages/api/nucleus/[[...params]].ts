@@ -115,10 +115,16 @@ class NucleusRouter {
     };
   }
 
-  @Post("/create-auth-ticket")
+  @Post("/createauthticket")
   @Authorized()
   @RateLimitMiddleware(20)()
   public async createAuthTicket(@Account() user: User) {
+    await prisma.nucleusAuthTicket.deleteMany({
+      where: {
+        userId: user.id,
+      },
+    });
+
     const ticket = await prisma.nucleusAuthTicket.create({
       data: {
         user: {
@@ -151,6 +157,13 @@ class NucleusRouter {
       };
     }
 
+    if (match.fulfilled) {
+      return {
+        success: false,
+        message: "Ticket already fulfilled",
+      };
+    }
+
     const res = await prisma.nucleusAuthTicket.update({
       where: {
         id: match.id,
@@ -169,6 +182,9 @@ class NucleusRouter {
       },
       data: {
         playing: {
+          increment: 1,
+        },
+        visits: {
           increment: 1,
         },
       },

@@ -328,7 +328,7 @@ const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
 
             <Stack align="center" spacing={4}>
               <Text weight={500} size="lg" sx={{ lineHeight: 1 }}>
-                0
+                {viewing.games.map((g) => g.visits).reduce((a, b) => a + b, 0)}
               </Text>
               <Text size="sm" color="dimmed">
                 Place visits
@@ -370,9 +370,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
           dislikedBy: nonCurrentUserSelect,
         },
       },
-      nucleusKeys: true,
       avatar: true,
-      snippets: true,
       avatarUri: true,
       premium: true,
       role: true,
