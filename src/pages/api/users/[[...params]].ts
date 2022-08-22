@@ -233,6 +233,63 @@ class UserRouter {
     };
   }
 
+  @Post("/:id/donate/:amount")
+  @Authorized()
+  @RateLimitMiddleware(5)()
+  public async donate(@Account() user: User, @Param("id") id: number, @Param("amount") amount: number) {
+    const donatingUser = await prisma.user.findFirst({
+      where: { id: Number(id) },
+    });
+
+    if (!donatingUser) {
+      return {
+        success: false,
+        message: "User not found",
+      };
+    }
+
+    if (amount <= 0 || amount % 1 !== 0) {
+      return {
+        success: false,
+        message: "Invalid amount",
+      };
+    }
+
+    if (user.tickets < amount) {
+      return {
+        success: false,
+        message: "You do not have enough tickets",
+      };
+    }
+    
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        tickets: {
+          decrement: Number(amount),
+        }
+      },
+    });
+
+    await prisma.user.update({
+      where: {
+        id: donatingUser.id,
+      },
+      data: {
+        tickets: {
+          increment: Number(amount),
+        }
+      },
+    });
+
+    return {
+      success: true,
+      message: "Donation successful",
+    };
+  }
+
   @Post("/@me/update")
   @Authorized()
   @RateLimitMiddleware(20)()

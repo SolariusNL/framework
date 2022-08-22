@@ -108,10 +108,10 @@ const Games: NextPage<GamesProps> = ({ user, initialGames }) => {
         </Grid.Col>
         <Grid.Col span={mobile ? 24 : 19}>
           <Title mb={24}>Games</Title>
-          <Grid>
+          <Grid columns={12}>
             {games.length > 0 &&
               games.map((game) => (
-                <Grid.Col md={6} sm={6} lg={4} key={game.id}>
+                <Grid.Col xs={6} md={4} sm={6} lg={4} key={game.id}>
                   <GameCard game={game} />
                 </Grid.Col>
               ))}

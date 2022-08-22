@@ -1,6 +1,4 @@
-import "../styles/framework.css";
-import type { AppProps } from "next/app";
-import Head from "next/head";
+import { useFlags } from "@happykit/flags/client";
 import {
   Anchor,
   Button,
@@ -10,20 +8,25 @@ import {
   Dialog,
   Group,
   MantineProvider,
-  MantineTheme,
   Modal,
   Text,
 } from "@mantine/core";
-import NextNProgress from "nextjs-progressbar";
-import { NotificationsProvider } from "@mantine/notifications";
-import { ModalsProvider } from "@mantine/modals";
 import { useLocalStorage } from "@mantine/hooks";
+import { ModalsProvider } from "@mantine/modals";
+import {
+  NotificationsProvider,
+  showNotification,
+} from "@mantine/notifications";
+import type { AppProps } from "next/app";
+import Head from "next/head";
 import Link from "next/link";
-import { setCookie } from "../util/cookies";
 import { useRouter } from "next/router";
-import "../../flags.config";
-import { useFlags } from "@happykit/flags/client";
+import NextNProgress from "nextjs-progressbar";
 import { useEffect } from "react";
+import { HiCheckCircle } from "react-icons/hi";
+import "../../flags.config";
+import "../styles/framework.css";
+import { setCookie } from "../util/cookies";
 
 const Framework = ({ Component, pageProps }: AppProps) => {
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
@@ -51,6 +54,15 @@ const Framework = ({ Component, pageProps }: AppProps) => {
       if (router.pathname !== "/maintenance") {
         router.push("/maintenance");
       }
+    }
+
+    if (router.query.status == "success") {
+      showNotification({
+        title: "Success",
+        message: "Your request was successful.",
+        icon: <HiCheckCircle size={18} />,
+        color: "green",
+      });
     }
   }),
     [];

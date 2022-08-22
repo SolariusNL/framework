@@ -11,6 +11,7 @@ import {
   Grid,
   Group,
   Image,
+  Menu,
   Paper,
   Progress,
   Stack,
@@ -18,7 +19,7 @@ import {
   Title,
   Tooltip,
 } from "@mantine/core";
-import { showNotification } from "@mantine/notifications";
+import { useNotifications } from "@mantine/notifications";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { useRouter } from "next/router";
 import React from "react";
@@ -27,7 +28,9 @@ import {
   HiCheck,
   HiClipboardCopy,
   HiFlag,
+  HiOutlineShoppingBag,
   HiPlay,
+  HiReceiptTax,
   HiShieldCheck,
   HiSparkles,
   HiUser,
@@ -45,13 +48,7 @@ import authorizedRoute from "../../util/authorizedRoute";
 import { getCookie } from "../../util/cookies";
 import { exclude } from "../../util/exclude";
 import prisma from "../../util/prisma";
-import {
-  nonCurrentUserSelect,
-  NonUser,
-  User,
-  userSelect,
-} from "../../util/prisma-types";
-import { sendFriendRequest } from "../../util/universe/friends";
+import { nonCurrentUserSelect, User } from "../../util/prisma-types";
 import useMediaQuery from "../../util/useMediaQuery";
 
 interface ProfileProps {
@@ -63,6 +60,21 @@ const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
   const mobile = useMediaQuery("768");
   const [reportOpened, setReportOpened] = React.useState(false);
   const router = useRouter();
+
+  const handleDonate = async (amt: number) => {
+    await fetch(`/api/users/${viewing.id}/donate/${amt}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: String(getCookie(".frameworksession")),
+      },
+    }).then(() => router.replace({
+      pathname: `/profile/${viewing.username}`,
+      query: {
+        status: "success",
+      },
+    }).then(() => router.reload()));
+  };
 
   return (
     <>
@@ -196,6 +208,30 @@ const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
                       ? "Unfollow"
                       : "Follow"}
                   </Button>
+                  <Menu shadow="md" width={240}>
+                    <Menu.Target>
+                      <Button leftIcon={<HiReceiptTax />}>Donate</Button>
+                    </Menu.Target>
+                    <Menu.Dropdown>
+                      {[100, 200, 500, 1000, 2500, 5000, 10000].map(
+                        (amount) => (
+                          <Menu.Item
+                            key={amount}
+                            icon={<HiOutlineShoppingBag />}
+                            disabled={amount > user.tickets}
+                            onClick={() => handleDonate(amount)}
+                          >
+                            Donate {amount} tickets
+                          </Menu.Item>
+                        )
+                      )}
+                      <Menu.Divider />
+                      <Menu.Label>
+                        If you did not mean to donate, contact us and we will
+                        refund your donation.
+                      </Menu.Label>
+                    </Menu.Dropdown>
+                  </Menu>
                   <Button
                     leftIcon={<HiFlag />}
                     color="red"
