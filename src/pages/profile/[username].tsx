@@ -36,6 +36,7 @@ import {
 import AdminBadge from "../../components/Badges/Admin";
 import AlphaBadge from "../../components/Badges/Alpha";
 import PremiumBadge from "../../components/Badges/Premium";
+import EmptyState from "../../components/EmptyState";
 import Framework from "../../components/Framework";
 import ThumbnailCarousel from "../../components/ImageCarousel";
 import PlaceholderGameResource from "../../components/PlaceholderGameResource";
@@ -243,6 +244,12 @@ const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
           </Grid.Col>
 
           <Grid.Col span={mobile ? 24 : 10}>
+            {viewing.games.length == 0 && (
+              <EmptyState
+                title="No games"
+                body={`${viewing.username} has no games.`}
+              />
+            )}
             <ThumbnailCarousel
               p={8}
               slides={viewing.games.map((g, i) => (
