@@ -1,5 +1,7 @@
 import {
   ActionIcon,
+  Alert,
+  Anchor,
   Autocomplete,
   Avatar,
   Badge,
@@ -25,6 +27,7 @@ import {
   HiChevronDown,
   HiCog,
   HiCurrencyDollar,
+  HiGift,
   HiHome,
   HiLightBulb,
   HiLogout,
@@ -553,6 +556,14 @@ const Framework = ({
         <Container mt={26}>
           {user && !user.emailVerified && !warningSeen && !isSSR && (
             <EmailReminder setWarningSeen={setEmailWarningSeen} />
+          )}
+          {process.env.NEXT_PUBLIC_UKRAINE_HEADER === "true" && (
+            <Alert mb={16} icon={<HiGift size={36} />}>
+              {process.env.NEXT_PUBLIC_UKRAINE_HEADER_TEXT}{" "}
+              <Anchor href={process.env.NEXT_PUBLIC_UKRAINE_HEADER_SUPPORT_URL} target="_blank">
+                Help Provide Humanitarian Aid to Ukraine
+              </Anchor>
+            </Alert>
           )}
           {children}
         </Container>
