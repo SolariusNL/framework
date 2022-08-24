@@ -8,6 +8,7 @@ import {
 import { category } from "../../../components/ReportUser";
 import Authorized, { Account } from "../../../util/api/authorized";
 import countries from "../../../util/countries";
+import createNotification from "../../../util/notifications";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
 import { RateLimitMiddleware } from "../../../util/rateLimit";
@@ -294,6 +295,13 @@ class UserRouter {
       amount,
       `Donation to ${donatingUser.username} (ID: ${donatingUser.id})`,
       user.id
+    );
+
+    await createNotification(
+      user.id,
+      "SUCCESS",
+      `You have donated ${amount} tickets to @${donatingUser.username}.`,
+      "Donation Success"
     );
 
     return {

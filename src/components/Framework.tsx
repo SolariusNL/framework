@@ -46,6 +46,7 @@ import { setCookie } from "../util/cookies";
 import { User } from "../util/prisma-types";
 import useMediaQuery from "../util/useMediaQuery";
 import EmailReminder from "./EmailReminder";
+import NotificationFlyout from "./NotificationFlyout";
 
 interface FrameworkProps {
   user: User;
@@ -434,6 +435,7 @@ const Framework = ({
             {mobile && <Burger opened={opened} onClick={toggle} size="sm" />}
             {!mobile && (
               <Group>
+                <NotificationFlyout notificationData={user && user.notifications} />
                 <CurrencyMenu
                   cx={cx}
                   classes={classes}
