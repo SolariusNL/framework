@@ -68,12 +68,16 @@ const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
         "Content-Type": "application/json",
         Authorization: String(getCookie(".frameworksession")),
       },
-    }).then(() => router.replace({
-      pathname: `/profile/${viewing.username}`,
-      query: {
-        status: "success",
-      },
-    }).then(() => router.reload()));
+    }).then(() =>
+      router
+        .replace({
+          pathname: `/profile/${viewing.username}`,
+          query: {
+            status: "success",
+          },
+        })
+        .then(() => router.reload())
+    );
   };
 
   return (

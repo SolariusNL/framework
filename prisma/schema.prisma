@@ -48,6 +48,7 @@ model User {
   sentMessages               Message[]           @relation("messageSender")
   reports                    UserReport[]        @relation("userReportAuthor")
   reportedBy                 UserReport[]        @relation("userReportedBy")
+  transactions               Transaction[]       @relation("userTransactions")
 }
 
 model Avatar {
@@ -189,6 +190,16 @@ model Update {
   tag         String
   description String
   releaseDate DateTime @default(now())
+}
+
+model Transaction {
+  id          String   @id @default(uuid())
+  user        User     @relation("userTransactions", fields: [userId], references: [id])
+  userId      Int
+  to          String
+  tickets     Int
+  description String
+  createdAt   DateTime @default(now())
 }
 
 model UserReport {

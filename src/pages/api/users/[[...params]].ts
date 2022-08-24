@@ -12,6 +12,7 @@ import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
 import { RateLimitMiddleware } from "../../../util/rateLimit";
 import { verificationEmail } from "../../../util/templates/verification-email";
+import { logTransaction } from "../../../util/transactionHistory";
 
 interface UserUpdateBody {
   username?: string;
@@ -236,7 +237,11 @@ class UserRouter {
   @Post("/:id/donate/:amount")
   @Authorized()
   @RateLimitMiddleware(5)()
-  public async donate(@Account() user: User, @Param("id") id: number, @Param("amount") amount: number) {
+  public async donate(
+    @Account() user: User,
+    @Param("id") id: number,
+    @Param("amount") amount: number
+  ) {
     const donatingUser = await prisma.user.findFirst({
       where: { id: Number(id) },
     });
@@ -261,7 +266,7 @@ class UserRouter {
         message: "You do not have enough tickets",
       };
     }
-    
+
     await prisma.user.update({
       where: {
         id: user.id,
@@ -269,7 +274,7 @@ class UserRouter {
       data: {
         tickets: {
           decrement: Number(amount),
-        }
+        },
       },
     });
 
@@ -280,9 +285,16 @@ class UserRouter {
       data: {
         tickets: {
           increment: Number(amount),
-        }
+        },
       },
     });
+
+    await logTransaction(
+      donatingUser.username,
+      amount,
+      `Donation to ${donatingUser.username} (ID: ${donatingUser.id})`,
+      user.id
+    );
 
     return {
       success: true,
