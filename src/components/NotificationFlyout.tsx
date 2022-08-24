@@ -13,6 +13,7 @@ import { useState } from "react";
 import {
   HiBell,
   HiCheckCircle,
+  HiDesktopComputer,
   HiExclamationCircle,
   HiInformationCircle,
   HiPhone,
@@ -53,15 +54,15 @@ const NotificationFlyout = ({ notificationData }: NotificationFlyoutProps) => {
   const typeIcon = (type: NotificationType) => {
     switch (type) {
       case "ALERT":
-        return <HiExclamationCircle />;
+        return <HiExclamationCircle size={12}/>;
       case "INFO":
-        return <HiInformationCircle />;
+        return <HiInformationCircle size={12}/>;
       case "LOGIN":
-        return <HiPhone />;
+        return <HiDesktopComputer size={12} />;
       case "SUCCESS":
-        return <HiCheckCircle />;
+        return <HiCheckCircle size={12}/>;
       default:
-        return <HiInformationCircle />;
+        return <HiInformationCircle size={12}/>;
     }
   };
 
@@ -112,6 +113,9 @@ const NotificationFlyout = ({ notificationData }: NotificationFlyoutProps) => {
             bulletSize={24}
             lineWidth={2}
             p={10}
+            sx={{
+              maxWidth: "360px",
+            }}
           >
             {notifications
               .sort(

@@ -1,6 +1,12 @@
-import { Body, createHandler, Post } from "@storyofams/next-api-decorators";
-import { randomUUID } from "crypto";
-import { sendMail } from "../../../util/mail";
+import {
+  Body,
+  createHandler,
+  Post,
+  Req,
+} from "@storyofams/next-api-decorators";
+import type { NextApiRequest } from "next";
+import { getClientIp } from "request-ip";
+import createNotification from "../../../util/notifications";
 import prisma from "../../../util/prisma";
 import { verificationEmail } from "../../../util/templates/verification-email";
 
@@ -18,7 +24,7 @@ interface RegisterBody {
 
 class AuthRouter {
   @Post("/login")
-  public async login(@Body() body: LoginBody) {
+  public async login(@Body() body: LoginBody, @Req() request: NextApiRequest) {
     const { username, password } = body;
     if (!username || !password) {
       return {
@@ -51,6 +57,17 @@ class AuthRouter {
         token: Math.random().toString(36).substring(2),
       },
     });
+
+    const ip = getClientIp(request);
+    const os =
+      request?.headers["user-agent"]?.split("(")[1].split(")")[0] || "Unknown";
+
+    await createNotification(
+      Number(account.id),
+      "LOGIN",
+      `New login detected from a ${os} machine device with IP ${ip}`,
+      "New Login"
+    );
 
     return {
       success: true,
@@ -144,7 +161,7 @@ class AuthRouter {
       },
       include: {
         user: true,
-      }
+      },
     });
 
     await prisma.invite.update({
