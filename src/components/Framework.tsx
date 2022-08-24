@@ -41,6 +41,7 @@ import {
   HiViewGrid,
   HiViewList,
 } from "react-icons/hi";
+import abbreviateNumber from "../util/abbreviate";
 import { setCookie } from "../util/cookies";
 import { User } from "../util/prisma-types";
 import useMediaQuery from "../util/useMediaQuery";
@@ -309,14 +310,20 @@ const CurrencyMenu = ({
             size="sm"
             sx={{ lineHeight: 1 }}
           >
-            {user.tickets}
+            {abbreviateNumber(user.tickets)}
           </Text>
         </Group>
       </UnstyledButton>
     </Menu.Target>
 
     <Menu.Dropdown>
-      <Menu.Label>You have {user.tickets} tickets</Menu.Label>
+      <Menu.Label>
+        You have{" "}
+        {Math.round(user.tickets)
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}{" "}
+        tickets
+      </Menu.Label>
 
       <Menu.Item icon={<HiShoppingBag />}>Purchase tickets</Menu.Item>
       <Menu.Item icon={<HiViewList />}>Transaction history</Menu.Item>
@@ -560,7 +567,10 @@ const Framework = ({
           {process.env.NEXT_PUBLIC_UKRAINE_HEADER === "true" && (
             <Alert mb={16} icon={<HiGift size={36} />}>
               {process.env.NEXT_PUBLIC_UKRAINE_HEADER_TEXT}{" "}
-              <Anchor href={process.env.NEXT_PUBLIC_UKRAINE_HEADER_SUPPORT_URL} target="_blank">
+              <Anchor
+                href={process.env.NEXT_PUBLIC_UKRAINE_HEADER_SUPPORT_URL}
+                target="_blank"
+              >
                 Help Provide Humanitarian Aid to Ukraine
               </Anchor>
             </Alert>
