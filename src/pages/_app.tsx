@@ -17,23 +17,32 @@ import {
   NotificationsProvider,
   showNotification,
 } from "@mantine/notifications";
+import { deleteCookie, getCookie, setCookie } from "cookies-next";
+import { GetServerSidePropsContext } from "next";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import NextNProgress from "nextjs-progressbar";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { HiCheckCircle } from "react-icons/hi";
 import "../../flags.config";
 import "../styles/framework.css";
-import { setCookie } from "../util/cookies";
 
-const Framework = ({ Component, pageProps }: AppProps) => {
-  const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
-    key: "mantine-color-scheme",
-    defaultValue: "light",
-    getInitialValueInEffect: true,
-  });
+const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
+  const { Component, pageProps } = props;
+  const [colorScheme, setColorScheme] = useState<ColorScheme>(
+    props.colorScheme
+  );
+
+  const toggleColorScheme = (value?: ColorScheme) => {
+    const nextColorScheme =
+      value || (colorScheme === "dark" ? "light" : "dark");
+    setColorScheme(nextColorScheme);
+    setCookie("mantine-color-scheme", nextColorScheme, {
+      maxAge: 60 * 60 * 24 * 30,
+    });
+  };
 
   const [cookieConsent, setCookieConsent] = useLocalStorage<{
     accepted: boolean;
@@ -42,9 +51,6 @@ const Framework = ({ Component, pageProps }: AppProps) => {
     key: "soodam-cookie-consent",
     defaultValue: { accepted: false, rejected: false },
   });
-
-  const toggleColorScheme = (value?: ColorScheme) =>
-    setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
 
   const router = useRouter();
   const { flags } = useFlags();
@@ -135,7 +141,7 @@ const Framework = ({ Component, pageProps }: AppProps) => {
                 <Button
                   fullWidth
                   onClick={() => {
-                    setCookie(".frameworksession", "", -365);
+                    deleteCookie(".frameworksession");
                     router.push("/login");
                   }}
                 >
@@ -182,5 +188,9 @@ const Framework = ({ Component, pageProps }: AppProps) => {
     </>
   );
 };
+
+Framework.getInitialProps = ({ ctx }: { ctx: GetServerSidePropsContext }) => ({
+  colorScheme: getCookie("mantine-color-scheme", ctx) || "light",
+});
 
 export default Framework;

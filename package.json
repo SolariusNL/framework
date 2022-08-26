@@ -44,6 +44,7 @@
     "@types/three": "^0.143.0",
     "clsx": "^1.2.1",
     "concurrently": "^7.3.0",
+    "cookies-next": "^2.1.1",
     "cp-cli": "^2.0.0",
     "cross-env": "^7.0.3",
     "embla-carousel-autoplay": "^7.0.0",

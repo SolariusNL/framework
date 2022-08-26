@@ -6,7 +6,6 @@ import {
   Avatar,
   Badge,
   Burger,
-  ColorScheme,
   Container,
   createStyles,
   Drawer,
@@ -19,6 +18,7 @@ import {
   Text,
   ThemeIcon,
   UnstyledButton,
+  useMantineColorScheme,
 } from "@mantine/core";
 import { useDisclosure, useLocalStorage } from "@mantine/hooks";
 import { useRouter } from "next/router";
@@ -209,12 +209,7 @@ const Search = ({ ref }: { ref: React.RefObject<HTMLInputElement> }) => {
 };
 
 const UserMenu = ({ classes, userMenuOpened, user, cx, router }: any) => {
-  const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
-    key: "mantine-color-scheme",
-  });
-
-  const toggleColorScheme = () =>
-    setColorScheme((current) => (current === "dark" ? "light" : "dark"));
+  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
 
   return (
     <Menu transition="pop-top-right">
@@ -254,7 +249,7 @@ const UserMenu = ({ classes, userMenuOpened, user, cx, router }: any) => {
             colorScheme === "dark" ? <HiMoon size={18} /> : <HiSun size={18} />
           }
           color={colorScheme === "dark" ? "yellow" : "blue"}
-          onClick={toggleColorScheme}
+          onClick={() => toggleColorScheme()}
         >
           Change theme{" "}
           <Badge color={colorScheme === "dark" ? "yellow" : "blue"}>WIP</Badge>
@@ -435,7 +430,9 @@ const Framework = ({
             {mobile && <Burger opened={opened} onClick={toggle} size="sm" />}
             {!mobile && (
               <Group>
-                <NotificationFlyout notificationData={user && user.notifications} />
+                <NotificationFlyout
+                  notificationData={user && user.notifications}
+                />
                 <CurrencyMenu
                   cx={cx}
                   classes={classes}

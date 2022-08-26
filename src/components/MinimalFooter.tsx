@@ -12,15 +12,8 @@ import Link from "next/link";
 import { HiMoon, HiSun } from "react-icons/hi";
 
 const MinimalFooter = () => {
-  const { colorScheme } = useMantineColorScheme();
+  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const dark = colorScheme === "dark";
-
-  const [_, setColorScheme] = useLocalStorage<ColorScheme>({
-    key: "mantine-color-scheme",
-  });
-
-  const toggleColorScheme = () =>
-    setColorScheme((current) => (current === "dark" ? "light" : "dark"));
 
   return (
     <>
@@ -62,7 +55,7 @@ const MinimalFooter = () => {
               border: "1px solid",
               borderColor: dark ? theme.colors.yellow[5] : theme.colors.blue[5],
             })}
-            onClick={toggleColorScheme}
+            onClick={() => toggleColorScheme()}
           >
             {dark ? <HiSun /> : <HiMoon />}
           </ActionIcon>
