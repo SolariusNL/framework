@@ -212,7 +212,7 @@ const UserMenu = ({ classes, userMenuOpened, user, cx, router }: any) => {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
 
   return (
-    <Menu transition="pop-top-right">
+    <Menu transition="pop-top-right" width={240}>
       <Menu.Target>
         <UnstyledButton
           className={cx(classes.user, {
@@ -238,6 +238,11 @@ const UserMenu = ({ classes, userMenuOpened, user, cx, router }: any) => {
       </Menu.Target>
 
       <Menu.Dropdown>
+        <Menu.Label>
+          👻 Framework {process.env.NEXT_PUBLIC_VERSION} - Built by Emil, Rosé{" "}
+          {"&"} contributors
+        </Menu.Label>
+        <Menu.Divider />
         <Menu.Item
           icon={<HiUser />}
           onClick={() => router.push(`/profile/${user.username}`)}
