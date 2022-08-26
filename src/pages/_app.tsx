@@ -123,7 +123,11 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
               <Component {...pageProps} />
               <Modal
                 withCloseButton={false}
-                opened={pageProps.user && pageProps.user.banned}
+                opened={
+                  pageProps != undefined &&
+                  pageProps.user &&
+                  pageProps.user.banned
+                }
                 onClose={() => null}
               >
                 <Text mb={16}>
@@ -135,7 +139,11 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
 
                 <Text mb={24}>
                   Ban reason:{" "}
-                  <strong>{pageProps.user && pageProps.user.banReason}</strong>
+                  <strong>
+                    {pageProps != undefined &&
+                      pageProps.user &&
+                      pageProps.user.banReason}
+                  </strong>
                 </Text>
 
                 <Button
