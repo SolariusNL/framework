@@ -3,7 +3,9 @@ import {
   createStyles,
   Group,
   Indicator,
+  Pagination,
   Popover,
+  Spoiler,
   Text,
   Timeline,
   UnstyledButton,
@@ -50,26 +52,25 @@ const NotificationFlyout = ({ notificationData }: NotificationFlyoutProps) => {
   const { classes, cx, theme } = useStyles();
 
   const [notifications, setNotifications] = useState(notificationData);
+  const [activePage, setActivePage] = useState(1);
 
   const typeIcon = (type: NotificationType) => {
     switch (type) {
       case "ALERT":
-        return <HiExclamationCircle size={12}/>;
+        return <HiExclamationCircle size={12} />;
       case "INFO":
-        return <HiInformationCircle size={12}/>;
+        return <HiInformationCircle size={12} />;
       case "LOGIN":
         return <HiDesktopComputer size={12} />;
       case "SUCCESS":
-        return <HiCheckCircle size={12}/>;
+        return <HiCheckCircle size={12} />;
       default:
-        return <HiInformationCircle size={12}/>;
+        return <HiInformationCircle size={12} />;
     }
   };
 
   const handleReadNotification = (notification: Notification) => {
-    setNotifications(
-      notifications.filter((n) => n.id !== notification.id)
-    );
+    setNotifications(notifications.filter((n) => n.id !== notification.id));
 
     fetch(`/api/notifications/${notification.id}/read`, {
       method: "POST",
@@ -108,42 +109,63 @@ const NotificationFlyout = ({ notificationData }: NotificationFlyoutProps) => {
             body="You have no notifications"
           />
         ) : (
-          <Timeline
-            active={notifications.length}
-            bulletSize={24}
-            lineWidth={2}
-            p={10}
-            sx={{
-              maxWidth: "360px",
-            }}
-          >
-            {notifications
-              .sort(
-                (a, b) =>
-                  new Date(b.createdAt).getTime() -
-                  new Date(a.createdAt).getTime()
-              )
-              .map((notification) => (
-                <Timeline.Item
-                  key={notification.id}
-                  bullet={typeIcon(notification.type)}
-                  title={notification.title}
-                >
-                  <Text color="dimmed" size="sm">
-                    {notification.message}
-                  </Text>
-                  <Text size="xs" mt={4}>
-                    {getRelativeTime(new Date(notification.createdAt))}
-                    {" - "}
-                    <Anchor
-                      onClick={() => handleReadNotification(notification)}
+          <>
+            <Group sx={{ width: "100%", justifyContent: "center" }} mb={16}>
+              <Pagination
+                size="sm"
+                radius="xl"
+                withEdges
+                total={Math.ceil(notifications.length / 5)}
+                page={activePage}
+                onChange={setActivePage}
+                align="center"
+              />
+            </Group>
+
+            <Timeline
+              active={notifications.length}
+              bulletSize={24}
+              lineWidth={2}
+              p={10}
+              sx={{
+                maxWidth: "360px",
+              }}
+            >
+              {notifications
+                .sort(
+                  (a, b) =>
+                    new Date(b.createdAt).getTime() -
+                    new Date(a.createdAt).getTime()
+                )
+                .slice((activePage - 1) * 5, activePage * 5)
+                .map((notification) => (
+                  <Timeline.Item
+                    key={notification.id}
+                    bullet={typeIcon(notification.type)}
+                    title={notification.title}
+                  >
+                    <Spoiler
+                      maxHeight={40}
+                      showLabel="See more"
+                      hideLabel="Collapse"
                     >
-                      Mark as read
-                    </Anchor>
-                  </Text>
-                </Timeline.Item>
-              ))}
-          </Timeline>
+                      <Text color="dimmed" size="sm">
+                        {notification.message}
+                      </Text>
+                    </Spoiler>
+                    <Text size="xs" mt={4}>
+                      {getRelativeTime(new Date(notification.createdAt))}
+                      {" - "}
+                      <Anchor
+                        onClick={() => handleReadNotification(notification)}
+                      >
+                        Mark as read
+                      </Anchor>
+                    </Text>
+                  </Timeline.Item>
+                ))}
+            </Timeline>
+          </>
         )}
       </Popover.Dropdown>
     </Popover>
