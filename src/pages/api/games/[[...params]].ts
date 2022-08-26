@@ -303,8 +303,8 @@ class GameRouter {
         id: Number(id),
       },
       data: {
-        likedBy: {
-          ...(game.dislikedBy.find((dislike) => dislike.id == dislike.id)
+        dislikedBy: {
+          ...(game.dislikedBy.find((like) => like.id == user.id)
             ? {
                 disconnect: {
                   id: user.id,

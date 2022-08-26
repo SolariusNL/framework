@@ -353,7 +353,6 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                 game.dislikedBy.find((u) => u.id == user.id) ? true : false
               }
               onClick={() => {
-                // add like if not liked already by us, otherwise remove like
                 setGame({
                   ...game,
                   likedBy: game.likedBy.find((u) => u.id == user.id)
@@ -361,7 +360,7 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                     : [...game.likedBy, user],
                 });
 
-                fetch(`/api//games/${game.id}/like`, {
+                fetch(`/api/games/${game.id}/like`, {
                   method: "POST",
                   headers: {
                     "Content-Type": "application/json",
@@ -396,7 +395,7 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                     : [...game.dislikedBy, user],
                 });
 
-                fetch(`/api//games/${game.id}/dislike`, {
+                fetch(`/api/games/${game.id}/dislike`, {
                   method: "POST",
                   headers: {
                     "Content-Type": "application/json",
