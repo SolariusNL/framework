@@ -161,6 +161,14 @@ const nucleusKey = Prisma.validator<Prisma.NucleusKeyArgs>()({
   },
 });
 
+const reportType = Prisma.validator<Prisma.UserReportArgs>()({
+  include: {
+    user: nonCurrentUserSelect,
+    author: nonCurrentUserSelect,
+  },
+});
+
+export type Report = Prisma.UserReportGetPayload<typeof reportType>;
 export type User = Prisma.UserGetPayload<typeof user>;
 export type Game = Prisma.GameGetPayload<typeof game>;
 export type NonUser = Prisma.UserGetPayload<typeof nonuser>;
