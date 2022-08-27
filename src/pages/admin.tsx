@@ -7,6 +7,7 @@ import {
   Table,
   Text,
   Title,
+  Tooltip,
 } from "@mantine/core";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
@@ -112,7 +113,7 @@ const Admin: NextPage<AdminProps> = ({ user }) => {
             reports?.map((report) => (
               <tr key={report.id}>
                 <td>
-                  <Group>
+                  <Tooltip label={report.author.username}>
                     <Avatar
                       src={
                         report.author.avatarUri ||
@@ -121,13 +122,10 @@ const Admin: NextPage<AdminProps> = ({ user }) => {
                       radius={999}
                       size={30}
                     />
-                    <Text weight={500} color="dimmed" size="sm">
-                      {report.author.username}
-                    </Text>
-                  </Group>
+                  </Tooltip>
                 </td>
                 <td>
-                  <Group>
+                  <Tooltip label={report.user.username}>
                     <Avatar
                       src={
                         report.user.avatarUri ||
@@ -136,13 +134,12 @@ const Admin: NextPage<AdminProps> = ({ user }) => {
                       radius={999}
                       size={30}
                     />
-                    <Text weight={500} color="dimmed" size="sm">
-                      {report.user.username}
-                    </Text>
-                  </Group>
+                  </Tooltip>
                 </td>
                 <td>{report.reason}</td>
-                <td>{report.description}</td>
+                <td>
+                  <Text lineClamp={1}>{report.description}</Text>
+                </td>
                 <td>
                   <ActionIcon color="grape">
                     <HiArrowRight />
