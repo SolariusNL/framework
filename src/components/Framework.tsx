@@ -13,6 +13,7 @@ import {
   Kbd,
   Menu,
   Popover,
+  ScrollArea,
   Stack,
   Tabs,
   Text,
@@ -455,6 +456,41 @@ const Framework = ({
               </Group>
             )}
           </Group>
+
+          {mobile && (
+            <Tabs
+              defaultValue={activeTab}
+              variant="pills"
+              classNames={{
+                tabsList: classes.tabsList,
+              }}
+              mt={14}
+            >
+              <div>
+                <ScrollArea>
+                  <Tabs.List>
+                    {tabs.map((tab) => (
+                      <Tabs.Tab
+                        value={tab.label.toLowerCase()}
+                        key={tab.label}
+                        onClick={() => {
+                          router.push(tab.href);
+                        }}
+                        sx={{
+                          width: "140px",
+                        }}
+                      >
+                        <Group>
+                          {tab.icon}
+                          <Text>{tab.label}</Text>
+                        </Group>
+                      </Tabs.Tab>
+                    ))}
+                  </Tabs.List>
+                </ScrollArea>
+              </div>
+            </Tabs>
+          )}
         </Container>
         {!mobile && (
           <Container mt={10}>
