@@ -32,6 +32,7 @@ interface Comment {
     country: string;
     bio: string;
     busy: boolean;
+    premium: boolean;
   };
   text: string;
   createdAt: Date;
