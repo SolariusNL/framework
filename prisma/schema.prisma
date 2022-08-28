@@ -21,6 +21,22 @@ enum ReceiveNotification {
   LOGIN
 }
 
+enum PremiumSubscriptionType {
+  PREMIUM_ONE_MONTH
+  PREMIUM_SIX_MONTHS
+  PREMIUM_ONE_YEAR
+}
+
+enum GiftCodeGrant {
+  PREMIUM_ONE_MONTH
+  PREMIUM_SIX_MONTHS
+  PREMIUM_ONE_YEAR
+  THOUSAND_TICKETS
+  TWOTHOUSAND_TICKETS
+  FIVETHOUSAND_TICKETS
+  SIXTEENTHOUSAND_TICKETS
+}
+
 model User {
   id                         Int                   @id @default(autoincrement())
   username                   String
@@ -57,6 +73,8 @@ model User {
   transactions               Transaction[]         @relation("userTransactions")
   notifications              Notification[]        @relation("userNotifications")
   notificationPreferences    ReceiveNotification[]
+  redeemedGifts              GiftCode[]            @relation("userRedeemedCodes")
+  premiumSubscription        PremiumSubscription?  @relation("userPremiumSubscription")
 }
 
 model Avatar {
@@ -69,6 +87,27 @@ model Avatar {
   rightArmColor String @default("rgb(244, 204, 67)")
   rightLegColor String @default("rgb(165, 188, 80)")
   torsoColor    String @default("rgb(23, 107, 170)")
+}
+
+model GiftCode {
+  id           String        @id @default(uuid())
+  code         String
+  grant        GiftCodeGrant @default(PREMIUM_ONE_MONTH)
+  redeemed     Boolean       @default(false)
+  redeemedAt   DateTime
+  redeemedBy   User?         @relation("userRedeemedCodes", references: [id], fields: [redeemedById])
+  redeemedById Int?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @default(now())
+}
+
+model PremiumSubscription {
+  id        String                  @id @default(uuid())
+  user      User                    @relation("userPremiumSubscription", references: [id], fields: [userId])
+  userId    Int                     @unique
+  createdAt DateTime                @default(now())
+  expiresAt DateTime                @default(now())
+  type      PremiumSubscriptionType @default(PREMIUM_ONE_MONTH)
 }
 
 model EmailVerification {
