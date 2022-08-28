@@ -19,7 +19,6 @@ import {
   Title,
   Tooltip,
 } from "@mantine/core";
-import { useNotifications } from "@mantine/notifications";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { useRouter } from "next/router";
 import React from "react";
