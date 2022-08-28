@@ -18,7 +18,7 @@ const useStyles = createStyles((theme) => ({
 
 const Power = () => {
   const { classes, cx, theme } = useStyles();
-  const examplecode = `
+  const joinleave = `
 import Players from "@framework/services/players";
 
 Players.on("playerJoin", (plr) => {
@@ -30,11 +30,47 @@ Players.on("playerJoin", (plr) => {
 });
   `.trim();
 
+  const refundTransaction = `
+import TransactionService from "@framework/services/transaction";
+import Broadcastable from "@framework/fxconnect/broadcastable";
+
+const event = game.Events.WaitFor("RefundFlashlight").subscribe((evt) => {
+  const plr = evt.getPlayer();
+  plr.services.framework.broadcast(new Broadcastable("Refund", {
+    uid: plr.id,
+  })).then(() => {
+    println("Refunded flashlight");
+  }).catch((err) => {
+    println(err);
+  }).finally(() => {
+    plr.notifications.invoke({
+      title: "Refunded flashlight",
+      message: "You have been refunded the flashlight.",
+    });
+  });
+});
+  `.trim();
+
   return (
     <div className={classes.wrapper}>
       <Grid gutter={80}>
         <Col span={12} md={7}>
-          <Prism language="typescript">{examplecode}</Prism>
+          <Prism.Tabs defaultValue="send-msg">
+            <Prism.TabsList>
+              <Prism.Tab value="send-msg">
+                Send message on join & leave
+              </Prism.Tab>
+
+              <Prism.Tab value="refund-flashlight">Refund a gamepass</Prism.Tab>
+            </Prism.TabsList>
+
+            <Prism.Panel value="send-msg" language="tsx">
+              {joinleave}
+            </Prism.Panel>
+            <Prism.Panel value="refund-flashlight" language="tsx">
+              {refundTransaction}
+            </Prism.Panel>
+          </Prism.Tabs>
         </Col>
         <Col span={12} md={5}>
           <Title className={classes.title} order={2}>
