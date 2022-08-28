@@ -19,8 +19,6 @@ async function startSubscriptionService() {
       continue;
     }
 
-    console.log(user);
-
     const subscription = user.premiumSubscription;
 
     scheduleJob(subscription.expiresAt, async () => {
