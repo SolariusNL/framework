@@ -68,8 +68,17 @@ class AuthRouter {
     });
 
     const ip = getClientIp(request);
-    const os =
-      request?.headers["user-agent"]?.split("(")[1].split(")")[0] || "Unknown";
+    let os = "";
+
+    try {
+      os = request?.headers["user-agent"]
+        ? (String(request?.headers["user-agent"]) as string)
+            ?.split("(")[1]
+            .split(")")[0]
+        : "Unknown";
+    } catch {
+      os = "Unknown";
+    }
 
     await createNotification(
       Number(account.id),
