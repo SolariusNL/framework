@@ -299,12 +299,23 @@ class UserRouter {
       user.id
     );
 
-    await createNotification(
-      user.id,
-      "SUCCESS",
-      `You have donated ${amount} tickets to @${donatingUser.username}.`,
-      "Donation Success"
-    );
+    if (user.notificationPreferences.includes("SENT_DONATION")) {
+      await createNotification(
+        user.id,
+        "SUCCESS",
+        `You have donated ${amount} tickets to @${donatingUser.username}.`,
+        "Donation Success"
+      );
+    }
+
+    if (donatingUser.notificationPreferences.includes("RECEIVED_DONATION")) {
+      await createNotification(
+        donatingUser.id,
+        "SUCCESS",
+        `You have received ${amount} tickets from @${donatingUser.username}!`,
+        "New Donation"
+      );
+    }
 
     return {
       success: true,
@@ -337,6 +348,11 @@ class UserRouter {
         name: "busy",
         regex: /^(true|false)$/,
         error: "Busy must be true or false",
+      },
+      {
+        name: "notificationPreferences",
+        verify: (value: any) => Array.isArray(value),
+        error: "Notification data must be an array",
       },
     ];
 

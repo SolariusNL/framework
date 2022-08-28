@@ -92,6 +92,7 @@ export const userSelect: Prisma.UserSelect = {
   following: nonCurrentUserSelect,
   followers: nonCurrentUserSelect,
   notifications: true,
+  notificationPreferences: true,
 };
 
 export const gameSelect: Prisma.GameSelect = {

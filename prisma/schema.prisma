@@ -15,41 +15,48 @@ enum Role {
   USER
 }
 
+enum ReceiveNotification {
+  RECEIVED_DONATION
+  SENT_DONATION
+  LOGIN
+}
+
 model User {
-  id                         Int                 @id @default(autoincrement())
+  id                         Int                   @id @default(autoincrement())
   username                   String
   email                      String
   password                   String
-  tickets                    Int                 @default(500)
-  premium                    Boolean             @default(false)
-  createdAt                  DateTime            @default(now())
-  updatedAt                  DateTime            @default(now())
-  role                       Role                @default(USER)
-  following                  User[]              @relation("userFollows")
-  followers                  User[]              @relation("userFollows")
-  sessions                   Session[]           @relation("userSessions")
-  games                      Game[]              @relation("gameAuthor")
+  tickets                    Int                   @default(500)
+  premium                    Boolean               @default(false)
+  createdAt                  DateTime              @default(now())
+  updatedAt                  DateTime              @default(now())
+  role                       Role                  @default(USER)
+  following                  User[]                @relation("userFollows")
+  followers                  User[]                @relation("userFollows")
+  sessions                   Session[]             @relation("userSessions")
+  games                      Game[]                @relation("gameAuthor")
   avatarUri                  String
-  likedGames                 Game[]              @relation("likedGames")
-  dislikedGames              Game[]              @relation("dislikedGames")
-  nucleusKeys                NucleusKey[]        @relation("nucleusKeys")
-  gameComments               GameComment[]       @relation("userGameComments")
-  avatar                     Avatar?             @relation("avatar")
-  country                    String              @default("")
-  snippets                   CodeSnippet[]       @relation("userCodeSnippets")
-  bio                        String              @default("This user has not yet written a bio.")
-  busy                       Boolean             @default(false)
-  banned                     Boolean             @default(false)
-  banReason                  String              @default("")
-  emailVerificationInstances EmailVerification[] @relation("emailVerification")
-  emailVerified              Boolean             @default(false)
-  authTickets                NucleusAuthTicket[] @relation("authTickets")
-  receivedMessages           Message[]           @relation("messageRecipient")
-  sentMessages               Message[]           @relation("messageSender")
-  reports                    UserReport[]        @relation("userReportAuthor")
-  reportedBy                 UserReport[]        @relation("userReportedBy")
-  transactions               Transaction[]       @relation("userTransactions")
-  notifications              Notification[]      @relation("userNotifications")
+  likedGames                 Game[]                @relation("likedGames")
+  dislikedGames              Game[]                @relation("dislikedGames")
+  nucleusKeys                NucleusKey[]          @relation("nucleusKeys")
+  gameComments               GameComment[]         @relation("userGameComments")
+  avatar                     Avatar?               @relation("avatar")
+  country                    String                @default("")
+  snippets                   CodeSnippet[]         @relation("userCodeSnippets")
+  bio                        String                @default("This user has not yet written a bio.")
+  busy                       Boolean               @default(false)
+  banned                     Boolean               @default(false)
+  banReason                  String                @default("")
+  emailVerificationInstances EmailVerification[]   @relation("emailVerification")
+  emailVerified              Boolean               @default(false)
+  authTickets                NucleusAuthTicket[]   @relation("authTickets")
+  receivedMessages           Message[]             @relation("messageRecipient")
+  sentMessages               Message[]             @relation("messageSender")
+  reports                    UserReport[]          @relation("userReportAuthor")
+  reportedBy                 UserReport[]          @relation("userReportedBy")
+  transactions               Transaction[]         @relation("userTransactions")
+  notifications              Notification[]        @relation("userNotifications")
+  notificationPreferences    ReceiveNotification[]
 }
 
 model Avatar {

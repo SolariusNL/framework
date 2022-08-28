@@ -67,25 +67,27 @@ class AuthRouter {
       },
     });
 
-    const ip = getClientIp(request);
-    let os = "";
+    if (account.notificationPreferences.includes("LOGIN")) {
+      const ip = getClientIp(request);
+      let os = "";
 
-    try {
-      os = request?.headers["user-agent"]
-        ? (String(request?.headers["user-agent"]) as string)
-            ?.split("(")[1]
-            .split(")")[0]
-        : "Unknown";
-    } catch {
-      os = "Unknown";
+      try {
+        os = request?.headers["user-agent"]
+          ? (String(request?.headers["user-agent"]) as string)
+              ?.split("(")[1]
+              .split(")")[0]
+          : "Unknown";
+      } catch {
+        os = "Unknown";
+      }
+
+      await createNotification(
+        Number(account.id),
+        "LOGIN",
+        `New login detected from a ${os} machine device with IP ${ip}`,
+        "New Login"
+      );
     }
-
-    await createNotification(
-      Number(account.id),
-      "LOGIN",
-      `New login detected from a ${os} machine device with IP ${ip}`,
-      "New Login"
-    );
 
     return {
       success: true,
