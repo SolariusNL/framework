@@ -8,7 +8,7 @@ import {
 import { category } from "../../../components/ReportUser";
 import Authorized, { Account } from "../../../util/api/authorized";
 import countries from "../../../util/countries";
-import { hashPass } from "../../../util/hash/password";
+import { hashPass, isSamePass } from "../../../util/hash/password";
 import createNotification from "../../../util/notifications";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
@@ -83,7 +83,7 @@ class UserRouter {
       };
     }
 
-    if (oldPassword != user.password) {
+    if (!(await isSamePass(oldPassword, user.password))) {
       return {
         status: 400,
         message: "Old password is not correct",
