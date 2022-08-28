@@ -2,8 +2,6 @@ import {
   Alert,
   Button,
   Grid,
-  Group,
-  Text,
   TextInput,
   Title,
   useMantineTheme,
@@ -12,7 +10,7 @@ import { useForm } from "@mantine/form";
 import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 import React from "react";
-import { HiCheckCircle, HiXCircle } from "react-icons/hi";
+import { HiXCircle } from "react-icons/hi";
 import Framework from "../../../../components/Framework";
 import authorizedRoute from "../../../../util/authorizedRoute";
 import { getCookie } from "../../../../util/cookies";
