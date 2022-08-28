@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { hashPass } from "../src/util/hash/password";
 import logger from "../src/util/logger";
 
 const prisma = new PrismaClient();
@@ -13,9 +14,12 @@ const stages = [
         .create({
           data: {
             email: "admin@invent.soodam.rocks",
-            password:
-              Math.random().toString(36).substring(2, 15) +
-              Math.random().toString(36).substring(2, 15),
+            password: String(
+              hashPass(
+                Math.random().toString(36).substring(2, 15) +
+                  Math.random().toString(36).substring(2, 15)
+              )
+            ),
             role: "ADMIN",
             username: "Framework",
             premium: true,

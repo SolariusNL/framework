@@ -8,6 +8,7 @@ import {
 import { category } from "../../../components/ReportUser";
 import Authorized, { Account } from "../../../util/api/authorized";
 import countries from "../../../util/countries";
+import { hashPass } from "../../../util/hash/password";
 import createNotification from "../../../util/notifications";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
@@ -66,6 +67,7 @@ class UserRouter {
     @Body() data: ChangePasswordBody
   ) {
     const { oldPassword, newPassword } = data;
+    const newPasswordHash = await hashPass(newPassword);
 
     if (!oldPassword || !newPassword) {
       return {
@@ -74,7 +76,7 @@ class UserRouter {
       };
     }
 
-    if (oldPassword === newPassword) {
+    if (oldPassword === newPasswordHash) {
       return {
         status: 400,
         message: "New password is the same as the current password",
@@ -90,7 +92,7 @@ class UserRouter {
 
     await prisma.user.update({
       where: { id: user.id },
-      data: { password: newPassword },
+      data: { password: await hashPass(newPassword) },
     });
 
     await prisma.session.deleteMany({

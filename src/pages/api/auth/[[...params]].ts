@@ -6,8 +6,10 @@ import {
 } from "@storyofams/next-api-decorators";
 import type { NextApiRequest } from "next";
 import { getClientIp } from "request-ip";
+import { hashPass, isSamePass } from "../../../util/hash/password";
 import createNotification from "../../../util/notifications";
 import prisma from "../../../util/prisma";
+import { RateLimitMiddleware } from "../../../util/rateLimit";
 import { verificationEmail } from "../../../util/templates/verification-email";
 
 interface LoginBody {
@@ -24,6 +26,7 @@ interface RegisterBody {
 
 class AuthRouter {
   @Post("/login")
+  @RateLimitMiddleware(5)()
   public async login(@Body() body: LoginBody, @Req() request: NextApiRequest) {
     const { username, password } = body;
     if (!username || !password) {
@@ -36,11 +39,17 @@ class AuthRouter {
     const account = await prisma.user.findFirst({
       where: {
         username: String(username),
-        password: String(password),
       },
     });
 
     if (!account) {
+      return {
+        status: 400,
+        message: "Invalid username or password",
+      };
+    }
+
+    if (!(await isSamePass(password, account.password))) {
       return {
         status: 400,
         message: "Invalid username or password",
@@ -76,6 +85,7 @@ class AuthRouter {
   }
 
   @Post("/register")
+  @RateLimitMiddleware(5)()
   public async register(@Body() body: RegisterBody) {
     const { inviteCode, username, password, email } = body;
 
@@ -149,7 +159,7 @@ class AuthRouter {
         user: {
           create: {
             username: String(username),
-            password: String(password),
+            password: String(await hashPass(password)),
             email: String(email),
             avatarUri: "",
             avatar: {
