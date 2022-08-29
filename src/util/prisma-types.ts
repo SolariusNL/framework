@@ -95,6 +95,7 @@ export const userSelect: Prisma.UserSelect = {
   followers: nonCurrentUserSelect,
   notifications: true,
   notificationPreferences: true,
+  lastRandomPrize: true,
 };
 
 export const gameSelect: Prisma.GameSelect = {

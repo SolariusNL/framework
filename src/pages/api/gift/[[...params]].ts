@@ -1,8 +1,10 @@
 import { GiftCodeGrant } from "@prisma/client";
 import { createHandler, Param, Post } from "@storyofams/next-api-decorators";
 import Authorized, { Account } from "../../../util/api/authorized";
+import generateGiftCode from "../../../util/generateGiftCode";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
+import { grantInformation } from "../../redeem";
 
 class GiftRouter {
   @Post("/redeem/:code")
@@ -39,6 +41,7 @@ class GiftRouter {
             id: Number(user.id),
           },
         },
+        redeemedAt: new Date(),
       },
     });
 
@@ -166,6 +169,63 @@ class GiftRouter {
       success: true,
       message: "Gift redeemed",
       reward: gift.grant,
+    };
+  }
+
+  @Post("/randomPrize")
+  @Authorized()
+  public async randomPrize(@Account() user: User) {
+    if (user.lastRandomPrize == undefined) {
+      await prisma.user.update({
+        where: {
+          id: Number(user.id),
+        },
+        data: {
+          lastRandomPrize: new Date(0),
+        },
+      });
+    }
+
+    if (
+      new Date(user.lastRandomPrize!).getTime() >
+      Date.now() - 24 * 60 * 60 * 1000
+    ) {
+      return {
+        success: false,
+        message:
+          "You've already redeemed your prize today. Come back tomorrow!",
+      };
+    }
+
+    const prizes: GiftCodeGrant[] = [
+      GiftCodeGrant.PREMIUM_ONE_MONTH,
+      GiftCodeGrant.THOUSAND_TICKETS,
+      GiftCodeGrant.TWOTHOUSAND_TICKETS,
+    ];
+
+    await prisma.user.update({
+      where: {
+        id: Number(user.id),
+      },
+      data: {
+        lastRandomPrize: new Date(),
+      },
+    });
+
+    const prize = prizes[Math.floor(Math.random() * prizes.length)];
+
+    const code = await prisma.giftCode.create({
+      data: {
+        grant: prize,
+        code: String(generateGiftCode()),
+        redeemedAt: new Date(0),
+      },
+    });
+
+    return {
+      success: true,
+      message: grantInformation[prize].message,
+      code: code.code,
     };
   }
 }

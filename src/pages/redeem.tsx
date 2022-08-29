@@ -18,7 +18,7 @@ import authorizedRoute from "../util/authorizedRoute";
 import { User } from "../util/prisma-types";
 import Celebration from "react-confetti";
 
-const useStyles = createStyles((theme) => ({
+export const useStylesredeemCard = createStyles((theme) => ({
   title: {
     fontSize: 26,
     fontWeight: 900,
@@ -42,8 +42,36 @@ interface RedeemProps {
   user: User;
 }
 
+export const grantInformation: {
+  [key in GiftCodeGrant]: {
+    message: string;
+  };
+} = {
+  FIVETHOUSAND_TICKETS: {
+    message: "You have redeemed 5,000 tickets!",
+  },
+  PREMIUM_ONE_MONTH: {
+    message: "You have redeemed Framework Premium for 1 month!",
+  },
+  PREMIUM_ONE_YEAR: {
+    message: "You have redeemed Framework Premium for 1 year!",
+  },
+  PREMIUM_SIX_MONTHS: {
+    message: "You have redeemed Framework Premium for 6 months!",
+  },
+  SIXTEENTHOUSAND_TICKETS: {
+    message: "You have redeemed 16,000 tickets!",
+  },
+  THOUSAND_TICKETS: {
+    message: "You have redeemed 1,000 tickets!",
+  },
+  TWOTHOUSAND_TICKETS: {
+    message: "You have redeemed 2,000 tickets!",
+  },
+};
+
 const Redeem: NextPage<RedeemProps> = ({ user }) => {
-  const { classes } = useStyles();
+  const { classes } = useStylesredeemCard();
 
   const [redeemed, setRedeemed] = React.useState(false);
   const [reward, setReward] = React.useState<GiftCodeGrant | null>(null);
@@ -55,35 +83,15 @@ const Redeem: NextPage<RedeemProps> = ({ user }) => {
 
   React.useEffect(() => {
     setClient(true);
-  }, []);
 
-  const grantInformation: {
-    [key in GiftCodeGrant]: {
-      message: string;
-    };
-  } = {
-    FIVETHOUSAND_TICKETS: {
-      message: "You have redeemed 5,000 tickets!",
-    },
-    PREMIUM_ONE_MONTH: {
-      message: "You have redeemed Framework Premium for 1 month!",
-    },
-    PREMIUM_ONE_YEAR: {
-      message: "You have redeemed Framework Premium for 1 year!",
-    },
-    PREMIUM_SIX_MONTHS: {
-      message: "You have redeemed Framework Premium for 6 months!",
-    },
-    SIXTEENTHOUSAND_TICKETS: {
-      message: "You have redeemed 16,000 tickets!",
-    },
-    THOUSAND_TICKETS: {
-      message: "You have redeemed 1,000 tickets!",
-    },
-    TWOTHOUSAND_TICKETS: {
-      message: "You have redeemed 2,000 tickets!",
-    },
-  };
+    if (typeof window !== "undefined" && window.location.search) {
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get("autofill");
+      if (code) {
+        setEnteredCode(code);
+      }
+    }
+  }, []);
 
   const handleRedeem = async () => {
     await fetch(`/api/gift/redeem/${enteredCode}`, {

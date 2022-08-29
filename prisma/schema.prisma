@@ -75,6 +75,7 @@ model User {
   notificationPreferences    ReceiveNotification[]
   redeemedGifts              GiftCode[]            @relation("userRedeemedCodes")
   premiumSubscription        PremiumSubscription?  @relation("userPremiumSubscription")
+  lastRandomPrize            DateTime?
 }
 
 model Avatar {

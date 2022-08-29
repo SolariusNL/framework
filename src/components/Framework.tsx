@@ -38,6 +38,7 @@ import {
   HiSearchCircle,
   HiShoppingBag,
   HiSun,
+  HiTicket,
   HiUser,
   HiViewGrid,
   HiViewList,
@@ -243,6 +244,13 @@ const UserMenu = ({ classes, userMenuOpened, user, cx, router }: any) => {
           👻 Framework {process.env.NEXT_PUBLIC_VERSION} - Built by Emil, Rosé{" "}
           {"&"} contributors
         </Menu.Label>
+        <Menu.Divider />
+        <Menu.Item icon={<HiGift />} onClick={() => router.push("/prizes")}>
+          Daily prizes
+        </Menu.Item>
+        <Menu.Item icon={<HiTicket />} onClick={() => router.push("/redeem")}>
+          Redeem prizes
+        </Menu.Item>
         <Menu.Divider />
         <Menu.Item
           icon={<HiUser />}
