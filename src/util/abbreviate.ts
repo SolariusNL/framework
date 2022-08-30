@@ -1,25 +1,15 @@
 function abbreviateNumber(value: number) {
-  var newValue: any = value;
-  if (value >= 1000) {
-    var suffixes = ["", "k", "m", "b", "t"];
-    var suffixNum = Math.floor(("" + value).length / 3);
-    var shortValue: any = "";
-    for (var precision = 2; precision >= 1; precision--) {
-      shortValue = parseFloat(
-        (suffixNum != 0
-          ? value / Math.pow(1000, suffixNum)
-          : value
-        ).toPrecision(precision)
-      );
-      var dotLessShortValue = (shortValue + "").replace(/[^a-zA-Z 0-9]+/g, "");
-      if (dotLessShortValue.length <= 2) {
-        break;
-      }
-    }
-    if (shortValue % 1 != 0) shortValue = shortValue.toFixed(1);
-    newValue = shortValue + suffixes[suffixNum];
+  const abs = Math.abs(value);
+  if (abs >= 1000000000) {
+    return (value / 1000000000).toFixed(1).replace(/\.0$/, "") + "G";
   }
-  return newValue;
+  if (abs >= 1000000) {
+    return (value / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
+  }
+  if (abs >= 1000) {
+    return (value / 1000).toFixed(1).replace(/\.0$/, "") + "K";
+  }
+  return value;
 }
 
 export default abbreviateNumber;
