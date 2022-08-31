@@ -6,15 +6,13 @@ import {
   Pagination,
   Stack,
   Textarea,
-  TextInput,
 } from "@mantine/core";
 import { usePagination } from "@mantine/hooks";
-import { Avatar as AvatarDB, GameComment } from "@prisma/client";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { HiChat } from "react-icons/hi";
 import { getCookie } from "../util/cookies";
-import { Game, User } from "../util/prisma-types";
+import { Game, NonUser, User } from "../util/prisma-types";
 import Comment from "./Comment";
 import EmptyState from "./EmptyState";
 
@@ -24,16 +22,7 @@ interface GameCommentsProps {
 }
 
 interface Comment {
-  user: {
-    id: number;
-    username: string;
-    avatarUri: string;
-    avatar: AvatarDB | null;
-    country: string;
-    bio: string;
-    busy: boolean;
-    premium: boolean;
-  };
+  user: NonUser;
   text: string;
   createdAt: Date;
 }

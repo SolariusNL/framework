@@ -10,6 +10,7 @@ export const nonCurrentUserSelect = {
     bio: true,
     busy: true,
     premium: true,
+    banned: true,
   },
 };
 
@@ -51,6 +52,7 @@ const nonuser = Prisma.validator<Prisma.UserArgs>()({
     bio: true,
     busy: true,
     premium: true,
+    banned: true,
   },
 });
 
