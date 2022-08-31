@@ -7,6 +7,7 @@ import {
   Paper,
 } from "@mantine/core";
 import { NonUser } from "../util/prisma-types";
+import { getRelativeTime } from "../util/relativeTime";
 
 const useStyles = createStyles((theme) => ({
   comment: {
@@ -46,9 +47,11 @@ const Comment = ({ postedAt, body, user }: CommentProps) => {
           radius="xl"
         />
         <div>
-          <Text size="sm">{user.username}</Text>
+          <Text size="sm" weight={500}>
+            {user.username}
+          </Text>
           <Text size="xs" color="dimmed">
-            {new Date(postedAt).toLocaleDateString()}
+            {getRelativeTime(new Date(postedAt))}
           </Text>
         </div>
       </Group>

@@ -131,6 +131,9 @@ const GameComments = ({ user, game }: GameCommentsProps) => {
             onChange={pagination.setPage}
             total={Math.ceil(comments.length / 8)}
             mb={24}
+            size="sm"
+            radius="xl"
+            withEdges
           />
           <Stack spacing={10}>
             {comments
