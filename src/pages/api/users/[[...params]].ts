@@ -312,7 +312,7 @@ class UserRouter {
       await createNotification(
         donatingUser.id,
         "SUCCESS",
-        `You have received ${amount} tickets from @${donatingUser.username}!`,
+        `You have received ${amount} tickets from @${user.username}!`,
         "New Donation"
       );
     }
