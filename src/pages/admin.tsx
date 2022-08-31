@@ -1,22 +1,24 @@
 import {
-  ActionIcon,
   Avatar,
   Divider,
+  Grid,
   Group,
-  SimpleGrid,
-  Table,
+  Paper,
   Text,
   Title,
-  Tooltip,
 } from "@mantine/core";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { useEffect, useState } from "react";
-import { HiArrowRight, HiUser, HiViewGrid, HiXCircle } from "react-icons/hi";
+import { HiUser, HiViewGrid, HiXCircle } from "react-icons/hi";
 import StatsGrid from "../components/Admin/StatsGrid";
+import EmptyState from "../components/EmptyState";
 import Framework from "../components/Framework";
+import UserContext from "../components/UserContext";
 import authorizedRoute from "../util/authorizedRoute";
 import { Report, User } from "../util/prisma-types";
+import { getRelativeTime } from "../util/relativeTime";
+import useMediaQuery from "../util/useMediaQuery";
 
 interface AdminProps {
   user: User;
@@ -38,6 +40,8 @@ interface AdminStats {
 const Admin: NextPage<AdminProps> = ({ user }) => {
   const [stats, setStats] = useState<AdminStats | undefined>(undefined);
   const [reports, setReports] = useState<Report[] | undefined>(undefined);
+
+  const mobile = useMediaQuery("768");
 
   const getStats = async () => {
     await fetch("/api/admin/analytics", {
@@ -94,61 +98,58 @@ const Admin: NextPage<AdminProps> = ({ user }) => {
 
       <Divider mt={36} mb={36} />
 
-      <Title order={3} mb={10}>
+      <Title order={3} mb={24}>
         Recent Reports
       </Title>
-      <Table highlightOnHover striped>
-        <thead>
-          <tr>
-            <th>Author</th>
-            <th>Reported User</th>
-            <th>Category</th>
-            <th>Details</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
+      {reports?.length === 0 ? (
+        <EmptyState title="No reports" body="No reports to show." />
+      ) : (
+        <Grid columns={6}>
+          {reports?.map((report) => (
+            <Grid.Col key={report.id} span={mobile ? 6 : 2}>
+              <Paper
+                radius="md"
+                withBorder
+                p="lg"
+                sx={(theme) => ({
+                  backgroundColor:
+                    theme.colorScheme === "dark"
+                      ? theme.colors.dark[8]
+                      : theme.white,
+                })}
+              >
+                <Group mb={10}>
+                  <UserContext user={report.author}>
+                    <Avatar
+                      src={report.author.avatarUri}
+                      alt={report.author.username}
+                      radius={99}
+                      size={28}
+                    />
+                  </UserContext>
 
-        <tbody>
-          {reports &&
-            reports?.map((report) => (
-              <tr key={report.id}>
-                <td>
-                  <Tooltip label={report.author.username}>
-                    <Avatar
-                      src={
-                        report.author.avatarUri ||
-                        `https://avatars.dicebear.com/api/identicon/${report.author.id}.png`
-                      }
-                      radius={999}
-                      size={30}
-                    />
-                  </Tooltip>
-                </td>
-                <td>
-                  <Tooltip label={report.user.username}>
-                    <Avatar
-                      src={
-                        report.user.avatarUri ||
-                        `https://avatars.dicebear.com/api/identicon/${report.user.id}.png`
-                      }
-                      radius={999}
-                      size={30}
-                    />
-                  </Tooltip>
-                </td>
-                <td>{report.reason}</td>
-                <td>
-                  <Text lineClamp={1}>{report.description}</Text>
-                </td>
-                <td>
-                  <ActionIcon color="grape">
-                    <HiArrowRight />
-                  </ActionIcon>
-                </td>
-              </tr>
-            ))}
-        </tbody>
-      </Table>
+                  <Text size="sm" color="dimmed" weight={500}>
+                    {report.author.username} • Report author
+                  </Text>
+                </Group>
+
+                <Title order={4} mb={10}>
+                  {report.reason}
+                </Title>
+                <Text lineClamp={3} mb={24}>
+                  {report.description.length > 0
+                    ? report.description
+                    : "No description"}
+                </Text>
+
+                <Text size="sm" color="dimmed" weight={500}>
+                  {getRelativeTime(new Date(report.createdAt))}
+                </Text>
+              </Paper>
+            </Grid.Col>
+          ))}
+        </Grid>
+      )}
     </Framework>
   );
 };

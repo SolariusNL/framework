@@ -11,6 +11,8 @@ export const nonCurrentUserSelect = {
     busy: true,
     premium: true,
     banned: true,
+    followers: { select: { id: true } },
+    following: { select: { id: true } },
   },
 };
 
@@ -53,6 +55,8 @@ const nonuser = Prisma.validator<Prisma.UserArgs>()({
     busy: true,
     premium: true,
     banned: true,
+    followers: { select: { id: true } },
+    following: { select: { id: true } },
   },
 });
 
