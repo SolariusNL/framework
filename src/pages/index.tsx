@@ -13,13 +13,21 @@ const Home: NextPage<HomeProps> = ({ user }) => {
   const [timeMessage, setTimeMessage] = useState("");
 
   useEffect(() => {
-    setTimeMessage(new Date().getHours() > 12 ? "afternoon" : "morning");
+    setTimeMessage(
+      new Date().getHours() < 12
+        ? "Good morning"
+        : new Date().getHours() < 18
+        ? "Good afternoon"
+        : new Date().getHours() < 22
+        ? "Good evening"
+        : "Good night"
+    );
   }, []);
 
   return (
     <Framework user={user} activeTab="home">
       <Title mb={12}>
-        Good {timeMessage}, {user.username}!
+        {timeMessage}, {user.username}!
       </Title>
     </Framework>
   );
