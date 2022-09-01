@@ -39,7 +39,7 @@ Framework is very easy to set up and deploy.
   - Go to the [PostgreSQL website](https://www.postgresql.org/download/) and download the latest version for your operating system.
   - Install PostgreSQL.
 - **Clone** the repository
-  - Run `git clone https://invent.soodam.rocks/Seeun/framework.git` to clone the repository to your local machine.
+  - Run `git clone https://github.com/Tsodinq/framework.git` to clone the repository to your local machine.
 - **Install** the dependencies
   - Run `yarn setup-projects` to install dependencies for all the projects.
 - **Seed** the database

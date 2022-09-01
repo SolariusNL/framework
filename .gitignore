@@ -34,3 +34,4 @@ yarn-error.log*
 *.tsbuildinfo
 
 /public/avatars
+/docs/site
