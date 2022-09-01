@@ -1,11 +1,12 @@
 name: Main workflow
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
     branches:
-      - master
       - main
-    types: [opened, synchronize, reopened]
 
 jobs:
   test:
