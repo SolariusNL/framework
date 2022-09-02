@@ -602,6 +602,10 @@ const Framework = ({
                 user={user}
                 router={router}
               />
+              <NotificationFlyout
+                notificationData={user && user.notifications}
+              />
+              <Search ref={searchRef} />
             </Group>
           </Container>
         </Drawer>
