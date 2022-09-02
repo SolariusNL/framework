@@ -8,6 +8,7 @@ import {
 } from "@mantine/core";
 import { NonUser } from "../util/prisma-types";
 import { getRelativeTime } from "../util/relativeTime";
+import UserContext from "./UserContext";
 
 const useStyles = createStyles((theme) => ({
   comment: {
@@ -38,14 +39,16 @@ const Comment = ({ postedAt, body, user }: CommentProps) => {
   return (
     <Paper withBorder radius="md" className={classes.comment}>
       <Group>
-        <Avatar
-          src={
-            user.avatarUri ||
-            `https://avatars.dicebear.com/api/identicon/${user.id}.png`
-          }
-          alt={user.username}
-          radius="xl"
-        />
+        <UserContext user={user}>
+          <Avatar
+            src={
+              user.avatarUri ||
+              `https://avatars.dicebear.com/api/identicon/${user.id}.png`
+            }
+            alt={user.username}
+            radius="xl"
+          />
+        </UserContext>
         <div>
           <Text size="sm" weight={500}>
             {user.username}

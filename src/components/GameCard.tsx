@@ -25,6 +25,7 @@ import abbreviate from "../util/abbreviate";
 import { Game } from "../util/prisma-types";
 import { getGenreText } from "../util/universe/genre";
 import PlaceholderGameResource from "./PlaceholderGameResource";
+import UserContext from "./UserContext";
 
 interface GameCardProps {
   game: Game;
@@ -66,13 +67,15 @@ const GameCard = ({ game }: GameCardProps) => {
       </Text>
 
       <Group mt="lg" mb="md">
-        <Avatar
-          src={
-            game.author.avatarUri ||
-            `https://avatars.dicebear.com/api/identicon/${game.author.id}.png`
-          }
-          radius={999}
-        />
+        <UserContext user={game.author}>
+          <Avatar
+            src={
+              game.author.avatarUri ||
+              `https://avatars.dicebear.com/api/identicon/${game.author.id}.png`
+            }
+            radius={999}
+          />
+        </UserContext>
         <div>
           <Text weight={500}>{game.author.username}</Text>
           <Text size="xs" color="dimmed">

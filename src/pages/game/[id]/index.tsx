@@ -20,7 +20,6 @@ import { GetServerSidePropsContext, NextPage } from "next";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import {
-  HiChat,
   HiDotsVertical,
   HiFolder,
   HiInformationCircle,
@@ -39,6 +38,7 @@ import GameComments from "../../../components/GameComments";
 import ThumbnailCarousel from "../../../components/ImageCarousel";
 import Launching from "../../../components/Launching";
 import PlaceholderGameResource from "../../../components/PlaceholderGameResource";
+import UserContext from "../../../components/UserContext";
 import authorizedRoute from "../../../util/authorizedRoute";
 import { getCookie } from "../../../util/cookies";
 import prisma from "../../../util/prisma";
@@ -268,16 +268,20 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                 cursor: "pointer",
               }}
             >
-              <Avatar
-                src={
-                  game.author.avatarUri ||
-                  `https://avatars.dicebear.com/api/identicon/${game.authorId}.png`
-                }
-                alt={game.author.username}
-                radius="xl"
-                size={20}
-                onClick={() => router.push(`/profile/${game.author.username}`)}
-              />
+              <UserContext user={game.author}>
+                <Avatar
+                  src={
+                    game.author.avatarUri ||
+                    `https://avatars.dicebear.com/api/identicon/${game.authorId}.png`
+                  }
+                  alt={game.author.username}
+                  radius="xl"
+                  size={20}
+                  onClick={() =>
+                    router.push(`/profile/${game.author.username}`)
+                  }
+                />
+              </UserContext>
               <Text weight={700}>{game.author.username}</Text>
             </Group>
 
