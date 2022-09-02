@@ -7,11 +7,11 @@ theme:
   features:
     - navigation.instant
     - navigation.top
-  palette: 
+  palette:
     scheme: slate
     primary: indigo
     accent: indigo
-  
+
 plugins:
   - search
 
@@ -23,6 +23,17 @@ extra:
       as to measure the effectiveness of our documentation and whether users
       find what they're searching for. With your consent, you're helping us to
       make our documentation better.
+    cookies:
+      analytics:
+        name: Soodam.re Anonymized Analytics
+        checked: false
+      soodamre:
+        name: Soodam.re Interactive
+        checked: false
+
+copyright: >
+  Copyright &copy; 2022 Soodam.re and contributors. All rights reserved. –
+  <a href="#__consent">Change cookie settings</a>
 
 markdown_extensions:
   - def_list
