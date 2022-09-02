@@ -7,6 +7,13 @@ theme:
   features:
     - navigation.instant
     - navigation.top
+  palette: 
+    scheme: slate
+    primary: indigo
+    accent: indigo
+  
+plugins:
+  - search
 
 extra:
   consent:
@@ -16,3 +23,11 @@ extra:
       as to measure the effectiveness of our documentation and whether users
       find what they're searching for. With your consent, you're helping us to
       make our documentation better.
+
+markdown_extensions:
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+nav:
+  - Home: index.md

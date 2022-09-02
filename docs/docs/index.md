@@ -1,17 +1,51 @@
-# Welcome to MkDocs
+# Framework Wiki
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+Welcome to the Framework Wiki. This is a work in progress, so please bear with us as we get things up and running.
 
-## Commands
+## What is Framework?
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+Framework is a platform that strives to become a friendly, and enjoyable Roblox alternative to the likes of Unity and Unreal Engine. Framework is built on modern web technologies, is open source, and is free to use for all and forever.
 
-## Project layout
+With the freedom offered by our platform, you can build to your heart's content. Whether you're a beginner or a seasoned developer, Framework is a great place to start your journey, and we're here to help you along the way.
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+## What is this wiki for?
+
+Here, we have several support articles that will help you out with any issues you may experience while using our platform. We have tutorials to help you dive into the world of Framework, and we have a list of all of our APIs and their respective documentation.
+
+You can also find our legal documents here, such as our Terms of Service and Privacy Policy, as well as release notes for our platform.
+
+## How can I contribute?
+
+Framework is open source on GitHub, and we welcome all contributions. If you find any issues with our platform, or have any suggestions, please feel free to open an issue on our GitHub repository. If you'd like to contribute to our documentation, you can do so by opening a pull request on our documentation repository.
+
+## How can I get in touch?
+
+As we are not an organized / structured company, we do not have a support email. However, you can reach out to us on our Discord server, or by opening an issue on our GitHub repository.
+
+## What is the current state of Framework?
+
+Framework is currently in a closed beta. We are currently working on the core features of our platform, and are not accepting any new users at this time. We will be opening up our platform to the public in the near future, so stay tuned!
+
+We are currently working on the following features:
+
+- [x] User accounts
+- [x] Project management
+- [x] Plugin management
+- [x] Plugin store
+- [ ] Catalog
+  - [x] Base UI
+  - [ ] API
+  - [ ] Uploading items
+- [ ] Avatars
+  - [x] Base UI
+  - [x] Semi-functioning editor
+    - [ ] API    
+    - [ ] Saving
+- [ ] Game client
+- [ ] Game server
+  - [x] Authentication
+  - [x] Synchronization with master server
+    - [ ] Game server API    
+    - [x] Game server management
+
+We can't wait to see what you build with Framework, and we can't wait to finally open our platform to the public! The wait will be worth it, we promise.
