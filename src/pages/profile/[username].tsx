@@ -43,6 +43,7 @@ import Framework from "../../components/Framework";
 import ThumbnailCarousel from "../../components/ImageCarousel";
 import PlaceholderGameResource from "../../components/PlaceholderGameResource";
 import ReportUser from "../../components/ReportUser";
+import { useUserInformationDialog } from "../../contexts/userInformationDialogs";
 import authorizedRoute from "../../util/authorizedRoute";
 import { getCookie } from "../../util/cookies";
 import { exclude } from "../../util/exclude";
@@ -59,6 +60,7 @@ const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
   const mobile = useMediaQuery("768");
   const [reportOpened, setReportOpened] = React.useState(false);
   const router = useRouter();
+  const { open, setOpen, setUser, setDefaultTab } = useUserInformationDialog();
 
   const handleDonate = async (amt: number) => {
     await fetch(`/api/users/${viewing.id}/donate/${amt}`, {
@@ -177,11 +179,27 @@ const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
             >
               <Group spacing={3}>
                 <HiUsers color="#868e96" style={{ marginRight: 5 }} />
-                <Anchor>{viewing.followers.length} followers</Anchor>
+                <Anchor
+                  onClick={() => {
+                    setUser(viewing);
+                    setDefaultTab("followers");
+                    setOpen(true);
+                  }}
+                >
+                  {viewing.followers.length} followers
+                </Anchor>
                 <Text color="dimmed" pl={8} pr={8}>
                   ·
                 </Text>
-                <Anchor>{viewing.following.length} following</Anchor>
+                <Anchor
+                  onClick={() => {
+                    setUser(viewing);
+                    setDefaultTab("following");
+                    setOpen(true);
+                  }}
+                >
+                  {viewing.following.length} following
+                </Anchor>
               </Group>
             </div>
 

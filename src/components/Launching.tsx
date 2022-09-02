@@ -1,20 +1,6 @@
 import {
-  Container,
-  Modal,
-  Stack,
-  Title,
-  Anchor,
-  Badge,
-  Col,
-  Divider,
-  Grid,
-  Group,
-  SimpleGrid,
-  ThemeIcon,
-  TypographyStylesProvider,
-  UnstyledButton,
-  Text,
-  Button,
+  Button, Group, Modal,
+  Stack, Text, ThemeIcon, Title, UnstyledButton
 } from "@mantine/core";
 import React from "react";
 import { BsApple, BsWindows } from "react-icons/bs";
