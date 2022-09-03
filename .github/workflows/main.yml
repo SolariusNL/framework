@@ -24,6 +24,9 @@ jobs:
 
       - name: 🧰 Install dependencies
         run: yarn
+        
+      - name: 💻 Generate Prisma types
+        run: yarn run generate
 
       - name: 📦 Build project
         run: yarn run build
