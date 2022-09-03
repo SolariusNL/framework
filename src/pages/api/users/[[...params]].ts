@@ -1,3 +1,4 @@
+import { ReceiveNotification } from "@prisma/client";
 import {
   Body,
   createHandler,
@@ -351,8 +352,15 @@ class UserRouter {
       },
       {
         name: "notificationPreferences",
-        verify: (value: any) => Array.isArray(value),
-        error: "Notification data must be an array",
+        verify: (value: any) => {
+          if (!Array.isArray(value)) return false;
+          for (const v of value) {
+            if (!Object.keys(ReceiveNotification).includes(v)) return false;
+          }
+
+          return true;
+        },
+        error: "Invalid notification preferences",
       },
     ];
 
