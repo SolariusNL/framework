@@ -7,6 +7,7 @@ import {
   Group,
   Modal,
   Stack,
+  Textarea,
   TextInput,
 } from "@mantine/core";
 import { useEffect, useRef, useState } from "react";
@@ -299,18 +300,41 @@ const AccountTab = ({ user }: AccountTabProps) => {
             />
           </Grid.Col>
           <Grid.Col span={mobile ? 2 : 1}>
-            <Descriptive title="Country" description="Represent your country on Framework!">
-              <CountrySelect defaultValue={user.country} onChange={(code: string) => {
-                update("country", code);
-              }} />
+            <Descriptive
+              title="Country"
+              description="Represent your country on Framework!"
+            >
+              <CountrySelect
+                defaultValue={user.country}
+                onChange={(code: string) => {
+                  update("country", code);
+                }}
+              />
             </Descriptive>
           </Grid.Col>
           <Grid.Col span={mobile ? 2 : 1}>
-            <Descriptive title="Busy" description="Let other users know you're busy.">
-              <Checkbox label="Enable busy status" defaultChecked={user.busy} onChange={(e) => {
-                update("busy", e.currentTarget.checked);
-              } } />
+            <Descriptive
+              title="Busy"
+              description="Let other users know you're busy."
+            >
+              <Checkbox
+                label="Enable busy status"
+                defaultChecked={user.busy}
+                onChange={(e) => {
+                  update("busy", e.currentTarget.checked);
+                }}
+              />
             </Descriptive>
+          </Grid.Col>
+          <Grid.Col span={mobile ? 2 : 1}>
+            <Textarea
+              label="Bio"
+              description="Tell other users about yourself."
+              defaultValue={user.bio}
+              onChange={(e) => {
+                update("bio", e.target.value);
+              }}
+            />
           </Grid.Col>
         </Grid>
       </SettingsTab>

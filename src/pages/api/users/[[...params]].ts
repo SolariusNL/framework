@@ -341,8 +341,8 @@ class UserRouter {
       },
       {
         name: "bio",
-        regex: /^.{0,255}$/,
-        error: "Bio must be less than 255 characters",
+        regex: /^.{0,1024}$/,
+        error: "Bio must be less than 1024 characters",
       },
       {
         name: "busy",
