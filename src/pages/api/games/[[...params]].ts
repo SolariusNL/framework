@@ -6,11 +6,7 @@ import {
   Param,
   Post,
   Query,
-  Req,
-  Res,
-  UseMiddleware,
 } from "@storyofams/next-api-decorators";
-import type { NextApiRequest, NextApiResponse } from "next";
 import sanitizeHtml from "sanitize-html";
 import Authorized, { Account } from "../../../util/api/authorized";
 import prisma from "../../../util/prisma";
@@ -305,6 +301,104 @@ class GameRouter {
       data: {
         dislikedBy: {
           ...(game.dislikedBy.find((like) => like.id == user.id)
+            ? {
+                disconnect: {
+                  id: user.id,
+                },
+              }
+            : {
+                connect: {
+                  id: user.id,
+                },
+              }),
+        },
+      },
+    });
+
+    return {
+      success: true,
+    };
+  }
+
+  @Post("/:id/:commentId/upvote")
+  @Authorized()
+  public async upvoteComment(
+    @Account() user: User,
+    @Param("id") id: number,
+    @Param("commentId") commentId: string
+  ) {
+    const comment = await prisma.gameComment.findFirst({
+      where: {
+        id: String(commentId),
+      },
+      include: {
+        upvotedBy: true,
+      },
+    });
+
+    if (!comment) {
+      return {
+        success: false,
+        error: "Comment not found",
+      };
+    }
+
+    await prisma.gameComment.update({
+      where: {
+        id: String(commentId),
+      },
+      data: {
+        upvotedBy: {
+          ...(comment.upvotedBy.find((like) => like.id == user.id)
+            ? {
+                disconnect: {
+                  id: user.id,
+                },
+              }
+            : {
+                connect: {
+                  id: user.id,
+                },
+              }),
+        },
+      },
+    });
+
+    return {
+      success: true,
+    };
+  }
+
+  @Post("/:id/:commentId/downvote")
+  @Authorized()
+  public async downvoteComment(
+    @Account() user: User,
+    @Param("id") id: number,
+    @Param("commentId") commentId: string
+  ) {
+    const comment = await prisma.gameComment.findFirst({
+      where: {
+        id: String(commentId),
+      },
+      include: {
+        downvotedBy: true,
+      },
+    });
+
+    if (!comment) {
+      return {
+        success: false,
+        error: "Comment not found",
+      };
+    }
+
+    await prisma.gameComment.update({
+      where: {
+        id: String(commentId),
+      },
+      data: {
+        downvotedBy: {
+          ...(comment.downvotedBy.find((like) => like.id == user.id)
             ? {
                 disconnect: {
                   id: user.id,

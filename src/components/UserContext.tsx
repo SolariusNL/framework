@@ -17,7 +17,9 @@ const UserContext = ({ user, children, customHref }: UserContextProps) => {
       openDelay={200}
       closeDelay={400}
     >
-      <HoverCard.Target>{children}</HoverCard.Target>
+      <HoverCard.Target>
+        <div style={{ cursor: "pointer" }}>{children}</div>
+      </HoverCard.Target>
       <HoverCard.Dropdown>
         <Group>
           <Avatar src={user.avatarUri} alt={user.username} radius="xl" />

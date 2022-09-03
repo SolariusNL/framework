@@ -76,6 +76,8 @@ model User {
   redeemedGifts              GiftCode[]            @relation("userRedeemedCodes")
   premiumSubscription        PremiumSubscription?  @relation("userPremiumSubscription")
   lastRandomPrize            DateTime?
+  upvotedComments            GameComment[]         @relation("upvotedComments")
+  downvotedComments          GameComment[]         @relation("downvotedComments")
 }
 
 model Avatar {
@@ -193,14 +195,16 @@ model Game {
 }
 
 model GameComment {
-  id        String   @id @default(uuid())
-  game      Game     @relation("gameComments", fields: [gameId], references: [id])
-  gameId    Int
-  user      User     @relation("userGameComments", fields: [userId], references: [id])
-  userId    Int
-  text      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  id          String   @id @default(uuid())
+  game        Game     @relation("gameComments", fields: [gameId], references: [id])
+  gameId      Int
+  user        User     @relation("userGameComments", fields: [userId], references: [id])
+  userId      Int
+  text        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+  upvotedBy   User[]   @relation("upvotedComments")
+  downvotedBy User[]   @relation("downvotedComments")
 }
 
 model NucleusKey {
