@@ -22,6 +22,7 @@ import {
 } from "react-icons/hi";
 import { getCookie } from "../util/cookies";
 import { getRelativeTime } from "../util/relativeTime";
+import useMediaQuery from "../util/useMediaQuery";
 import EmptyState from "./EmptyState";
 
 interface NotificationFlyoutProps {
@@ -81,6 +82,8 @@ const NotificationFlyout = ({ notificationData }: NotificationFlyoutProps) => {
     }).catch(() => alert("Error marking notification as read"));
   };
 
+  const mobile = useMediaQuery("768");
+
   return (
     <Popover transition="pop-top-right">
       <Popover.Target>
@@ -115,7 +118,7 @@ const NotificationFlyout = ({ notificationData }: NotificationFlyoutProps) => {
                 size="sm"
                 radius="xl"
                 withEdges
-                total={Math.ceil(notifications.length / 5)}
+                total={Math.ceil(notifications.length / (mobile ? 3 : 5))}
                 page={activePage}
                 onChange={setActivePage}
                 align="center"
@@ -137,7 +140,7 @@ const NotificationFlyout = ({ notificationData }: NotificationFlyoutProps) => {
                     new Date(b.createdAt).getTime() -
                     new Date(a.createdAt).getTime()
                 )
-                .slice((activePage - 1) * 5, activePage * 5)
+                .slice((activePage - 1) * (mobile ? 3 : 5), activePage * 5)
                 .map((notification) => (
                   <Timeline.Item
                     key={notification.id}
