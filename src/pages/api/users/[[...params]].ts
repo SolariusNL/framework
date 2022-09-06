@@ -144,6 +144,20 @@ class UserRouter {
     };
   }
 
+  @Post("/@me/warning/acknowledge")
+  @Authorized()
+  public async acknowledgeWarning(@Account() user: User) {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { warningViewed: false, warning: "" },
+    });
+
+    return {
+      success: true,
+      message: "Warning acknowledged",
+    };
+  }
+
   @Post("/:id/report")
   @Authorized()
   @RateLimitMiddleware(5)()

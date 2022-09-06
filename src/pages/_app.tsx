@@ -128,6 +128,45 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
                   opened={
                     pageProps != undefined &&
                     pageProps.user &&
+                    pageProps.user.warning &&
+                    !pageProps.user.warningViewed
+                  }
+                  onClose={() => null}
+                >
+                  <Text mb={16}>
+                    You have received a warning from the staff team:{" "}
+                    <strong>
+                      {pageProps.user.warning || "No warning reason provided"}
+                    </strong>
+                  </Text>
+
+                  <Text mb={24}>
+                    If you continue to violate our Community Guidelines, you may
+                    be permanently banned from Framework. Please, go through our
+                    policies again and make sure you understand them. We would
+                    hate to see you go!
+                  </Text>
+
+                  <Button
+                    fullWidth
+                    onClick={() => {
+                      fetch("/api/users/@me/warning/acknowledge", {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                          Authorization: String(getCookie(".frameworksession")),
+                        },
+                      }).then(() => router.reload());
+                    }}
+                  >
+                    Acknowledge
+                  </Button>
+                </Modal>
+                <Modal
+                  withCloseButton={false}
+                  opened={
+                    pageProps != undefined &&
+                    pageProps.user &&
                     pageProps.user.banned
                   }
                   onClose={() => null}
