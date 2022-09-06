@@ -17,9 +17,9 @@ import {
   Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { openConfirmModal } from "@mantine/modals";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import {
   HiClock,
@@ -74,6 +74,8 @@ const ReportPage: NextPage<ReportProps> = ({ user, report }) => {
   const [punishOpened, setPunishOpened] = useState(false);
   const [punishUser, setPunishUser] = useState<NonUser | undefined>(undefined);
 
+  const router = useRouter();
+
   const punishmentForm = useForm<IPunishmentForm>({
     initialValues: {
       category: "warning",
@@ -108,13 +110,13 @@ const ReportPage: NextPage<ReportProps> = ({ user, report }) => {
       .then((res) => res.json())
       .then((res) => {
         if (res.success) {
-          alert("Success");
+          router.reload();
         } else {
-          alert("Error");
+          alert("An error occurred while punishing the user.");
         }
       })
-      .catch((err) => {
-        alert("Error");
+      .catch(() => {
+        alert("An error occurred while punishing the user.");
       });
   };
 
@@ -253,41 +255,30 @@ const ReportPage: NextPage<ReportProps> = ({ user, report }) => {
                 leftIcon={<HiX />}
                 disabled={report.processed}
                 fullWidth
+                onClick={async () => {
+                  await fetch(`/api/admin/report/${report.id}/close`, {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: String(getCookie(".frameworksession")),
+                    },
+                  })
+                    .then((res) => res.json())
+                    .then((res) => {
+                      if (res.success) {
+                        router.reload();
+                      } else {
+                        alert("An error occurred while closing the report.");
+                      }
+                    })
+                    .catch(() => {
+                      alert("An error occurred while closing the report.");
+                    });
+                }}
               >
                 Close report
               </Button>
             </Stack>
-
-            <Text size="sm" color="dimmed" weight={500} mb={6}>
-              Additional information
-            </Text>
-            <Paper withBorder mb={16} shadow="sm" p={16}>
-              <Text size="sm" color="dimmed" weight={500} mb={10}>
-                Notes
-              </Text>
-              <Group>
-                <ThemeIcon color="gray">
-                  <HiX />
-                </ThemeIcon>
-                <Stack spacing={3}>
-                  <Text weight={500} mb={6}>
-                    No notes
-                  </Text>
-                  <Anchor size="xs">Add a note</Anchor>
-                </Stack>
-              </Group>
-            </Paper>
-
-            <Spoiler
-              maxHeight={0}
-              showLabel={"See JSON"}
-              hideLabel={"Hide JSON"}
-              style={{
-                width: "100%",
-              }}
-            >
-              <code>{JSON.stringify(report, null, 2)}</code>
-            </Spoiler>
           </Grid.Col>
         </Grid>
       </Framework>
