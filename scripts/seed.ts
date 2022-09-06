@@ -15,7 +15,7 @@ const stages = [
           data: {
             email: "admin@invent.soodam.rocks",
             password: String(
-              hashPass(
+              await hashPass(
                 Math.random().toString(36).substring(2, 15) +
                   Math.random().toString(36).substring(2, 15)
               )
