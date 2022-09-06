@@ -284,10 +284,12 @@ const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
 
             <Grid>
               {[
-                <AlphaBadge user={user} key="alpha" />,
-                viewing.premium && <PremiumBadge user={user} key="premium" />,
+                <AlphaBadge user={viewing} key="alpha" />,
+                viewing.premium && (
+                  <PremiumBadge user={viewing} key="premium" />
+                ),
                 viewing.role == "ADMIN" && (
-                  <AdminBadge user={user} key="admin" />
+                  <AdminBadge user={viewing} key="admin" />
                 ),
               ].map((b) => (
                 <Grid.Col
