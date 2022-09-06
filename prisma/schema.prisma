@@ -78,6 +78,8 @@ model User {
   lastRandomPrize            DateTime?
   upvotedComments            GameComment[]         @relation("upvotedComments")
   downvotedComments          GameComment[]         @relation("downvotedComments")
+  warningViewed              Boolean               @default(false)
+  warning                    String                @default("")
 }
 
 model Avatar {

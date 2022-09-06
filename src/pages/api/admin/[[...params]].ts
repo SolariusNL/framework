@@ -1,4 +1,10 @@
-import { createHandler, Get } from "@storyofams/next-api-decorators";
+import {
+  Body,
+  createHandler,
+  Get,
+  Param,
+  Post,
+} from "@storyofams/next-api-decorators";
 import { AdminAuthorized } from "../../../util/api/authorized";
 import prisma from "../../../util/prisma";
 import { nonCurrentUserSelect } from "../../../util/prisma-types";
@@ -20,6 +26,127 @@ class AdminRouter {
     });
 
     return latestReports;
+  }
+
+  @Post("/report/:id/close")
+  @AdminAuthorized()
+  public async closeReport(@Param("id") id: string) {
+    const report = await prisma.userReport.findFirst({
+      where: {
+        id: String(id),
+      },
+    });
+
+    if (!report) {
+      return {
+        success: false,
+        error: "Report not found",
+      };
+    }
+
+    await prisma.userReport.update({
+      where: {
+        id: String(id),
+      },
+      data: {
+        processed: true,
+      },
+    });
+
+    return {
+      success: true,
+    };
+  }
+
+  @Post("/report/:id/punish/:type")
+  @AdminAuthorized()
+  public async punishReportMember(
+    @Param("id") id: string,
+    @Param("type") type: "author" | "reported",
+    @Body() body: { description: string; category: "warning" | "ban" }
+  ) {
+    if (type !== "author" && type !== "reported") {
+      return {
+        success: false,
+        error: "Invalid type",
+      };
+    }
+
+    if (body.category !== "warning" && body.category !== "ban") {
+      return {
+        success: false,
+        error: "Invalid type",
+      };
+    }
+
+    if (body.description.length > 1000 || body.description.length < 10) {
+      return {
+        success: false,
+        error: "Description must be between 10 and 1000 characters",
+      };
+    }
+
+    const report = await prisma.userReport.findFirst({
+      where: {
+        id: String(id),
+      },
+      include: {
+        user: true,
+        author: true,
+      },
+    });
+
+    if (!report) {
+      return {
+        success: false,
+        error: "Report not found",
+      };
+    }
+
+    if (report.processed) {
+      return {
+        success: false,
+        error: "Report already processed",
+      };
+    }
+
+    switch (body.category) {
+      case "warning":
+        await prisma.user.update({
+          where: {
+            id: type === "author" ? report.authorId : report.userId,
+          },
+          data: {
+            warningViewed: false,
+            warning: body.description,
+          },
+        });
+        break;
+      case "ban":
+        await prisma.user.update({
+          where: {
+            id: type === "author" ? report.authorId : report.userId,
+          },
+          data: {
+            banned: true,
+            banReason: body.description,
+          },
+        });
+        break;
+    }
+
+    await prisma.userReport.update({
+      where: {
+        id: String(id),
+      },
+      data: {
+        processed: true,
+      },
+    });
+
+    return {
+      success: true,
+    };
   }
 
   @Get("/analytics")

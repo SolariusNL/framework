@@ -9,16 +9,17 @@ import {
 } from "@mantine/core";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { HiUser, HiViewGrid, HiXCircle } from "react-icons/hi";
-import StatsGrid from "../components/Admin/StatsGrid";
-import EmptyState from "../components/EmptyState";
-import Framework from "../components/Framework";
-import UserContext from "../components/UserContext";
-import authorizedRoute from "../util/authorizedRoute";
-import { Report, User } from "../util/prisma-types";
-import { getRelativeTime } from "../util/relativeTime";
-import useMediaQuery from "../util/useMediaQuery";
+import StatsGrid from "../../components/Admin/StatsGrid";
+import EmptyState from "../../components/EmptyState";
+import Framework from "../../components/Framework";
+import UserContext from "../../components/UserContext";
+import authorizedRoute from "../../util/authorizedRoute";
+import { Report, User } from "../../util/prisma-types";
+import { getRelativeTime } from "../../util/relativeTime";
+import useMediaQuery from "../../util/useMediaQuery";
 
 interface AdminProps {
   user: User;
@@ -42,6 +43,7 @@ const Admin: NextPage<AdminProps> = ({ user }) => {
   const [reports, setReports] = useState<Report[] | undefined>(undefined);
 
   const mobile = useMediaQuery("768");
+  const router = useRouter();
 
   const getStats = async () => {
     await fetch("/api/admin/analytics", {
@@ -116,7 +118,14 @@ const Admin: NextPage<AdminProps> = ({ user }) => {
                     theme.colorScheme === "dark"
                       ? theme.colors.dark[8]
                       : theme.white,
+                  cursor: "pointer",
                 })}
+                onClick={() => router.push(`/admin/report/${report.id}`)}
+                onMouseDown={(e: React.MouseEvent) => {
+                  if (e.button === 1) {
+                    window.open(`/admin/report/${report.id}`, "_blank");
+                  }
+                }}
               >
                 <Group mb={10}>
                   <UserContext user={report.author}>
