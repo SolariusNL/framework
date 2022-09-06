@@ -30,6 +30,7 @@ import {
   HiCurrencyDollar,
   HiGift,
   HiHome,
+  HiLibrary,
   HiLightBulb,
   HiLogout,
   HiMail,
@@ -245,6 +246,17 @@ const UserMenu = ({ classes, userMenuOpened, user, cx, router }: any) => {
           {"&"} contributors
         </Menu.Label>
         <Menu.Divider />
+        {user.role == "ADMIN" && (
+          <>
+            <Menu.Item
+              icon={<HiLibrary />}
+              onClick={() => router.push("/admin")}
+            >
+              Admin Dashboard
+            </Menu.Item>
+            <Menu.Divider />
+          </>
+        )}
         <Menu.Item icon={<HiGift />} onClick={() => router.push("/prizes")}>
           Daily prizes
         </Menu.Item>
