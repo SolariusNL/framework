@@ -92,7 +92,8 @@ const Search: NextPage<SearchProps> = ({
                       )}
                     </Text>
                     <Text align="center" color="dimmed" size="sm">
-                      {user.id} • {user.id}
+                      {user.followers.length} followers •{" "}
+                      {user.following.length} following
                     </Text>
                     <Text align="center" color="dimmed" size="sm" lineClamp={2}>
                       {user.bio || "No bio"}
