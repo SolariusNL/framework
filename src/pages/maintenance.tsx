@@ -33,14 +33,25 @@ const Maintenance: NextPage = () => {
     if (flags?.maintenanceEnabled == false) {
       router.push("/");
     }
-  }), [];
+  }),
+    [];
 
   return (
     <Container size={460} my={280}>
-      <Title align="center" className={classes.title}>Under maintenance</Title>
-      <Text color="dimmed" size="sm" align="center">
+      <Title align="center" className={classes.title}>
+        Under maintenance
+      </Title>
+      <Text color="dimmed" size="sm" align="center" mb={24}>
         We are making things awesome. We will be back soon! Sorry for the
         inconvenience.
+      </Text>
+      <Text color="dimmed" size="sm" align="center">
+        We typically go down for maintenance every 2 weeks on Tuesday at 3:00 AM
+        Central Daylight Time (CDT) and remain offline for 1-3 hours. During
+        this time, we will be performing routine maintenance and upgrades to our
+        servers, this may include migrating to a new version, upgrading our
+        hardware/software, or performing other maintenance tasks that require
+        the site to be offline.
       </Text>
     </Container>
   );
