@@ -185,6 +185,36 @@ class AdminRouter {
       },
     };
   }
+
+  @Get("/invites")
+  @AdminAuthorized()
+  public async getInvites() {
+    const invites = await prisma.invite.findMany();
+    return invites;
+  }
+
+  @Post("/invites/new/:amount")
+  @AdminAuthorized()
+  public async createInvite(@Param("amount") amount: number) {
+    if (amount < 1 || amount > 500) {
+      return {
+        success: false,
+        error: "Amount must be between 1 and 500",
+      };
+    }
+
+    const invites = await prisma.invite.createMany({
+      data: Array.from({ length: amount }, () => ({
+        code: `${Math.floor(Math.random() * 10000)}-${Math.floor(
+          Math.random() * 10000
+        )}-${Math.floor(Math.random() * 10000)}-${Math.floor(
+          Math.random() * 10000
+        )}`,
+      })),
+    });
+
+    return invites;
+  }
 }
 
 export default createHandler(AdminRouter);

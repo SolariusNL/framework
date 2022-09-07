@@ -11,7 +11,15 @@ import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { HiUser, HiViewGrid, HiXCircle } from "react-icons/hi";
+import {
+  HiKey,
+  HiServer,
+  HiUser,
+  HiUsers,
+  HiViewGrid,
+  HiXCircle,
+} from "react-icons/hi";
+import ResourceCard from "../../components/Admin/ResourceCard";
 import StatsGrid from "../../components/Admin/StatsGrid";
 import EmptyState from "../../components/EmptyState";
 import Framework from "../../components/Framework";
@@ -159,6 +167,37 @@ const Admin: NextPage<AdminProps> = ({ user }) => {
           ))}
         </Grid>
       )}
+
+      <Divider mt={36} mb={36} />
+
+      <Grid columns={3}>
+        <Grid.Col span={mobile ? 3 : 1}>
+          <ResourceCard
+            title="Invite Keys"
+            description="Create invite keys in bulk, or individually."
+            icon={<HiKey size={28} />}
+            link="/admin/invites"
+          />
+        </Grid.Col>
+
+        <Grid.Col span={mobile ? 3 : 1}>
+          <ResourceCard
+            title="Users"
+            description="Manage users, revoke bans, edit user roles, etc."
+            icon={<HiUsers size={28} />}
+            link="/admin/users"
+          />
+        </Grid.Col>
+
+        <Grid.Col span={mobile ? 3 : 1}>
+          <ResourceCard
+            title="Instance"
+            description="Manage this Framework instance, monitor server status, etc."
+            icon={<HiServer size={28} />}
+            link="/admin/instance"
+          />
+        </Grid.Col>
+      </Grid>
     </Framework>
   );
 };

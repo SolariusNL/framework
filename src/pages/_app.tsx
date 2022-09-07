@@ -136,7 +136,10 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
                   <Text mb={16}>
                     You have received a warning from the staff team:{" "}
                     <strong>
-                      {pageProps.user.warning || "No warning reason provided"}
+                      {(pageProps != undefined &&
+                        pageProps.user &&
+                        pageProps.user.warning) ||
+                        "No warning reason provided"}
                     </strong>
                   </Text>
 
