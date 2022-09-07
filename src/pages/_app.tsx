@@ -27,7 +27,7 @@ import NextNProgress from "nextjs-progressbar";
 import { useEffect, useState } from "react";
 import { HiCheckCircle } from "react-icons/hi";
 import "../../flags.config";
-import { UserInformationWrapper } from "../contexts/userInformationDialogs";
+import { UserInformationWrapper } from "../contexts/UserInformationDialog";
 import "../styles/framework.css";
 
 const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {

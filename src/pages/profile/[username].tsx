@@ -43,7 +43,7 @@ import Framework from "../../components/Framework";
 import ThumbnailCarousel from "../../components/ImageCarousel";
 import PlaceholderGameResource from "../../components/PlaceholderGameResource";
 import ReportUser from "../../components/ReportUser";
-import { useUserInformationDialog } from "../../contexts/userInformationDialogs";
+import { useUserInformationDialog } from "../../contexts/UserInformationDialog";
 import authorizedRoute from "../../util/authorizedRoute";
 import { getCookie } from "../../util/cookies";
 import { exclude } from "../../util/exclude";
