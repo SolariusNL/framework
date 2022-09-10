@@ -80,6 +80,7 @@ model User {
   downvotedComments          GameComment[]         @relation("downvotedComments")
   warningViewed              Boolean               @default(false)
   warning                    String                @default("")
+  secrets                    Secret[]              @relation("userSecrets")
 }
 
 model Avatar {
@@ -119,6 +120,15 @@ model EmailVerification {
   id        String   @id @default(uuid())
   user      User     @relation("emailVerification", references: [id], fields: [userId])
   userId    Int
+  code      String   @default(uuid())
+  createdAt DateTime @default(now())
+}
+
+model Secret {
+  id        String   @id @default(uuid())
+  user      User     @relation("userSecrets", references: [id], fields: [userId])
+  userId    Int
+  name      String
   code      String   @default(uuid())
   createdAt DateTime @default(now())
 }

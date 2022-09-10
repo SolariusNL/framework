@@ -41,6 +41,7 @@ const user = Prisma.validator<Prisma.UserArgs>()({
     following: nonCurrentUserSelect,
     followers: nonCurrentUserSelect,
     notifications: true,
+    secrets: true,
   },
 });
 
@@ -104,6 +105,7 @@ export const userSelect: Prisma.UserSelect = {
   lastRandomPrize: true,
   warning: true,
   warningViewed: true,
+  secrets: true,
 };
 
 export const gameSelect: Prisma.GameSelect = {
