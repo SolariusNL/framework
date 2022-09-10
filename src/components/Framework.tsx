@@ -47,6 +47,7 @@ import {
 import abbreviateNumber from "../util/abbreviate";
 import { setCookie } from "../util/cookies";
 import { User } from "../util/prisma-types";
+import useConfig from "../util/useConfig";
 import useMediaQuery from "../util/useMediaQuery";
 import EmailReminder from "./EmailReminder";
 import NotificationFlyout from "./NotificationFlyout";
@@ -365,6 +366,7 @@ const Framework = ({
   const [currencyMenuOpened, setCurrencyMenuOpened] = useState(false);
   const router = useRouter();
   const mobile = useMediaQuery("768");
+  const config = useConfig();
 
   const tabs = [
     {
@@ -628,11 +630,11 @@ const Framework = ({
           {user && !user.emailVerified && !warningSeen && !isSSR && (
             <EmailReminder setWarningSeen={setEmailWarningSeen} />
           )}
-          {process.env.NEXT_PUBLIC_UKRAINE_HEADER === "true" && (
+          {config.features.additional.ukraine.enabled && (
             <Alert mb={16} icon={<HiGift size={36} />}>
-              {process.env.NEXT_PUBLIC_UKRAINE_HEADER_TEXT}{" "}
+              {config.features.additional.ukraine.supportText}{" "}
               <Anchor
-                href={process.env.NEXT_PUBLIC_UKRAINE_HEADER_SUPPORT_URL}
+                href={config.features.additional.ukraine.supportUrl}
                 target="_blank"
               >
                 Help Provide Humanitarian Aid to Ukraine

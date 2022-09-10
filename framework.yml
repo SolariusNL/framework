@@ -1,0 +1,6 @@
+features:
+  additional:
+    ukraine:
+      enabled: false
+      supportText: Support Ukraine 🇺🇦
+      supportUrl: https://donate.chooselove.org/campaigns/ukraine-appeal/
