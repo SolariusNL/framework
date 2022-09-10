@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Framework from "../components/Framework";
 import authorizedRoute from "../util/authorizedRoute";
 import { User } from "../util/prisma-types";
-import useConfig from "../util/useConfig";
 
 interface HomeProps {
   user: User;
@@ -12,7 +11,6 @@ interface HomeProps {
 
 const Home: NextPage<HomeProps> = ({ user }) => {
   const [timeMessage, setTimeMessage] = useState("");
-  const config = useConfig();
 
   useEffect(() => {
     setTimeMessage(
@@ -31,8 +29,6 @@ const Home: NextPage<HomeProps> = ({ user }) => {
       <Title mb={12}>
         {timeMessage}, {user.username}!
       </Title>
-
-      {JSON.stringify(config.features.design.newheader)}
     </Framework>
   );
 };

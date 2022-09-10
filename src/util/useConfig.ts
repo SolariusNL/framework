@@ -3,8 +3,12 @@ import data from "../../framework.yml";
 
 interface Configuration {
   features: {
-    design: {
-      test: boolean;
+    additional: {
+      ukraine: {
+        enabled: boolean;
+        supportText: string;
+        supportUrl: string;
+      };
     };
   };
 }
