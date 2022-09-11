@@ -50,6 +50,7 @@ import { User } from "../util/prisma-types";
 import useConfig from "../util/useConfig";
 import useMediaQuery from "../util/useMediaQuery";
 import EmailReminder from "./EmailReminder";
+import Footer from "./Footer";
 import NotificationFlyout from "./NotificationFlyout";
 
 interface FrameworkProps {
@@ -646,6 +647,8 @@ const Framework = ({
       ) : (
         <div>{children}</div>
       )}
+
+      <Footer />
     </>
   );
 };
