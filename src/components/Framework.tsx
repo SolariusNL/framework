@@ -631,7 +631,7 @@ const Framework = ({
           {user && !user.emailVerified && !warningSeen && !isSSR && (
             <EmailReminder setWarningSeen={setEmailWarningSeen} />
           )}
-          {config.features.additional.ukraine.enabled && (
+          {config?.features?.additional?.ukraine?.enabled && (
             <Alert mb={16} icon={<HiGift size={36} />}>
               {config.features.additional.ukraine.supportText}{" "}
               <Anchor

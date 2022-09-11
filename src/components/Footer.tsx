@@ -119,9 +119,9 @@ const Footer = () => {
   const { classes } = useStyles();
   const config = useConfig();
 
-  const groups = config.footer.links.map((group) => {
-    const links = group.links.map((link, index) => (
-      <Link passHref href={link.url} key={index}>
+  const groups = config?.footer?.links?.map((group) => {
+    const links = group.links?.map((link, index) => (
+      <Link passHref href={String(link.url)} key={index}>
         <Text<"a"> className={classes.link} component="a">
           {link.label}
         </Text>
@@ -153,21 +153,21 @@ const Footer = () => {
         </Text>
 
         <Group spacing={0} className={classes.social} position="right" noWrap>
-          {config.footer.socials.twitter.show && (
+          {config?.footer?.socials?.twitter?.show && (
             <Link href={config.footer.socials.twitter.url}>
               <ActionIcon size="lg">
                 <IconBrandTwitter size={18} stroke={1.5} />
               </ActionIcon>
             </Link>
           )}
-          {config.footer.socials.youtube.show && (
+          {config?.footer?.socials?.youtube?.show && (
             <Link href={config.footer.socials.youtube.url}>
               <ActionIcon size="lg">
                 <IconBrandYoutube size={18} stroke={1.5} />
               </ActionIcon>
             </Link>
           )}
-          {config.footer.socials.instagram.show && (
+          {config?.footer?.socials?.instagram?.show && (
             <Link href={config.footer.socials.instagram.url}>
               <ActionIcon size="lg">
                 <IconBrandInstagram size={18} stroke={1.5} />

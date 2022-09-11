@@ -7,29 +7,29 @@ interface SocialLink {
 }
 
 interface Configuration {
-  features: {
-    additional: {
-      ukraine: {
-        enabled: boolean;
-        supportText: string;
-        supportUrl: string;
+  features?: {
+    additional?: {
+      ukraine?: {
+        enabled?: boolean;
+        supportText?: string;
+        supportUrl?: string;
       };
     };
   };
 
-  footer: {
-    links: Array<{
-      sectionName: string;
-      links: Array<{
-        label: string;
-        url: string;
+  footer?: {
+    links?: Array<{
+      sectionName?: string;
+      links?: Array<{
+        label?: string;
+        url?: string;
       }>;
     }>;
 
-    socials: {
-      twitter: SocialLink;
-      youtube: SocialLink;
-      instagram: SocialLink;
+    socials?: {
+      twitter?: SocialLink;
+      youtube?: SocialLink;
+      instagram?: SocialLink;
     };
   };
 }
