@@ -121,15 +121,11 @@ const Footer = () => {
 
   const groups = config.footer.links.map((group) => {
     const links = group.links.map((link, index) => (
-      <Text<"a">
-        key={index}
-        className={classes.link}
-        component="a"
-        href={link.url}
-        onClick={(event) => event.preventDefault()}
-      >
-        {link.label}
-      </Text>
+      <Link passHref href={link.url} key={index}>
+        <Text<"a"> className={classes.link} component="a">
+          {link.label}
+        </Text>
+      </Link>
     ));
 
     return (
