@@ -8,6 +8,7 @@ import {
   TextInput,
 } from "@mantine/core";
 import { getCookie } from "cookies-next";
+import { randomUUID } from "crypto";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { HiPlus, HiTrash } from "react-icons/hi";
@@ -26,6 +27,8 @@ const Secrets = ({ user }: SecretsProps) => {
   const [shownIndexes, setShownIndexes] = useState<string[]>([]);
   const router = useRouter();
 
+  const [secrets, setSecrets] = useState(user.secrets);
+
   const createSecret = async () => {
     await fetch("/api/secrets/create", {
       method: "POST",
@@ -37,7 +40,20 @@ const Secrets = ({ user }: SecretsProps) => {
         name: enteredName,
         value: enteredValue,
       }),
-    }).then(() => router.reload());
+    }).then(() => {
+      setSecrets([
+        ...secrets,
+        {
+          id: String(Math.random() * 100),
+          name: enteredName,
+          code: enteredValue,
+          userId: user.id,
+          createdAt: new Date(),
+        },
+      ]);
+
+      setCreateModalOpen(false);
+    });
   };
 
   const deleteSecret = async (id: string) => {
@@ -47,7 +63,9 @@ const Secrets = ({ user }: SecretsProps) => {
         "Content-Type": "application/json",
         Authorization: String(getCookie(".frameworksession")),
       },
-    }).then(() => router.reload());
+    }).then(() => {
+      setSecrets(secrets.filter((secret) => secret.id !== id));
+    });
   };
 
   return (
@@ -108,7 +126,7 @@ const Secrets = ({ user }: SecretsProps) => {
             </tr>
           </thead>
           <tbody>
-            {user.secrets.map((secret) => (
+            {secrets.map((secret) => (
               <tr key={secret.id}>
                 <td>{secret.name}</td>
                 <td>
