@@ -27,6 +27,9 @@ jobs:
         
       - name: 💻 Generate Prisma types
         run: yarn run generate
+        
+      - name: 🧰 Generate configuration
+        run: yarn run create-config
 
       - name: 📦 Build project
         run: yarn run build
