@@ -102,8 +102,7 @@ const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
                 size={10}
                 position="bottom-end"
                 disabled={
-                  Date.now() - new Date(viewing.lastSeen).getTime() >
-                  5 * 60 * 1000
+                  Date.now() - new Date(viewing.lastSeen).getTime() > 5 * 60 * 1000
                 }
               >
                 <Avatar

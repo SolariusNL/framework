@@ -359,7 +359,7 @@ const CurrencyMenu = ({
         <Menu.Item icon={<HiShoppingBag />}>Purchase tickets</Menu.Item>
         <Menu.Item icon={<HiViewList />}>Transaction history</Menu.Item>
 
-        {user.premium && (
+        {!user.premium && (
           <>
             <Menu.Divider />
             <Menu.Item
