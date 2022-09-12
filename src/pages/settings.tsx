@@ -20,9 +20,7 @@ const Settings: NextPage<SettingsProps> = ({ user }) => {
   const mobile = useMediaQuery("768");
 
   return (
-    <Framework user={user} activeTab="settings">
-      <Title mb={24}>Settings</Title>
-
+    <Framework user={user} activeTab="settings" modernTitle="Settings" modernSubtitle="Manage your account, privacy, security, subscriptions, and more.">
       <Tabs
         variant="pills"
         orientation={mobile ? "horizontal" : "vertical"}
