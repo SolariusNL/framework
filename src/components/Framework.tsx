@@ -658,8 +658,10 @@ const Framework = ({
               mb={32}
               p={32}
             >
-              <Title mb={8}>{modernTitle}</Title>
-              <Text color="dimmed">{modernSubtitle}</Text>
+              <Container>
+                <Title mb={8}>{modernTitle}</Title>
+                <Text color="dimmed">{modernSubtitle}</Text>
+              </Container>
             </Box>
           )}
           <Container mt={26}>
