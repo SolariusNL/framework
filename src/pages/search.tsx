@@ -1,18 +1,5 @@
-import {
-  Avatar,
-  Button,
-  Grid,
-  Group,
-  Indicator,
-  Paper,
-  Text,
-  ThemeIcon,
-  Title,
-  Tooltip,
-} from "@mantine/core";
+import { Grid, Title } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
-import Link from "next/link";
-import { HiXCircle } from "react-icons/hi";
 import EmptyState from "../components/EmptyState";
 import Framework from "../components/Framework";
 import GameCard from "../components/GameCard";
