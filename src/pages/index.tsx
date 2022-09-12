@@ -1,15 +1,19 @@
-import { Title } from "@mantine/core";
+import { Grid, Title } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { useEffect, useState } from "react";
+import EmptyState from "../components/EmptyState";
 import Framework from "../components/Framework";
+import UserCard from "../components/UserCard";
 import authorizedRoute from "../util/authorizedRoute";
-import { User } from "../util/prisma-types";
+import prisma from "../util/prisma";
+import { nonCurrentUserSelect, NonUser, User } from "../util/prisma-types";
 
 interface HomeProps {
   user: User;
+  onlineFriends: NonUser[];
 }
 
-const Home: NextPage<HomeProps> = ({ user }) => {
+const Home: NextPage<HomeProps> = ({ user, onlineFriends }) => {
   const [timeMessage, setTimeMessage] = useState("");
 
   useEffect(() => {
@@ -26,15 +30,31 @@ const Home: NextPage<HomeProps> = ({ user }) => {
 
   return (
     <Framework user={user} activeTab="home">
-      <Title mb={12}>
+      <Title mb={24}>
         {timeMessage}, {user.username}!
       </Title>
+
+      <Title order={3} mb={6}>
+        Online friends
+      </Title>
+      <Grid>
+        {onlineFriends.map((friend) => (
+          <Grid.Col xs={3} md={3} sm={2} lg={3} key={user.id}>
+            <UserCard user={friend} minimal />
+          </Grid.Col>
+        ))}
+
+        {onlineFriends.length === 0 && (
+          <EmptyState title="No friends online" body="Maybe later?" />
+        )}
+      </Grid>
     </Framework>
   );
 };
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const auth = await authorizedRoute(ctx, true, false);
+
   if (auth.redirect) {
     return {
       redirect: {
@@ -44,9 +64,30 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     };
   }
 
+  const onlineFriends = await prisma.user.findMany({
+    where: {
+      following: {
+        some: {
+          id: auth!.props!.user!.id,
+        },
+      },
+      followers: {
+        some: {
+          id: auth!.props!.user!.id,
+        },
+      },
+
+      lastSeen: {
+        gte: new Date(new Date().getTime() - 5 * 60 * 1000),
+      },
+    },
+    ...nonCurrentUserSelect,
+  });
+
   return {
     props: {
       user: auth.props.user,
+      onlineFriends: JSON.parse(JSON.stringify(onlineFriends)),
     },
   };
 }

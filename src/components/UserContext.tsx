@@ -1,4 +1,12 @@
-import { Anchor, Avatar, Group, HoverCard, Stack, Text } from "@mantine/core";
+import {
+  Anchor,
+  Avatar,
+  Group,
+  HoverCard,
+  Indicator,
+  Stack,
+  Text,
+} from "@mantine/core";
 import { NonUser } from "../util/prisma-types";
 import Link from "next/link";
 
@@ -22,7 +30,15 @@ const UserContext = ({ user, children, customHref }: UserContextProps) => {
       </HoverCard.Target>
       <HoverCard.Dropdown>
         <Group>
-          <Avatar src={user.avatarUri} alt={user.username} radius="xl" />
+          <Indicator
+            color="green"
+            position="bottom-end"
+            disabled={
+              Date.now() - new Date(user.lastSeen).getTime() > 5 * 60 * 1000
+            }
+          >
+            <Avatar src={user.avatarUri} alt={user.username} radius="xl" />
+          </Indicator>
           <Stack spacing={5}>
             <Text size="sm" weight={700} sx={{ lineHeight: 1 }}>
               {user.username}

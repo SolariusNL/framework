@@ -33,6 +33,15 @@ const authorizedRoute = async (
 
   switch (isAuthorized) {
     case true:
+      await prisma.user.update({
+        where: {
+          id: account?.id,
+        },
+        data: {
+          lastSeen: new Date(),
+        },
+      });
+
       if (redirectIfAuthorized) {
         return {
           redirect: {
@@ -90,7 +99,9 @@ async function verifySession(token: string): Promise<Session | undefined> {
   return session;
 }
 
-export async function getAccountFromSession(token: string): Promise<User | undefined> {
+export async function getAccountFromSession(
+  token: string
+): Promise<User | undefined> {
   const session = await verifySession(token);
 
   if (!session || !session.userId) {

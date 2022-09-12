@@ -13,6 +13,7 @@ export const nonCurrentUserSelect = {
     banned: true,
     followers: { select: { id: true } },
     following: { select: { id: true } },
+    lastSeen: true,
   },
 };
 
@@ -58,6 +59,7 @@ const nonuser = Prisma.validator<Prisma.UserArgs>()({
     banned: true,
     followers: { select: { id: true } },
     following: { select: { id: true } },
+    lastSeen: true,
   },
 });
 
@@ -106,6 +108,7 @@ export const userSelect: Prisma.UserSelect = {
   warning: true,
   warningViewed: true,
   secrets: true,
+  lastSeen: true,
 };
 
 export const gameSelect: Prisma.GameSelect = {

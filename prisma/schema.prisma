@@ -81,6 +81,7 @@ model User {
   warningViewed              Boolean               @default(false)
   warning                    String                @default("")
   secrets                    Secret[]              @relation("userSecrets")
+  lastSeen                   DateTime              @default(now())
 }
 
 model Avatar {

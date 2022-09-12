@@ -2,6 +2,8 @@ import {
   Avatar,
   Button,
   Grid,
+  Group,
+  Indicator,
   Paper,
   Text,
   ThemeIcon,
@@ -14,6 +16,7 @@ import { HiXCircle } from "react-icons/hi";
 import EmptyState from "../components/EmptyState";
 import Framework from "../components/Framework";
 import GameCard from "../components/GameCard";
+import UserCard from "../components/UserCard";
 import authorizedRoute from "../util/authorizedRoute";
 import prisma from "../util/prisma";
 import {
@@ -58,53 +61,7 @@ const Search: NextPage<SearchProps> = ({
               // @ts-ignore
               searchResults.map((user: User) => (
                 <Grid.Col xs={4.5} md={4.5} sm={4.5} lg={3.5} key={user.id}>
-                  <Paper
-                    radius="md"
-                    withBorder
-                    p="lg"
-                    sx={(theme) => ({
-                      backgroundColor:
-                        theme.colorScheme === "dark"
-                          ? theme.colors.dark[8]
-                          : theme.white,
-                    })}
-                    key={user.id}
-                  >
-                    <Avatar
-                      src={user.avatarUri}
-                      size={120}
-                      radius={120}
-                      mx="auto"
-                    />
-                    <Text align="center" size="lg" weight={500} mt="md">
-                      {user.username}{" "}
-                      {user.banned && (
-                        <Tooltip label="User is banned from Framework">
-                          <ThemeIcon
-                            color="red"
-                            variant="light"
-                            radius={999}
-                            size={24}
-                          >
-                            <HiXCircle />
-                          </ThemeIcon>
-                        </Tooltip>
-                      )}
-                    </Text>
-                    <Text align="center" color="dimmed" size="sm">
-                      {user.followers.length} followers •{" "}
-                      {user.following.length} following
-                    </Text>
-                    <Text align="center" color="dimmed" size="sm" lineClamp={2}>
-                      {user.bio || "No bio"}
-                    </Text>
-
-                    <Link href={`/profile/${user.username}`} passHref>
-                      <Button component="a" variant="default" fullWidth mt="md">
-                        View Profile
-                      </Button>
-                    </Link>
-                  </Paper>
+                  <UserCard user={user} />
                 </Grid.Col>
               )))}
         </Grid>

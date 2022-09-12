@@ -11,6 +11,7 @@ import {
   Grid,
   Group,
   Image,
+  Indicator,
   Menu,
   Paper,
   Progress,
@@ -95,16 +96,27 @@ const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
           }}
         >
           <Stack align="center">
-            <Avatar
-              src={
-                viewing.avatarUri ||
-                `https://avatars.dicebear.com/api/identicon/${viewing.id}.png`
-              }
-              alt={viewing.username}
-              radius={999}
-              size={100}
-              mb={16}
-            />
+            <Group align="center">
+              <Indicator
+                color="green"
+                size={10}
+                position="bottom-end"
+                disabled={
+                  Date.now() - new Date(viewing.lastSeen).getTime() >
+                  5 * 60 * 1000
+                }
+              >
+                <Avatar
+                  src={
+                    viewing.avatarUri ||
+                    `https://avatars.dicebear.com/api/identicon/${viewing.id}.png`
+                  }
+                  alt={viewing.username}
+                  radius={999}
+                  size={100}
+                />
+              </Indicator>
+            </Group>
 
             <div
               style={{
