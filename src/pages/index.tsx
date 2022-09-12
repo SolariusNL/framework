@@ -29,11 +29,7 @@ const Home: NextPage<HomeProps> = ({ user, onlineFriends }) => {
   }, []);
 
   return (
-    <Framework user={user} activeTab="home">
-      <Title mb={24}>
-        {timeMessage}, {user.username}!
-      </Title>
-
+    <Framework user={user} activeTab="home" modernTitle={`${timeMessage}, ${user.username}!`} modernSubtitle="Your experience at a glance">
       <Title order={3} mb={6}>
         Online friends
       </Title>

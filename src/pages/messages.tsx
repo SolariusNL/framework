@@ -12,8 +12,7 @@ interface MessagesProps {
 
 const Messages: NextPage<MessagesProps> = ({ user }) => {
   return (
-    <Framework user={user} activeTab="messages">
-      <Title mb={24}>Messages</Title>
+    <Framework user={user} activeTab="messages" modernTitle="Messages" modernSubtitle="Send and receive messages with your friends">
       <Tabs variant="pills" defaultValue="inbox">
         <Tabs.List>
           <Tabs.Tab icon={<HiMail />} value="inbox">Inbox</Tabs.Tab>

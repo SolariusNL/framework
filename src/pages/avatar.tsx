@@ -16,8 +16,7 @@ const Avatar: NextPage<AvatarProps> = ({ user }) => {
   const mobile = useMediaQuery("768");
 
   return (
-    <Framework user={user} activeTab="avatar">
-      <Title mb={24}>Avatar</Title>
+    <Framework user={user} activeTab="avatar" modernTitle="Avatar" modernSubtitle="Customize your avatar to your liking">
       <Grid columns={6}>
         <Grid.Col span={mobile ? 6 : 2}>
           <AvatarViewer user={user} />

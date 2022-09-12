@@ -39,9 +39,7 @@ const Invent: NextPage<InventProps> = ({ user }) => {
   const mobile = useMediaQuery("768");
 
   return (
-    <Framework user={user} activeTab="invent">
-      <Title mb={24}>Invent</Title>
-
+    <Framework user={user} activeTab="invent" modernTitle="Invent" modernSubtitle="Manage your games, plugins, and more">
       <Tabs
         variant="pills"
         orientation={mobile ? "horizontal" : "vertical"}
