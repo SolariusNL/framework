@@ -115,6 +115,15 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
                   },
                 }),
               },
+              Tabs: {
+                styles: () => ({
+                  tab: {
+                    "&[data-active]": {
+                      fontWeight: 700,
+                    },
+                  },
+                }),
+              },
             },
           }}
         >
