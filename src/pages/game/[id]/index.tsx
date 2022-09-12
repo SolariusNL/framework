@@ -30,6 +30,7 @@ import {
   HiThumbDown,
   HiThumbUp,
   HiUsers,
+  HiViewGrid,
   HiViewList,
 } from "react-icons/hi";
 import sanitize from "sanitize-html";
@@ -182,8 +183,13 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                     item: "playing",
                     label: "Playing",
                   },
+                  {
+                    icon: <HiViewGrid />,
+                    item: "visits",
+                    label: "Visits",
+                  },
                 ].map((x, i) => (
-                  <Grid.Col md={4} sm={2} key={i}>
+                  <Grid.Col md={6} sm={6} xs={4} span={6} key={i}>
                     <Stack spacing={10} align="center">
                       {x.icon}
                       <Text weight={550} mb={6}>
