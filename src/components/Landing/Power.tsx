@@ -58,10 +58,10 @@ const event = game.Events.WaitFor("RefundFlashlight").subscribe((evt) => {
           <Prism.Tabs defaultValue="send-msg">
             <Prism.TabsList>
               <Prism.Tab value="send-msg">
-                Send message on join & leave
+                Example #1
               </Prism.Tab>
 
-              <Prism.Tab value="refund-flashlight">Refund a gamepass</Prism.Tab>
+              <Prism.Tab value="refund-flashlight">Example #2</Prism.Tab>
             </Prism.TabsList>
 
             <Prism.Panel value="send-msg" language="tsx">
