@@ -5,6 +5,7 @@ import {
   Autocomplete,
   Avatar,
   Badge,
+  Box,
   Burger,
   Container,
   createStyles,
@@ -18,6 +19,7 @@ import {
   Tabs,
   Text,
   ThemeIcon,
+  Title,
   UnstyledButton,
   useMantineColorScheme,
 } from "@mantine/core";
@@ -38,6 +40,7 @@ import {
   HiSearch,
   HiSearchCircle,
   HiShoppingBag,
+  HiStar,
   HiSun,
   HiTicket,
   HiUser,
@@ -66,6 +69,8 @@ interface FrameworkProps {
     | "messages"
     | "none";
   noPadding?: boolean;
+  modernTitle?: string;
+  modernSubtitle?: string;
 }
 
 const HeaderStyle = {
@@ -318,48 +323,65 @@ const CurrencyMenu = ({
   currencyMenuOpened,
   theme,
   user,
-}: any) => (
-  <Menu transition="pop-top-right">
-    <Menu.Target>
-      <UnstyledButton
-        className={cx(classes.currency, {
-          [classes.currencyActive]: currencyMenuOpened,
-        })}
-      >
-        <Group spacing={6}>
-          <HiCurrencyDollar color={theme.colors.green[3]} />
-          <Text
-            color={theme.colors.green[4]}
-            weight={500}
-            size="sm"
-            sx={{ lineHeight: 1 }}
-          >
-            {abbreviateNumber(user.tickets)}
-          </Text>
-        </Group>
-      </UnstyledButton>
-    </Menu.Target>
+}: any) => {
+  const router = useRouter();
+  return (
+    <Menu transition="pop-top-right">
+      <Menu.Target>
+        <UnstyledButton
+          className={cx(classes.currency, {
+            [classes.currencyActive]: currencyMenuOpened,
+          })}
+        >
+          <Group spacing={6}>
+            <HiCurrencyDollar color={theme.colors.green[3]} />
+            <Text
+              color={theme.colors.green[4]}
+              weight={500}
+              size="sm"
+              sx={{ lineHeight: 1 }}
+            >
+              {abbreviateNumber(user.tickets)}
+            </Text>
+          </Group>
+        </UnstyledButton>
+      </Menu.Target>
 
-    <Menu.Dropdown>
-      <Menu.Label>
-        You have{" "}
-        {Math.round(user.tickets)
-          .toString()
-          .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}{" "}
-        tickets
-      </Menu.Label>
+      <Menu.Dropdown>
+        <Menu.Label>
+          You have{" "}
+          {Math.round(user.tickets)
+            .toString()
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}{" "}
+          tickets
+        </Menu.Label>
 
-      <Menu.Item icon={<HiShoppingBag />}>Purchase tickets</Menu.Item>
-      <Menu.Item icon={<HiViewList />}>Transaction history</Menu.Item>
-    </Menu.Dropdown>
-  </Menu>
-);
+        <Menu.Item icon={<HiShoppingBag />}>Purchase tickets</Menu.Item>
+        <Menu.Item icon={<HiViewList />}>Transaction history</Menu.Item>
+
+        {user.premium && (
+          <>
+            <Menu.Divider />
+            <Menu.Item
+              icon={<HiStar />}
+              onClick={() => router.push("/premium")}
+            >
+              Get premium
+            </Menu.Item>
+          </>
+        )}
+      </Menu.Dropdown>
+    </Menu>
+  );
+};
 
 const Framework = ({
   user,
   children,
   activeTab,
   noPadding,
+  modernTitle,
+  modernSubtitle,
 }: FrameworkProps) => {
   const { classes, theme, cx } = useStyles();
   const [opened, { toggle }] = useDisclosure(false);
@@ -627,23 +649,37 @@ const Framework = ({
       </div>
 
       {!noPadding ? (
-        <Container mt={26}>
-          {user && !user.emailVerified && !warningSeen && !isSSR && (
-            <EmailReminder setWarningSeen={setEmailWarningSeen} />
+        <>
+          {modernTitle && modernSubtitle && (
+            <Box
+              sx={(theme) => ({
+                backgroundColor: theme.colorScheme === "dark" ? "#000" : "#fff",
+              })}
+              mb={32}
+              p={32}
+            >
+              <Title mb={8}>{modernTitle}</Title>
+              <Text color="dimmed">{modernSubtitle}</Text>
+            </Box>
           )}
-          {config?.features?.additional?.ukraine?.enabled && (
-            <Alert mb={16} icon={<HiGift size={36} />}>
-              {config.features.additional.ukraine.supportText}{" "}
-              <Anchor
-                href={config.features.additional.ukraine.supportUrl}
-                target="_blank"
-              >
-                Help Provide Humanitarian Aid to Ukraine
-              </Anchor>
-            </Alert>
-          )}
-          {children}
-        </Container>
+          <Container mt={26}>
+            {user && !user.emailVerified && !warningSeen && !isSSR && (
+              <EmailReminder setWarningSeen={setEmailWarningSeen} />
+            )}
+            {config?.features?.additional?.ukraine?.enabled && (
+              <Alert mb={16} icon={<HiGift size={36} />}>
+                {config.features.additional.ukraine.supportText}{" "}
+                <Anchor
+                  href={config.features.additional.ukraine.supportUrl}
+                  target="_blank"
+                >
+                  Help Provide Humanitarian Aid to Ukraine
+                </Anchor>
+              </Alert>
+            )}
+            {children}
+          </Container>
+        </>
       ) : (
         <div>{children}</div>
       )}
