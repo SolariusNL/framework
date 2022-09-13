@@ -9,13 +9,14 @@
     "lint": "next lint",
     "migrate": "npx prisma migrate dev && npx prisma generate",
     "studio": "npx prisma studio",
-    "start:prod": "cross-env NEXT_PUBLIC_VERSION=0.3.0 concurrently \"cd cron && yarn run start\" \"next start --port=80\"",
+    "start:prod": "cross-env NEXT_PUBLIC_VERSION=0.3.0 concurrently \"cd cron && yarn run start\" \"next start --port=88\"",
     "generate": "npx prisma generate",
     "seed": "ts-node --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\" scripts/seed.ts",
     "postinstall": "cp-cli node_modules/.prisma/client/ cron/node_modules/.prisma/client",
-    "setup-projects": "cd cron && yarn && cd .. && yarn run generate && yarn && yarn run create-config",
+    "setup-projects": "cd cron && yarn && cd .. && yarn run generate && yarn && yarn run create-config && yarn run create-config-schema",
     "analyze": "cross-env ANALYZE=true yarn run build",
-    "create-config": "ts-node --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\" scripts/create-config.ts"
+    "create-config": "ts-node --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\" scripts/create-config.ts",
+    "create-config-schema": "typescript-json-schema src/types/Configuration.ts Configuration > framework.schema.json"
   },
   "dependencies": {
     "@emotion/react": "^11.9.3",

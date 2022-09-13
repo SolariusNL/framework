@@ -37,3 +37,4 @@ yarn-error.log*
 /docs/site
 
 framework.yml
+framework.schema.json
