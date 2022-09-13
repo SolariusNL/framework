@@ -357,7 +357,12 @@ const CurrencyMenu = ({
         </Menu.Label>
 
         <Menu.Item icon={<HiShoppingBag />}>Purchase tickets</Menu.Item>
-        <Menu.Item icon={<HiViewList />}>Transaction history</Menu.Item>
+        <Menu.Item
+          icon={<HiViewList />}
+          onClick={() => router.push("/tickets/transactions")}
+        >
+          Transaction history
+        </Menu.Item>
 
         {!user.premium && (
           <>

@@ -213,6 +213,22 @@ class UserRouter {
     };
   }
 
+  @Get("/@me/transactions/:page")
+  @Authorized()
+  public async getTransactions(
+    @Account() user: User,
+    @Param("page") page: number
+  ) {
+    const transactions = await prisma.transaction.findMany({
+      where: { userId: user.id },
+      orderBy: { createdAt: "desc" },
+      take: 10,
+      skip: (page - 1) * 10,
+    });
+
+    return transactions;
+  }
+
   @Post("/:id/follow")
   @Authorized()
   @RateLimitMiddleware(50)()
