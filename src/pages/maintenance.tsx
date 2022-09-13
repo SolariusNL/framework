@@ -37,7 +37,7 @@ const Maintenance: NextPage = () => {
     [];
 
   return (
-    <Container size={460} my={280}>
+    <Container size={460} my={200}>
       <Title align="center" className={classes.title}>
         Under maintenance
       </Title>
