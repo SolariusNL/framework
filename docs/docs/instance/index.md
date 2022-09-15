@@ -12,7 +12,7 @@ Framework is a FOSS open-source project, and because of that, you can self-host 
   : PostgreSQL is the database used by Framework and its database interface, Prisma. Find the installation instructions for your operating system [here](https://www.postgresql.org/download/).
 
 - **Run yarn setup scripts**
-  : Run `yarn run setup-projects && yarn run migrate && yarn run seed && yarn` to install all dependencies, run the database migrations, and seed the database.
+  : Run `yarn run setup-projects && yarn run seed && yarn run create-config-schema` to install all dependencies, run the database migrations, and seed the database.
 
 - **Run the server**
   : Run `yarn run dev` in your terminal to start a development server. You can also run `yarn run build && yarn run start` to build the project and run it in production mode.

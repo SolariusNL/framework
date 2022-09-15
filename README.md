@@ -13,7 +13,7 @@ Framework is built on the following technologies:
   - [React](https://reactjs.org) - A declarative, efficient, and flexible JavaScript library for building user interfaces
     - [Mantine](https://mantine.dev) - A modern, flexible, and extensible framework for building websites and apps
 - [Postgres](https://www.postgresql.org) - A powerful, open source object-relational database system
-  - [Prisma](https://https://www.prisma.io) - A open source, distributed database layer for modern applications
+  - [Prisma](https://www.prisma.io) - A open source, distributed database layer for modern applications
 
 ## Directory Structure
 
@@ -27,9 +27,11 @@ Framework is built on the following technologies:
   - **seed.ts** - Seed database with required data
 - **src** - Main source code
   - **components** - Reusable React components
+  - **contexts** - React contexts, used for global state management
   - **pages** - Next.js routes
   - **styles** - CSS styles
-  - **utils** - Utility functions
+  - **types** - TypeScript types
+  - **util** - Utility functions
 
 ## Installation
 
@@ -44,7 +46,10 @@ Framework is very easy to set up and deploy.
   - Run `yarn setup-projects` to install dependencies for all the projects.
 - **Seed** the database
   - Run `yarn run seed` to generate Prisma types and seed the database with initial data.
+- **Generate** config schema
+  - Run `yarn run create-config-schema` to generate the config schema for intellisense support in the `framework.yml` file.
 - **Configure** your `.env` file, some important things may be the database connection url, or optional API keys for extended functionality.
+- **Configure** your `framework.yml` file, this is where you can configure the application to your liking, such as editing footer links, enabling or disabling features, and more.
 - **Build** the application
   - Run `yarn build` to build the application. This will create a `dist` directory with the compiled application.
 - **Deploy** the application
