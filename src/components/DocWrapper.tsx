@@ -29,8 +29,8 @@ const useStyles = createStyles((theme) => ({
     lineHeight: `${LINK_HEIGHT}px`,
     fontSize: theme.fontSizes.sm,
     height: LINK_HEIGHT,
-    borderTopRightRadius: theme.radius.sm,
-    borderBottomRightRadius: theme.radius.sm,
+    borderTopRightRadius: theme.radius.md,
+    borderBottomRightRadius: theme.radius.md,
     borderLeft: `2px solid ${
       theme.colorScheme === "dark" ? theme.colors.dark[4] : theme.colors.gray[2]
     }`,

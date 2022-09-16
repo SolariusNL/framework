@@ -1,12 +1,11 @@
 import { Grid, ScrollArea, Tabs, Title } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
-import dynamic from "next/dynamic";
+import { HiAdjustments, HiBeaker, HiEmojiHappy } from "react-icons/hi";
+import AvatarViewer from "../components/AvatarViewer";
 import Framework from "../components/Framework";
 import authorizedRoute from "../util/authorizedRoute";
 import { User } from "../util/prisma-types";
-import AvatarViewer from "../components/Avatar";
 import useMediaQuery from "../util/useMediaQuery";
-import { HiAdjustments, HiBeaker, HiEmojiHappy } from "react-icons/hi";
 
 interface AvatarProps {
   user: User;
@@ -16,16 +15,18 @@ const Avatar: NextPage<AvatarProps> = ({ user }) => {
   const mobile = useMediaQuery("768");
 
   return (
-    <Framework user={user} activeTab="avatar" modernTitle="Avatar" modernSubtitle="Customize your avatar to your liking">
+    <Framework
+      user={user}
+      activeTab="avatar"
+      modernTitle="Avatar"
+      modernSubtitle="Customize your avatar to your liking"
+    >
       <Grid columns={6}>
         <Grid.Col span={mobile ? 6 : 2}>
           <AvatarViewer user={user} />
         </Grid.Col>
         <Grid.Col span={mobile ? 6 : 4}>
-          <Tabs
-            variant="pills"
-            defaultValue="account"
-          >
+          <Tabs variant="pills" defaultValue="hats">
             <ScrollArea offsetScrollbars>
               <Tabs.List>
                 <div
@@ -33,7 +34,7 @@ const Avatar: NextPage<AvatarProps> = ({ user }) => {
                     display: "flex",
                     flexDirection: "row",
                     flex: 1,
-                    marginBottom: "24px"
+                    marginBottom: "24px",
                   }}
                 >
                   <Tabs.Tab value="hats" icon={<HiBeaker />}>

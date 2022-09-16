@@ -1,6 +1,8 @@
+import { Skeleton } from "@mantine/core";
 import { Environment, OrbitControls } from "@react-three/drei";
 import { Canvas, useLoader } from "@react-three/fiber";
 import { Suspense } from "react";
+import NoSSR from "react-no-ssr";
 import {
   BufferGeometry,
   Color,
@@ -36,7 +38,15 @@ const Avatar = ({ user }: AvatarProps) => {
   const torso = useLoader(OBJLoader, getBaseUri("/obj/Torso.obj"));
 
   return (
-    <div>
+    <NoSSR
+      onSSR={
+        <Skeleton
+          sx={{
+            height: "45vh",
+          }}
+        />
+      }
+    >
       <Canvas
         style={{
           height: "45vh",
@@ -128,10 +138,10 @@ const Avatar = ({ user }: AvatarProps) => {
             scale={[2, 2, 2]}
           />
           <OrbitControls />
-          <Environment preset="studio" background />
+          <Environment preset="warehouse" background />
         </Suspense>
       </Canvas>
-    </div>
+    </NoSSR>
   );
 };
 

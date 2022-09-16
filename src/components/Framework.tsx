@@ -111,7 +111,7 @@ const useStyles = createStyles((theme) => ({
   user: {
     color: theme.colorScheme === "dark" ? theme.colors.dark[0] : theme.black,
     padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
-    borderRadius: theme.radius.sm,
+    borderRadius: theme.radius.md,
     transition: "background-color 100ms ease",
 
     "&:hover": {
@@ -128,7 +128,7 @@ const useStyles = createStyles((theme) => ({
   currency: {
     color: theme.colorScheme === "dark" ? theme.colors.dark[0] : theme.black,
     padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
-    borderRadius: theme.radius.sm,
+    borderRadius: theme.radius.md,
     transition: "background-color 100ms ease",
 
     "&:hover": {
