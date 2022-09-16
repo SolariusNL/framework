@@ -25,6 +25,7 @@ import { useRouter } from "next/router";
 import React from "react";
 import ReactCountryFlag from "react-country-flag";
 import {
+  HiArrowRight,
   HiCheck,
   HiClipboardCopy,
   HiFlag,
@@ -102,7 +103,8 @@ const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
                 size={10}
                 position="bottom-end"
                 disabled={
-                  Date.now() - new Date(viewing.lastSeen).getTime() > 5 * 60 * 1000
+                  Date.now() - new Date(viewing.lastSeen).getTime() >
+                  5 * 60 * 1000
                 }
               >
                 <Avatar
@@ -323,7 +325,16 @@ const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
             <ThumbnailCarousel
               p={8}
               slides={viewing.games.map((g, i) => (
-                <Paper withBorder p={12} radius="md" key={i}>
+                <Paper
+                  withBorder
+                  p={12}
+                  radius="md"
+                  key={i}
+                  shadow="md"
+                  sx={{
+                    marginRight: i != viewing.games.length - 1 ? 8 : 0,
+                  }}
+                >
                   <Container p={0} mb={16}>
                     {g.gallery.length > 0 && (
                       <ThumbnailCarousel
@@ -363,8 +374,12 @@ const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
                     mb="md"
                   />
 
-                  <Button fullWidth color="green" leftIcon={<HiPlay />}>
-                    Play
+                  <Button
+                    fullWidth
+                    leftIcon={<HiArrowRight />}
+                    onClick={() => router.push(`/game/${g.id}`)}
+                  >
+                    View
                   </Button>
                 </Paper>
               ))}

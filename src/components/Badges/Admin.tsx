@@ -8,7 +8,7 @@ const AdminBadge = ({ user }: { user: User }) => {
   return (
     <Badge
       title="Framework staff"
-      description={`${user.username} is a Framework staff member.`}
+      description={`${user.username} is a Framework staff member, and is trusted to help other users.`}
       user={user}
       icon={<HiOutlineShieldCheck size={24} color={theme.colors.indigo[4]} />}
     />

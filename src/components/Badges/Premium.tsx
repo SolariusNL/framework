@@ -8,7 +8,7 @@ const PremiumBadge = ({ user }: { user: User }) => {
   return (
     <Badge
       title="Premium subscriber"
-      description={`${user.username} is currently subscribed to Framework Premium.`}
+      description={`${user.username} is currently a Framework Premium subscriber.`}
       user={user}
       icon={<HiOutlineSparkles size={24} color={theme.colors.grape[7]} />}
     />
