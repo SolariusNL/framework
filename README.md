@@ -23,6 +23,7 @@ Framework is built on the following technologies:
   - **migrations** - Prisma migrations
   - **schema.prisma** - Prisma schema
 - **public** - Static assets set up by Next.js
+  - **avatars** - Avatar store
 - **scripts** - Scripts for building and deploying the application
   - **seed.ts** - Seed database with required data
 - **src** - Main source code
