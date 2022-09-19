@@ -1,6 +1,6 @@
 import { client } from "../app";
 import { scheduleJob } from "node-schedule";
-import { Prisma } from "@prisma/client";
+import { PremiumSubscriptionType, Prisma } from "@prisma/client";
 import { schedule } from "node-cron";
 
 const user = Prisma.validator<Prisma.UserArgs>()({
@@ -46,6 +46,40 @@ async function schedulePremiumExpiration(user: User) {
   });
 }
 
+async function grantPremiumMonthlyReward(user: User) {
+  async function grantTickets(amt: number) {
+    await client.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        tickets: {
+          increment: amt,
+        },
+      },
+    });
+  }
+
+  const level = user.premiumSubscription?.type;
+
+  if (
+    new Date(user.premiumSubscription!.lastReward) <
+    new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+  ) {
+    switch (level) {
+      case PremiumSubscriptionType.PREMIUM_ONE_MONTH:
+        await grantTickets(1200);
+        break;
+      case PremiumSubscriptionType.PREMIUM_ONE_YEAR:
+        await grantTickets(14400);
+        break;
+      case PremiumSubscriptionType.PREMIUM_SIX_MONTHS:
+        await grantTickets(7200);
+        break;
+    }
+  }
+}
+
 async function startSubscriptionService() {
   schedule("0 */3 * * *", async () => {
     const users = await client.user.findMany({
@@ -59,9 +93,10 @@ async function startSubscriptionService() {
         premiumSubscription: true,
       },
     });
-  
+
     for (const user of users) {
       schedulePremiumExpiration(user);
+      grantPremiumMonthlyReward(user);
     }
 
     console.log("cron->premiumservice ~ 🔃 Subscription service refreshed");

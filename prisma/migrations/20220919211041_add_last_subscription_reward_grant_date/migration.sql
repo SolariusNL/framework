@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "PremiumSubscription" ADD COLUMN     "lastReward" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;

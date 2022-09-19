@@ -109,12 +109,13 @@ model GiftCode {
 }
 
 model PremiumSubscription {
-  id        String                  @id @default(uuid())
-  user      User                    @relation("userPremiumSubscription", references: [id], fields: [userId])
-  userId    Int                     @unique
-  createdAt DateTime                @default(now())
-  expiresAt DateTime                @default(now())
-  type      PremiumSubscriptionType @default(PREMIUM_ONE_MONTH)
+  id         String                  @id @default(uuid())
+  user       User                    @relation("userPremiumSubscription", references: [id], fields: [userId])
+  userId     Int                     @unique
+  createdAt  DateTime                @default(now())
+  expiresAt  DateTime                @default(now())
+  type       PremiumSubscriptionType @default(PREMIUM_ONE_MONTH)
+  lastReward DateTime                @default(now())
 }
 
 model EmailVerification {
