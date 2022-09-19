@@ -79,6 +79,8 @@ interface Configuration {
        */
       instagram?: SocialLink;
     };
+
+    description?: string;
   };
 }
 

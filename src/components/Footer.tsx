@@ -142,7 +142,7 @@ const Footer = () => {
         <div className={classes.logo}>
           <SoodamLogo height={64} width={64} />
           <Text size="xs" color="dimmed" className={classes.description}>
-            For a better tomorrow, we are building a better today.
+            {config?.footer?.description || "Passionate about open source and a better future for the web."}
           </Text>
         </div>
         <div className={classes.groups}>{groups}</div>
