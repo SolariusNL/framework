@@ -23,12 +23,10 @@ jobs:
           author_email: ${{ github.actor }}@users.noreply.github.com
           message: "add version file"
           add: "docs/version.txt"
-          publish_branch: gh-pages
       - name: push changes
         uses: EndBug/add-and-commit@v7
         with:
           author_name: ${{ github.actor }}
           author_email: ${{ github.actor }}@users.noreply.github.com
           message: "update docs"
-          push: true
-          publish_branch: gh-pages
+          push: origin gh-pages --force
