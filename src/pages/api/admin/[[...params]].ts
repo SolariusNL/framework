@@ -5,6 +5,7 @@ import {
   Param,
   Post,
 } from "@storyofams/next-api-decorators";
+import { readFile } from "fs/promises";
 import { AdminAuthorized } from "../../../util/api/authorized";
 import prisma from "../../../util/prisma";
 import { nonCurrentUserSelect } from "../../../util/prisma-types";
@@ -214,6 +215,21 @@ class AdminRouter {
     });
 
     return invites;
+  }
+
+  @Get("/instance")
+  @AdminAuthorized()
+  public async getInstance() {
+    const packageFile = JSON.parse(
+      await readFile(
+        new URL("../../../../package.json", import.meta.url),
+        "utf-8"
+      )
+    );
+
+    return {
+      version: packageFile.version,
+    };
   }
 }
 
