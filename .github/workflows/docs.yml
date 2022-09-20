@@ -29,4 +29,5 @@ jobs:
           author_name: ${{ github.actor }}
           author_email: ${{ github.actor }}@users.noreply.github.com
           message: "update docs"
-          push: origin gh-pages --force
+          push: true
+          new_branch: gh-pages
