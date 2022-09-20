@@ -1,4 +1,5 @@
 import {
+  Alert,
   Avatar,
   Button,
   Checkbox,
@@ -6,25 +7,25 @@ import {
   Grid,
   Group,
   Modal,
-  Stack,
   Textarea,
   TextInput,
 } from "@mantine/core";
+import { motion } from "framer-motion";
+import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import {
-  HiCheckCircle,
   HiIdentification,
+  HiInformationCircle,
   HiTrash,
   HiUser,
 } from "react-icons/hi";
+import { Crop } from "react-image-crop";
 import { getCookie } from "../../util/cookies";
 import { User } from "../../util/prisma-types";
-import Descriptive from "../Descriptive";
-import SettingsTab from "./SettingsTab";
-import dynamic from "next/dynamic";
-import { centerCrop, Crop, makeAspectCrop } from "react-image-crop";
 import useMediaQuery from "../../util/useMediaQuery";
 import CountrySelect from "../CountryPicker";
+import Descriptive from "../Descriptive";
+import SettingsTab from "./SettingsTab";
 
 const AvatarCropNoSSR = dynamic(() => import("react-image-crop"), {
   ssr: false,
@@ -80,6 +81,7 @@ const AccountTab = ({ user }: AccountTabProps) => {
   const [cropModalOpen, setCropModalOpen] = useState(false);
   const [crop, setCrop] = useState<Crop>();
   const imgRef = useRef<HTMLImageElement | null>();
+  const [usernameSelected, setUsernameSelected] = useState(false);
 
   const onCropComplete = (crop: Crop) => {
     makeClientCrop(crop);
@@ -297,7 +299,37 @@ const AccountTab = ({ user }: AccountTabProps) => {
                 update("username", e.target.value);
               }}
               icon={<HiUser />}
+              onFocus={() => setUsernameSelected(true)}
+              onBlur={() => setUsernameSelected(false)}
+              styles={{
+                input: {
+                  ...(usernameSelected
+                    ? {
+                        borderBottomLeftRadius: "0!important",
+                        borderBottomRightRadius: "0!important",
+                      }
+                    : {}),
+                },
+              }}
             />
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{
+                opacity: usernameSelected ? 1 : 0,
+                height: usernameSelected ? "auto" : 0,
+              }}
+              transition={{ duration: 0.2 }}
+            >
+              <Alert
+                icon={<HiInformationCircle size={14} />}
+                sx={{
+                  borderTopRightRadius: "0!important",
+                  borderTopLeftRadius: "0!important",
+                }}
+              >
+                You will be charged 500 tickets to change your username.
+              </Alert>
+            </motion.div>
           </Grid.Col>
           <Grid.Col span={mobile ? 2 : 1}>
             <Descriptive

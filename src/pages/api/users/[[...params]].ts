@@ -377,18 +377,27 @@ class UserRouter {
             return false;
           }
 
-          const user = await prisma.user.findFirst({
+          const userExists = await prisma.user.findFirst({
             where: { username: String(value) },
           });
 
-          if (user) {
+          if (userExists) {
             return false;
           }
+
+          if (user.tickets < 500) {
+            return false;
+          }
+
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { tickets: { decrement: 500 } },
+          });
 
           return true;
         },
         error:
-          "Username must be between 3 and 24 characters long and can only contain letters, numbers, underscores. Cannot be the same as another user.",
+          "You either cannot afford to change your username or your username is invalid. (Internal system error)",
       },
       {
         name: "country",
