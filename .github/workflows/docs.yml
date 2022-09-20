@@ -12,7 +12,7 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: 3.x
-      - run: echo $(jq -r .version package.json) > ./docsversion.txt
+      - run: echo $(jq -r .version package.json) > ./docs/version.txt
       - run: pip install mkdocs-material
       - run: mkdocs gh-deploy --force
         working-directory: ./docs
