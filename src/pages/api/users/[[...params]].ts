@@ -372,13 +372,28 @@ class UserRouter {
     const updatable = [
       {
         name: "username",
-        regex: /^[a-zA-Z0-9_]{3,24}$/,
+        verify: async (value: any) => {
+          if (!value.match(/^[a-zA-Z0-9_]{3,24}$/)) {
+            return false;
+          }
+
+          const user = await prisma.user.findFirst({
+            where: { username: String(value) },
+          });
+
+          if (user) {
+            return false;
+          }
+
+          return true;
+        },
         error:
-          "Username must be between 3 and 24 characters long and can only contain letters, numbers, and underscores",
+          "Username must be between 3 and 24 characters long and can only contain letters, numbers, underscores. Cannot be the same as another user.",
       },
       {
         name: "country",
-        verify: (value: string) => countries.find((c) => c.code === value),
+        verify: async (value: string) =>
+          countries.find((c) => c.code === value),
         error: "Invalid country",
       },
       {
@@ -393,7 +408,7 @@ class UserRouter {
       },
       {
         name: "notificationPreferences",
-        verify: (value: any) => {
+        verify: async (value: any) => {
           if (!Array.isArray(value)) return false;
           for (const v of value) {
             if (!Object.keys(ReceiveNotification).includes(v)) return false;
@@ -420,7 +435,9 @@ class UserRouter {
           }
         } else {
           if (
-            !field.verify(data[field.name as keyof UserUpdateBody] as string)
+            !(await field.verify(
+              data[field.name as keyof UserUpdateBody] as string
+            ))
           ) {
             return {
               error: field.error,
