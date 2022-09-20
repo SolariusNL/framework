@@ -58,7 +58,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     },
   });
 
-  await sendMail(
+  sendMail(
     String(auth.props.user?.email),
     "Email verified",
     "<p>Your email has been verified! Enjoy Framework, and contact us if you have any questions.</p>"

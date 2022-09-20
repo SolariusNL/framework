@@ -129,6 +129,17 @@ class UserRouter {
       };
     }
 
+    const userExists = await prisma.user.findFirst({
+      where: { email: newEmail },
+    });
+
+    if (userExists) {
+      return {
+        status: 400,
+        message: "User with this email already exists",
+      };
+    }
+
     await prisma.user.update({
       where: { id: user.id },
       data: { email: newEmail, emailVerified: false },
