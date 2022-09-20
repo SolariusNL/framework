@@ -12,12 +12,14 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: 3.x
-      - run: pip install mkdocs-material
-      - run: mkdocs gh-deploy --force
-        working-directory: ./docs
+
       - run: echo $(jq -r .version package.json) > version.txt
         working-directory: ./docs
       - uses: actions/upload-artifact@v2
         with:
           name: docs
           path: ./docs/site
+
+      - run: pip install mkdocs-material
+      - run: mkdocs gh-deploy --force
+        working-directory: ./docs
