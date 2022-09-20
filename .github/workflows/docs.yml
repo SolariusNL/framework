@@ -17,14 +17,14 @@ jobs:
         working-directory: ./docs
       - run: echo $(jq -r .version package.json) > ./docs/version.txt
       - name: commit version file
-        uses: EndBug/add-and-commit@v7
+        uses: EndBug/add-and-commit@v9
         with:
           author_name: ${{ github.actor }}
           author_email: ${{ github.actor }}@users.noreply.github.com
           message: "add version file"
           add: "docs/version.txt"
       - name: push changes
-        uses: EndBug/add-and-commit@v7
+        uses: EndBug/add-and-commit@v9
         with:
           author_name: ${{ github.actor }}
           author_email: ${{ github.actor }}@users.noreply.github.com
