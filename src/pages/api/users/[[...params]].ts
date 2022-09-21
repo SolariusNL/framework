@@ -394,6 +394,13 @@ class UserRouter {
             data: { tickets: { decrement: 500 } },
           });
 
+          await logTransaction(
+            "Username change",
+            500,
+            `Username change to ${value}`,
+            user.id
+          );
+
           return true;
         },
         error:
