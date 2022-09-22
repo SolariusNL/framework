@@ -1,8 +1,9 @@
-import { ScrollArea, Stack, Tabs, Text } from "@mantine/core";
+import { ScrollArea, Stack, Tabs, Text, useMantineColorScheme } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
-import { HiBell, HiEye, HiKey, HiSortAscending, HiTrash, HiUser } from "react-icons/hi";
+import { HiBell, HiEye, HiGlobe, HiKey, HiPhotograph, HiSortAscending, HiTrash, HiUser } from "react-icons/hi";
 import Framework from "../components/Framework";
 import AccountTab from "../components/Settings/AccountTab";
+import AppearanceTab from "../components/Settings/AppearanceTab";
 import DeleteAccountTab from "../components/Settings/DeleteAccountTab";
 import NotificationsTab from "../components/Settings/NotificationsTab";
 import PrivacyTab from "../components/Settings/PrivacyTab";
@@ -22,9 +23,10 @@ interface SettingsGroupProps {
 }
 
 const SettingsGroup = ({ title, children, icon }: SettingsGroupProps) => {
+  const { colorScheme } = useMantineColorScheme();
   return (
     <>
-      <Text color="dimmed" className="settings-header" size="sm">
+      <Text color="dimmed" className={`settings-header_${colorScheme}`} size="sm">
         <div
           style={{
             display: "inline-flex",
@@ -85,6 +87,12 @@ const Settings: NextPage<SettingsProps> = ({ user }) => {
                   </Tabs.Tab>
                 </SettingsGroup>
 
+                <SettingsGroup title="App" icon={<HiGlobe />}>
+                  <Tabs.Tab value="appearance" icon={<HiPhotograph />}>
+                    Appearance
+                  </Tabs.Tab>
+                </SettingsGroup>
+
                 <SettingsGroup title="Other" icon={<HiSortAscending />}>
                   <Tabs.Tab
                     value="deleteaccount"
@@ -104,6 +112,8 @@ const Settings: NextPage<SettingsProps> = ({ user }) => {
         <PrivacyTab user={user} />
         <NotificationsTab user={user} />
         <DeleteAccountTab user={user} />
+
+        <AppearanceTab user={user} />
       </Tabs>
     </Framework>
   );
