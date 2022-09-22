@@ -82,6 +82,7 @@ model User {
   warning                    String                @default("")
   secrets                    Secret[]              @relation("userSecrets")
   lastSeen                   DateTime              @default(now())
+  enrolledInPreview          Boolean               @default(false)
 }
 
 model Avatar {

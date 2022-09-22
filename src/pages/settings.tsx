@@ -1,9 +1,10 @@
 import { ScrollArea, Stack, Tabs, Text, useMantineColorScheme } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
-import { HiBell, HiEye, HiGlobe, HiKey, HiPhotograph, HiSortAscending, HiTrash, HiUser } from "react-icons/hi";
+import { HiBell, HiEye, HiGift, HiGlobe, HiKey, HiPhotograph, HiSortAscending, HiTrash, HiUser } from "react-icons/hi";
 import Framework from "../components/Framework";
 import AccountTab from "../components/Settings/AccountTab";
 import AppearanceTab from "../components/Settings/AppearanceTab";
+import BetaTab from "../components/Settings/BetaTab";
 import DeleteAccountTab from "../components/Settings/DeleteAccountTab";
 import NotificationsTab from "../components/Settings/NotificationsTab";
 import PrivacyTab from "../components/Settings/PrivacyTab";
@@ -91,6 +92,10 @@ const Settings: NextPage<SettingsProps> = ({ user }) => {
                   <Tabs.Tab value="appearance" icon={<HiPhotograph />}>
                     Appearance
                   </Tabs.Tab>
+
+                  <Tabs.Tab value="beta" icon={<HiGift />}>
+                    Preview Program
+                  </Tabs.Tab>
                 </SettingsGroup>
 
                 <SettingsGroup title="Other" icon={<HiSortAscending />}>
@@ -114,6 +119,7 @@ const Settings: NextPage<SettingsProps> = ({ user }) => {
         <DeleteAccountTab user={user} />
 
         <AppearanceTab user={user} />
+        <BetaTab user={user} />
       </Tabs>
     </Framework>
   );

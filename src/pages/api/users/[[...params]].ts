@@ -482,6 +482,31 @@ class UserRouter {
       message: "User updated successfully.",
     };
   }
+
+  @Post("/@me/preview/enroll")
+  @Authorized()
+  public async enrollInPreview(@Account() user: User) {
+    if (user.enrolledInPreview) {
+      return {
+        success: false,
+        message: "You are already enrolled in the preview.",
+      };
+    }
+
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        enrolledInPreview: true,
+      },
+    });
+
+    return {
+      success: true,
+      message: "You have successfully enrolled in the preview.",
+    };
+  }
 }
 
 export default createHandler(UserRouter);

@@ -109,6 +109,7 @@ export const userSelect: Prisma.UserSelect = {
   warningViewed: true,
   secrets: true,
   lastSeen: true,
+  enrolledInPreview: true,
 };
 
 export const gameSelect: Prisma.GameSelect = {
