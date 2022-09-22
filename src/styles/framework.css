@@ -5,8 +5,8 @@ html,
 body {
   padding: 0;
   margin: 0;
-  font-family: Inter var, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: Inter var, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
+    Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
 h1,
@@ -15,7 +15,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: Inter var!important;
+  font-family: Inter var !important;
 }
 
 .embla {
@@ -34,4 +34,22 @@ h6 {
   height: 100vh;
   width: 100vw;
   overflow: hidden;
+}
+
+.settings-header::after {
+  content: "";
+  height: 2px;
+  background-color: rgb(255, 255, 255, 20%);
+  margin-left: 8px;
+  flex-grow: 1;
+}
+
+.settings-header {
+  user-select: none;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  color: rgb(255, 255, 255, 50%);
+  font-weight: 600;
+  font-size: 14px;
 }

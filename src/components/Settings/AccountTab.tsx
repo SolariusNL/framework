@@ -187,7 +187,7 @@ const AccountTab = ({ user }: AccountTabProps) => {
 
       <SettingsTab
         tabValue="account"
-        tabTitle="Account"
+        tabTitle="Profile"
         saveButtonLabel="Save"
         saveButtonAction={(setLoading, setError) => {
           updateAccount(setLoading, setError, updated, setSuccess);
