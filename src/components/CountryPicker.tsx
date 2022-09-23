@@ -3,7 +3,7 @@
 import { Avatar, Group, Select, Text } from "@mantine/core";
 import { forwardRef } from "react";
 import ReactCountryFlag from "react-country-flag";
-import countries from "../util/countries";
+import countries from "../data/countries";
 
 interface CountrySelectProps extends React.ComponentPropsWithoutRef<"div"> {
   image: string;

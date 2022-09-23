@@ -7,6 +7,7 @@ import {
   Grid,
   Group,
   Modal,
+  Select,
   Textarea,
   TextInput,
 } from "@mantine/core";
@@ -20,12 +21,14 @@ import {
   HiUser,
 } from "react-icons/hi";
 import { Crop } from "react-image-crop";
+import getTimezones from "../../data/timezones";
 import { getCookie } from "../../util/cookies";
 import { User } from "../../util/prisma-types";
 import useMediaQuery from "../../util/useMediaQuery";
 import CountrySelect from "../CountryPicker";
 import Descriptive from "../Descriptive";
 import SettingsTab from "./SettingsTab";
+import ReactNoSSR from "react-no-ssr";
 
 const AvatarCropNoSSR = dynamic(() => import("react-image-crop"), {
   ssr: false,
@@ -242,17 +245,19 @@ const AccountTab = ({ user }: AccountTabProps) => {
               description="Your avatar will be displayed next to your name."
             >
               <Group spacing={24}>
-                <Avatar
-                  src={
-                    uploadedAvatarData
-                      ? uploadedAvatarData
-                      : user.avatarUri ||
-                        `https://avatars.dicebear.com/api/identicon/${user.id}.png`
-                  }
-                  alt={user.username}
-                  radius={999}
-                  size={48}
-                />
+                <ReactNoSSR>
+                  <Avatar
+                    src={
+                      uploadedAvatarData
+                        ? uploadedAvatarData
+                        : user.avatarUri ||
+                          `https://avatars.dicebear.com/api/identicon/${user.id}.png`
+                    }
+                    alt={user.username}
+                    radius={999}
+                    size={48}
+                  />
+                </ReactNoSSR>
 
                 <Group>
                   <FileButton
@@ -366,6 +371,21 @@ const AccountTab = ({ user }: AccountTabProps) => {
               onChange={(e) => {
                 update("bio", e.target.value);
               }}
+            />
+          </Grid.Col>
+          <Grid.Col span={mobile ? 2 : 1}>
+            <Select
+              label="Timezone"
+              description="Select your timezone."
+              defaultValue={user.timeZone}
+              onChange={(e) => {
+                update("timeZone", String(e));
+              }}
+              data={getTimezones().map((t) => ({
+                label: t.value,
+                value: t.value,
+              }))}
+              searchable
             />
           </Grid.Col>
         </Grid>

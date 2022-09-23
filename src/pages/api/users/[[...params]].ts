@@ -8,7 +8,7 @@ import {
 } from "@storyofams/next-api-decorators";
 import { category } from "../../../components/ReportUser";
 import Authorized, { Account } from "../../../util/api/authorized";
-import countries from "../../../util/countries";
+import countries from "../../../data/countries";
 import { hashPass, isSamePass } from "../../../util/hash/password";
 import createNotification from "../../../util/notifications";
 import prisma from "../../../util/prisma";
@@ -16,6 +16,7 @@ import type { User } from "../../../util/prisma-types";
 import { RateLimitMiddleware } from "../../../util/rateLimit";
 import { verificationEmail } from "../../../util/templates/verification-email";
 import { logTransaction } from "../../../util/transactionHistory";
+import getTimezones from "../../../data/timezones";
 
 interface UserUpdateBody {
   username?: string;
@@ -433,6 +434,15 @@ class UserRouter {
           return true;
         },
         error: "Invalid notification preferences",
+      },
+      {
+        name: "timeZone",
+        verify: async (value: any) => {
+          if (getTimezones().filter((t) => t.value === value)) return true;
+
+          return false;
+        },
+        error: "Invalid timezone",
       },
     ];
 

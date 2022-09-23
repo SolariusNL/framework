@@ -83,6 +83,7 @@ model User {
   secrets                    Secret[]              @relation("userSecrets")
   lastSeen                   DateTime              @default(now())
   enrolledInPreview          Boolean               @default(false)
+  timeZone                   String                @default("UTC+12")
 }
 
 model Avatar {

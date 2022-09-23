@@ -1,6 +1,23 @@
-import { ScrollArea, Stack, Tabs, Text, useMantineColorScheme } from "@mantine/core";
+import {
+  ScrollArea,
+  Skeleton,
+  Stack,
+  Tabs,
+  Text,
+  useMantineColorScheme,
+} from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
-import { HiBell, HiEye, HiGift, HiGlobe, HiKey, HiPhotograph, HiSortAscending, HiTrash, HiUser } from "react-icons/hi";
+import {
+  HiBell,
+  HiEye,
+  HiGift,
+  HiGlobe,
+  HiKey,
+  HiPhotograph,
+  HiSortAscending,
+  HiTrash,
+  HiUser,
+} from "react-icons/hi";
 import Framework from "../components/Framework";
 import AccountTab from "../components/Settings/AccountTab";
 import AppearanceTab from "../components/Settings/AppearanceTab";
@@ -12,6 +29,7 @@ import SecurityTab from "../components/Settings/SecurityTab";
 import authorizedRoute from "../util/authorizedRoute";
 import { User } from "../util/prisma-types";
 import useMediaQuery from "../util/useMediaQuery";
+import ReactNoSSR from "react-no-ssr";
 
 interface SettingsProps {
   user: User;
@@ -27,7 +45,11 @@ const SettingsGroup = ({ title, children, icon }: SettingsGroupProps) => {
   const { colorScheme } = useMantineColorScheme();
   return (
     <>
-      <Text color="dimmed" className={`settings-header_${colorScheme}`} size="sm">
+      <Text
+        color="dimmed"
+        className={`settings-header_${colorScheme}`}
+        size="sm"
+      >
         <div
           style={{
             display: "inline-flex",
@@ -112,14 +134,19 @@ const Settings: NextPage<SettingsProps> = ({ user }) => {
           </Tabs.List>
         </ScrollArea>
 
-        <AccountTab user={user} />
-        <SecurityTab user={user} />
-        <PrivacyTab user={user} />
-        <NotificationsTab user={user} />
-        <DeleteAccountTab user={user} />
-
-        <AppearanceTab user={user} />
-        <BetaTab user={user} />
+        {[
+          AccountTab,
+          SecurityTab,
+          PrivacyTab,
+          NotificationsTab,
+          DeleteAccountTab,
+          AppearanceTab,
+          BetaTab,
+        ].map((Component, index) => (
+          <ReactNoSSR key={index}>
+            <Component user={user} />
+          </ReactNoSSR>
+        ))}
       </Tabs>
     </Framework>
   );

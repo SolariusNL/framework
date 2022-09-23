@@ -14,6 +14,7 @@ export const nonCurrentUserSelect = {
     followers: { select: { id: true } },
     following: { select: { id: true } },
     lastSeen: true,
+    timeZone: true,
   },
 };
 
@@ -60,6 +61,7 @@ const nonuser = Prisma.validator<Prisma.UserArgs>()({
     followers: { select: { id: true } },
     following: { select: { id: true } },
     lastSeen: true,
+    timeZone: true,
   },
 });
 
@@ -110,6 +112,7 @@ export const userSelect: Prisma.UserSelect = {
   secrets: true,
   lastSeen: true,
   enrolledInPreview: true,
+  timeZone: true,
 };
 
 export const gameSelect: Prisma.GameSelect = {
