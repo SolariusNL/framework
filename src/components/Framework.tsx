@@ -1,3 +1,4 @@
+import { useFlags } from "@happykit/flags/client";
 import {
   ActionIcon,
   Alert,
@@ -40,6 +41,7 @@ import {
   HiSearch,
   HiSearchCircle,
   HiShoppingBag,
+  HiSpeakerphone,
   HiStar,
   HiSun,
   HiTicket,
@@ -470,6 +472,8 @@ const Framework = ({
   const searchRef = useRef<HTMLInputElement>(null);
   const [searchPopoverOpen, setSearchPopoverOpen] = useState(false);
 
+  const { flags } = useFlags();
+
   return (
     <>
       <div className={classes.header}>
@@ -655,6 +659,28 @@ const Framework = ({
 
       {!noPadding ? (
         <>
+          {flags?.bannerEnabled && (
+            <Box
+              sx={(theme) => ({
+                backgroundColor: "#e03131",
+              })}
+              p={12}
+            >
+              <Container
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <ThemeIcon color="yellow" size={28} mr={16}>
+                  <HiSpeakerphone />
+                </ThemeIcon>
+                <Text weight={500} color="white">
+                  {String(flags.bannerMessage)}
+                </Text>
+              </Container>
+            </Box>
+          )}
           {modernTitle && modernSubtitle && (
             <Box
               sx={(theme) => ({
