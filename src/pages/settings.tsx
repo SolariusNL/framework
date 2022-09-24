@@ -1,4 +1,6 @@
 import {
+  Box,
+  Loader,
   ScrollArea,
   Skeleton,
   Stack,
@@ -143,7 +145,23 @@ const Settings: NextPage<SettingsProps> = ({ user }) => {
           AppearanceTab,
           BetaTab,
         ].map((Component, index) => (
-          <ReactNoSSR key={index}>
+          <ReactNoSSR
+            key={index}
+            onSSR={
+              index == 0 ? (
+                <Box
+                  sx={{
+                    alignItems: "center",
+                    display: "flex",
+                    justifyContent: "center",
+                    width: "100%",
+                  }}
+                >
+                  <Loader />
+                </Box>
+              ) : undefined
+            }
+          >
             <Component user={user} />
           </ReactNoSSR>
         ))}
