@@ -28,9 +28,9 @@ import {
   HiArrowRight,
   HiCheck,
   HiClipboardCopy,
+  HiClock,
   HiFlag,
   HiOutlineShoppingBag,
-  HiPlay,
   HiReceiptTax,
   HiShieldCheck,
   HiSparkles,
@@ -140,8 +140,10 @@ const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
               </Group>
 
               <Group spacing={4} ml={6}>
-                {viewing.premium && <HiSparkles />}
-                {viewing.role == "ADMIN" && <HiShieldCheck />}
+                {viewing.premium && <HiSparkles title="Premium" />}
+                {viewing.role == "ADMIN" && (
+                  <HiShieldCheck title="Official Framework Staff" />
+                )}
               </Group>
             </div>
 
@@ -182,6 +184,18 @@ const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
               </Text>
 
               <Text color="dimmed">@{viewing.username}</Text>
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+              }}
+            >
+              <Group spacing={3}>
+                <HiClock color="#868e96" style={{ marginRight: 5 }} />
+                <Text color="dimmed">{viewing.timeZone}</Text>
+              </Group>
             </div>
 
             <div
@@ -467,6 +481,8 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       country: true,
       followers: nonCurrentUserSelect,
       following: nonCurrentUserSelect,
+      timeZone: true,
+      lastSeen: true,
     },
   });
 
