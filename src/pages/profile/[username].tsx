@@ -18,7 +18,7 @@ import {
   Stack,
   Text,
   Title,
-  Tooltip,
+  Tooltip
 } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { useRouter } from "next/router";
@@ -30,12 +30,11 @@ import {
   HiClipboardCopy,
   HiClock,
   HiFlag,
+  HiGift,
   HiOutlineShoppingBag,
   HiReceiptTax,
-  HiShieldCheck,
-  HiSparkles,
-  HiUser,
-  HiUsers,
+  HiShieldCheck, HiUser,
+  HiUsers
 } from "react-icons/hi";
 import AdminBadge from "../../components/Badges/Admin";
 import AlphaBadge from "../../components/Badges/Alpha";
@@ -140,7 +139,7 @@ const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
               </Group>
 
               <Group spacing={4} ml={6}>
-                {viewing.premium && <HiSparkles title="Premium" />}
+                {viewing.premium && <HiGift title="Premium" />}
                 {viewing.role == "ADMIN" && (
                   <HiShieldCheck title="Official Framework Staff" />
                 )}

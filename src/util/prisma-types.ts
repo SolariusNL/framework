@@ -15,6 +15,7 @@ export const nonCurrentUserSelect = {
     following: { select: { id: true } },
     lastSeen: true,
     timeZone: true,
+    role: true,
   },
 };
 
@@ -62,6 +63,7 @@ const nonuser = Prisma.validator<Prisma.UserArgs>()({
     following: { select: { id: true } },
     lastSeen: true,
     timeZone: true,
+    role: true,
   },
 });
 

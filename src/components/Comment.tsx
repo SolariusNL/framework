@@ -6,9 +6,15 @@ import {
   Paper,
   Stack,
   Text,
-  TypographyStylesProvider,
+  Tooltip,
+  TypographyStylesProvider
 } from "@mantine/core";
-import { HiChevronDown, HiChevronUp } from "react-icons/hi";
+import {
+  HiChevronDown,
+  HiChevronUp,
+  HiGift,
+  HiShieldCheck
+} from "react-icons/hi";
 import { NonUser } from "../util/prisma-types";
 import { getRelativeTime } from "../util/relativeTime";
 import UserContext from "./UserContext";
@@ -70,12 +76,24 @@ const Comment = ({ postedAt, body, user }: CommentProps) => {
               />
             </UserContext>
             <div>
-              <Text size="sm" weight={500}>
-                {user.username}
-              </Text>
-              <Text size="xs" color="dimmed">
-                {getRelativeTime(new Date(postedAt))}
-              </Text>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <Text size="sm" weight={500} mr={6}>
+                  {user.username}
+                </Text>
+                {user.role == "ADMIN" && (
+                  <HiShieldCheck title="Framework Staff Member" />
+                )}
+                {user.premium && <HiGift title="Premium Member" />}
+              </div>
+              <Tooltip
+                label={new Date(postedAt).toISOString()}
+                position="bottom"
+                openDelay={250}
+              >
+                <Text size="xs" color="dimmed">
+                  {getRelativeTime(new Date(postedAt))}
+                </Text>
+              </Tooltip>
             </div>
           </Group>
           <TypographyStylesProvider className={classes.body}>

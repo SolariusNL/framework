@@ -8,6 +8,10 @@ function getRelativeTime(date: Date): string {
   var elapsed = new Date().getTime() - date.getTime();
 
   if (elapsed < msPerMinute) {
+    if (elapsed / 1000 < 30) {
+      return "just now";
+    }
+
     return Math.round(elapsed / 1000) + " seconds ago";
   } else if (elapsed < msPerHour) {
     return Math.round(elapsed / msPerMinute) + " minutes ago";
