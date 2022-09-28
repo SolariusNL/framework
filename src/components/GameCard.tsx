@@ -1,5 +1,6 @@
 import {
   ActionIcon,
+  AspectRatio,
   Avatar,
   Badge,
   Button,
@@ -23,8 +24,6 @@ import {
 } from "react-icons/hi";
 import abbreviate from "../util/abbreviate";
 import { Game } from "../util/prisma-types";
-import { getGenreText } from "../util/universe/genre";
-import PlaceholderGameResource from "./PlaceholderGameResource";
 import UserContext from "./UserContext";
 
 interface GameCardProps {
@@ -53,20 +52,13 @@ const GameCard = ({ game }: GameCardProps) => {
   return (
     <Card shadow="md" withBorder p="lg" radius="md" className={classes.card}>
       <Card.Section mb="sm">
-        {game.iconUri ? (
-          <Image src={game.iconUri} alt={game.name} height={180} />
-        ) : (
-          <PlaceholderGameResource height={180} />
-        )}
+        <AspectRatio ratio={1 / 1} mx="auto">
+          <Image src={game.iconUri} alt={game.name} withPlaceholder />
+        </AspectRatio>
       </Card.Section>
 
-      <Badge>{getGenreText(game.genre)}</Badge>
-
-      <Text weight={700} mt="xs">
-        {game.name}
-      </Text>
-
-      <Group mt="lg" mb="md">
+      <Badge mb="md">{game.genre}</Badge>
+      <Group mb="md">
         <UserContext user={game.author}>
           <Avatar
             src={
@@ -74,21 +66,24 @@ const GameCard = ({ game }: GameCardProps) => {
               `https://avatars.dicebear.com/api/identicon/${game.author.id}.png`
             }
             radius={999}
+            size={32}
           />
         </UserContext>
-        <div>
-          <Text weight={500}>{game.author.username}</Text>
-          <Text size="xs" color="dimmed">
-            {new Date(game.updatedAt).toLocaleDateString()}
-          </Text>
-        </div>
+        <Text weight={500} color="dimmed">
+          {game.author.username}
+        </Text>
       </Group>
+
+      <Text weight={700} mb="xl" size="lg">
+        {game.name}
+      </Text>
 
       <Button
         mb="sm"
         onClick={() => router.push(`/game/${game.id}`)}
         leftIcon={<HiChevronRight />}
         fullWidth
+        variant="default"
       >
         View
       </Button>
