@@ -14,13 +14,16 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/router";
 import {
+  HiExternalLink,
   HiPencil,
   HiPencilAlt,
   HiPlus,
+  HiServer,
   HiThumbDown,
   HiThumbUp,
   HiTrash,
   HiUsers,
+  HiXCircle,
 } from "react-icons/hi";
 import abbreviateNumber from "../../util/abbreviate";
 import { User } from "../../util/prisma-types";
@@ -142,7 +145,11 @@ const Games = ({ user }: GamesProps) => {
 
               <Group>
                 <Link passHref href={`/game/${game.id}`}>
-                  <Button size="sm" variant="default">
+                  <Button
+                    size="sm"
+                    variant="default"
+                    leftIcon={<HiExternalLink />}
+                  >
                     View
                   </Button>
                 </Link>
@@ -159,6 +166,18 @@ const Games = ({ user }: GamesProps) => {
                       onClick={() => router.push(`/game/${game.id}/edit`)}
                     >
                       Edit
+                    </Menu.Item>
+                    <Menu.Item
+                      icon={<HiServer />}
+                      onClick={() =>
+                        router.push(`/game/${game.id}/connection/add`)
+                      }
+                    >
+                      Add Connection
+                    </Menu.Item>
+                    <Menu.Divider />
+                    <Menu.Item color="red" icon={<HiXCircle />}>
+                      Shutdown all connections
                     </Menu.Item>
                     <Menu.Item color="red" icon={<HiTrash />}>
                       Disable game
