@@ -1,7 +1,7 @@
 import {
   ActionIcon,
+  Badge,
   Button,
-  Grid,
   Group,
   Image,
   Menu,
@@ -22,9 +22,10 @@ import {
   HiTrash,
   HiUsers,
 } from "react-icons/hi";
+import abbreviateNumber from "../../util/abbreviate";
 import { User } from "../../util/prisma-types";
+import Copy from "../Copy";
 import EmptyState from "../EmptyState";
-import PlaceholderGameResource from "../PlaceholderGameResource";
 import InventTab from "./InventTab";
 
 interface GamesProps {
@@ -56,7 +57,7 @@ const Games = ({ user }: GamesProps) => {
       </Title>
 
       <Paper withBorder shadow="md" p={12} radius="md" mb={30}>
-        <Stack spacing={8}>
+        <Stack spacing={12}>
           {user.games.length == 0 && (
             <EmptyState
               title="No games"
@@ -71,14 +72,44 @@ const Games = ({ user }: GamesProps) => {
                     src={game.iconUri}
                     width={48}
                     height={48}
-                    radius={8}
                     alt={game.name}
                     withPlaceholder
                   />
                   <Stack spacing={5}>
-                    <Text weight={550} size="lg">
-                      {game.name}
-                    </Text>
+                    <Group>
+                      <Text weight={550} size="lg">
+                        {game.name}
+                      </Text>
+                      <div
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: 12,
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Badge color="teal" variant="dot" size="sm">
+                            Active
+                          </Badge>
+                        </div>
+                        <div
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Text color="dimmed" size="sm">
+                            id: <strong>{game.id}</strong>
+                          </Text>
+                          <Copy value={game.id} />
+                        </div>
+                      </div>
+                    </Group>
                     <div style={{ display: "flex", gap: 12 }}>
                       {[
                         { property: game.likedBy.length, icon: HiThumbUp },
@@ -100,7 +131,7 @@ const Games = ({ user }: GamesProps) => {
                             }
                           />
                           <Text size="sm" color="dimmed">
-                            {String(stat.property)}
+                            {String(abbreviateNumber(stat.property))}
                           </Text>
                         </div>
                       ))}
@@ -111,16 +142,13 @@ const Games = ({ user }: GamesProps) => {
 
               <Group>
                 <Link passHref href={`/game/${game.id}`}>
-                  <Button
-                    size="sm"
-                    color={colorScheme == "dark" ? "dark" : "blue"}
-                  >
+                  <Button size="sm" variant="default">
                     View
                   </Button>
                 </Link>
                 <Menu shadow="md">
                   <Menu.Target>
-                    <ActionIcon>
+                    <ActionIcon variant="default" size="lg">
                       <HiPencilAlt />
                     </ActionIcon>
                   </Menu.Target>
