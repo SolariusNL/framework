@@ -2,7 +2,6 @@ import {
   Box,
   Loader,
   ScrollArea,
-  Skeleton,
   Stack,
   Tabs,
   Text,
@@ -20,6 +19,7 @@ import {
   HiTrash,
   HiUser,
 } from "react-icons/hi";
+import ReactNoSSR from "react-no-ssr";
 import Framework from "../components/Framework";
 import AccountTab from "../components/Settings/AccountTab";
 import AppearanceTab from "../components/Settings/AppearanceTab";
@@ -31,7 +31,6 @@ import SecurityTab from "../components/Settings/SecurityTab";
 import authorizedRoute from "../util/authorizedRoute";
 import { User } from "../util/prisma-types";
 import useMediaQuery from "../util/useMediaQuery";
-import ReactNoSSR from "react-no-ssr";
 
 interface SettingsProps {
   user: User;
