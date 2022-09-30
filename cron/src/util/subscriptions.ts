@@ -81,7 +81,7 @@ async function grantPremiumMonthlyReward(user: User) {
 }
 
 async function startSubscriptionService() {
-  schedule("0 */3 * * *", async () => {
+  schedule("0 9 * * *", async () => {
     const users = await client.user.findMany({
       where: {
         premium: true,
@@ -99,7 +99,7 @@ async function startSubscriptionService() {
       grantPremiumMonthlyReward(user);
     }
 
-    console.log("cron->premiumservice ~ 🔃 Subscription service refreshed");
+    console.log("cron->premiumservice ~ 🔃 Subscription service ran");
   });
 }
 
