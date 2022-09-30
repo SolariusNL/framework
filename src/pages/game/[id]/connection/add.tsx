@@ -88,9 +88,12 @@ const AddGameConnection = ({ user, game }: AddGameConnectionProps) => {
   };
 
   return (
-    <Framework activeTab="invent" user={user}>
-      <Title mb={24}>Add Connection</Title>
-
+    <Framework
+      activeTab="invent"
+      user={user}
+      modernTitle="Add Connection"
+      modernSubtitle="Add a new connection to host your game from"
+    >
       <form onSubmit={form.onSubmit((values) => onSubmit(values))}>
         <Grid columns={3}>
           <Grid.Col span={mobile ? 3 : 1}>
