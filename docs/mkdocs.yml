@@ -51,3 +51,5 @@ nav:
   - Instance Guides:
       - instance/index.md
       - Configuring: instance/configuration.md
+
+repo_url: https://github.com/Tsodinq/framework
