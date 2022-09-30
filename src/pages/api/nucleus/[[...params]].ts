@@ -1,12 +1,11 @@
 import {
-  Body,
   createHandler,
+  Get,
   Header,
   Param,
   Post,
   Req,
   Res,
-  UseMiddleware,
 } from "@storyofams/next-api-decorators";
 import type { NextApiRequest, NextApiResponse } from "next";
 import Authorized, {
@@ -15,12 +14,9 @@ import Authorized, {
   NucleusAuthorized,
 } from "../../../util/api/authorized";
 import prisma from "../../../util/prisma";
+import type { NucleusKey, User } from "../../../util/prisma-types";
 import { nonCurrentUserSelect } from "../../../util/prisma-types";
-import type { User } from "../../../util/prisma-types";
-import type { NucleusKey } from "../../../util/prisma-types";
-import rateLimitedResource, {
-  RateLimitMiddleware,
-} from "../../../util/rateLimit";
+import { RateLimitMiddleware } from "../../../util/rateLimit";
 
 class NucleusRouter {
   @Post("/auth")
@@ -236,6 +232,60 @@ class NucleusRouter {
     return {
       success: true,
       message: "Ticket invalidated",
+    };
+  }
+
+  @Authorized()
+  @Get("/my/connections")
+  public async getConnections(@Account() user: User) {
+    const keys = await prisma.connection.findMany({
+      where: {
+        game: {
+          authorId: user.id,
+        },
+      },
+    });
+
+    return keys;
+  }
+
+  @Authorized()
+  @Post("/connections/:id/delete")
+  public async deleteConnection(
+    @Param("id") id: string,
+    @Account() user: User
+  ) {
+    const connection = await prisma.connection.findFirst({
+      where: {
+        id: String(id),
+        game: {
+          authorId: user.id,
+        },
+      },
+    });
+
+    if (!connection) {
+      return {
+        success: false,
+        message: "Invalid connection",
+      };
+    }
+
+    await prisma.nucleusKey.deleteMany({
+      where: {
+        connectionId: connection.id,
+      },
+    });
+
+    await prisma.connection.delete({
+      where: {
+        id: String(id),
+      },
+    });
+
+    return {
+      success: true,
+      message: "Connection deleted",
     };
   }
 }
