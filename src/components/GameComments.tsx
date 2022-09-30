@@ -15,6 +15,7 @@ import { getCookie } from "../util/cookies";
 import { Game, NonUser, User } from "../util/prisma-types";
 import Comment from "./Comment";
 import EmptyState from "./EmptyState";
+import ModernEmptyState from "./ModernEmptyState";
 
 interface GameCommentsProps {
   user: User;
@@ -120,7 +121,7 @@ const GameComments = ({ user, game }: GameCommentsProps) => {
       <Divider mt={24} mb={24} />
 
       {comments.length == 0 ? (
-        <EmptyState
+        <ModernEmptyState
           title="No comments"
           body="No one has commented on this game yet."
         />

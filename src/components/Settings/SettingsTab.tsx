@@ -3,6 +3,7 @@ import React from "react";
 import { HiCheckCircle, HiSave, HiXCircle } from "react-icons/hi";
 import useMediaQuery from "../../util/useMediaQuery";
 import EmptyState from "../EmptyState";
+import ModernEmptyState from "../ModernEmptyState";
 
 interface SettingsTabProps {
   tabValue: string;
@@ -44,7 +45,7 @@ const SettingsTab = ({
 
       {children}
       {unavailable && (
-        <EmptyState
+        <ModernEmptyState
           title="Feature unavailable"
           body="This feature is not yet available."
         />

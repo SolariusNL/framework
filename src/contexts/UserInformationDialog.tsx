@@ -17,6 +17,7 @@ import {
   useState,
 } from "react";
 import EmptyState from "../components/EmptyState";
+import ModernEmptyState from "../components/ModernEmptyState";
 import { NonUser, User } from "../util/prisma-types";
 
 const UserInformationDialogContext =
@@ -127,7 +128,7 @@ const UserInformationWrapper = ({
             radius="md"
           >
             {user?.following.length === 0 ? (
-              <EmptyState
+              <ModernEmptyState
                 title={`${user?.username} is not following anyone`}
                 body="They will be listed here once they start following people."
               />
@@ -152,7 +153,7 @@ const UserInformationWrapper = ({
               radius="md"
             >
               {user?.followers.length === 0 ? (
-                <EmptyState
+                <ModernEmptyState
                   title={`${user?.username} has no followers`}
                   body="They will be listed here once they start getting followers."
                 />

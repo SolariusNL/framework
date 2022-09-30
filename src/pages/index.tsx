@@ -3,6 +3,7 @@ import { GetServerSidePropsContext, NextPage } from "next";
 import { useEffect, useState } from "react";
 import EmptyState from "../components/EmptyState";
 import Framework from "../components/Framework";
+import ModernEmptyState from "../components/ModernEmptyState";
 import UserCard from "../components/UserCard";
 import authorizedRoute from "../util/authorizedRoute";
 import prisma from "../util/prisma";
@@ -29,7 +30,12 @@ const Home: NextPage<HomeProps> = ({ user, onlineFriends }) => {
   }, []);
 
   return (
-    <Framework user={user} activeTab="home" modernTitle={`${timeMessage}, ${user.username}!`} modernSubtitle="Your experience at a glance">
+    <Framework
+      user={user}
+      activeTab="home"
+      modernTitle={`${timeMessage}, ${user.username}!`}
+      modernSubtitle="Your experience at a glance"
+    >
       <Title order={3} mb={6}>
         Online friends
       </Title>
@@ -41,7 +47,7 @@ const Home: NextPage<HomeProps> = ({ user, onlineFriends }) => {
         ))}
 
         {onlineFriends.length === 0 && (
-          <EmptyState title="No friends online" body="Maybe later?" />
+          <ModernEmptyState title="No friends online" body="Maybe later?" />
         )}
       </Grid>
     </Framework>

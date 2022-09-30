@@ -23,6 +23,7 @@ import ResourceCard from "../../components/Admin/ResourceCard";
 import StatsGrid from "../../components/Admin/StatsGrid";
 import EmptyState from "../../components/EmptyState";
 import Framework from "../../components/Framework";
+import ModernEmptyState from "../../components/ModernEmptyState";
 import UserContext from "../../components/UserContext";
 import authorizedRoute from "../../util/authorizedRoute";
 import { Report, User } from "../../util/prisma-types";
@@ -112,7 +113,7 @@ const Admin: NextPage<AdminProps> = ({ user }) => {
         Recent Reports
       </Title>
       {reports?.length === 0 ? (
-        <EmptyState title="No reports" body="No reports to show." />
+        <ModernEmptyState title="No reports" body="No reports to show." />
       ) : (
         <Grid columns={6}>
           {reports?.map((report) => (

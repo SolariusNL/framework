@@ -11,6 +11,7 @@ import { GetServerSidePropsContext, NextPage } from "next";
 import React from "react";
 import EmptyState from "../components/EmptyState";
 import Framework from "../components/Framework";
+import ModernEmptyState from "../components/ModernEmptyState";
 import authorizedRoute from "../util/authorizedRoute";
 import { exclude } from "../util/exclude";
 import { User } from "../util/prisma-types";
@@ -43,7 +44,7 @@ const Catalog: NextPage<CatalogProps> = ({ user }) => {
       <Title mb={24}>Catalog</Title>
       <Grid columns={24}>
         <Grid.Col span={16}>
-          <EmptyState
+          <ModernEmptyState
             title="No items"
             body="No items found for your filters."
           />

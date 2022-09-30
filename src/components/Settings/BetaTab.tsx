@@ -4,6 +4,7 @@ import { useState } from "react";
 import { HiGift } from "react-icons/hi";
 import { User } from "../../util/prisma-types";
 import EmptyState from "../EmptyState";
+import ModernEmptyState from "../ModernEmptyState";
 import SettingsTab from "./SettingsTab";
 
 interface BetaTabProps {
@@ -56,7 +57,7 @@ const BetaTab = ({ user }: BetaTabProps) => {
               </tr>
             </thead>
             <tbody>
-              <EmptyState
+              <ModernEmptyState
                 title="No experiments available"
                 body="Check back later!"
               />

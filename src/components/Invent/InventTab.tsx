@@ -1,6 +1,7 @@
 import { Group, Tabs, Title } from "@mantine/core";
 import useMediaQuery from "../../util/useMediaQuery";
 import EmptyState from "../EmptyState";
+import ModernEmptyState from "../ModernEmptyState";
 
 interface InventTabProps {
   tabValue: string;
@@ -32,7 +33,10 @@ const InventTab = ({
 
       {children}
       {unavailable && (
-        <EmptyState title="Feature unavailable" body="This feature is not yet available." />
+        <ModernEmptyState
+          title="Feature unavailable"
+          body="This feature is not yet available."
+        />
       )}
     </Tabs.Panel>
   );

@@ -18,7 +18,7 @@ import {
   Stack,
   Text,
   Title,
-  Tooltip
+  Tooltip,
 } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { useRouter } from "next/router";
@@ -33,8 +33,9 @@ import {
   HiGift,
   HiOutlineShoppingBag,
   HiReceiptTax,
-  HiShieldCheck, HiUser,
-  HiUsers
+  HiShieldCheck,
+  HiUser,
+  HiUsers,
 } from "react-icons/hi";
 import AdminBadge from "../../components/Badges/Admin";
 import AlphaBadge from "../../components/Badges/Alpha";
@@ -42,6 +43,7 @@ import PremiumBadge from "../../components/Badges/Premium";
 import EmptyState from "../../components/EmptyState";
 import Framework from "../../components/Framework";
 import ThumbnailCarousel from "../../components/ImageCarousel";
+import ModernEmptyState from "../../components/ModernEmptyState";
 import PlaceholderGameResource from "../../components/PlaceholderGameResource";
 import ReportUser from "../../components/ReportUser";
 import { useUserInformationDialog } from "../../contexts/UserInformationDialog";
@@ -330,7 +332,7 @@ const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
 
           <Grid.Col span={mobile ? 24 : 10}>
             {viewing.games.length == 0 && (
-              <EmptyState
+              <ModernEmptyState
                 title="No games"
                 body={`${viewing.username} has no games.`}
               />

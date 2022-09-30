@@ -3,6 +3,7 @@ import { GetServerSidePropsContext, NextPage } from "next";
 import EmptyState from "../components/EmptyState";
 import Framework from "../components/Framework";
 import GameCard from "../components/GameCard";
+import ModernEmptyState from "../components/ModernEmptyState";
 import UserCard from "../components/UserCard";
 import authorizedRoute from "../util/authorizedRoute";
 import prisma from "../util/prisma";
@@ -34,7 +35,7 @@ const Search: NextPage<SearchProps> = ({
       </Title>
 
       {searchResults.length === 0 ? (
-        <EmptyState title="No results" body="Try another search term." />
+        <ModernEmptyState title="No results" body="Try another search term." />
       ) : (
         <Grid>
           {(dataType === "games" &&

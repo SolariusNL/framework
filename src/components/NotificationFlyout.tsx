@@ -24,6 +24,7 @@ import { getCookie } from "../util/cookies";
 import { getRelativeTime } from "../util/relativeTime";
 import useMediaQuery from "../util/useMediaQuery";
 import EmptyState from "./EmptyState";
+import ModernEmptyState from "./ModernEmptyState";
 
 interface NotificationFlyoutProps {
   notificationData: Notification[];
@@ -107,7 +108,7 @@ const NotificationFlyout = ({ notificationData }: NotificationFlyoutProps) => {
 
       <Popover.Dropdown>
         {notifications.length == 0 ? (
-          <EmptyState
+          <ModernEmptyState
             title="No notifications"
             body="You have no notifications"
           />

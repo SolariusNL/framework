@@ -29,6 +29,7 @@ import abbreviateNumber from "../../util/abbreviate";
 import { User } from "../../util/prisma-types";
 import Copy from "../Copy";
 import EmptyState from "../EmptyState";
+import ModernEmptyState from "../ModernEmptyState";
 import InventTab from "./InventTab";
 
 interface GamesProps {
@@ -62,7 +63,7 @@ const Games = ({ user }: GamesProps) => {
       <Paper withBorder shadow="md" p={12} radius="md" mb={30}>
         <Stack spacing={12}>
           {user.games.length == 0 && (
-            <EmptyState
+            <ModernEmptyState
               title="No games"
               body="You don't have any games on your account."
             />
