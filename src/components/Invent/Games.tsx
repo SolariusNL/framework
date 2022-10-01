@@ -76,7 +76,6 @@ const Games = ({ user }: GamesProps) => {
                     src={game.iconUri}
                     width={48}
                     height={48}
-                    alt={game.name}
                     withPlaceholder
                   />
                   <Stack spacing={5}>

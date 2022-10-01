@@ -238,6 +238,15 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                       </td>
                     </tr>
                   ))}
+
+                  {game.connection.length == 0 && (
+                    <tr>
+                      <td colSpan={3}>
+                        No servers found. The developer must add a server to
+                        play this game.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </Table>
 
