@@ -1,18 +1,4 @@
-import {
-  ActionIcon,
-  Badge,
-  Button,
-  Modal,
-  Skeleton,
-  Table,
-  Text,
-  Title,
-  Tooltip,
-} from "@mantine/core";
-import { Connection } from "@prisma/client";
-import { getCookie } from "cookies-next";
-import React from "react";
-import { HiTrash } from "react-icons/hi";
+import { Text, Title } from "@mantine/core";
 import { User } from "../../util/prisma-types";
 import ConnectionsWidget from "../Widgets/Connections";
 import InventTab from "./InventTab";
