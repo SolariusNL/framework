@@ -472,6 +472,101 @@ class GameRouter {
 
     return results;
   }
+
+  @Post("/:id/update")
+  @Authorized()
+  async updateGame(
+    @Account() user: User,
+    @Param("id") id: string,
+    @Body() body: any
+  ) {
+    const game = await prisma.game.findFirst({
+      where: {
+        id: Number(id),
+      },
+    });
+
+    if (!game) {
+      return {
+        success: false,
+        error: "Game not found",
+      };
+    }
+
+    if (game.authorId !== user.id) {
+      return {
+        success: false,
+        error: "You don't own this game",
+      };
+    }
+
+    const updatable = ["name", "description", "genre", "maxPlayersPerSession"];
+    const updatableData = [
+      {
+        property: "name",
+        regex: /^.{3,40}$/,
+        error: "Name must be between 3 and 40 characters",
+      },
+      {
+        property: "description",
+        regex: /^.{3,4000}$/,
+        error: "Description must be between 3 and 4000 characters",
+      },
+      {
+        property: "genre",
+        regex: undefined,
+        error: "Invalid genre",
+        validation: (value: any) => {
+          return Object.values(GameGenre).includes(value);
+        },
+      },
+      {
+        property: "maxPlayersPerSession",
+        regex: undefined,
+        error: "Invalid max players per session",
+        validation: (value: any) => {
+          return value >= 1 && value <= 100;
+        },
+      },
+    ];
+
+    const errors = [];
+
+    for (const field of updatableData) {
+      if (body[field.property]) {
+        if (field.regex && !field.regex.test(body[field.property])) {
+          errors.push(field.error);
+        } else if (
+          field.validation &&
+          !field.validation(body[field.property])
+        ) {
+          errors.push(field.error);
+        }
+      }
+    }
+
+    if (errors.length > 0) {
+      return {
+        success: false,
+        errors,
+      };
+    }
+
+    await prisma.game.update({
+      where: {
+        id: Number(id),
+      },
+      data: updatable
+        .map((field) => ({
+          [field]: body[field],
+        }))
+        .reduce((a, b) => ({ ...a, ...b })),
+    });
+
+    return {
+      success: true,
+    };
+  }
 }
 
 export default createHandler(GameRouter);
