@@ -145,7 +145,7 @@ const Funding = ({ game }: FundingProps) => {
               ))
             ) : (
               <tr>
-                <td colSpan={4}>
+                <td colSpan={5}>
                   <ModernEmptyState
                     title="No funds found"
                     body="Create a new fund to get started"
