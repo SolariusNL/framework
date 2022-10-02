@@ -131,7 +131,9 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
           <ModalsProvider>
             <UserInformationWrapper>
               <NotificationsProvider position="top-center">
-                <FrameworkUserProvider value={pageProps.user || null}>
+                <FrameworkUserProvider
+                  value={pageProps && pageProps.user && pageProps.user}
+                >
                   <NextNProgress />
                   <Component {...pageProps} />
                   <Modal

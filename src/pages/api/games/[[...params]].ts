@@ -34,6 +34,11 @@ interface GameCommentBody {
   body: string;
 }
 
+interface CreateFundBody {
+  name: string;
+  goal: number;
+}
+
 class GameRouter {
   @Post("/create")
   @Authorized()
@@ -565,6 +570,160 @@ class GameRouter {
 
     return {
       success: true,
+    };
+  }
+
+  @Post("/:id/fund/:fundId/donate/:amount")
+  @Authorized()
+  async donate(
+    @Account() user: User,
+    @Param("id") id: number,
+    @Param("fundId") fundId: string,
+    @Param("amount") amount: number
+  ) {
+    const game = await prisma.game.findFirst({
+      where: {
+        id: Number(id),
+      },
+      include: {
+        funds: true,
+      },
+    });
+
+    if (!game) {
+      return {
+        success: false,
+        error: "Game not found",
+      };
+    }
+
+    const fund = game.funds.find((fund) => fund.id == fundId);
+
+    if (!fund) {
+      return {
+        success: false,
+        error: "Fund not found",
+      };
+    }
+
+    if (user.tickets < Number(amount)) {
+      return {
+        success: false,
+        error: "You don't have enough tickets",
+      };
+    }
+
+    if (game.authorId == user.id) {
+      return {
+        success: false,
+        error: "You can't donate to your own fund",
+      };
+    }
+
+    await prisma.game.update({
+      where: {
+        id: Number(id),
+      },
+      data: {
+        funds: {
+          update: {
+            where: {
+              id: fundId,
+            },
+            data: {
+              current: {
+                increment: Number(amount),
+              },
+            },
+          },
+        },
+      },
+    });
+
+    await prisma.user.update({
+      where: {
+        id: game.authorId,
+      },
+      data: {
+        tickets: {
+          increment: Number(amount),
+        },
+      },
+    });
+
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        tickets: {
+          decrement: Number(amount),
+        },
+      },
+    });
+
+    return {
+      success: true,
+    };
+  }
+
+  @Post("/:id/fund/create")
+  @Authorized()
+  async createFund(
+    @Account() user: User,
+    @Param("id") id: number,
+    @Body() body: CreateFundBody
+  ) {
+    const game = await prisma.game.findFirst({
+      where: {
+        id: Number(id),
+      },
+    });
+
+    if (!game) {
+      return {
+        success: false,
+        error: "Game not found",
+      };
+    }
+
+    if (game.authorId !== user.id) {
+      return {
+        success: false,
+        error: "You don't own this game",
+      };
+    }
+
+    if (body.goal < 1 || body.goal > 1000000) {
+      return {
+        success: false,
+        error: "Invalid amount",
+      };
+    }
+
+    if (body.name.length < 3 || body.name.length > 120) {
+      return {
+        success: false,
+        error: "Invalid name",
+      };
+    }
+
+    const fund = await prisma.gameFund.create({
+      data: {
+        target: Number(body.goal),
+        game: {
+          connect: {
+            id: Number(id),
+          },
+        },
+        current: 0,
+        name: String(body.name),
+      },
+    });
+
+    return {
+      success: true,
+      fund,
     };
   }
 }

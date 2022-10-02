@@ -84,6 +84,7 @@ model User {
   lastSeen                   DateTime              @default(now())
   enrolledInPreview          Boolean               @default(false)
   timeZone                   String                @default("UTC+12")
+  donatedFunds               GameFund[]            @relation("donatedFunds")
 }
 
 model Avatar {
@@ -208,6 +209,7 @@ model Game {
   connection           Connection[]  @relation("gameConnection")
   comments             GameComment[] @relation("gameComments")
   playing              Int           @default(0)
+  funds                GameFund[]    @relation("gameFunds")
 }
 
 model GameComment {
@@ -231,6 +233,19 @@ model NucleusKey {
   name         String     @default("Nucleus key")
   connection   Connection @relation("nucleusKeyConnection", fields: [connectionId], references: [id])
   connectionId String
+}
+
+model GameFund {
+  id           String   @id @default(uuid())
+  game         Game     @relation("gameFunds", fields: [gameId], references: [id])
+  gameId       Int
+  name         String
+  target       Int
+  current      Int
+  donors       User[]   @relation("donatedFunds")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+  lastDonation DateTime @default(now())
 }
 
 model NucleusAuthTicket {

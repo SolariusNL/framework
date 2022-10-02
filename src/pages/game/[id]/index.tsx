@@ -8,6 +8,8 @@ import {
   Grid,
   Group,
   Image,
+  Modal,
+  NumberInput,
   Progress,
   Stack,
   Table,
@@ -16,10 +18,12 @@ import {
   Title,
   TypographyStylesProvider,
 } from "@mantine/core";
+import { GameFund } from "@prisma/client";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import {
+  HiCurrencyDollar,
   HiDotsVertical,
   HiFolder,
   HiInformationCircle,
@@ -38,6 +42,7 @@ import Framework from "../../../components/Framework";
 import GameComments from "../../../components/GameComments";
 import ThumbnailCarousel from "../../../components/ImageCarousel";
 import Launching from "../../../components/Launching";
+import ModernEmptyState from "../../../components/ModernEmptyState";
 import PlaceholderGameResource from "../../../components/PlaceholderGameResource";
 import UserContext from "../../../components/UserContext";
 import authorizedRoute from "../../../util/authorizedRoute";
@@ -61,10 +66,65 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
   const negative = (game.dislikedBy.length / totalFeedback) * 100;
 
   const [launchingOpen, setLaunchingOpen] = useState(false);
+  const [toFund, setToFund] = useState<GameFund | null>(null);
+  const [fundOpen, setFundOpen] = useState(false);
+  const [selectedFundAmount, setSelectedFundAmount] = useState(0);
+  const [fundLoading, setFundLoading] = useState(false);
+
+  const handleFund = async () => {
+    setFundLoading(true);
+    await fetch(
+      `/api/games/${game.id}/fund/${toFund?.id}/donate/${selectedFundAmount}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: String(getCookie(".frameworksession")),
+        },
+      }
+    )
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.error) {
+          alert(res.error || "An error occurred.");
+          return;
+        }
+
+        router.reload();
+      })
+      .catch((err) => {
+        alert(err);
+      })
+      .finally(() => {
+        setFundLoading(false);
+      });
+  };
 
   return (
     <Framework user={user} activeTab="none">
       <Launching opened={launchingOpen} setOpened={setLaunchingOpen} />
+
+      <Modal
+        opened={fundOpen}
+        onClose={() => setFundOpen(false)}
+        title="Fund Game"
+      >
+        <Text mb={16}>
+          You are about to fund {toFund?.name}. The amount you fund will be
+          deducted from your tickets balance.
+        </Text>
+
+        <NumberInput
+          label="Amount"
+          value={selectedFundAmount}
+          onChange={(n) => setSelectedFundAmount(Number(n))}
+          min={1}
+          max={user.tickets}
+          mb={16}
+        />
+
+        <Button onClick={handleFund}>Donate</Button>
+      </Modal>
 
       {game.author.id == user.id && game.connection.length == 0 && (
         <Alert
@@ -132,6 +192,10 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                   Servers
                 </Tabs.Tab>
 
+                <Tabs.Tab icon={<HiCurrencyDollar />} value="funds">
+                  Funds
+                </Tabs.Tab>
+
                 <Tabs.Tab icon={<HiFolder />} value="updatelog">
                   Update Log
                 </Tabs.Tab>
@@ -149,10 +213,8 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                 <div
                   dangerouslySetInnerHTML={{
                     __html: sanitize(game.description, {
-                      // replace links to http://framework.soodam.rocks/link?url=
                       transformTags: {
                         a: (tagName, attribs) => {
-                          // rewrite links to http://framework.soodam.rocks/link?url=
                           attribs.href = `http://${
                             process.env.NODE_ENV === "development"
                               ? "localhost:3000"
@@ -264,6 +326,83 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
 
             <Tabs.Panel value="servers" pt="md">
               <Title order={3}>Servers</Title>
+            </Tabs.Panel>
+
+            <Tabs.Panel value="funds" pt="md">
+              <Title order={3} mb={16}>
+                Funds
+              </Title>
+              <Text mb={16}>
+                Help support the developer of this game by donating to them, and
+                they will be able to continue to maintain and develop this game
+                to be the best it can be.
+              </Text>
+              {game.funds.length > 0 ? (
+                <Table striped mb={10}>
+                  <thead>
+                    <tr>
+                      <th>Status</th>
+                      <th>Name</th>
+                      <th>Goal</th>
+                      <th>Amount Raised</th>
+                      <th>Started</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {game.funds.map((fund, i) => (
+                      <tr key={i}>
+                        <td>
+                          <Badge
+                            variant="dot"
+                            color={
+                              fund.current >= fund.target ? "blue" : "green"
+                            }
+                          >
+                            {fund.current >= fund.target
+                              ? "Complete"
+                              : "Active"}
+                          </Badge>
+                        </td>
+                        <td>{fund.name}</td>
+                        <td>{fund.target}</td>
+                        <td>{fund.current}</td>
+                        <td>{new Date(fund.createdAt).toLocaleDateString()}</td>
+                        <td>
+                          {mobile ? (
+                            <ActionIcon
+                              onClick={() => {
+                                setToFund(fund);
+                                setFundOpen(true);
+                              }}
+                              color="blue"
+                            >
+                              <HiCurrencyDollar />
+                            </ActionIcon>
+                          ) : (
+                            <Button
+                              size="xs"
+                              leftIcon={<HiCurrencyDollar />}
+                              onClick={() => {
+                                setToFund(fund);
+                                setFundOpen(true);
+                              }}
+                            >
+                              Donate
+                            </Button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              ) : (
+                <ModernEmptyState
+                  title="No funds"
+                  body="The developer hasn't set up any funds yet."
+                />
+              )}
             </Tabs.Panel>
 
             <Tabs.Panel value="updatelog" pt="md">
