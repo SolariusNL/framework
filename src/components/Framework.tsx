@@ -147,33 +147,6 @@ const useStyles = createStyles((theme) => ({
   tabsList: {
     borderBottom: "0 !important",
   },
-
-  tab: {
-    height: 38,
-    backgroundColor: "transparent",
-    color: theme.colors.gray[7],
-
-    "&:hover": {
-      backgroundColor:
-        theme.colorScheme === "dark"
-          ? theme.colors.dark[5]
-          : theme.colors.gray[1],
-    },
-
-    "&[data-active]": {
-      backgroundColor:
-        theme.colorScheme === "dark" ? theme.colors.dark[7] : theme.white,
-      borderColor:
-        theme.colorScheme === "dark"
-          ? theme.colors.dark[7]
-          : theme.colors.gray[2],
-      fontWeight: 500,
-      color:
-        theme.colorScheme === "dark"
-          ? theme.colors.dark[1]
-          : theme.colors.dark[7],
-    },
-  },
 }));
 
 const Search = ({ ref }: { ref: React.RefObject<HTMLInputElement> }) => {
@@ -395,7 +368,7 @@ const Framework = ({
   const [userMenuOpened, setUserMenuOpened] = useState(false);
   const [currencyMenuOpened, setCurrencyMenuOpened] = useState(false);
   const router = useRouter();
-  const mobile = useMediaQuery("768");
+  const mobile = useMediaQuery("950");
   const config = useConfig();
 
   const tabs = [
@@ -551,10 +524,54 @@ const Framework = ({
             <Group position="apart">
               <Tabs
                 defaultValue={activeTab}
-                variant="outline"
+                variant="pills"
                 classNames={{
                   tabsList: classes.tabsList,
-                  tab: classes.tab,
+                }}
+                mb={12}
+                styles={{
+                  tab: {
+                    fontSize: "14px",
+                    marginLeft: "8px",
+                    transition: "background 33.333ms linear 0s",
+                    color:
+                      theme.colorScheme == "dark"
+                        ? "rgb(201, 209, 217)"
+                        : "rgb(36, 41, 47)",
+                    cursor: "pointer",
+                    padding: "6px 14px",
+                    /**
+                     * TS doesn't like this, but it works
+                     */
+                    /** @ts-ignore */
+                    "&[data-active=true]": {
+                      ":after": {
+                        height: "24px",
+                        content: "''",
+                        backgroundColor:
+                          theme.colorScheme == "dark"
+                            ? "rgb(88, 166, 255)"
+                            : "rgb(9, 105, 218)",
+                        borderRadius: "6px",
+                        position: "absolute",
+                        top: "calc(50% - 12px)",
+                        left: "-8px",
+                        width: "4px",
+                      },
+                      fontWeight: 600,
+                      backgroundColor:
+                        theme.colorScheme == "dark"
+                          ? "rgba(177, 186, 196, 0.08)!important"
+                          : "rgba(208, 215, 222, 0.24)!important",
+                      color: theme.colorScheme == "light" && "rgb(36, 41, 47)",
+                    },
+                    ":hover": {
+                      backgroundColor: "rgba(177, 186, 196, 0.08)",
+                    },
+                  },
+                  tabsList: {
+                    gap: 6,
+                  },
                 }}
               >
                 <Tabs.List>{items}</Tabs.List>
@@ -571,6 +588,7 @@ const Framework = ({
                   <ActionIcon
                     variant="subtle"
                     onClick={() => setSearchPopoverOpen(!searchPopoverOpen)}
+                    mb={10}
                   >
                     <HiSearch />
                   </ActionIcon>
