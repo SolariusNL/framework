@@ -20,7 +20,7 @@ h6 {
 
 .embla {
   overflow: hidden;
-  border-radius: 16px;
+  border-radius: 8px;
 }
 .embla__container {
   display: flex;

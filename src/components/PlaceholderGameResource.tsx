@@ -1,7 +1,7 @@
 import { useMantineTheme } from "@mantine/core";
 
 interface PlaceholderGameResourceProps {
-  height: number;
+  height?: number;
   radius?: number;
   width?: number;
 }

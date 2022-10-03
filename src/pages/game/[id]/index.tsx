@@ -1,24 +1,23 @@
 import {
   ActionIcon,
   Alert,
+  AspectRatio,
   Avatar,
-  Badge,
+  Box,
   Button,
   Divider,
   Grid,
   Group,
   Image,
-  Modal,
-  NumberInput,
+  Loader,
   Progress,
+  Skeleton,
   Stack,
-  Table,
   Tabs,
   Text,
   Title,
-  TypographyStylesProvider,
+  Tooltip,
 } from "@mantine/core";
-import { GameFund } from "@prisma/client";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -29,22 +28,23 @@ import {
   HiInformationCircle,
   HiLockClosed,
   HiPlay,
-  HiPlus,
   HiServer,
   HiThumbDown,
   HiThumbUp,
-  HiUsers,
-  HiViewGrid,
   HiViewList,
 } from "react-icons/hi";
-import sanitize from "sanitize-html";
+import ReactNoSSR from "react-no-ssr";
 import Framework from "../../../components/Framework";
 import GameComments from "../../../components/GameComments";
 import ThumbnailCarousel from "../../../components/ImageCarousel";
 import Launching from "../../../components/Launching";
-import ModernEmptyState from "../../../components/ModernEmptyState";
 import PlaceholderGameResource from "../../../components/PlaceholderGameResource";
 import UserContext from "../../../components/UserContext";
+import ConnectionTab from "../../../components/ViewGame/Connection";
+import FundsTab from "../../../components/ViewGame/Funds";
+import InfoTab from "../../../components/ViewGame/Info";
+import ServersTab from "../../../components/ViewGame/Servers";
+import UpdateLogTab from "../../../components/ViewGame/UpdateLog";
 import authorizedRoute from "../../../util/authorizedRoute";
 import { getCookie } from "../../../util/cookies";
 import prisma from "../../../util/prisma";
@@ -66,65 +66,10 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
   const negative = (game.dislikedBy.length / totalFeedback) * 100;
 
   const [launchingOpen, setLaunchingOpen] = useState(false);
-  const [toFund, setToFund] = useState<GameFund | null>(null);
-  const [fundOpen, setFundOpen] = useState(false);
-  const [selectedFundAmount, setSelectedFundAmount] = useState(0);
-  const [fundLoading, setFundLoading] = useState(false);
-
-  const handleFund = async () => {
-    setFundLoading(true);
-    await fetch(
-      `/api/games/${game.id}/fund/${toFund?.id}/donate/${selectedFundAmount}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: String(getCookie(".frameworksession")),
-        },
-      }
-    )
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.error) {
-          alert(res.error || "An error occurred.");
-          return;
-        }
-
-        router.reload();
-      })
-      .catch((err) => {
-        alert(err);
-      })
-      .finally(() => {
-        setFundLoading(false);
-      });
-  };
 
   return (
     <Framework user={user} activeTab="none">
       <Launching opened={launchingOpen} setOpened={setLaunchingOpen} />
-
-      <Modal
-        opened={fundOpen}
-        onClose={() => setFundOpen(false)}
-        title="Fund Game"
-      >
-        <Text mb={16}>
-          You are about to fund {toFund?.name}. The amount you fund will be
-          deducted from your tickets balance.
-        </Text>
-
-        <NumberInput
-          label="Amount"
-          value={selectedFundAmount}
-          onChange={(n) => setSelectedFundAmount(Number(n))}
-          min={1}
-          max={user.tickets}
-          mb={16}
-        />
-
-        <Button onClick={handleFund}>Donate</Button>
-      </Modal>
 
       {game.author.id == user.id && game.connection.length == 0 && (
         <Alert
@@ -145,19 +90,17 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
             slides={
               game.gallery.length > 0
                 ? game.gallery.map((image, i) => (
-                    <Image
-                      src={image}
-                      key={i}
-                      alt={game.name}
-                      height={mobile ? 200 : 320}
-                    />
+                    <AspectRatio ratio={16 / 9} key={i}>
+                      <Image src={image} key={i} alt={game.name} />
+                    </AspectRatio>
                   ))
-                : [
-                    <PlaceholderGameResource
-                      height={mobile ? 200 : 320}
-                      key="placeholder"
-                    />,
-                  ]
+                : Array(3)
+                    .fill(0)
+                    .map((_, i) => (
+                      <AspectRatio ratio={16 / 9} key={i}>
+                        <PlaceholderGameResource key={i} />
+                      </AspectRatio>
+                    ))
             }
           />
 
@@ -202,215 +145,45 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
               </div>
             </Tabs.List>
 
-            <Tabs.Panel value="info" pt="md">
-              <Title order={3} mb={16}>
-                Information
-              </Title>
-              <Title order={5} mb={10}>
-                Description
-              </Title>
-              <TypographyStylesProvider mb={26}>
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: sanitize(game.description, {
-                      transformTags: {
-                        a: (tagName, attribs) => {
-                          attribs.href = `http://${
-                            process.env.NODE_ENV === "development"
-                              ? "localhost:3000"
-                              : "framework.soodam.rocks"
-                          }/link?url=${attribs.href}`;
-                          return { tagName, attribs };
-                        },
-                      },
-                    }),
-                  }}
-                />
-              </TypographyStylesProvider>
-
-              <Grid>
-                {[
-                  {
-                    icon: <HiViewList />,
-                    item: "genre",
-                    label: "Genre",
-                  },
-                  {
-                    icon: <HiUsers />,
-                    item: "maxPlayersPerSession",
-                    label: "Max Players",
-                  },
-                  {
-                    icon: <HiServer />,
-                    item: "playing",
-                    label: "Playing",
-                  },
-                  {
-                    icon: <HiViewGrid />,
-                    item: "visits",
-                    label: "Visits",
-                  },
-                ].map((x, i) => (
-                  <Grid.Col md={6} sm={6} xs={4} span={6} key={i}>
-                    <Stack spacing={10} align="center">
-                      {x.icon}
-                      <Text weight={550} mb={6}>
-                        {x.label}
-                      </Text>
-                      {x.item == "genre" ? (
-                        <Badge color="blue">{game.genre}</Badge>
-                      ) : (
-                        <Text>{String(game[x.item as keyof Game])}</Text>
-                      )}
-                    </Stack>
-                  </Grid.Col>
-                ))}
-              </Grid>
-            </Tabs.Panel>
-
-            <Tabs.Panel value="connection" pt="md">
-              <Title order={3} mb={16}>
-                Connection Information
-              </Title>
-
-              <Table highlightOnHover mb={10}>
-                <thead>
-                  <tr>
-                    <th>IP Address</th>
-                    <th>Port</th>
-                    <th>Online</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {game.connection.map((connection, i) => (
-                    <tr key={i}>
-                      <td>{connection.ip}</td>
-                      <td>{connection.port}</td>
-                      <td>
-                        {connection.online ? (
-                          <Badge variant="dot" color="green">
-                            Online
-                          </Badge>
-                        ) : (
-                          <Badge variant="dot" color="red">
-                            Offline
-                          </Badge>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-
-                  {game.connection.length == 0 && (
-                    <tr>
-                      <td colSpan={3}>
-                        No servers found. The developer must add a server to
-                        play this game.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </Table>
-
-              {game.author.id == user.id && (
-                <Button
-                  variant="subtle"
-                  size="xs"
-                  leftIcon={<HiPlus />}
-                  onClick={() => router.push(`/game/${game.id}/connection/add`)}
+            {[InfoTab, ConnectionTab, ServersTab, FundsTab, UpdateLogTab].map(
+              (Tab, i) => (
+                <ReactNoSSR
+                  key={i}
+                  onSSR={
+                    i == 0 ? (
+                      <Box
+                        sx={{
+                          alignItems: "center",
+                          display: "flex",
+                          justifyContent: "center",
+                          width: "100%",
+                        }}
+                      >
+                        <Loader />
+                      </Box>
+                    ) : undefined
+                  }
                 >
-                  Add server
-                </Button>
-              )}
-            </Tabs.Panel>
-
-            <Tabs.Panel value="servers" pt="md">
-              <Title order={3}>Servers</Title>
-            </Tabs.Panel>
-
-            <Tabs.Panel value="funds" pt="md">
-              <Title order={3} mb={16}>
-                Funds
-              </Title>
-              <Text mb={16}>
-                Help support the developer of this game by donating to them, and
-                they will be able to continue to maintain and develop this game
-                to be the best it can be.
-              </Text>
-              {game.funds.length > 0 ? (
-                <Table striped mb={10}>
-                  <thead>
-                    <tr>
-                      <th>Status</th>
-                      <th>Name</th>
-                      <th>Goal</th>
-                      <th>Amount Raised</th>
-                      <th>Started</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {game.funds.map((fund, i) => (
-                      <tr key={i}>
-                        <td>
-                          <Badge
-                            variant="dot"
-                            color={
-                              fund.current >= fund.target ? "blue" : "green"
-                            }
-                          >
-                            {fund.current >= fund.target
-                              ? "Complete"
-                              : "Active"}
-                          </Badge>
-                        </td>
-                        <td>{fund.name}</td>
-                        <td>{fund.target}</td>
-                        <td>{fund.current}</td>
-                        <td>{new Date(fund.createdAt).toLocaleDateString()}</td>
-                        <td>
-                          {mobile ? (
-                            <ActionIcon
-                              onClick={() => {
-                                setToFund(fund);
-                                setFundOpen(true);
-                              }}
-                              color="blue"
-                            >
-                              <HiCurrencyDollar />
-                            </ActionIcon>
-                          ) : (
-                            <Button
-                              size="xs"
-                              leftIcon={<HiCurrencyDollar />}
-                              onClick={() => {
-                                setToFund(fund);
-                                setFundOpen(true);
-                              }}
-                            >
-                              Donate
-                            </Button>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </Table>
-              ) : (
-                <ModernEmptyState
-                  title="No funds"
-                  body="The developer hasn't set up any funds yet."
-                />
-              )}
-            </Tabs.Panel>
-
-            <Tabs.Panel value="updatelog" pt="md">
-              <Title order={3}>Update Log</Title>
-            </Tabs.Panel>
+                  <Tab game={game} key={i} />
+                </ReactNoSSR>
+              )
+            )}
           </Tabs>
 
-          <GameComments user={user} game={game} />
+          <ReactNoSSR
+            onSSR={
+              <Stack spacing={12}>
+                <Skeleton height={160} />
+                {Array(3)
+                  .fill(0)
+                  .map((_, i) => (
+                    <Skeleton key={i} height={100} />
+                  ))}
+              </Stack>
+            }
+          >
+            <GameComments user={user} game={game} />
+          </ReactNoSSR>
         </Grid.Col>
         <Grid.Col span={mobile ? 24 : 8} p={10}>
           <Group position="apart" pl={0} pr={0} p={10} mb="lg">
@@ -442,12 +215,14 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
             <Group>
               <Text color="dimmed">@{game.author.username}</Text>
               {game.author.id == user.id && (
-                <ActionIcon
-                  onClick={() => router.push(`/game/${game.id}/edit`)}
-                  color="dark"
-                >
-                  <HiDotsVertical />
-                </ActionIcon>
+                <Tooltip label="Edit game">
+                  <ActionIcon
+                    onClick={() => router.push(`/game/${game.id}/edit`)}
+                    color="dark"
+                  >
+                    <HiDotsVertical />
+                  </ActionIcon>
+                </Tooltip>
               )}
             </Group>
           </Group>

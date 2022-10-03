@@ -4,26 +4,36 @@ import Autoplay from "embla-carousel-autoplay";
 
 type PropType = {
   options?: EmblaOptionsType;
-  slides: ReactNode[];
+  slides: ReactNode[] | ReactNode;
   p?: number;
 };
 
 const ThumbnailCarousel = (props: PropType) => {
   const { options, slides, p } = props;
-  const [emblaRef] = useEmblaCarousel(options, [Autoplay({
-    delay: 2500
-  })]);
+  const [emblaRef] = useEmblaCarousel(options, [
+    Autoplay({
+      delay: 2500,
+    }),
+  ]);
 
   return (
-    <div className="embla" ref={emblaRef} style={{
-      ...(p ? { padding: `${p}px` } : {})
-    }}>
+    <div
+      className="embla"
+      ref={emblaRef}
+      style={{
+        ...(p ? { padding: `${p}px` } : {}),
+      }}
+    >
       <div className="embla__container">
-        {slides.map((slide, index) => (
-          <div className="embla__slide" key={index}>
-            {slide}
-          </div>
-        ))}
+        {Array.isArray(slides) ? (
+          slides.map((slide, index) => (
+            <div className="embla__slide" key={index}>
+              {slide}
+            </div>
+          ))
+        ) : (
+          <div className="embla__slide">{slides}</div>
+        )}
       </div>
     </div>
   );
