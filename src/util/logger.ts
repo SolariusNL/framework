@@ -36,7 +36,7 @@ class Logger {
 
     console.log(
       chalk.bgBlue(chalk.hex(colors.white)(` [${timestamp}] `)),
-      chalk.hex(color)(`[asura->${level}]`),
+      chalk.hex(color)(`[framework->${level}]`),
       chalk.hex(colors.white)(`${message}`)
     );
   }
