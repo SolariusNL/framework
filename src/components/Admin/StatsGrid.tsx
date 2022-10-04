@@ -1,4 +1,4 @@
-import { Group, Paper, SimpleGrid, Text } from "@mantine/core";
+import { Group, Paper, SimpleGrid, Skeleton, Text } from "@mantine/core";
 import { IconArrowDownRight, IconArrowUpRight } from "@tabler/icons";
 
 interface StatsGridProps {
@@ -62,7 +62,7 @@ StatsGrid.Item = ({
             lineHeight: 1,
           }}
         >
-          {value}
+          {value || <Skeleton height={32} width={100} />}
         </Text>
         {hasDiff && diff && (
           <Text

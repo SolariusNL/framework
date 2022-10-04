@@ -1,6 +1,7 @@
 import { Text, Title } from "@mantine/core";
 import { HiArrowsExpand, HiEye, HiShare } from "react-icons/hi";
 import { User } from "../../util/prisma-types";
+import useMediaQuery from "../../util/useMediaQuery";
 import SettingsTab from "./SettingsTab";
 
 interface PrivacyTabProps {
@@ -29,6 +30,8 @@ const PrivacyTab = ({ user }: PrivacyTabProps) => {
     },
   ];
 
+  const mobile = useMediaQuery("768");
+
   return (
     <SettingsTab tabValue="privacy" tabTitle="Privacy">
       <Title order={4} mb={16}>
@@ -41,7 +44,7 @@ const PrivacyTab = ({ user }: PrivacyTabProps) => {
       </Text>
       <div
         style={{
-          display: "flex",
+          display: mobile ? "block" : "flex",
           gap: 16,
         }}
       >
