@@ -16,6 +16,7 @@ import {
   type User,
 } from "../../../util/prisma-types";
 import { RateLimitMiddleware } from "../../../util/rateLimit";
+import { logTransaction } from "../../../util/transactionHistory";
 
 interface GameCreateBody {
   gameName: string;
@@ -661,6 +662,13 @@ class GameRouter {
         },
       },
     });
+
+    await logTransaction(
+      "Game fund " + fund.name,
+      amount,
+      "Donated to game fund for " + game.name + " (" + game.id + ")",
+      user.id
+    );
 
     return {
       success: true,
