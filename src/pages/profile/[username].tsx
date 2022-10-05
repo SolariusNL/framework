@@ -40,7 +40,6 @@ import {
 import AdminBadge from "../../components/Badges/Admin";
 import AlphaBadge from "../../components/Badges/Alpha";
 import PremiumBadge from "../../components/Badges/Premium";
-import EmptyState from "../../components/EmptyState";
 import Framework from "../../components/Framework";
 import ThumbnailCarousel from "../../components/ImageCarousel";
 import ModernEmptyState from "../../components/ModernEmptyState";
