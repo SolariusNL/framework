@@ -1,6 +1,13 @@
-import { Card, Group, Text, Title, useMantineColorScheme } from "@mantine/core";
+import {
+  Button,
+  Card,
+  Group,
+  Text,
+  Title,
+  useMantineColorScheme,
+} from "@mantine/core";
 import { PremiumSubscriptionType } from "@prisma/client";
-import { HiClock, HiGift } from "react-icons/hi";
+import { HiClock, HiGift, HiStop } from "react-icons/hi";
 import { User } from "../../util/prisma-types";
 import { getSubscriptionTypeString } from "../../util/universe/subscription";
 import SettingsTab from "./SettingsTab";
@@ -31,7 +38,7 @@ const SubscriptionTab = ({ user }: SubscriptionTabProps) => {
             >
               <div>
                 {premium ? (
-                  <HiGift size={64} color="#e599f7" />
+                  <HiGift size={64} />
                 ) : (
                   <HiGift size={64} style={{ opacity: 0.5 }} />
                 )}
@@ -102,6 +109,9 @@ const SubscriptionTab = ({ user }: SubscriptionTabProps) => {
               </div>
             </div>
           </Card>
+        }
+        actions={
+          premium && <Button leftIcon={<HiStop />}>Cancel Subscription</Button>
         }
       />
     </SettingsTab>
