@@ -9,6 +9,14 @@ class DocRouter {
     const license = await readFile("./LICENSE", "utf-8");
     return license;
   }
+
+  @Get("/version")
+  @RateLimitMiddleware(20)()
+  async getVersion() {
+    const data = await readFile("./package.json", "utf-8");
+    const { version } = JSON.parse(data);
+    return version;
+  }
 }
 
 export default createHandler(DocRouter);

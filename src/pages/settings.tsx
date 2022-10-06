@@ -14,6 +14,7 @@ import {
   HiEye,
   HiGift,
   HiGlobe,
+  HiInformationCircle,
   HiKey,
   HiPhotograph,
   HiSortAscending,
@@ -22,6 +23,7 @@ import {
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import Framework from "../components/Framework";
+import AboutTab from "../components/Settings/AboutTab";
 import AccountTab from "../components/Settings/AccountTab";
 import AppearanceTab from "../components/Settings/AppearanceTab";
 import BetaTab from "../components/Settings/BetaTab";
@@ -128,6 +130,9 @@ const Settings: NextPage<SettingsProps> = ({ user }) => {
                 </SettingsGroup>
 
                 <SettingsGroup title="Other" icon={<HiSortAscending />}>
+                  <Tabs.Tab value="about" icon={<HiInformationCircle />}>
+                    About Framework
+                  </Tabs.Tab>
                   <Tabs.Tab
                     value="deleteaccount"
                     icon={<HiTrash />}
@@ -147,6 +152,7 @@ const Settings: NextPage<SettingsProps> = ({ user }) => {
           PrivacyTab,
           SubscriptionTab,
           NotificationsTab,
+          AboutTab,
           DeleteAccountTab,
           AppearanceTab,
           BetaTab,
