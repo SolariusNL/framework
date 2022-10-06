@@ -6,9 +6,9 @@ import {
   Table,
   Text,
   TextInput,
+  Tooltip,
 } from "@mantine/core";
 import { getCookie } from "cookies-next";
-import { randomUUID } from "crypto";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { HiPlus, HiTrash } from "react-icons/hi";
@@ -131,37 +131,43 @@ const Secrets = ({ user }: SecretsProps) => {
                 <td>{secret.name}</td>
                 <td>
                   {shownIndexes.includes(secret.id) ? (
-                    <Button
-                      variant="subtle"
-                      size="xs"
-                      onClick={() =>
-                        setShownIndexes(
-                          shownIndexes.filter((i) => i !== secret.id)
-                        )
-                      }
-                    >
-                      {secret.code}
-                    </Button>
+                    <Tooltip label="Hide whole value">
+                      <Button
+                        variant="subtle"
+                        size="xs"
+                        onClick={() =>
+                          setShownIndexes(
+                            shownIndexes.filter((i) => i !== secret.id)
+                          )
+                        }
+                      >
+                        {secret.code}
+                      </Button>
+                    </Tooltip>
                   ) : (
-                    <Button
-                      variant="subtle"
-                      size="xs"
-                      onClick={() =>
-                        setShownIndexes([...shownIndexes, secret.id])
-                      }
-                    >
-                      {secret.code.slice(0, 3)}... show
-                    </Button>
+                    <Tooltip label="Show whole value">
+                      <Button
+                        variant="subtle"
+                        size="xs"
+                        onClick={() =>
+                          setShownIndexes([...shownIndexes, secret.id])
+                        }
+                      >
+                        {secret.code.slice(0, 3)}... show
+                      </Button>
+                    </Tooltip>
                   )}
                 </td>
                 <td>
-                  <ActionIcon
-                    color="red"
-                    size="sm"
-                    onClick={() => deleteSecret(secret.id)}
-                  >
-                    <HiTrash />
-                  </ActionIcon>
+                  <Tooltip label="Delete secret">
+                    <ActionIcon
+                      color="red"
+                      size="md"
+                      onClick={() => deleteSecret(secret.id)}
+                    >
+                      <HiTrash />
+                    </ActionIcon>
+                  </Tooltip>
                 </td>
               </tr>
             ))}

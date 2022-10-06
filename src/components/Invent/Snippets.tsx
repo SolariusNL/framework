@@ -5,6 +5,7 @@ import {
   Table,
   Textarea,
   TextInput,
+  Tooltip,
 } from "@mantine/core";
 import { useRouter } from "next/router";
 import React from "react";
@@ -112,12 +113,17 @@ const Snippets = ({ user }: SnippetsProps) => {
                 <td>{snippet.name}</td>
                 <td>{snippet.description}</td>
                 <td>
-                  <ActionIcon
-                    variant="light"
-                    onClick={() => router.push(`/snippets/${snippet.id}/edit`)}
-                  >
-                    <HiPencil />
-                  </ActionIcon>
+                  <Tooltip label="Edit snippet">
+                    <ActionIcon
+                      variant="light"
+                      onClick={() =>
+                        router.push(`/snippets/${snippet.id}/edit`)
+                      }
+                      size="md"
+                    >
+                      <HiPencil />
+                    </ActionIcon>
+                  </Tooltip>
                 </td>
               </tr>
             ))}

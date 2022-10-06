@@ -1,17 +1,15 @@
 import {
   ActionIcon,
   Alert,
-  Button,
-  Modal,
   NotificationProps,
   Table,
   Text,
-  TextInput,
   Title,
+  Tooltip,
 } from "@mantine/core";
 import { NucleusKey } from "@prisma/client";
 import React from "react";
-import { HiCheckCircle, HiPlus, HiXCircle } from "react-icons/hi";
+import { HiXCircle } from "react-icons/hi";
 import { getCookie } from "../../util/cookies";
 import { User } from "../../util/prisma-types";
 import InventTab from "./InventTab";
@@ -86,18 +84,18 @@ const Nucleus = ({ user }: NucleusProps) => {
             {keys.map((key) => (
               <tr key={key.id}>
                 <td>{key.name}</td>
-                <td>
-                  {key.connectionId.substring(0, 10)}...
-                </td>
+                <td>{key.connectionId.substring(0, 10)}...</td>
                 <td>{key.key}</td>
                 <td>
-                  <ActionIcon
-                    variant="light"
-                    color="red"
-                    onClick={() => deleteKey(key.key)}
-                  >
-                    <HiXCircle />
-                  </ActionIcon>
+                  <Tooltip label="Delete key and its assosciated connection">
+                    <ActionIcon
+                      variant="light"
+                      color="red"
+                      onClick={() => deleteKey(key.key)}
+                    >
+                      <HiXCircle />
+                    </ActionIcon>
+                  </Tooltip>
                 </td>
               </tr>
             ))}
