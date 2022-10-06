@@ -9,6 +9,7 @@ import {
 } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
 import {
+  HiBeaker,
   HiBell,
   HiEye,
   HiGift,
@@ -28,6 +29,7 @@ import DeleteAccountTab from "../components/Settings/DeleteAccountTab";
 import NotificationsTab from "../components/Settings/NotificationsTab";
 import PrivacyTab from "../components/Settings/PrivacyTab";
 import SecurityTab from "../components/Settings/SecurityTab";
+import SubscriptionTab from "../components/Settings/SubscriptionTab";
 import authorizedRoute from "../util/authorizedRoute";
 import { User } from "../util/prisma-types";
 import useMediaQuery from "../util/useMediaQuery";
@@ -106,6 +108,10 @@ const Settings: NextPage<SettingsProps> = ({ user }) => {
                     Privacy
                   </Tabs.Tab>
 
+                  <Tabs.Tab value="subscriptions" icon={<HiGift />}>
+                    Subscriptions
+                  </Tabs.Tab>
+
                   <Tabs.Tab value="notifications" icon={<HiBell />}>
                     Notifications
                   </Tabs.Tab>
@@ -116,7 +122,7 @@ const Settings: NextPage<SettingsProps> = ({ user }) => {
                     Appearance
                   </Tabs.Tab>
 
-                  <Tabs.Tab value="beta" icon={<HiGift />}>
+                  <Tabs.Tab value="beta" icon={<HiBeaker />}>
                     Preview Program
                   </Tabs.Tab>
                 </SettingsGroup>
@@ -139,6 +145,7 @@ const Settings: NextPage<SettingsProps> = ({ user }) => {
           AccountTab,
           SecurityTab,
           PrivacyTab,
+          SubscriptionTab,
           NotificationsTab,
           DeleteAccountTab,
           AppearanceTab,
