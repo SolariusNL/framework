@@ -7,13 +7,13 @@ import {
   Stack,
   Text,
   Tooltip,
-  TypographyStylesProvider
+  TypographyStylesProvider,
 } from "@mantine/core";
 import {
   HiChevronDown,
   HiChevronUp,
   HiGift,
-  HiShieldCheck
+  HiShieldCheck,
 } from "react-icons/hi";
 import { NonUser } from "../util/prisma-types";
 import { getRelativeTime } from "../util/relativeTime";
@@ -46,7 +46,7 @@ interface CommentProps {
 const Comment = ({ postedAt, body, user }: CommentProps) => {
   const { classes } = useStyles();
   return (
-    <Paper withBorder radius="md" className={classes.comment}>
+    <Paper className={classes.comment}>
       <div
         style={{
           display: "flex",

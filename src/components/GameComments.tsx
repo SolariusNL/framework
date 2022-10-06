@@ -29,7 +29,6 @@ interface Comment {
 }
 
 const GameComments = ({ user, game }: GameCommentsProps) => {
-  const router = useRouter();
   const [commentText, setCommentText] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -106,10 +105,11 @@ const GameComments = ({ user, game }: GameCommentsProps) => {
             sx={{
               resize: "none",
             }}
+            maxLength={500}
           />
           <Button
             leftIcon={<HiChat />}
-            disabled={commentText.length == 0 || commentText.length > 256}
+            disabled={commentText.length == 0 || commentText.length > 500}
             onClick={submitComment}
             loading={loading}
           >

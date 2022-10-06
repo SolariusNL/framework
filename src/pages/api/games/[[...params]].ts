@@ -150,7 +150,7 @@ class GameRouter {
       };
     }
 
-    if (commentBody.length > 256) {
+    if (commentBody.length > 500) {
       return {
         error: "Comment body too long",
       };
