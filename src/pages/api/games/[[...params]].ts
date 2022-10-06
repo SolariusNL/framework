@@ -734,6 +734,19 @@ class GameRouter {
       fund,
     };
   }
+
+  @Get("/by/genre/:genre")
+  async getGamesByGenre(@Param("genre") genre: string) {
+    const games = await prisma.game.findMany({
+      where: {
+        genre: genre as GameGenre,
+      },
+      select: gameSelect,
+      take: 10,
+    });
+
+    return games;
+  }
 }
 
 export default createHandler(GameRouter);

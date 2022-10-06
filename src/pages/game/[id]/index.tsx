@@ -17,10 +17,12 @@ import {
   Text,
   Title,
   Tooltip,
+  UnstyledButton,
 } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
+import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   HiCurrencyDollar,
   HiDotsVertical,
@@ -66,6 +68,24 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
   const negative = (game.dislikedBy.length / totalFeedback) * 100;
 
   const [launchingOpen, setLaunchingOpen] = useState(false);
+  const [similarGames, setSimilarGames] = useState<Game[] | null>(null);
+
+  const getSimilarGames = async () => {
+    await fetch(`/api/games/by/genre/${game.genre}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        setSimilarGames(res);
+      });
+  };
+
+  useEffect(() => {
+    getSimilarGames();
+  }, []);
 
   return (
     <Framework user={user} activeTab="none">
@@ -277,7 +297,7 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
             ]}
             mb="sm"
           />
-          <Group grow>
+          <Group grow mb={32}>
             <Button
               color="green"
               leftIcon={<HiThumbUp />}
@@ -349,6 +369,65 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
               Dislike{game.dislikedBy.find((u) => u.id == user.id) ? "d" : ""}
             </Button>
           </Group>
+
+          <ReactNoSSR onSSR={<Skeleton height={350} />}>
+            <Title order={4} mb={16}>
+              More like this
+            </Title>
+
+            <Stack spacing={12}>
+              {similarGames != null &&
+                similarGames.map((game: Game, i) => (
+                  <Link href={`/game/${game.id}`} key={i}>
+                    <UnstyledButton
+                      sx={(theme) => ({
+                        padding: theme.spacing.xs,
+                        borderRadius: theme.radius.md,
+                        color:
+                          theme.colorScheme === "dark"
+                            ? theme.colors.dark[0]
+                            : theme.black,
+
+                        "&:hover": {
+                          backgroundColor:
+                            theme.colorScheme === "dark"
+                              ? theme.colors.dark[6]
+                              : theme.colors.gray[0],
+                        },
+
+                        width: "100%",
+                      })}
+                    >
+                      <Group spacing={12}>
+                        <Image
+                          src={game.iconUri}
+                          alt={game.name}
+                          width={50}
+                          height={50}
+                          radius={8}
+                          withPlaceholder
+                        />
+                        <Stack spacing={4}>
+                          <Text weight={700}>{game.name}</Text>
+                          <Group spacing={6}>
+                            <UserContext user={game.author}>
+                              <Image
+                                src={game.author.avatarUri}
+                                width={20}
+                                height={20}
+                                radius="xl"
+                                withPlaceholder
+                              />
+                            </UserContext>
+                            <Text color="dimmed">@{game.author.username}</Text>
+                          </Group>
+                        </Stack>
+                      </Group>
+                    </UnstyledButton>
+                  </Link>
+                ))}
+            </Stack>
+          </ReactNoSSR>
         </Grid.Col>
       </Grid>
     </Framework>
