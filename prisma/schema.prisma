@@ -85,6 +85,7 @@ model User {
   enrolledInPreview          Boolean               @default(false)
   timeZone                   String                @default("UTC+12")
   donatedFunds               GameFund[]            @relation("donatedFunds")
+  checklists                 Checklist[]           @relation("userChecklists")
 }
 
 model Avatar {
@@ -312,4 +313,26 @@ model Notification {
   type      NotificationType @default(INFO)
   title     String           @default("")
   createdAt DateTime         @default(now())
+}
+
+model Checklist {
+  id          String          @id @default(uuid())
+  user        User            @relation("userChecklists", fields: [userId], references: [id])
+  userId      Int
+  name        String
+  description String
+  createdAt   DateTime        @default(now())
+  items       ChecklistItem[] @relation("checklistItems")
+}
+
+model ChecklistItem {
+  id          String    @id @default(uuid())
+  checklist   Checklist @relation("checklistItems", fields: [checklistId], references: [id])
+  checklistId String
+  name        String
+  description String
+  createdAt   DateTime  @default(now())
+  completed   Boolean   @default(false)
+  scheduled   DateTime?
+  tags        String[]
 }

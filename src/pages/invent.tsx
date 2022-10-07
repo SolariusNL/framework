@@ -1,11 +1,12 @@
-import { ScrollArea, Tabs, Title } from "@mantine/core";
+import { ScrollArea, Tabs } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
+import Link from "next/link";
 import {
+  HiClipboardCheck,
   HiCloud,
   HiFilm,
   HiIdentification,
   HiKey,
-  HiLightningBolt,
   HiLockClosed,
   HiMusicNote,
   HiScissors,
@@ -22,7 +23,6 @@ import GamePasses from "../components/Invent/GamePasses";
 import Games from "../components/Invent/Games";
 import GameUpdates from "../components/Invent/GameUpdates";
 import Nucleus from "../components/Invent/Nucleus";
-import Plugins from "../components/Invent/Plugins";
 import Secrets from "../components/Invent/Secrets";
 import Shirts from "../components/Invent/Shirts";
 import Snippets from "../components/Invent/Snippets";
@@ -39,7 +39,12 @@ const Invent: NextPage<InventProps> = ({ user }) => {
   const mobile = useMediaQuery("768");
 
   return (
-    <Framework user={user} activeTab="invent" modernTitle="Invent" modernSubtitle="Manage your games, plugins, and more">
+    <Framework
+      user={user}
+      activeTab="invent"
+      modernTitle="Invent"
+      modernSubtitle="Manage your games, plugins, and more"
+    >
       <Tabs
         variant="pills"
         orientation={mobile ? "horizontal" : "vertical"}
@@ -58,9 +63,11 @@ const Invent: NextPage<InventProps> = ({ user }) => {
                 Games
               </Tabs.Tab>
 
-              <Tabs.Tab value="plugins" icon={<HiLightningBolt />}>
-                Plugins
-              </Tabs.Tab>
+              <Link href="/checklists">
+                <Tabs.Tab value="checklists" icon={<HiClipboardCheck />}>
+                  Checklists
+                </Tabs.Tab>
+              </Link>
 
               <Tabs.Tab value="sounds" icon={<HiMusicNote />}>
                 Sounds
@@ -106,7 +113,6 @@ const Invent: NextPage<InventProps> = ({ user }) => {
         </ScrollArea>
 
         <Games user={user} />
-        <Plugins user={user} />
         <Sounds user={user} />
         <GamePasses user={user} />
         <Shirts user={user} />

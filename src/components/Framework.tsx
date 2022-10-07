@@ -70,9 +70,13 @@ interface FrameworkProps {
     | "settings"
     | "messages"
     | "none";
+  // @deprecated - use noContentPadding instead
   noPadding?: boolean;
   modernTitle?: string;
   modernSubtitle?: string;
+  noContentPadding?: boolean;
+  immersive?: boolean;
+  beta?: boolean;
 }
 
 const HeaderStyle = {
@@ -362,6 +366,9 @@ const Framework = ({
   noPadding,
   modernTitle,
   modernSubtitle,
+  noContentPadding,
+  immersive,
+  beta,
 }: FrameworkProps) => {
   const { classes, theme, cx } = useStyles();
   const [opened, { toggle }] = useDisclosure(false);
@@ -704,16 +711,36 @@ const Framework = ({
               sx={(theme) => ({
                 backgroundColor: theme.colorScheme === "dark" ? "#000" : "#fff",
               })}
-              mb={32}
+              mb={noContentPadding ? 0 : 32}
               p={32}
             >
               <Container>
-                <Title mb={8}>{modernTitle}</Title>
+                <Title mb={8}>
+                  {modernTitle}
+                  {beta && (
+                    <Badge
+                      sx={{
+                        verticalAlign: "middle",
+                      }}
+                      ml={12}
+                    >
+                      Beta
+                    </Badge>
+                  )}
+                </Title>
                 <Text color="dimmed">{modernSubtitle}</Text>
               </Container>
             </Box>
           )}
-          <Container mt={26}>
+          <Container
+            mt={noContentPadding ? 0 : 26}
+            {...(noContentPadding && {
+              sx: {
+                padding: "0px!important",
+                maxWidth: "100%!important",
+              },
+            })}
+          >
             {user && !user.emailVerified && !warningSeen && !isSSR && (
               <EmailReminder setWarningSeen={setEmailWarningSeen} />
             )}
@@ -735,7 +762,7 @@ const Framework = ({
         <div>{children}</div>
       )}
 
-      <Footer />
+      {!immersive && <Footer />}
     </>
   );
 };
