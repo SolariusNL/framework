@@ -43,6 +43,47 @@ const avatars = multer({
   fileFilter: imageOnly,
 }).single("avatar");
 
+const gameThumbnails = multer({
+  limits: {
+    fileSize: 12 * 1024 * 1024,
+  },
+  storage: multer.diskStorage({
+    destination: "./public/thumbnails",
+    filename: async (req, file, cb) => {
+      const user = await getAccountFromSession(
+        String(req.headers["authorization"])
+      );
+
+      if (!req.params.gameId) return cb(new Error("No game id provided"), "");
+
+      const game = await prisma.game.findFirst({
+        where: {
+          id: Number(req.params.gameId),
+          authorId: user?.id,
+        },
+      });
+
+      if (!game) return cb(new Error("Game not found"), "");
+      if (!Number.isInteger(Number(req.params.gameId)))
+        return cb(new Error("Invalid game id"), "");
+
+      await prisma.game.update({
+        where: {
+          id: Number.parseInt(req.params.gameId),
+        },
+        data: {
+          gallery: {
+            set: [`/thumbnails/${game.name}.png`],
+          },
+        },
+      });
+
+      cb(null, game.name + ".png");
+    },
+  }),
+  fileFilter: imageOnly,
+}).single("thumbnail");
+
 class MediaRouter {
   @Post("/upload/avatar")
   @Authorized()
@@ -50,6 +91,16 @@ class MediaRouter {
   async uploadAvatar(@Account() account: User) {
     return {
       avatar: `/avatars/${account.username}.png`,
+      success: true,
+    };
+  }
+
+  @Post("/upload/thumbnail/:gameId")
+  @Authorized()
+  @UseMiddleware(gameThumbnails)
+  async uploadThumbnail(@Account() account: User) {
+    return {
+      thumbnail: `/thumbnails/${account.username}.png`,
       success: true,
     };
   }

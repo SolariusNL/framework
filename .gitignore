@@ -34,6 +34,7 @@ yarn-error.log*
 *.tsbuildinfo
 
 /public/avatars
+/public/thumbnails
 /docs/site
 
 framework.yml
