@@ -689,7 +689,7 @@ class UserRouter {
       },
       data: {
         ...(schedule ? { scheduled: new Date(schedule as Date) } : {}),
-        ...(finished ? { completed: finished } : {}),
+        completed: finished,
       },
     });
 
