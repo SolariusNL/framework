@@ -688,8 +688,8 @@ class UserRouter {
         id: String(taskId),
       },
       data: {
-        scheduled: new Date(schedule as Date),
-        completed: finished,
+        ...(schedule ? { scheduled: new Date(schedule as Date) } : {}),
+        ...(finished ? { completed: finished } : {}),
       },
     });
 
