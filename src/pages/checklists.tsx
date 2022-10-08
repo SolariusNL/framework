@@ -109,6 +109,10 @@ const Checklists: NextPage<ChecklistsProps> = ({ user }) => {
   useEffect(() => {
     document.body.style.overflow = "hidden";
     fetchChecklists();
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
   }, []);
 
   useEffect(() => {
