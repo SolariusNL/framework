@@ -35,6 +35,7 @@ import {
 import ReactNoSSR from "react-no-ssr";
 import CreateChecklist from "../components/Checklists/CreateChecklist";
 import CreateTask from "../components/Checklists/CreateTask";
+import ChecklistTask from "../components/Checklists/Task";
 import Descriptive from "../components/Descriptive";
 import Framework from "../components/Framework";
 import ModernEmptyState from "../components/ModernEmptyState";
@@ -69,7 +70,7 @@ const Checklists: NextPage<ChecklistsProps> = ({ user }) => {
   const [createTaskOpen, setCreateTaskOpen] = useState(false);
   const { colorScheme } = useMantineColorScheme();
   const [loading, setLoading] = useState(true);
-  const [sortBy, setSortBy] = useState(SortBy.ScheduledFor);
+  const [sortBy, setSortBy] = useState<SortBy | null>(null);
 
   const sortByLabel = (sort: SortBy) => {
     switch (sort) {
@@ -126,37 +127,6 @@ const Checklists: NextPage<ChecklistsProps> = ({ user }) => {
       });
     }
   }, [sortBy]);
-
-  const deleteTask = async (id: string) => {
-    await fetch(`/api/users/@me/checklists/${active}/tasks/${id}/delete`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: String(getCookie(".frameworksession")),
-      },
-    })
-      .then(() => {
-        fetchChecklists();
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  };
-
-  const setTaskCompleted = async (id: string, completed: boolean) => {
-    await fetch(`/api/users/@me/checklists/${active}/tasks/${id}/update`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: String(getCookie(".frameworksession")),
-      },
-      body: JSON.stringify({
-        finished: completed,
-      }),
-    }).catch((err) => {
-      console.error(err);
-    });
-  };
 
   return (
     <>
@@ -347,90 +317,13 @@ const Checklists: NextPage<ChecklistsProps> = ({ user }) => {
                 }}
               >
                 {currentChecklist?.items.map((task) => (
-                  <UnstyledButton
-                    sx={(theme) => ({
-                      borderRadius: theme.radius.md,
-                      color:
-                        theme.colorScheme === "dark"
-                          ? theme.colors.dark[0]
-                          : theme.black,
-
-                      "&:hover": {
-                        backgroundColor:
-                          theme.colorScheme === "dark"
-                            ? theme.colors.dark[6]
-                            : theme.colors.gray[0],
-                      },
-                      width: "33%",
-                      padding: "12px",
-                      opacity: task.completed ? 0.5 : 1,
-                    })}
+                  <ChecklistTask
                     key={task.id}
-                  >
-                    <Descriptive
-                      title={task.name}
-                      description={task.description}
-                    >
-                      <Checkbox
-                        label="Completed"
-                        checked={task.completed}
-                        onChange={(e) => {
-                          task.completed = e.target.checked;
-                          setCurrentChecklist({
-                            ...currentChecklist,
-                          });
-                          setTaskCompleted(task.id, e.target.checked);
-                        }}
-                      />
-                    </Descriptive>
-                    <Group mt={12}>
-                      {task.scheduled && (
-                        <Group spacing={12}>
-                          <HiClock
-                            color={
-                              colorScheme === "dark" ? "#909296" : "#868e96"
-                            }
-                          />
-                          <Tooltip
-                            label={`Due by ${new Date(
-                              task.scheduled
-                            ).toLocaleDateString()}`}
-                            position="bottom"
-                          >
-                            <Text color="dimmed" size="sm">
-                              {new Date(task.scheduled).toLocaleDateString()}
-                            </Text>
-                          </Tooltip>
-                        </Group>
-                      )}
-                      {task.tags && (
-                        <Group spacing={12}>
-                          {task.tags.map((tag) => (
-                            <Badge key={tag}>{tag}</Badge>
-                          ))}
-                        </Group>
-                      )}
-                    </Group>
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{
-                        opacity: task.completed ? 1 : 0,
-                        height: task.completed ? "auto" : 0,
-                      }}
-                      transition={{ duration: 0.2 }}
-                      style={{
-                        marginTop: task.completed ? 12 : 0,
-                      }}
-                    >
-                      <Button
-                        fullWidth
-                        color="red"
-                        onClick={() => deleteTask(task.id)}
-                      >
-                        Delete
-                      </Button>
-                    </motion.div>
-                  </UnstyledButton>
+                    task={task}
+                    setCurrentChecklist={setCurrentChecklist}
+                    currentChecklist={currentChecklist}
+                    fetchChecklists={fetchChecklists}
+                  />
                 ))}
               </div>
             </Container>
