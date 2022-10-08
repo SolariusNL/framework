@@ -1,8 +1,11 @@
 import {
+  Badge,
   Button,
   Card,
+  Center,
   Group,
   Text,
+  ThemeIcon,
   Title,
   useMantineColorScheme,
 } from "@mantine/core";
@@ -29,7 +32,7 @@ const SubscriptionTab = ({ user }: SubscriptionTabProps) => {
         title="Current Subscription"
         description="Details about your current subscription, including payment method, billing cycle, and more."
         right={
-          <Card withBorder shadow="sm" p="md">
+          <Card shadow="sm" p="lg" withBorder>
             <div
               style={{
                 display: "flex",
@@ -37,16 +40,18 @@ const SubscriptionTab = ({ user }: SubscriptionTabProps) => {
               }}
             >
               <div>
-                {premium ? (
-                  <HiGift size={64} />
-                ) : (
-                  <HiGift size={64} style={{ opacity: 0.5 }} />
-                )}
+                <ThemeIcon size={64} variant="light" color="pink" radius="lg">
+                  {premium ? (
+                    <HiGift size={48} />
+                  ) : (
+                    <HiGift size={48} style={{ opacity: 0.5 }} />
+                  )}
+                </ThemeIcon>
               </div>
               <div>
-                <Title order={5} mb={16}>
+                <Badge size="lg" color="pink" mb={16}>
                   {premium ? "Premium" : "Free"}
-                </Title>
+                </Badge>
                 <Text>
                   {premium
                     ? "You are currently subscribed to the Premium plan."
@@ -108,6 +113,19 @@ const SubscriptionTab = ({ user }: SubscriptionTabProps) => {
                 )}
               </div>
             </div>
+
+            {premium && (
+              <Center mt={16}>
+                <Button.Group>
+                  <Button size="xs" variant="light" color="pink">
+                    Manage
+                  </Button>
+                  <Button size="xs" variant="light" color="pink">
+                    Cancel
+                  </Button>
+                </Button.Group>
+              </Center>
+            )}
           </Card>
         }
         actions={
