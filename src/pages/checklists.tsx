@@ -203,7 +203,12 @@ const Checklists: NextPage<ChecklistsProps> = ({ user }) => {
               }
             />
           ) : (
-            <Container>
+            <Container
+              sx={{
+                overflow: "scroll",
+                height: "80%",
+              }}
+            >
               <Group spacing={12}>
                 <Title
                   order={4}
