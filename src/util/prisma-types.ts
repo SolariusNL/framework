@@ -148,6 +148,11 @@ export const gameSelect: Prisma.GameSelect = {
       donors: nonCurrentUserSelect,
     },
   },
+  rating: {
+    include: {
+      scores: true,
+    },
+  },
 };
 
 const game = Prisma.validator<Prisma.GameArgs>()({
@@ -167,6 +172,11 @@ const game = Prisma.validator<Prisma.GameArgs>()({
     funds: {
       include: {
         donors: nonCurrentUserSelect,
+      },
+    },
+    rating: {
+      include: {
+        scores: true,
       },
     },
   },

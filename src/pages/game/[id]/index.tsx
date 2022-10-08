@@ -3,8 +3,10 @@ import {
   Alert,
   AspectRatio,
   Avatar,
+  Badge,
   Box,
   Button,
+  Card,
   Divider,
   Grid,
   Group,
@@ -24,20 +26,24 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import {
+  HiChat,
   HiCurrencyDollar,
   HiDotsVertical,
   HiFolder,
   HiInformationCircle,
+  HiLibrary,
   HiLockClosed,
   HiPlay,
   HiServer,
   HiThumbDown,
   HiThumbUp,
   HiViewList,
+  HiXCircle,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import Framework from "../../../components/Framework";
 import GameComments from "../../../components/GameComments";
+import GameRating from "../../../components/GameRating";
 import ThumbnailCarousel from "../../../components/ImageCarousel";
 import Launching from "../../../components/Launching";
 import PlaceholderGameResource from "../../../components/PlaceholderGameResource";
@@ -51,6 +57,7 @@ import authorizedRoute from "../../../util/authorizedRoute";
 import { getCookie } from "../../../util/cookies";
 import prisma from "../../../util/prisma";
 import { Game, gameSelect, User } from "../../../util/prisma-types";
+import { getRatingTypeDescription } from "../../../util/universe/ratings";
 import useMediaQuery from "../../../util/useMediaQuery";
 
 interface GameViewProps {
@@ -375,7 +382,7 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
               More like this
             </Title>
 
-            <Stack spacing={12}>
+            <Stack spacing={12} mb={16}>
               {similarGames != null &&
                 similarGames.map((game: Game, i) => (
                   <Link href={`/game/${game.id}`} key={i}>
@@ -427,6 +434,8 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                   </Link>
                 ))}
             </Stack>
+
+            {game.rating && <GameRating game={game} />}
           </ReactNoSSR>
         </Grid.Col>
       </Grid>

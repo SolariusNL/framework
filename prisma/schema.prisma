@@ -211,6 +211,7 @@ model Game {
   comments             GameComment[] @relation("gameComments")
   playing              Int           @default(0)
   funds                GameFund[]    @relation("gameFunds")
+  rating               Rating?       @relation("gameRating")
 }
 
 model GameComment {
@@ -335,4 +336,42 @@ model ChecklistItem {
   completed   Boolean   @default(false)
   scheduled   DateTime?
   tags        String[]
+}
+
+enum RatingType {
+  EC
+  E
+  E10
+  T
+  M
+  AO
+  RP
+}
+
+enum RatingCategoryScore {
+  PASSING
+  FAILING
+}
+
+model Rating {
+  id     String        @id @default(uuid())
+  game   Game          @relation("gameRating", fields: [gameId], references: [id])
+  gameId Int           @unique
+  type   RatingType
+  scores RatingScore[] @relation("gameRatingCategory")
+}
+
+enum RatingCategory {
+  SOCIAL
+  DRUGS
+  NUDITY
+}
+
+model RatingScore {
+  id          String              @id @default(uuid())
+  rating      Rating              @relation("gameRatingCategory", fields: [ratingId], references: [id])
+  ratingId    String
+  category    RatingCategory
+  score       RatingCategoryScore
+  description String
 }
