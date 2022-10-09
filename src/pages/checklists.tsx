@@ -1,24 +1,16 @@
 import {
-  AppShell,
-  Badge,
-  Button,
-  Center,
-  Checkbox,
-  Container,
+  AppShell, Button,
+  Center, Container,
   Group,
   Menu,
   Navbar,
   NavLink,
   ScrollArea,
   Text,
-  Title,
-  Tooltip,
-  UnstyledButton,
-  useMantineColorScheme,
+  Title, useMantineColorScheme
 } from "@mantine/core";
 import { ChecklistItem, Prisma } from "@prisma/client";
 import { getCookie } from "cookies-next";
-import { motion } from "framer-motion";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { useEffect, useState } from "react";
 import {
@@ -30,13 +22,12 @@ import {
   HiDownload,
   HiFilter,
   HiPlusCircle,
-  HiSortAscending,
+  HiSortAscending
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import CreateChecklist from "../components/Checklists/CreateChecklist";
 import CreateTask from "../components/Checklists/CreateTask";
 import ChecklistTask from "../components/Checklists/Task";
-import Descriptive from "../components/Descriptive";
 import Framework from "../components/Framework";
 import ModernEmptyState from "../components/ModernEmptyState";
 import authorizedRoute from "../util/authorizedRoute";
