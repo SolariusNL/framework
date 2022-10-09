@@ -17,7 +17,22 @@ const GameRating = ({ game }: GameRatingProps) => {
       </Card.Section>
 
       <div style={{ textAlign: "center" }}>
-        <Badge size="lg" color="green" mb={6}>
+        <Badge
+          size="lg"
+          color={
+            rating.type === "EC" ||
+            rating.type === "E" ||
+            rating.type === "E10" ||
+            rating.type === "T"
+              ? "green"
+              : rating.type === "M" ||
+                rating.type === "AO" ||
+                rating.type === "RP"
+              ? "red"
+              : "gray"
+          }
+          mb={6}
+        >
           {rating.type}
         </Badge>
 

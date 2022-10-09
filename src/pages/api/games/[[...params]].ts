@@ -1,4 +1,9 @@
-import { GameGenre } from "@prisma/client";
+import {
+  GameGenre,
+  RatingCategory,
+  RatingCategoryScore,
+  RatingType,
+} from "@prisma/client";
 import {
   Body,
   createHandler,
@@ -8,6 +13,7 @@ import {
   Query,
 } from "@storyofams/next-api-decorators";
 import sanitizeHtml from "sanitize-html";
+import { scoreDescriptions } from "../../../components/EditGame/AgeRating";
 import Authorized, { Account } from "../../../util/api/authorized";
 import prisma from "../../../util/prisma";
 import {
@@ -38,6 +44,15 @@ interface GameCommentBody {
 interface CreateFundBody {
   name: string;
   goal: number;
+}
+
+interface UpdateRatingBody {
+  type: RatingType;
+  scores: Array<{
+    category: RatingCategory;
+    score: RatingCategoryScore;
+    description: string;
+  }>;
 }
 
 class GameRouter {
@@ -746,6 +761,108 @@ class GameRouter {
     });
 
     return games;
+  }
+
+  @Post("/:id/rating/update")
+  @Authorized()
+  async updateRating(
+    @Account() user: User,
+    @Body() body: UpdateRatingBody,
+    @Param("id") id: number
+  ) {
+    const { type, scores } = body;
+
+    const game = await prisma.game.findFirst({
+      where: {
+        id: Number(id),
+        authorId: user.id,
+      },
+      include: {
+        rating: true,
+      },
+    });
+
+    if (!game) {
+      return {
+        success: false,
+        error: "Game not found",
+      };
+    }
+
+    if (!Object.values(RatingType).includes(type)) {
+      return {
+        success: false,
+        error: "Invalid rating type",
+      };
+    }
+
+    // can only be 3 scores
+    if (scores.length !== 3) {
+      return {
+        success: false,
+        error: "Invalid scores",
+      };
+    }
+
+    // check scores
+    for (const score of scores) {
+      if (!Object.values(RatingCategory).includes(score.category)) {
+        return {
+          success: false,
+          error: "Invalid score category",
+        };
+      }
+
+      if (!Object.values(RatingCategoryScore).includes(score.score)) {
+        return {
+          success: false,
+          error: "Invalid score",
+        };
+      }
+
+      if (!scoreDescriptions[score.category][score.score]) {
+        return {
+          success: false,
+          error: "Invalid score description",
+        };
+      }
+
+      await prisma.ratingScore.deleteMany({
+        where: {
+          rating: {
+            gameId: game.id,
+          },
+        },
+      });
+
+      await prisma.rating.deleteMany({
+        where: {
+          gameId: game.id,
+        },
+      });
+
+      await prisma.rating.create({
+        data: {
+          type: type,
+          scores: {
+            create: scores.map((score) => ({
+              category: score.category,
+              score: score.score,
+              description: score.description,
+            })),
+          },
+          game: {
+            connect: {
+              id: Number(id),
+            },
+          },
+        },
+      });
+
+      return {
+        success: true,
+      };
+    }
   }
 }
 

@@ -1,6 +1,12 @@
 import { Grid, Tabs, Title } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
-import { HiCurrencyDollar, HiServer, HiViewList } from "react-icons/hi";
+import {
+  HiCurrencyDollar,
+  HiExclamationCircle,
+  HiServer,
+  HiViewList,
+} from "react-icons/hi";
+import AgeRating from "../../../components/EditGame/AgeRating";
 import Details from "../../../components/EditGame/Details";
 import Funding from "../../../components/EditGame/Funding";
 import Servers from "../../../components/EditGame/Servers";
@@ -36,9 +42,12 @@ const EditGame: NextPage<EditGameProps> = ({ game, user }) => {
           <Tabs.Tab value="servers" icon={<HiServer />}>
             Servers
           </Tabs.Tab>
+          <Tabs.Tab value="age" icon={<HiExclamationCircle />}>
+            Age Rating
+          </Tabs.Tab>
         </Tabs.List>
 
-        {[Details, Funding, Servers].map((Component, index) => (
+        {[Details, Funding, Servers, AgeRating].map((Component, index) => (
           <Component key={index} game={game} />
         ))}
       </Tabs>

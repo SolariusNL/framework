@@ -355,8 +355,8 @@ enum RatingCategoryScore {
 
 model Rating {
   id     String        @id @default(uuid())
-  game   Game          @relation("gameRating", fields: [gameId], references: [id])
-  gameId Int           @unique
+  game   Game?         @relation("gameRating", fields: [gameId], references: [id])
+  gameId Int?          @unique
   type   RatingType
   scores RatingScore[] @relation("gameRatingCategory")
 }
