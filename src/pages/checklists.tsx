@@ -1,13 +1,16 @@
 import {
-  AppShell, Button,
-  Center, Container,
+  AppShell,
+  Button,
+  Center,
+  Container,
   Group,
   Menu,
   Navbar,
   NavLink,
   ScrollArea,
   Text,
-  Title, useMantineColorScheme
+  Title,
+  useMantineColorScheme,
 } from "@mantine/core";
 import { ChecklistItem, Prisma } from "@prisma/client";
 import { getCookie } from "cookies-next";
@@ -22,7 +25,8 @@ import {
   HiDownload,
   HiFilter,
   HiPlusCircle,
-  HiSortAscending
+  HiSortAscending,
+  HiViewGrid,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import CreateChecklist from "../components/Checklists/CreateChecklist";
@@ -62,6 +66,7 @@ const Checklists: NextPage<ChecklistsProps> = ({ user }) => {
   const { colorScheme } = useMantineColorScheme();
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<SortBy | null>(null);
+  const [display, setDisplay] = useState<"cards" | "list">("cards");
 
   const sortByLabel = (sort: SortBy) => {
     switch (sort) {
@@ -201,7 +206,7 @@ const Checklists: NextPage<ChecklistsProps> = ({ user }) => {
             <Container
               sx={{
                 overflow: "scroll",
-                height: "80%",
+                height: "70%",
               }}
             >
               <Group spacing={12}>
@@ -267,6 +272,31 @@ const Checklists: NextPage<ChecklistsProps> = ({ user }) => {
                   </Button>
                   <Menu>
                     <Menu.Target>
+                      <Button size="xs" leftIcon={<HiViewGrid />}>
+                        View...
+                      </Button>
+                    </Menu.Target>
+                    <Menu.Dropdown>
+                      {[
+                        ["cards", "Display as cards"],
+                        ["list", "Display as list"],
+                      ].map((item) => (
+                        <Menu.Item
+                          key={item[0]}
+                          onClick={() => {
+                            setDisplay(item[0] as "cards" | "list");
+                          }}
+                        >
+                          {display === item[0] && (
+                            <HiCheck size={12} style={{ marginRight: 12 }} />
+                          )}
+                          {item[1]}
+                        </Menu.Item>
+                      ))}
+                    </Menu.Dropdown>
+                  </Menu>
+                  <Menu>
+                    <Menu.Target>
                       <Button size="xs" leftIcon={<HiSortAscending />}>
                         Sort by...
                       </Button>
@@ -323,6 +353,7 @@ const Checklists: NextPage<ChecklistsProps> = ({ user }) => {
                     setCurrentChecklist={setCurrentChecklist}
                     currentChecklist={currentChecklist}
                     fetchChecklists={fetchChecklists}
+                    display={display}
                   />
                 ))}
               </div>

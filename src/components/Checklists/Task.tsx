@@ -19,6 +19,7 @@ interface ChecklistTaskProps {
   setCurrentChecklist: (checklist: any) => void;
   currentChecklist: any;
   fetchChecklists: () => void;
+  display: "cards" | "list";
 }
 
 const ChecklistTask = ({
@@ -26,6 +27,7 @@ const ChecklistTask = ({
   setCurrentChecklist,
   currentChecklist,
   fetchChecklists,
+  display = "cards",
 }: ChecklistTaskProps) => {
   const { colorScheme } = useMantineTheme();
 
@@ -79,7 +81,7 @@ const ChecklistTask = ({
               ? theme.colors.dark[6]
               : theme.colors.gray[0],
         },
-        width: "33%",
+        width: display === "cards" ? "33%" : "100%",
         padding: "12px",
         opacity: task.completed ? 0.5 : 1,
         display: "flex",
