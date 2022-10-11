@@ -35,7 +35,7 @@ const CreateChecklist = ({ opened, setOpened }: CreateChecklistProps) => {
   });
 
   const createChecklist = async () => {
-    await fetch("/api/users/@me/checklists/create", {
+    await fetch("/api/checklists/create", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

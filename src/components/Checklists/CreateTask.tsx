@@ -43,7 +43,7 @@ const CreateTask = ({ opened, checklistId, setOpened }: CreateTaskProps) => {
   const router = useRouter();
 
   const createTask = async () => {
-    await fetch(`/api/users/@me/checklists/${checklistId}/tasks/create`, {
+    await fetch(`/api/checklists/${checklistId}/tasks/create`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

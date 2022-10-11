@@ -32,16 +32,13 @@ const ChecklistTask = ({
   const { colorScheme } = useMantineTheme();
 
   const deleteTask = async (id: string) => {
-    await fetch(
-      `/api/users/@me/checklists/${currentChecklist.id}/tasks/${id}/delete`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: String(getCookie(".frameworksession")),
-        },
-      }
-    )
+    await fetch(`/api/checklists/${currentChecklist.id}/tasks/${id}/delete`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: String(getCookie(".frameworksession")),
+      },
+    })
       .then(() => {
         fetchChecklists();
       })
@@ -51,19 +48,16 @@ const ChecklistTask = ({
   };
 
   const setTaskCompleted = async (id: string, completed: boolean) => {
-    await fetch(
-      `/api/users/@me/checklists/${currentChecklist.id}/tasks/${id}/update`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: String(getCookie(".frameworksession")),
-        },
-        body: JSON.stringify({
-          finished: completed,
-        }),
-      }
-    ).catch((err) => {
+    await fetch(`/api/checklists/${currentChecklist.id}/tasks/${id}/update`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: String(getCookie(".frameworksession")),
+      },
+      body: JSON.stringify({
+        finished: completed,
+      }),
+    }).catch((err) => {
       console.error(err);
     });
   };

@@ -35,10 +35,12 @@ import ChecklistTask from "../components/Checklists/Task";
 import Framework from "../components/Framework";
 import ModernEmptyState from "../components/ModernEmptyState";
 import authorizedRoute from "../util/authorizedRoute";
+import prisma from "../util/prisma";
 import { User } from "../util/prisma-types";
 
 interface ChecklistsProps {
   user: User;
+  checklistData: ChecklistWithTasks[] | null;
 }
 
 const ChecklistWithTasks = Prisma.validator<Prisma.ChecklistArgs>()({
@@ -54,9 +56,9 @@ enum SortBy {
   ScheduledFor = "scheduled",
 }
 
-const Checklists: NextPage<ChecklistsProps> = ({ user }) => {
+const Checklists: NextPage<ChecklistsProps> = ({ user, checklistData }) => {
   const [checklists, setChecklists] = useState<ChecklistWithTasks[] | null>(
-    null
+    checklistData
   );
   const [active, setActive] = useState("");
   const [currentChecklist, setCurrentChecklist] =
@@ -64,7 +66,7 @@ const Checklists: NextPage<ChecklistsProps> = ({ user }) => {
   const [createChecklistOpen, setCreateChecklistOpen] = useState(false);
   const [createTaskOpen, setCreateTaskOpen] = useState(false);
   const { colorScheme } = useMantineColorScheme();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [sortBy, setSortBy] = useState<SortBy | null>(null);
   const [display, setDisplay] = useState<"cards" | "list">("cards");
 
@@ -79,7 +81,7 @@ const Checklists: NextPage<ChecklistsProps> = ({ user }) => {
 
   const fetchChecklists = async () => {
     setLoading(true);
-    await fetch("/api/users/@me/checklists", {
+    await fetch("/api/checklists", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -103,7 +105,10 @@ const Checklists: NextPage<ChecklistsProps> = ({ user }) => {
   };
 
   useEffect(() => {
-    fetchChecklists();
+    if (checklists && checklists.length > 0) {
+      setActive(checklists[0].id);
+      setCurrentChecklist(checklists[0]);
+    }
   }, []);
 
   useEffect(() => {
@@ -356,7 +361,26 @@ const Checklists: NextPage<ChecklistsProps> = ({ user }) => {
 };
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return await authorizedRoute(context, true, false);
+  const auth = await authorizedRoute(context, true, false);
+  if (auth.redirect) {
+    return auth;
+  }
+
+  const checklists = await prisma.checklist.findMany({
+    where: {
+      userId: auth.props.user?.id,
+    },
+    include: {
+      items: true,
+    },
+  });
+
+  return {
+    props: {
+      user: auth.props.user,
+      checklistData: JSON.parse(JSON.stringify(checklists)),
+    },
+  };
 }
 
 export default Checklists;
