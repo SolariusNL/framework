@@ -25,6 +25,7 @@ import {
   useMantineColorScheme,
 } from "@mantine/core";
 import { useDisclosure, useLocalStorage } from "@mantine/hooks";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useRef, useState } from "react";
 import {
@@ -472,7 +473,28 @@ const Framework = ({
           }}
         >
           <Group position="apart">
-            <h5 style={HeaderStyle}>Framework</h5>
+            <Group spacing={12}>
+              <Link href="/" passHref>
+                <Title
+                  // @ts-ignore
+                  sx={{
+                    ":hover": {
+                      backgroundPosition: "left",
+                      backgroundSize: "200%",
+                      backgroundRepeat: "no-repeat",
+                      transition: "all 0.5s ease",
+                    },
+                    transition: "all 0.5s ease",
+                    cursor: "pointer",
+                    ...HeaderStyle,
+                  }}
+                  order={5}
+                >
+                  Framework
+                </Title>
+              </Link>
+              {process.env.NODE_ENV === "development" && <Badge>Preview</Badge>}
+            </Group>
 
             {mobile && <Burger opened={opened} onClick={toggle} size="sm" />}
             {!mobile && (
