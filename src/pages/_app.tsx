@@ -125,6 +125,13 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
                   },
                 }),
               },
+              Modal: {
+                styles: () => ({
+                  root: {
+                    zIndex: 1000,
+                  },
+                }),
+              },
             },
           }}
         >

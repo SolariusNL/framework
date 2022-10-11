@@ -103,12 +103,7 @@ const Checklists: NextPage<ChecklistsProps> = ({ user }) => {
   };
 
   useEffect(() => {
-    document.body.style.overflow = "hidden";
     fetchChecklists();
-
-    return () => {
-      document.body.style.overflow = "auto";
-    };
   }, []);
 
   useEffect(() => {
@@ -203,12 +198,7 @@ const Checklists: NextPage<ChecklistsProps> = ({ user }) => {
               }
             />
           ) : (
-            <Container
-              sx={{
-                overflow: "scroll",
-                height: "70%",
-              }}
-            >
+            <Container>
               <Group spacing={12}>
                 <Title
                   order={4}

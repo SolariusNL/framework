@@ -456,7 +456,14 @@ const Framework = ({
 
   return (
     <>
-      <div className={classes.header}>
+      <div
+        className={classes.header}
+        style={{
+          position: immersive ? "sticky" : "relative",
+          top: 0,
+          zIndex: 1000,
+        }}
+      >
         <Container
           className={classes.mainSection}
           sx={{
@@ -686,7 +693,7 @@ const Framework = ({
         <>
           {flags?.bannerEnabled && (
             <Box
-              sx={(theme) => ({
+              sx={() => ({
                 backgroundColor: "#e03131",
               })}
               p={12}
@@ -710,6 +717,10 @@ const Framework = ({
             <Box
               sx={(theme) => ({
                 backgroundColor: theme.colorScheme === "dark" ? "#000" : "#fff",
+                position: immersive ? "sticky" : "relative",
+                zIndex: 500,
+                top: immersive ? "108.7px" : "0",
+                boxShadow: immersive ? "0 0 17px #00000070" : "none",
               })}
               mb={noContentPadding ? 0 : 32}
               p={32}
@@ -734,12 +745,12 @@ const Framework = ({
           )}
           <Container
             mt={noContentPadding ? 0 : 26}
-            {...(noContentPadding && {
-              sx: {
-                padding: "0px!important",
-                maxWidth: "100%!important",
-              },
-            })}
+            sx={{
+              ...(noContentPadding && {
+                padding: "0px",
+                maxWidth: "100%",
+              }),
+            }}
           >
             {user && !user.emailVerified && !warningSeen && !isSSR && (
               <EmailReminder setWarningSeen={setEmailWarningSeen} />
