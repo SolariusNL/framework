@@ -5,6 +5,7 @@ import {
   Container,
   Group,
   Menu,
+  MultiSelect,
   Navbar,
   NavLink,
   ScrollArea,
@@ -69,6 +70,7 @@ const Checklists: NextPage<ChecklistsProps> = ({ user, checklistData }) => {
   const [loading, setLoading] = useState(false);
   const [sortBy, setSortBy] = useState<SortBy | null>(null);
   const [display, setDisplay] = useState<"cards" | "list">("cards");
+  const [tagFilter, setTagFilter] = useState<string[]>([]);
 
   const sortByLabel = (sort: SortBy) => {
     switch (sort) {
@@ -262,9 +264,33 @@ const Checklists: NextPage<ChecklistsProps> = ({ user, checklistData }) => {
 
               <Group mb={24}>
                 <Button.Group>
-                  <Button size="xs" leftIcon={<HiFilter />}>
-                    Filter by...
-                  </Button>
+                  <Menu width={270}>
+                    <Menu.Target>
+                      <Button size="xs" leftIcon={<HiFilter />}>
+                        Filter by...
+                      </Button>
+                    </Menu.Target>
+                    <Menu.Dropdown>
+                      <Menu.Item closeMenuOnClick={false}>
+                        <MultiSelect
+                          label="Tags"
+                          description="Filter by tags"
+                          placeholder="Create tags for this task"
+                          searchable
+                          data={
+                            currentChecklist?.items
+                              .map((item) => item.tags)
+                              .flat()
+                              .filter((tag, index, self) => {
+                                return self.indexOf(tag) === index;
+                              }) ?? []
+                          }
+                          value={tagFilter}
+                          onChange={(value) => setTagFilter(value)}
+                        />
+                      </Menu.Item>
+                    </Menu.Dropdown>
+                  </Menu>
                   <Menu>
                     <Menu.Target>
                       <Button size="xs" leftIcon={<HiViewGrid />}>
@@ -341,16 +367,22 @@ const Checklists: NextPage<ChecklistsProps> = ({ user, checklistData }) => {
                   flexWrap: "wrap",
                 }}
               >
-                {currentChecklist?.items.map((task) => (
-                  <ChecklistTask
-                    key={task.id}
-                    task={task}
-                    setCurrentChecklist={setCurrentChecklist}
-                    currentChecklist={currentChecklist}
-                    fetchChecklists={fetchChecklists}
-                    display={display}
-                  />
-                ))}
+                {currentChecklist?.items
+                  .filter((item) => {
+                    if (tagFilter.length === 0) return true;
+
+                    return tagFilter.every((tag) => item.tags.includes(tag));
+                  })
+                  .map((task) => (
+                    <ChecklistTask
+                      key={task.id}
+                      task={task}
+                      setCurrentChecklist={setCurrentChecklist}
+                      currentChecklist={currentChecklist}
+                      fetchChecklists={fetchChecklists}
+                      display={display}
+                    />
+                  ))}
               </div>
             </Container>
           )}
