@@ -4,6 +4,7 @@ import {
   Center,
   Container,
   Group,
+  Loader,
   Menu,
   MultiSelect,
   Navbar,
@@ -205,14 +206,18 @@ const Checklists: NextPage<ChecklistsProps> = ({ user, checklistData }) => {
           }
         >
           {active === "" ? (
-            <ModernEmptyState
-              title={loading ? "Loading..." : "No checklists"}
-              body={
-                loading
-                  ? "Getting your checklists..."
-                  : "You have no checklists. Create one by clicking the 'Create new checklist' button in the navigation bar."
-              }
-            />
+            loading ? (
+              <Loader />
+            ) : (
+              <ModernEmptyState
+                title={loading ? "Loading..." : "No checklists"}
+                body={
+                  loading
+                    ? "Getting your checklists..."
+                    : "You have no checklists. Create one by clicking the 'Create new checklist' button in the navigation bar."
+                }
+              />
+            )
           ) : (
             <Container>
               <Group spacing={12}>
@@ -230,7 +235,12 @@ const Checklists: NextPage<ChecklistsProps> = ({ user, checklistData }) => {
                 </Title>
               </Group>
               <Text mb={24}>{currentChecklist?.description}</Text>
-              <Group mb={24} spacing={24}>
+              <div
+                style={{
+                  marginBottom: 24,
+                  display: "flex",
+                }}
+              >
                 {[
                   {
                     label: "Created",
@@ -259,17 +269,27 @@ const Checklists: NextPage<ChecklistsProps> = ({ user, checklistData }) => {
                     icon: HiClipboardList,
                   },
                 ].map((item) => (
-                  <Group spacing={6} key={item.label}>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      textAlign: "center",
+                      flex: 1,
+                    }}
+                    key={item.label}
+                  >
                     <>
                       <item.icon size={20} />
                       <Group>
-                        <Text weight={700}>{item.label}</Text>
-                        <Text>{item.value}</Text>
+                        <Text color="dimmed">{item.label}</Text>
+                        <Text weight={700}>{item.value}</Text>
                       </Group>
                     </>
-                  </Group>
+                  </div>
                 ))}
-              </Group>
+              </div>
 
               <Group mb={24}>
                 <Button.Group>
