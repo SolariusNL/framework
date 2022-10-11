@@ -1,4 +1,4 @@
-import { Button, Modal, Stack, Text, TextInput } from "@mantine/core";
+import { Button, Modal, Stack, Text, Textarea, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/router";
@@ -67,7 +67,7 @@ const CreateChecklist = ({ opened, setOpened }: CreateChecklistProps) => {
             description="The name of your checklist"
             {...createForm.getInputProps("name")}
           />
-          <TextInput
+          <Textarea
             label="Description"
             description="The description of your checklist"
             {...createForm.getInputProps("description")}

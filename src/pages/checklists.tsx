@@ -140,6 +140,12 @@ const Checklists: NextPage<ChecklistsProps> = ({ user, checklistData }) => {
           opened={createTaskOpen}
           setOpened={setCreateTaskOpen}
           checklistId={String(currentChecklist?.id)}
+          existingtags={
+            currentChecklist?.items
+              .map((item) => item.tags)
+              .flat()
+              .filter((tag, index, self) => self.indexOf(tag) === index) || []
+          }
         />
       </ReactNoSSR>
 

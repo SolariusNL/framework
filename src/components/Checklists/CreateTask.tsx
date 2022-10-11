@@ -1,4 +1,11 @@
-import { Button, Modal, MultiSelect, Stack, TextInput } from "@mantine/core";
+import {
+  Button,
+  Modal,
+  MultiSelect,
+  Stack,
+  Textarea,
+  TextInput,
+} from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
 import { useForm } from "@mantine/form";
 import { getCookie } from "cookies-next";
@@ -9,6 +16,7 @@ interface CreateTaskProps {
   opened: boolean;
   checklistId: string;
   setOpened: (opened: boolean) => void;
+  existingtags: string[];
 }
 
 interface CreatableTask {
@@ -18,7 +26,12 @@ interface CreatableTask {
   tags: string[];
 }
 
-const CreateTask = ({ opened, checklistId, setOpened }: CreateTaskProps) => {
+const CreateTask = ({
+  opened,
+  checklistId,
+  setOpened,
+  existingtags,
+}: CreateTaskProps) => {
   const createTaskForm = useForm<CreatableTask>({
     initialValues: {
       name: "",
@@ -68,7 +81,7 @@ const CreateTask = ({ opened, checklistId, setOpened }: CreateTaskProps) => {
             description="Name of the task"
             {...createTaskForm.getInputProps("name")}
           />
-          <TextInput
+          <Textarea
             label="Description"
             description="Describe what you want to accomplish"
             {...createTaskForm.getInputProps("description")}
@@ -80,6 +93,7 @@ const CreateTask = ({ opened, checklistId, setOpened }: CreateTaskProps) => {
             description="When do you want this to be done by?"
             dropdownType="modal"
             minDate={dayjs(new Date()).add(1, "day").toDate()}
+            defaultValue={dayjs(new Date()).add(1, "day").toDate()}
           />
           <MultiSelect
             label="Tags"
@@ -87,7 +101,8 @@ const CreateTask = ({ opened, checklistId, setOpened }: CreateTaskProps) => {
             searchable
             creatable
             getCreateLabel={(query) => `+ Create ${query}`}
-            data={[]}
+            data={existingtags || []}
+            description="Tags are used to categorize tasks and contribute to organization"
             {...createTaskForm.getInputProps("tags")}
           />
         </Stack>
