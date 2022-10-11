@@ -122,7 +122,10 @@ const Checklists: NextPage<ChecklistsProps> = ({ user, checklistData }) => {
             if (sortBy === SortBy.CreatedAt) {
               return a.createdAt > b.createdAt ? -1 : 1;
             } else {
-              return (a.scheduled ?? 0) > (b.scheduled ?? 0) ? -1 : 1;
+              return (new Date(a.scheduled as Date) as any) >
+                (new Date(b.scheduled as Date) as any)
+                ? -1
+                : 1;
             }
           }
         ),
