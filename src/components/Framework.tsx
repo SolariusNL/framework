@@ -484,6 +484,13 @@ const Framework = ({
                     },
                     transition: "all 0.8s ease",
                     cursor: "pointer",
+                    ":active": {
+                      transform: "scale(0.9)",
+                      transition: "transform 0.3s ease",
+                    },
+                    ":focus": {
+                      outline: "none",
+                    },
                     ...HeaderStyle,
                   }}
                   order={5}
