@@ -479,12 +479,11 @@ const Framework = ({
                   // @ts-ignore
                   sx={{
                     ":hover": {
-                      backgroundPosition: "left",
-                      backgroundSize: "200%",
+                      backgroundPosition: "0 100%",
                       backgroundRepeat: "no-repeat",
-                      transition: "all 0.5s ease",
+                      transition: "all 0.8s ease",
                     },
-                    transition: "all 0.5s ease",
+                    transition: "all 0.8s ease",
                     cursor: "pointer",
                     ...HeaderStyle,
                   }}
