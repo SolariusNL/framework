@@ -13,13 +13,17 @@ import {
   UnstyledButton,
   useMantineTheme,
 } from "@mantine/core";
+import { Calendar } from "@mantine/dates";
 import { ChecklistItem } from "@prisma/client";
 import { getCookie } from "cookies-next";
+import dayjs from "dayjs";
 import { motion } from "framer-motion";
+import React from "react";
 import { HiClock } from "react-icons/hi";
+import ReactNoSSR from "react-no-ssr";
+import { ChecklistTaskUpdateBody } from "../../pages/api/checklists/[[...params]]";
 import Descriptive from "../Descriptive";
 import Stateful from "../Stateful";
-import ReactNoSSR from "react-no-ssr";
 
 interface ChecklistTaskProps {
   task: ChecklistItem;
@@ -29,20 +33,80 @@ interface ChecklistTaskProps {
   display: "cards" | "list";
 }
 
-const DueBy = ({ date }: { date: Date }) => {
-  const { colorScheme } = useMantineTheme();
+const DueBy = ({
+  date,
+  editable = false,
+  onUpdate,
+}: {
+  date: Date;
+  editable?: boolean;
+  onUpdate?: (date: Date) => void;
+}) => {
+  const { colorScheme, colors } = useMantineTheme();
+
   return (
-    <Group spacing={12}>
-      <HiClock color={colorScheme === "dark" ? "#909296" : "#868e96"} />
-      <Tooltip
-        label={`Due by ${new Date(date).toLocaleDateString()}`}
-        position="bottom"
+    <>
+      <Group
+        spacing={12}
+        sx={{
+          ...(editable && {
+            "&:hover": {
+              backgroundColor:
+                colorScheme === "dark" ? colors.dark[5] : colors.gray[1],
+            },
+            width: "fit-content",
+            padding: "0.5rem",
+            cursor: "pointer",
+            borderRadius: 8,
+          }),
+        }}
       >
-        <Text color="dimmed" size="sm">
-          {new Date(date).toLocaleDateString()}
-        </Text>
-      </Tooltip>
-    </Group>
+        <HiClock color={colorScheme === "dark" ? "#909296" : "#868e96"} />
+        <Tooltip
+          label={
+            editable
+              ? "Edit due date"
+              : `Due by ${new Date(date).toLocaleDateString()}`
+          }
+          position="bottom"
+        >
+          <Stateful>
+            {(editing, setEditing) => (
+              <>
+                <Modal
+                  opened={editing}
+                  onClose={() => setEditing(false)}
+                  title="Edit due date"
+                >
+                  <Calendar
+                    minDate={dayjs(new Date()).add(1, "day").toDate()}
+                    defaultValue={new Date(date).toLocaleDateString()}
+                    onChange={(date) => {
+                      onUpdate && onUpdate(new Date(date as Date));
+                      setEditing(false);
+                    }}
+                    fullWidth
+                  />
+                </Modal>
+
+                <Text
+                  color="dimmed"
+                  size="sm"
+                  weight={500}
+                  onClick={() => {
+                    if (editable) {
+                      setEditing(true);
+                    }
+                  }}
+                >
+                  {new Date(date).toLocaleDateString()}
+                </Text>
+              </>
+            )}
+          </Stateful>
+        </Tooltip>
+      </Group>
+    </>
   );
 };
 
@@ -53,6 +117,8 @@ const ChecklistTask = ({
   fetchChecklists,
   display = "cards",
 }: ChecklistTaskProps) => {
+  const [taskState, setTaskState] = React.useState(task);
+
   const deleteTask = async (id: string) => {
     await fetch(`/api/checklists/${currentChecklist.id}/tasks/${id}/delete`, {
       method: "POST",
@@ -69,20 +135,35 @@ const ChecklistTask = ({
       });
   };
 
-  const setTaskCompleted = async (id: string, completed: boolean) => {
+  const updateTask = async (id: string, data: ChecklistTaskUpdateBody) => {
     await fetch(`/api/checklists/${currentChecklist.id}/tasks/${id}/update`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: String(getCookie(".frameworksession")),
       },
-      body: JSON.stringify({
-        finished: completed,
-      }),
+      body: JSON.stringify(data),
     }).catch((err) => {
       console.error(err);
     });
   };
+
+  const setTaskCompleted = async (id: string, completed: boolean) => {
+    await updateTask(id, { finished: completed });
+    setTaskState((prev) => ({ ...prev, completed }));
+  };
+
+  const updateDescription = async (id: string, description: string) => {
+    await updateTask(id, { description });
+    setTaskState((prev) => ({ ...prev, description }));
+  };
+
+  const updateScheduledFor = async (id: string, scheduledFor: Date) => {
+    await updateTask(id, { scheduled: scheduledFor });
+    setTaskState((prev) => ({ ...prev, scheduled: scheduledFor }));
+  };
+
+  const checkboxRef = React.useRef<HTMLInputElement>(null);
 
   return (
     <Stateful>
@@ -93,73 +174,77 @@ const ChecklistTask = ({
               opened={state}
               onClose={() => setState(false)}
               title="Edit Checklist"
-              size="lg"
             >
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  gap: "1rem",
-                }}
-              >
-                <div
-                  style={{
-                    flex: 1,
-                  }}
-                >
-                  <Title order={3}>{task.name}</Title>
-                  <Divider mt={25} mb={25} />
-                  <Text weight={500} color="dimmed" mb={8}>
-                    Description
-                  </Text>
-                  <Stateful>
-                    {(state, setState) =>
-                      state ? (
-                        <>
-                          <Textarea
-                            defaultValue={task.description}
-                            mb={12}
-                            description="Editing description"
-                          />
-                          <Button onClick={() => setState(false)}>Save</Button>
-                        </>
-                      ) : (
-                        <Text
-                          onClick={() => setState(true)}
-                          sx={{
-                            cursor: "pointer",
-                          }}
-                        >
-                          {task.description}
-                        </Text>
-                      )
-                    }
-                  </Stateful>
-                  <Text weight={500} color="dimmed" mb={8} mt={18}>
-                    Tags
-                  </Text>
-                  <Group spacing={6}>
-                    {task.tags.map((tag) => (
-                      <Badge key={tag}>{tag}</Badge>
-                    ))}
-                  </Group>
-                  {task.scheduled && (
+              <Title order={3}>{taskState.name}</Title>
+              <Divider mt={25} mb={25} />
+              <Text weight={500} color="dimmed" mb={8}>
+                Description
+              </Text>
+              <Stateful>
+                {(state, setState) =>
+                  state ? (
                     <>
-                      <Text weight={500} color="dimmed" mb={8} mt={18}>
-                        Due Date
-                      </Text>
-                      <DueBy date={task.scheduled} />
+                      <Stateful initialState={taskState.description}>
+                        {(description, setDescription) => (
+                          <>
+                            <Textarea
+                              defaultValue={description}
+                              mb={12}
+                              description="Editing description"
+                              onChange={(e) =>
+                                setDescription(e.currentTarget.value)
+                              }
+                            />
+                            <Button
+                              onClick={async () => {
+                                await updateDescription(
+                                  taskState.id,
+                                  description
+                                );
+
+                                setState(false);
+                              }}
+                            >
+                              Save
+                            </Button>
+                          </>
+                        )}
+                      </Stateful>
                     </>
-                  )}
-                </div>
-                <div
-                  style={{
-                    flex: 1,
-                  }}
-                >
-                  <p>Test</p>
-                </div>
-              </div>
+                  ) : (
+                    <Text
+                      onClick={() => setState(true)}
+                      sx={{
+                        cursor: "pointer",
+                      }}
+                    >
+                      {taskState.description}
+                    </Text>
+                  )
+                }
+              </Stateful>
+              <Text weight={500} color="dimmed" mb={8} mt={18}>
+                Tags
+              </Text>
+              <Group spacing={6}>
+                {taskState.tags.map((tag) => (
+                  <Badge key={tag}>{tag}</Badge>
+                ))}
+              </Group>
+              {taskState.scheduled && (
+                <>
+                  <Text weight={500} color="dimmed" mb={8} mt={18}>
+                    Due Date
+                  </Text>
+                  <DueBy
+                    date={taskState.scheduled}
+                    editable
+                    onUpdate={(newDate) =>
+                      updateScheduledFor(taskState.id, newDate)
+                    }
+                  />
+                </>
+              )}
             </Modal>
           </ReactNoSSR>
 
@@ -179,32 +264,42 @@ const ChecklistTask = ({
               },
               width: display === "cards" ? "33%" : "100%",
               padding: "12px",
-              opacity: task.completed ? 0.5 : 1,
+              opacity: taskState.completed ? 0.5 : 1,
               display: "flex",
               flexDirection: "column",
               height: "100%",
             })}
-            key={task.id}
-            onClick={() => setState(true)}
+            key={taskState.id}
+            onClick={() => {
+              if (checkboxRef.current?.contains(document.activeElement)) {
+                return;
+              }
+
+              setState(true);
+            }}
           >
-            <Descriptive title={task.name} description={task.description}>
+            <Descriptive
+              title={taskState.name}
+              description={taskState.description}
+            >
               <Checkbox
                 label="Completed"
-                checked={task.completed}
+                checked={taskState.completed}
                 onChange={(e) => {
-                  task.completed = e.target.checked;
+                  taskState.completed = e.target.checked;
                   setCurrentChecklist({
                     ...currentChecklist,
                   });
-                  setTaskCompleted(task.id, e.target.checked);
+                  setTaskCompleted(taskState.id, e.target.checked);
                 }}
+                ref={checkboxRef}
               />
             </Descriptive>
             <Group mt={12}>
-              {task.scheduled && <DueBy date={task.scheduled} />}
-              {task.tags && (
+              {taskState.scheduled && <DueBy date={taskState.scheduled} />}
+              {taskState.tags && (
                 <Group spacing={12}>
-                  {task.tags.map((tag) => (
+                  {taskState.tags.map((tag) => (
                     <Badge key={tag}>{tag}</Badge>
                   ))}
                 </Group>
@@ -213,15 +308,19 @@ const ChecklistTask = ({
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{
-                opacity: task.completed ? 1 : 0,
-                height: task.completed ? "auto" : 0,
+                opacity: taskState.completed ? 1 : 0,
+                height: taskState.completed ? "auto" : 0,
               }}
               transition={{ duration: 0.2 }}
               style={{
-                marginTop: task.completed ? 12 : 0,
+                marginTop: taskState.completed ? 12 : 0,
               }}
             >
-              <Button fullWidth color="red" onClick={() => deleteTask(task.id)}>
+              <Button
+                fullWidth
+                color="red"
+                onClick={() => deleteTask(taskState.id)}
+              >
                 Delete
               </Button>
             </motion.div>

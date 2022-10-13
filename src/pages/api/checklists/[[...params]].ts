@@ -21,9 +21,10 @@ interface ChecklistTaskCreateBody {
   schedule?: Date;
 }
 
-interface ChecklistTaskUpdateBody {
+export interface ChecklistTaskUpdateBody {
   finished?: boolean;
-  schedule?: Date;
+  scheduled?: Date;
+  description?: string;
 }
 
 class ChecklistRouter {
@@ -161,11 +162,13 @@ class ChecklistRouter {
     @Param("taskId") taskId: string,
     @Body() data: ChecklistTaskUpdateBody
   ) {
-    const updatable = ["scheduled", "completed"];
+    const updatable = ["scheduled", "completed", "description"];
 
     const checks: Record<string, (v: any) => boolean> = {
       scheduled: (v: any) => new Date(v).getTime() > Date.now(),
       completed: (v: any) => typeof v === "boolean",
+      description: (v: any) =>
+        typeof v === "string" && v.length < 1024 && v.length > 3,
     };
 
     if (
