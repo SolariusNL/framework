@@ -28,7 +28,6 @@ import {
 import abbreviateNumber from "../../util/abbreviate";
 import { User } from "../../util/prisma-types";
 import Copy from "../Copy";
-import EmptyState from "../EmptyState";
 import ModernEmptyState from "../ModernEmptyState";
 import InventTab from "./InventTab";
 
@@ -60,16 +59,33 @@ const Games = ({ user }: GamesProps) => {
         Your games
       </Title>
 
-      <Paper withBorder shadow="md" p={12} radius="md" mb={30}>
-        <Stack spacing={12}>
-          {user.games.length == 0 && (
-            <ModernEmptyState
-              title="No games"
-              body="You don't have any games on your account."
-            />
-          )}
-          {user.games.map((game) => (
-            <Group position="apart" key={game.id}>
+      <div
+        style={{
+          // 2 columns
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "1rem",
+        }}
+      >
+        {user.games.length == 0 && (
+          <ModernEmptyState
+            title="No games"
+            body="You don't have any games on your account."
+          />
+        )}
+        {user.games.map((game) => (
+          <Paper
+            withBorder
+            shadow="md"
+            p={12}
+            radius="md"
+            mb={30}
+            key={game.id}
+            sx={{
+              flex: 1,
+            }}
+          >
+            <Group position="apart">
               <Group>
                 <Group>
                   <Image
@@ -186,9 +202,9 @@ const Games = ({ user }: GamesProps) => {
                 </Menu>
               </Group>
             </Group>
-          ))}
-        </Stack>
-      </Paper>
+          </Paper>
+        ))}
+      </div>
     </InventTab>
   );
 };
