@@ -22,7 +22,7 @@ interface ChecklistTaskCreateBody {
 }
 
 export interface ChecklistTaskUpdateBody {
-  finished?: boolean;
+  completed?: boolean;
   scheduled?: Date;
   description?: string;
 }

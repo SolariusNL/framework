@@ -149,7 +149,7 @@ const ChecklistTask = ({
   };
 
   const setTaskCompleted = async (id: string, completed: boolean) => {
-    await updateTask(id, { finished: completed });
+    await updateTask(id, { completed });
     setTaskState((prev) => ({ ...prev, completed }));
   };
 
@@ -175,7 +175,18 @@ const ChecklistTask = ({
               onClose={() => setState(false)}
               title="Edit Checklist"
             >
-              <Title order={3}>{taskState.name}</Title>
+              <Title
+                order={3}
+                {...(taskState.completed && {
+                  sx: {
+                    textDecoration: taskState.completed
+                      ? "line-through"
+                      : "none",
+                  },
+                })}
+              >
+                {taskState.name}
+              </Title>
               <Divider mt={25} mb={25} />
               <Text weight={500} color="dimmed" mb={8}>
                 Description
