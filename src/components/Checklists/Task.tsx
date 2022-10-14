@@ -19,7 +19,7 @@ import { getCookie } from "cookies-next";
 import dayjs from "dayjs";
 import { motion } from "framer-motion";
 import React from "react";
-import { HiClock } from "react-icons/hi";
+import { HiClock, HiTrash } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import { ChecklistTaskUpdateBody } from "../../pages/api/checklists/[[...params]]";
 import Descriptive from "../Descriptive";
@@ -256,6 +256,25 @@ const ChecklistTask = ({
                   />
                 </>
               )}
+              <Stateful>
+                {(repeat, setRepeat) => (
+                  <Button
+                    color="red"
+                    mt={18}
+                    leftIcon={<HiTrash />}
+                    onClick={() => {
+                      if (repeat) {
+                        deleteTask(taskState.id);
+                      } else {
+                        setRepeat(true);
+                      }
+                    }}
+                    fullWidth
+                  >
+                    {repeat ? "Are you sure?" : "Delete"}
+                  </Button>
+                )}
+              </Stateful>
             </Modal>
           </ReactNoSSR>
 
@@ -331,6 +350,7 @@ const ChecklistTask = ({
                 fullWidth
                 color="red"
                 onClick={() => deleteTask(taskState.id)}
+                leftIcon={<HiTrash />}
               >
                 Delete
               </Button>
