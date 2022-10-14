@@ -3,7 +3,6 @@ import {
   Loader,
   ScrollArea,
   Stack,
-  Tabs,
   Text,
   useMantineColorScheme,
 } from "@mantine/core";
@@ -32,6 +31,7 @@ import NotificationsTab from "../components/Settings/NotificationsTab";
 import PrivacyTab from "../components/Settings/PrivacyTab";
 import SecurityTab from "../components/Settings/SecurityTab";
 import SubscriptionTab from "../components/Settings/SubscriptionTab";
+import TabNav from "../components/TabNav";
 import authorizedRoute from "../util/authorizedRoute";
 import { User } from "../util/prisma-types";
 import useMediaQuery from "../util/useMediaQuery";
@@ -50,11 +50,7 @@ const SettingsGroup = ({ title, children, icon }: SettingsGroupProps) => {
   const { colorScheme } = useMantineColorScheme();
   return (
     <>
-      <Text
-        color="dimmed"
-        className={`settings-header_${colorScheme}`}
-        size="sm"
-      >
+      <Text color="dimmed" size="sm" weight={500}>
         <div
           style={{
             display: "inline-flex",
@@ -82,13 +78,13 @@ const Settings: NextPage<SettingsProps> = ({ user }) => {
       modernTitle="Settings"
       modernSubtitle="Manage your account, privacy, security, subscriptions, and more."
     >
-      <Tabs
+      <TabNav
         variant="pills"
         orientation={mobile ? "horizontal" : "vertical"}
         defaultValue="account"
       >
         <ScrollArea offsetScrollbars>
-          <Tabs.List>
+          <TabNav.List>
             <div
               style={{
                 display: "flex",
@@ -98,52 +94,52 @@ const Settings: NextPage<SettingsProps> = ({ user }) => {
             >
               <Stack spacing={10}>
                 <SettingsGroup title="Account" icon={<HiUser />}>
-                  <Tabs.Tab value="account" icon={<HiUser />}>
+                  <TabNav.Tab value="account" icon={<HiUser />}>
                     Profile
-                  </Tabs.Tab>
+                  </TabNav.Tab>
 
-                  <Tabs.Tab value="security" icon={<HiKey />}>
+                  <TabNav.Tab value="security" icon={<HiKey />}>
                     Security
-                  </Tabs.Tab>
+                  </TabNav.Tab>
 
-                  <Tabs.Tab value="privacy" icon={<HiEye />}>
+                  <TabNav.Tab value="privacy" icon={<HiEye />}>
                     Privacy
-                  </Tabs.Tab>
+                  </TabNav.Tab>
 
-                  <Tabs.Tab value="subscriptions" icon={<HiGift />}>
+                  <TabNav.Tab value="subscriptions" icon={<HiGift />}>
                     Subscriptions
-                  </Tabs.Tab>
+                  </TabNav.Tab>
 
-                  <Tabs.Tab value="notifications" icon={<HiBell />}>
+                  <TabNav.Tab value="notifications" icon={<HiBell />}>
                     Notifications
-                  </Tabs.Tab>
+                  </TabNav.Tab>
                 </SettingsGroup>
 
                 <SettingsGroup title="App" icon={<HiGlobe />}>
-                  <Tabs.Tab value="appearance" icon={<HiPhotograph />}>
+                  <TabNav.Tab value="appearance" icon={<HiPhotograph />}>
                     Appearance
-                  </Tabs.Tab>
+                  </TabNav.Tab>
 
-                  <Tabs.Tab value="beta" icon={<HiBeaker />}>
+                  <TabNav.Tab value="beta" icon={<HiBeaker />}>
                     Preview Program
-                  </Tabs.Tab>
+                  </TabNav.Tab>
                 </SettingsGroup>
 
                 <SettingsGroup title="Other" icon={<HiSortAscending />}>
-                  <Tabs.Tab value="about" icon={<HiInformationCircle />}>
+                  <TabNav.Tab value="about" icon={<HiInformationCircle />}>
                     About Framework
-                  </Tabs.Tab>
-                  <Tabs.Tab
+                  </TabNav.Tab>
+                  <TabNav.Tab
                     value="deleteaccount"
                     icon={<HiTrash />}
                     color="red"
                   >
                     Delete Account
-                  </Tabs.Tab>
+                  </TabNav.Tab>
                 </SettingsGroup>
               </Stack>
             </div>
-          </Tabs.List>
+          </TabNav.List>
         </ScrollArea>
 
         {[
@@ -177,7 +173,7 @@ const Settings: NextPage<SettingsProps> = ({ user }) => {
             <Component user={user} />
           </ReactNoSSR>
         ))}
-      </Tabs>
+      </TabNav>
     </Framework>
   );
 };
