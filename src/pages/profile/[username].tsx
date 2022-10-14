@@ -52,6 +52,7 @@ import { exclude } from "../../util/exclude";
 import prisma from "../../util/prisma";
 import { nonCurrentUserSelect, User } from "../../util/prisma-types";
 import useMediaQuery from "../../util/useMediaQuery";
+import ReactNoSSR from "react-no-ssr";
 
 interface ProfileProps {
   user: User;
@@ -309,24 +310,26 @@ const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
               Badges
             </Text>
 
-            <Grid>
-              {[
-                <AlphaBadge user={viewing} key="alpha" />,
-                viewing.premium && (
-                  <PremiumBadge user={viewing} key="premium" />
-                ),
-                viewing.role == "ADMIN" && (
-                  <AdminBadge user={viewing} key="admin" />
-                ),
-              ].map((b) => (
-                <Grid.Col
-                  span={mobile ? 12 : 6}
-                  key={Math.floor(Math.random() * 100)}
-                >
-                  {b}
-                </Grid.Col>
-              ))}
-            </Grid>
+            <ReactNoSSR>
+              <Grid>
+                {[
+                  <AlphaBadge user={viewing} key="alpha" />,
+                  viewing.premium && (
+                    <PremiumBadge user={viewing} key="premium" />
+                  ),
+                  viewing.role == "ADMIN" && (
+                    <AdminBadge user={viewing} key="admin" />
+                  ),
+                ].map((b) => (
+                  <Grid.Col
+                    span={mobile ? 12 : 6}
+                    key={Math.floor(Math.random() * 100)}
+                  >
+                    {b}
+                  </Grid.Col>
+                ))}
+              </Grid>
+            </ReactNoSSR>
           </Grid.Col>
 
           <Grid.Col span={mobile ? 24 : 10}>
@@ -336,112 +339,115 @@ const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
                 body={`${viewing.username} has no games.`}
               />
             )}
-            <ThumbnailCarousel
-              p={8}
-              slides={viewing.games.map((g, i) => (
-                <Paper
-                  withBorder
-                  p={12}
-                  radius="md"
-                  key={i}
-                  shadow="md"
-                  sx={{
-                    marginRight: i != viewing.games.length - 1 ? 8 : 0,
-                  }}
-                >
-                  <Container p={0} mb={16}>
-                    {g.gallery.length > 0 && (
-                      <ThumbnailCarousel
-                        slides={g.gallery.map((gal, j) => (
-                          <Image height={180} src={gal} key={j} alt={g.name} />
-                        ))}
-                      />
-                    )}
-
-                    {g.gallery.length == 0 && (
-                      <PlaceholderGameResource height={180} radius={6} />
-                    )}
-                  </Container>
-
-                  <Title order={3}>{g.name}</Title>
-                  <Text size="sm" color="dimmed" mb={16}>
-                    @{g.author.username}
-                  </Text>
-
-                  <Progress
-                    sections={[
-                      {
-                        value:
-                          (g.likedBy.length / g.likedBy.length +
-                            g.dislikedBy.length) *
-                          100,
-                        color: "green",
-                      },
-                      {
-                        value:
-                          (g.likedBy.length / g.likedBy.length +
-                            g.dislikedBy.length) *
-                          100,
-                        color: "red",
-                      },
-                    ]}
-                    mb="md"
-                  />
-
-                  <Button
-                    fullWidth
-                    leftIcon={<HiArrowRight />}
-                    onClick={() => router.push(`/game/${g.id}`)}
+            <ReactNoSSR>
+              <ThumbnailCarousel
+                p={8}
+                slides={viewing.games.map((g, i) => (
+                  <Paper
+                    withBorder
+                    p={12}
+                    radius="md"
+                    key={i}
+                    shadow="md"
+                    sx={{
+                      marginRight: i != viewing.games.length - 1 ? 8 : 0,
+                    }}
                   >
-                    View
-                  </Button>
-                </Paper>
-              ))}
-            />
+                    <Container p={0} mb={16}>
+                      {g.gallery.length > 0 && (
+                        <ThumbnailCarousel
+                          slides={g.gallery.map((gal, j) => (
+                            <Image
+                              height={180}
+                              src={gal}
+                              key={j}
+                              alt={g.name}
+                            />
+                          ))}
+                        />
+                      )}
+
+                      {g.gallery.length == 0 && (
+                        <PlaceholderGameResource height={180} radius={6} />
+                      )}
+                    </Container>
+
+                    <Title order={3}>{g.name}</Title>
+                    <Text size="sm" color="dimmed" mb={16}>
+                      @{g.author.username}
+                    </Text>
+
+                    <Progress
+                      sections={[
+                        {
+                          value:
+                            (g.likedBy.length / g.likedBy.length +
+                              g.dislikedBy.length) *
+                            100,
+                          color: "green",
+                        },
+                        {
+                          value:
+                            (g.likedBy.length / g.likedBy.length +
+                              g.dislikedBy.length) *
+                            100,
+                          color: "red",
+                        },
+                      ]}
+                      mb="md"
+                    />
+
+                    <Button
+                      fullWidth
+                      leftIcon={<HiArrowRight />}
+                      onClick={() => router.push(`/game/${g.id}`)}
+                    >
+                      View
+                    </Button>
+                  </Paper>
+                ))}
+              />
+            </ReactNoSSR>
           </Grid.Col>
         </Grid>
 
         <Divider mt={25} mb={25} />
 
-        <Paper
-          withBorder
-          shadow="md"
-          p={16}
-          radius="md"
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          mb={32}
-        >
-          <Group spacing={mobile ? 24 : 32}>
-            <Stack align="center" spacing={4}>
-              <Text weight={500} size="lg" sx={{ lineHeight: 1 }}>
-                {new Date(viewing.createdAt).toLocaleDateString()}
-              </Text>
-              <Text size="sm" color="dimmed">
-                Member since
-              </Text>
-            </Stack>
-
-            <Stack align="center" spacing={4}>
-              <Text weight={500} size="lg" sx={{ lineHeight: 1 }}>
-                {viewing.games.map((g) => g.visits).reduce((a, b) => a + b, 0)}
-              </Text>
-              <Text size="sm" color="dimmed">
-                Place visits
-              </Text>
-            </Stack>
-
-            <Stack align="center" spacing={4}>
-              <Text weight={500} size="lg" sx={{ lineHeight: 1 }}>
-                0
-              </Text>
-              <Text size="sm" color="dimmed">
-                Hours played
-              </Text>
-            </Stack>
+        <Paper px={60} radius="md" mb={32}>
+          <Group position="apart">
+            {[
+              {
+                icon: HiClock,
+                label: "Member since",
+                value: new Date(viewing.createdAt).toLocaleDateString(),
+              },
+              {
+                icon: HiUsers,
+                label: "Place visits",
+                value: viewing.games
+                  .map((g) => g.visits)
+                  .reduce((a, b) => a + b, 0),
+              },
+              {
+                icon: HiClock,
+                label: "Hours played",
+                value: 0,
+              },
+            ].map((stat) => (
+              <Stack align="center" spacing={4} key={stat.label}>
+                <stat.icon
+                  style={{
+                    marginBottom: 16,
+                  }}
+                />
+                <Text weight={500} size="lg" sx={{ lineHeight: 1 }}>
+                  {stat.value}
+                </Text>
+                <Text size="sm" color="dimmed">
+                  {stat.label}
+                </Text>
+              </Stack>
+            ))}
           </Group>
         </Paper>
       </Framework>
