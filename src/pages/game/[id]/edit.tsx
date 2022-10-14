@@ -14,6 +14,7 @@ import TabNav from "../../../components/TabNav";
 import authorizedRoute from "../../../util/authorizedRoute";
 import prisma from "../../../util/prisma";
 import { Game, gameSelect, User } from "../../../util/prisma-types";
+import ReactNoSSR from "react-no-ssr";
 
 interface EditGameProps {
   game: Game;
@@ -45,7 +46,9 @@ const EditGame: NextPage<EditGameProps> = ({ game, user }) => {
         </TabNav.List>
 
         {[Details, Funding, Servers, AgeRating].map((Component, index) => (
-          <Component key={index} game={game} />
+          <ReactNoSSR key={index}>
+            <Component game={game} />
+          </ReactNoSSR>
         ))}
       </TabNav>
     </Framework>
