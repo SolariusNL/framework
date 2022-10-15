@@ -1,16 +1,42 @@
-import logger from "../src/util/logger";
-import inquirer from "inquirer";
-import { spawn } from "child_process";
 import { PrismaClient } from "@prisma/client";
+import { spawn } from "child_process";
+import { createWriteStream, existsSync, mkdirSync } from "fs";
+import { readFile, writeFile } from "fs/promises";
+import inquirer from "inquirer";
+import yaml from "js-yaml";
+import Configuration from "../src/types/Configuration";
+import logger from "../src/util/logger";
 
 logger().info("frameworkctl - control your self-hosted framework instance");
 
+let PID: number | undefined;
+
+function pidIsRunning(pid: number) {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 async function main() {
+  PID = await readFile(".next/FW_PID")
+    .then((data) => parseInt(data.toString()))
+    .catch(() => undefined);
+  let running = PID && pidIsRunning(PID);
+
   const actions = await inquirer.prompt({
     name: "action",
     type: "list",
     message: "Choose an action",
-    choices: ["🔌 Start Framework", "🖥 Seed Database", "📈 Get Statistics"],
+    choices: [
+      "🔌 Start Framework",
+      "🖥 Seed Database",
+      "📈 Get Statistics",
+      "⚙ Set config value",
+      ...(running ? ["🔌 Stop Framework"] : []),
+    ],
   });
 
   switch (actions.action) {
@@ -22,6 +48,15 @@ async function main() {
       break;
     case "📈 Get Statistics":
       getStatistics();
+      break;
+    case "🔌 Stop Framework":
+      if (PID) {
+        process.kill(PID);
+        logger().info("Stopped Framework");
+      }
+      break;
+    case "⚙ Set config value":
+      configMenu();
       break;
     default:
       logger().info("Unknown action");
@@ -45,7 +80,7 @@ async function startFramework() {
     stdio: "inherit",
   });
 
-  build.on("close", (code: number) => {
+  build.on("close", async (code: number) => {
     if (code !== 0) {
       logger().error(`Build failed with code ${code}`);
       return;
@@ -53,9 +88,18 @@ async function startFramework() {
 
     logger().info("Build succeeded; starting app");
 
-    const start = spawn("next", ["start", "-p", portQuestion.port], {
+    if (process.platform === "linux" && portQuestion.port < 1024) {
+      if (process.getuid!() !== 0) {
+        logger().error(
+          "You are trying to start Framework on a port below 1024. This requires elevated permissions on Linux."
+        );
+      }
+    }
+
+    const start = spawn("next", ["start", "--p", portQuestion.port], {
       cwd: ".",
-      stdio: "inherit",
+      detached: true,
+      stdio: ["ignore", "ignore", "ignore", "ipc"],
     });
 
     start.on("close", (code: number) => {
@@ -63,8 +107,17 @@ async function startFramework() {
         logger().error(`Start failed with code ${code}`);
         return;
       }
+    });
 
-      logger().info("App started successfully");
+    start.stdout?.pipe(
+      createWriteStream(`.next/${new Date().toISOString()}.log`)
+    );
+
+    logger().info("App started successfully");
+
+    writeFile(".next/FW_PID", process.pid.toString()).catch((err) => {
+      logger().error("Failed to save PID to .next/FW_PID");
+      logger().error(err);
     });
   });
 }
@@ -112,6 +165,75 @@ async function getStatistics() {
   logger().info(`Tickets in circulation: ${ticketsInCirculation._sum.tickets}`);
 
   prisma.$disconnect();
+}
+
+async function configMenu() {
+  const valuePathQuestion = await inquirer.prompt({
+    name: "valuePath",
+    type: "input",
+    message: "Enter a value path (e.g. 'states.maintenance.enabled')",
+  });
+
+  const config = yaml.load(
+    await readFile("framework.yml", { encoding: "utf-8" })
+  ) as Configuration;
+
+  const value = valuePathQuestion.valuePath
+    .split(".")
+    .reduce((acc: any, key: string) => {
+      if (acc === undefined) {
+        return undefined;
+      }
+
+      return acc[key];
+    }, config);
+
+  if (value === undefined) {
+    logger().error("Invalid value path");
+    return;
+  }
+
+  if (typeof value === "object") {
+    logger().error(
+      "Value path is an object. Please choose a value path that is a primitive value. To reference a property in a list, use the index of the list. E.g. 'states.maintenance.messages.0'"
+    );
+    return;
+  }
+
+  const valueType = typeof value;
+
+  const valueQuestion = await inquirer.prompt({
+    name: "value",
+    type: valueType === "boolean" ? "confirm" : "input",
+    message: "Enter a value",
+    default: value,
+  });
+
+  valuePathQuestion.valuePath
+    .split(".")
+    .reduce((acc: any, key: string, index: number, arr: string[]) => {
+      if (index === arr.length - 1) {
+        acc[key] = valueQuestion.value as typeof value;
+      }
+
+      return acc[key];
+    }, config);
+
+  if (!existsSync("backups/config")) {
+    mkdirSync("backups/config", {
+      recursive: true,
+    });
+  }
+
+  await writeFile(
+    `backups/config/${new Date().toISOString()}.yml`,
+    yaml.dump(config)
+  );
+  await writeFile("framework.yml", yaml.dump(config));
+
+  logger().info(
+    "Config updated. Backups can be found in the backups/config folder."
+  );
 }
 
 main();
