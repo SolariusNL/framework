@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { spawn } from "child_process";
+import { spawn, spawnSync } from "child_process";
 import { createWriteStream, existsSync, mkdirSync } from "fs";
 import { readFile, writeFile } from "fs/promises";
 import inquirer from "inquirer";
@@ -20,6 +20,11 @@ function pidIsRunning(pid: number) {
   }
 }
 
+function getPidMemory(pid: number) {
+  const { stdout } = spawnSync("ps", ["-o", "rss=", "-p", pid.toString()]);
+  return parseInt(stdout.toString());
+}
+
 async function main() {
   PID = await readFile(".next/FW_PID")
     .then((data) => parseInt(data.toString()))
@@ -35,7 +40,7 @@ async function main() {
       "🖥 Seed Database",
       "📈 Get Statistics",
       "⚙ Set config value",
-      ...(running ? ["🔌 Stop Framework"] : []),
+      ...(running ? ["🔌 Stop Framework", "💿 Framework Status"] : []),
     ],
   });
 
@@ -58,6 +63,14 @@ async function main() {
     case "⚙ Set config value":
       configMenu();
       break;
+    case "💿 Framework Status":
+      if (PID) {
+        const mbUsage = getPidMemory(PID) / 1024;
+
+        logger().info(`Framework is running with PID ${PID}`);
+        logger().info(`Framework is using ${mbUsage} MB of memory`);
+      }
+      break;
     default:
       logger().info("Unknown action");
       main();
@@ -75,13 +88,34 @@ async function startFramework() {
 
   logger().info(`Starting Framework on port ${portQuestion.port}`);
 
+  let rebuild = false;
+
+  if (existsSync(".next")) {
+    await inquirer
+      .prompt({
+        name: "rebuild",
+        type: "confirm",
+        message:
+          "We found a .next folder, would you like to use the existing build or rebuild? (y=rebuild, n=use existing)",
+        default: true,
+      })
+      .then((answer) => {
+        rebuild = answer.rebuild;
+      });
+  }
+
   const build = spawn("yarn", ["run", "build"], {
     cwd: ".",
     stdio: "inherit",
   });
 
+  if (!rebuild) {
+    build.kill();
+    logger().info("Using existing build");
+  }
+
   build.on("close", async (code: number) => {
-    if (code !== 0) {
+    if (code !== 0 && rebuild) {
       logger().error(`Build failed with code ${code}`);
       return;
     }
@@ -96,7 +130,7 @@ async function startFramework() {
       }
     }
 
-    const start = spawn("next", ["start", "--p", portQuestion.port], {
+    const start = spawn("next", ["start", "-p", portQuestion.port], {
       cwd: ".",
       detached: true,
       stdio: ["ignore", "ignore", "ignore", "ipc"],
@@ -113,9 +147,11 @@ async function startFramework() {
       createWriteStream(`.next/${new Date().toISOString()}.log`)
     );
 
-    logger().info("App started successfully");
+    logger().info(
+      "App started successfully. You can safely exit this process, Framework will continue to run in the background."
+    );
 
-    writeFile(".next/FW_PID", process.pid.toString()).catch((err) => {
+    writeFile(".next/FW_PID", start.pid!.toString()).catch((err) => {
       logger().error("Failed to save PID to .next/FW_PID");
       logger().error(err);
     });
