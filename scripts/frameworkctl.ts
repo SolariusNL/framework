@@ -133,7 +133,7 @@ async function startFramework() {
     const start = spawn("next", ["start", "-p", portQuestion.port], {
       cwd: ".",
       detached: true,
-      stdio: ["ignore", "ignore", "ignore", "ipc"],
+      stdio: "pipe",
     });
 
     start.on("close", (code: number) => {
@@ -143,9 +143,11 @@ async function startFramework() {
       }
     });
 
-    start.stdout?.pipe(
-      createWriteStream(`.next/${new Date().toISOString()}.log`)
-    );
+    const stream = createWriteStream(`.next/${new Date().toISOString()}.log`);
+
+    start.stdout.on("data", (data) => {
+      stream.write(data);
+    });
 
     logger().info(
       "App started successfully. You can safely exit this process, Framework will continue to run in the background."
