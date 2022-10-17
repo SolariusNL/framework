@@ -36,7 +36,7 @@ async function main() {
     type: "list",
     message: "Choose an action",
     choices: [
-      "🔌 Start Framework",
+      ...(!running ? ["🔌 Start Framework"] : []),
       "🖥 Seed Database",
       "📈 Get Statistics",
       "⚙ Set config value",
