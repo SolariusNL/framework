@@ -292,8 +292,9 @@ async function configMenu() {
  */
 async function cli() {
   const args = {
-    "--clear-backups": Boolean,
-    "--query": String,
+    "--clear-backups": [Boolean, "Clears all backups stored in the backups folder"],
+    "--query": [String, "Runs a query. E.g. --query database"],
+    "--help": [Boolean, "Shows this help message"],
   };
 
   let opts: { name: string; value: any }[] = [];
@@ -357,6 +358,17 @@ async function cli() {
         }
       }
     }
+  }
+
+  if (contains("--help")) {
+    logger().info(
+      "Framework CLI Help\n\n" +
+      Object.entries(args)
+        .map(([key, value]) => {
+          return `\t${key.padEnd(20)} ${value[1]}`;
+        })
+        .join("\n")
+    );
   }
 
   if (wasArgful) {
