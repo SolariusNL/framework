@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { spawn, spawnSync } from "child_process";
 import { createWriteStream, existsSync, mkdirSync } from "fs";
-import { readFile, writeFile } from "fs/promises";
+import { readFile, rmdir, writeFile } from "fs/promises";
 import inquirer from "inquirer";
 import yaml from "js-yaml";
 import Configuration from "../src/types/Configuration";
@@ -287,4 +287,84 @@ async function configMenu() {
   );
 }
 
-main();
+/**
+ * command line args for features not visually represented in the menu
+ */
+async function cli() {
+  const args = {
+    "--clear-backups": Boolean,
+    "--query": String,
+  };
+
+  let opts: { name: string; value: any }[] = [];
+
+  for (let i = 0; i < process.argv.length; i++) {
+    if (args[process.argv[i] as keyof typeof args]) {
+      opts.push({
+        name: process.argv[i],
+        value:
+          process.argv[i + 1] && !process.argv[i + 1].startsWith("--")
+            ? process.argv[i + 1].split(",")
+            : true,
+      });
+    }
+  }
+
+  const contains = (name: string) => {
+    return opts.filter((opt) => opt.name === name).length > 0;
+  };
+
+  const get = (name: string) => {
+    return opts.filter((opt) => opt.name === name)[0].value;
+  };
+
+  const wasArgful = opts.length > 0;
+
+  if (contains("--clear-backups")) {
+    logger().info("Clearing backups");
+
+    if (existsSync("backups")) {
+      await rmdir("backups", { recursive: true });
+    }
+
+    mkdirSync("backups", {
+      recursive: true,
+    });
+
+    logger().info("Backups cleared");
+  }
+
+  if (contains("--query")) {
+    const query = get("--query");
+    const queries = {
+      database: getStatistics,
+    };
+
+    if (typeof query === "string") {
+      if (query in queries) {
+        await queries[query as keyof typeof queries]();
+      } else {
+        logger().error("Invalid query");
+      }
+    }
+
+    if (Array.isArray(query)) {
+      for (const q of query) {
+        if (q in queries) {
+          await queries[q as keyof typeof queries]();
+        } else {
+          logger().error("Invalid query: " + q);
+        }
+      }
+    }
+  }
+
+  if (wasArgful) {
+    logger().info("Finished");
+    process.exit(0);
+  }
+}
+
+cli().then(() => {
+  main();
+});
