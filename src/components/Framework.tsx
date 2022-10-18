@@ -701,7 +701,6 @@ const Framework = ({
                 position: immersive ? "sticky" : "relative",
                 zIndex: 500,
                 top: immersive ? "108.7px" : "0",
-                boxShadow: immersive ? "0 0 17px #00000070" : "none",
               })}
               mb={noContentPadding ? 0 : 32}
               p={32}
