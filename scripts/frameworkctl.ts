@@ -41,6 +41,7 @@ async function main() {
       "📈 Get Statistics",
       "⚙ Set config value",
       ...(running ? ["🔌 Stop Framework", "💿 Framework Status"] : []),
+      "❌ Exit",
     ],
   });
 
@@ -66,11 +67,23 @@ async function main() {
     case "💿 Framework Status":
       if (PID) {
         const mbUsage = getPidMemory(PID) / 1024;
+        const cpuUsage = spawnSync("ps", ["-o", "%cpu=", "-p", PID.toString()]);
+        const cpuUsageFormatted = cpuUsage.stdout.toString().trim();
 
         logger().info(`Framework is running with PID ${PID}`);
-        logger().info(`Framework is using ${mbUsage} MB of memory`);
+        logger().info(`Framework is using ${mbUsage.toFixed(2)} MB of memory`);
+        logger().info(`Framework is using ${cpuUsageFormatted}% of CPU`);
+        logger().info("Process tree:");
+        logger().info(
+          "\n" +
+            spawnSync("pstree", ["-p", PID.toString()])
+              .stdout.toString()
+              .replace(/(\d+)/g, "\x1b[36m$1\x1b[0m")
+        );
       }
       break;
+    case "❌ Exit":
+      process.exit(0);
     default:
       logger().info("Unknown action");
       main();
