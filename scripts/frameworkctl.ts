@@ -4,6 +4,7 @@ import { createWriteStream, existsSync, mkdirSync } from "fs";
 import { readFile, rmdir, writeFile } from "fs/promises";
 import inquirer from "inquirer";
 import yaml from "js-yaml";
+import open from "open";
 import Configuration from "../src/types/Configuration";
 import logger from "../src/util/logger";
 
@@ -26,6 +27,13 @@ function getPidMemory(pid: number) {
 }
 
 async function main() {
+  if (process.platform !== "linux" && process.platform !== "darwin") {
+    logger().error(
+      "frameworkctl can only be ran on unix systems because it uses several unix specific commands. we're sorry for the inconvenience."
+    );
+    process.exit(1);
+  }
+
   PID = await readFile(".next/FW_PID")
     .then((data) => parseInt(data.toString()))
     .catch(() => undefined);
@@ -73,13 +81,15 @@ async function main() {
         logger().info(`Framework is running with PID ${PID}`);
         logger().info(`Framework is using ${mbUsage.toFixed(2)} MB of memory`);
         logger().info(`Framework is using ${cpuUsageFormatted}% of CPU`);
-        logger().info("Process tree:");
-        logger().info(
-          "\n" +
-            spawnSync("pstree", ["-p", PID.toString()])
-              .stdout.toString()
-              .replace(/(\d+)/g, "\x1b[36m$1\x1b[0m")
-        );
+        if (process.platform === "linux") {
+          logger().info("Process tree:");
+          logger().info(
+            "\n" +
+              spawnSync("pstree", ["-p", PID.toString()])
+                .stdout.toString()
+                .replace(/(\d+)/g, "\x1b[36m$1\x1b[0m")
+          );
+        }
       }
       break;
     case "❌ Exit":
@@ -129,14 +139,34 @@ async function startFramework() {
 
   build.on("close", async (code: number) => {
     if (code !== 0 && rebuild) {
-      logger().error(`Build failed with code ${code}`);
+      logger().error(
+        `Build failed with code ${code}. If this is unexpected, please file an issue on the Framework GitHub repository.\n` +
+          "We're sorry for the inconvenience."
+      );
+
+      if (process.platform === "darwin") {
+        await macosAlert(
+          "Build failed",
+          "Build failed with code " +
+            code +
+            ". If this is unexpected, please file an issue on the Framework GitHub repository. We're sorry for the inconvenience.",
+          "critical",
+          ["Open GitHub", "Close"],
+          "Open GitHub"
+        ).then((r) => {
+          if (r === "Open GitHub") {
+            open("https://github.com/Tsodinq/framework/issues/new");
+          }
+        });
+      }
+
       return;
     }
 
     logger().info("Build succeeded; starting app");
 
-    if (process.platform === "linux" && portQuestion.port < 1024) {
-      if (process.getuid!() !== 0) {
+    if (process.platform === "linux" || process.platform === "darwin") {
+      if (process.getuid!() !== 0 && portQuestion.port < 1024) {
         logger().error(
           "You are trying to start Framework on a port below 1024. This requires elevated permissions on Linux."
         );
@@ -292,7 +322,10 @@ async function configMenu() {
  */
 async function cli() {
   const args = {
-    "--clear-backups": [Boolean, "Clears all backups stored in the backups folder"],
+    "--clear-backups": [
+      Boolean,
+      "Clears all backups stored in the backups folder",
+    ],
     "--query": [String, "Runs a query. E.g. --query database"],
     "--help": [Boolean, "Shows this help message"],
   };
@@ -363,11 +396,11 @@ async function cli() {
   if (contains("--help")) {
     logger().info(
       "Framework CLI Help\n\n" +
-      Object.entries(args)
-        .map(([key, value]) => {
-          return `\t${key.padEnd(20)} ${value[1]}`;
-        })
-        .join("\n")
+        Object.entries(args)
+          .map(([key, value]) => {
+            return `\t${key.padEnd(20)} ${value[1]}`;
+          })
+          .join("\n")
     );
   }
 
@@ -375,6 +408,23 @@ async function cli() {
     logger().info("Finished");
     process.exit(0);
   }
+}
+
+async function macosAlert(
+  title: string,
+  message: string,
+  as: "critical" | "warning" | "informational",
+  buttons: string[],
+  defaultButton: string
+) {
+  const e = await spawnSync("osascript", [
+    "-e",
+    `display alert "${title}" message "${message}" as ${as} buttons {"${buttons.join(
+      "\", \""
+    )}"} default button "${defaultButton || buttons[0]}"`,
+  ]);
+
+  return e.stdout.toString().trim().split(":")[1].trim();
 }
 
 cli().then(() => {
