@@ -6,6 +6,7 @@ import inquirer from "inquirer";
 import yaml from "js-yaml";
 import open from "open";
 import Configuration from "../src/types/Configuration";
+import { hashPass } from "../src/util/hash/password";
 import logger from "../src/util/logger";
 
 logger().info("frameworkctl - control your self-hosted framework instance");
@@ -328,6 +329,7 @@ async function cli() {
     ],
     "--query": [String, "Runs a query. E.g. --query database"],
     "--help": [Boolean, "Shows this help message"],
+    "--set-pwd": [Boolean, "Sets the password for the admin user"],
   };
 
   let opts: { name: string; value: any }[] = [];
@@ -349,7 +351,8 @@ async function cli() {
   };
 
   const get = (name: string) => {
-    return opts.filter((opt) => opt.name === name)[0].value;
+    const value = opts.filter((opt) => opt.name === name)[0].value;
+    return Array.isArray(value) && value.length === 1 ? value[0] : value;
   };
 
   const wasArgful = opts.length > 0;
@@ -378,7 +381,7 @@ async function cli() {
       if (query in queries) {
         await queries[query as keyof typeof queries]();
       } else {
-        logger().error("Invalid query");
+        logger().error("Invalid query for --query: " + query);
       }
     }
 
@@ -404,6 +407,51 @@ async function cli() {
     );
   }
 
+  if (contains("--set-pwd")) {
+    const prisma = new PrismaClient();
+    const admin = await prisma.user.findFirst({
+      where: {
+        username: "Framework",
+        role: "ADMIN",
+      },
+    });
+
+    const provided = get("--set-pwd");
+
+    if (!admin) {
+      logger().error("Admin user not found. Did you seed the database?");
+      return;
+    }
+
+    if (provided && typeof provided === "string") {
+      await prisma.user.update({
+        where: {
+          id: admin.id,
+        },
+        data: {
+          password: await hashPass(String(provided)),
+        },
+      });
+    } else {
+      const password = await inquirer.prompt({
+        name: "password",
+        type: "password",
+        message: "Enter a password",
+      });
+
+      await prisma.user.update({
+        where: {
+          id: admin.id,
+        },
+        data: {
+          password: await hashPass(password.password),
+        },
+      });
+    }
+
+    logger().info("Password updated");
+  }
+
   if (wasArgful) {
     logger().info("Finished");
     process.exit(0);
@@ -420,7 +468,7 @@ async function macosAlert(
   const e = await spawnSync("osascript", [
     "-e",
     `display alert "${title}" message "${message}" as ${as} buttons {"${buttons.join(
-      "\", \""
+      '", "'
     )}"} default button "${defaultButton || buttons[0]}"`,
   ]);
 
