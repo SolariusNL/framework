@@ -81,6 +81,23 @@ async function grantPremiumMonthlyReward(user: User) {
 }
 
 async function startSubscriptionService() {
+  const initial = await client.user.findMany({
+    where: {
+      premium: true,
+      premiumSubscription: {
+        isNot: null,
+      },
+    },
+    include: {
+      premiumSubscription: true,
+    },
+  });
+
+  for (const user of initial) {
+    schedulePremiumExpiration(user);
+    grantPremiumMonthlyReward(user);
+  }
+
   schedule("0 9 * * *", async () => {
     const users = await client.user.findMany({
       where: {
