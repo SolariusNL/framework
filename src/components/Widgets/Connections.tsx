@@ -1,6 +1,3 @@
-import { Connection } from "@prisma/client";
-import { getCookie } from "cookies-next";
-import React from "react";
 import {
   ActionIcon,
   Badge,
@@ -9,9 +6,11 @@ import {
   Skeleton,
   Table,
   Text,
-  Title,
   Tooltip,
 } from "@mantine/core";
+import { Connection } from "@prisma/client";
+import { getCookie } from "cookies-next";
+import React from "react";
 import { HiTrash } from "react-icons/hi";
 
 interface ConnectionsWidgetProps {
