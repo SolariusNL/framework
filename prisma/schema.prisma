@@ -161,6 +161,7 @@ model Session {
   user   User   @relation("userSessions", fields: [userId], references: [id])
   userId Int
   token  String @unique
+  ip     String @default("")
 }
 
 model Message {

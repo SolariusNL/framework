@@ -17,7 +17,7 @@ import {
   NotificationsProvider,
   showNotification,
 } from "@mantine/notifications";
-import { deleteCookie, getCookie, setCookie } from "cookies-next";
+import { getCookie, setCookie } from "cookies-next";
 import { GetServerSidePropsContext } from "next";
 import type { AppProps } from "next/app";
 import Head from "next/head";
@@ -30,6 +30,7 @@ import "../../flags.config";
 import { FrameworkUserProvider } from "../contexts/FrameworkUser";
 import { UserInformationWrapper } from "../contexts/UserInformationDialog";
 import "../styles/framework.css";
+import logout from "../util/api/logout";
 
 const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
   const { Component, pageProps } = props;
@@ -214,10 +215,9 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
 
                     <Button
                       fullWidth
-                      onClick={() => {
-                        deleteCookie(".frameworksession");
-                        router.push("/login");
-                      }}
+                      onClick={async () =>
+                        await logout().then(() => router.reload())
+                      }
                     >
                       Logout
                     </Button>

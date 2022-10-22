@@ -51,7 +51,7 @@ import {
   HiViewList,
 } from "react-icons/hi";
 import abbreviateNumber from "../util/abbreviate";
-import { setCookie } from "../util/cookies";
+import logout from "../util/api/logout";
 import { User } from "../util/prisma-types";
 import useConfig from "../util/useConfig";
 import useMediaQuery from "../util/useMediaQuery";
@@ -286,10 +286,7 @@ const UserMenu = ({ classes, userMenuOpened, user, cx, router }: any) => {
           sx={{ fontWeight: 500 }}
           color="red"
           icon={<HiLogout />}
-          onClick={() => {
-            setCookie(".frameworksession", "", -365);
-            router.push("/login");
-          }}
+          onClick={async () => await logout().then(() => router.push("/login"))}
         >
           Logout
         </Menu.Item>

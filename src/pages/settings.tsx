@@ -7,6 +7,7 @@ import {
   useMantineColorScheme,
 } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
+import Link from "next/link";
 import {
   HiBeaker,
   HiBell,
@@ -15,6 +16,7 @@ import {
   HiGlobe,
   HiInformationCircle,
   HiKey,
+  HiPhone,
   HiPhotograph,
   HiSortAscending,
   HiTrash,
@@ -113,6 +115,12 @@ const Settings: NextPage<SettingsProps> = ({ user }) => {
                   <TabNav.Tab value="notifications" icon={<HiBell />}>
                     Notifications
                   </TabNav.Tab>
+
+                  <Link href="/sessions">
+                    <TabNav.Tab value="sessions" icon={<HiPhone />}>
+                      Sessions
+                    </TabNav.Tab>
+                  </Link>
                 </SettingsGroup>
 
                 <SettingsGroup title="App" icon={<HiGlobe />}>

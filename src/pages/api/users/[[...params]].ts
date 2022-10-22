@@ -517,6 +517,20 @@ class UserRouter {
       message: "You have successfully enrolled in the preview.",
     };
   }
+
+  @Get("/@me/sessions")
+  @Authorized()
+  public async getSessions(@Account() user: User) {
+    const sessions = await prisma.session.findMany({
+      where: { userId: user.id },
+    });
+
+    return {
+      success: true,
+      message: "Sessions retrieved successfully.",
+      sessions,
+    };
+  }
 }
 
 export default createHandler(UserRouter);

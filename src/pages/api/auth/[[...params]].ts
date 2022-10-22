@@ -63,7 +63,11 @@ class AuthRouter {
             id: Number(account.id),
           },
         },
-        token: Math.random().toString(36).substring(2),
+        token: Array(12)
+          .fill(0)
+          .map(() => Math.random().toString(36).substring(2))
+          .join(""),
+        ip: String(getClientIp(request)),
       },
     });
 
@@ -201,6 +205,21 @@ class AuthRouter {
     return {
       success: true,
       token: session.token,
+    };
+  }
+
+  @Post("/logout")
+  public async logout(@Req() request: NextApiRequest) {
+    const { authorization } = request.headers;
+
+    await prisma.session.delete({
+      where: {
+        token: String(authorization),
+      },
+    });
+
+    return {
+      finished: true,
     };
   }
 }
