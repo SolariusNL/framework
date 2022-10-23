@@ -607,7 +607,14 @@ const Framework = ({
           </Container>
         )}
 
-        <Drawer opened={opened} onClose={toggle} position="right">
+        <Drawer
+          opened={opened}
+          onClose={toggle}
+          position="right"
+          sx={{
+            zIndex: 1000,
+          }}
+        >
           <Container>
             <Stack spacing={24} mb={32}>
               {tabs.map((tab) => (
