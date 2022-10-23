@@ -7,9 +7,7 @@ import {
   Grid,
   Group,
   Modal,
-  Paper,
   Select,
-  Spoiler,
   Stack,
   Text,
   Textarea,
@@ -19,9 +17,11 @@ import {
 import { useForm } from "@mantine/form";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import {
+  HiArrowLeft,
   HiClock,
   HiDocument,
   HiShieldCheck,
@@ -167,6 +167,14 @@ const ReportPage: NextPage<ReportProps> = ({ user, report }) => {
       <Framework activeTab="none" user={user}>
         <Grid columns={6} gutter="xl">
           <Grid.Col span={4}>
+            <Group mb={12}>
+              <Link href="/admin">
+                <Anchor sx={{ display: "flex", gap: 8, alignItems: "center" }}>
+                  <HiArrowLeft />
+                  Back to reports
+                </Anchor>
+              </Link>
+            </Group>
             <Title order={3} mb={24}>
               Report {report.id}{" "}
               {report.processed && (
