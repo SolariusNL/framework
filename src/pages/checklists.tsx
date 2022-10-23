@@ -165,6 +165,10 @@ const Checklists: NextPage<ChecklistsProps> = ({ user, checklistData }) => {
         noContentPadding
         immersive
         beta
+        returnTo={{
+          label: "Back to Invent",
+          href: "/invent",
+        }}
       >
         <AppShell
           navbar={

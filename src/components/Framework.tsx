@@ -29,6 +29,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useRef, useState } from "react";
 import {
+  HiArrowLeft,
   HiChevronDown,
   HiCog,
   HiCurrencyDollar,
@@ -79,6 +80,10 @@ interface FrameworkProps {
   noContentPadding?: boolean;
   immersive?: boolean;
   beta?: boolean;
+  returnTo?: {
+    label: string;
+    href: string;
+  };
 }
 
 const HeaderStyle = {
@@ -375,6 +380,7 @@ const Framework = ({
   noContentPadding,
   immersive,
   beta,
+  returnTo,
 }: FrameworkProps) => {
   const { classes, theme, cx } = useStyles();
   const [opened, { toggle }] = useDisclosure(false);
@@ -724,6 +730,21 @@ const Framework = ({
                   )}
                 </Title>
                 <Text color="dimmed">{modernSubtitle}</Text>
+                {returnTo && (
+                  <Link href={returnTo.href} passHref>
+                    <Anchor
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                      }}
+                      mt={16}
+                    >
+                      <HiArrowLeft />
+                      {returnTo.label}
+                    </Anchor>
+                  </Link>
+                )}
               </Container>
             </Box>
           )}

@@ -44,6 +44,10 @@ const Sessions: NextPage<SessionsProps> = ({ user }) => {
       activeTab="settings"
       modernTitle="Sessions"
       modernSubtitle="Manage your login sessions, and log out of other devices."
+      returnTo={{
+        label: "Back to settings",
+        href: "/settings",
+      }}
     >
       <Button
         leftIcon={<HiLogout />}
