@@ -1,3 +1,4 @@
+import { OperatingSystem } from "@prisma/client";
 import {
   Body,
   createHandler,
@@ -11,6 +12,7 @@ import createNotification from "../../../util/notifications";
 import prisma from "../../../util/prisma";
 import { RateLimitMiddleware } from "../../../util/rateLimit";
 import { verificationEmail } from "../../../util/templates/verification-email";
+import { getOperatingSystem, getOperatingSystemString } from "../../../util/ua";
 
 interface LoginBody {
   username: string;
@@ -68,27 +70,27 @@ class AuthRouter {
           .map(() => Math.random().toString(36).substring(2))
           .join(""),
         ip: String(getClientIp(request)),
+        ua: String(request.headers["user-agent"] || "Unknown"),
+        os: OperatingSystem[
+          getOperatingSystem(
+            String(request.headers["user-agent"]) || ""
+          ) as keyof typeof OperatingSystem
+        ],
       },
     });
 
     if (account.notificationPreferences.includes("LOGIN")) {
       const ip = getClientIp(request);
-      let os = "";
-
-      try {
-        os = request?.headers["user-agent"]
-          ? (String(request?.headers["user-agent"]) as string)
-              ?.split("(")[1]
-              .split(")")[0]
-          : "Unknown";
-      } catch {
-        os = "Unknown";
-      }
+      const os = getOperatingSystem(
+        String(request.headers["user-agent"] || "")
+      );
 
       await createNotification(
         Number(account.id),
         "LOGIN",
-        `New login detected from a ${os} machine device with IP ${ip}`,
+        `New login detected from a ${getOperatingSystemString(
+          os
+        )} machine device with IP ${ip}`,
         "New Login"
       );
     }
@@ -101,7 +103,10 @@ class AuthRouter {
 
   @Post("/register")
   @RateLimitMiddleware(5)()
-  public async register(@Body() body: RegisterBody) {
+  public async register(
+    @Body() body: RegisterBody,
+    @Req() request: NextApiRequest
+  ) {
     const { inviteCode, username, password, email } = body;
 
     if (!inviteCode || !username || !password || !email) {
@@ -182,7 +187,17 @@ class AuthRouter {
             },
           },
         },
-        token: Math.random().toString(36).substring(2),
+        token: Array(12)
+          .fill(0)
+          .map(() => Math.random().toString(36).substring(2))
+          .join(""),
+        ip: String(getClientIp(request)),
+        ua: String(request.headers["user-agent"] || "Unknown"),
+        os: OperatingSystem[
+          getOperatingSystem(
+            String(request.headers["user-agent"]) || ""
+          ) as keyof typeof OperatingSystem
+        ],
       },
       include: {
         user: true,
