@@ -11,11 +11,7 @@ const GameRating = ({ game }: GameRatingProps) => {
   const rating = game.rating!;
 
   return (
-    <Card shadow="sm" p="lg" radius="md" withBorder>
-      <Card.Section withBorder inheritPadding py="xs" mb={16}>
-        <Text weight={500}>Age Rating</Text>
-      </Card.Section>
-
+    <Card shadow="md" p="lg" radius="md" withBorder>
       <div style={{ textAlign: "center" }}>
         <Badge
           size="lg"
@@ -65,11 +61,11 @@ const GameRating = ({ game }: GameRatingProps) => {
               description: "Does not include nudity or sexual content",
               property: rating.scores.find((s) => s.category == "NUDITY"),
             },
-          ].map((i) => (
+          ].map((i, iter) => (
             <div
               key={i.title}
               style={{
-                marginBottom: 10,
+                marginBottom: iter === 2 ? 0 : 12,
                 display: "flex",
                 gap: 10,
               }}
@@ -78,8 +74,7 @@ const GameRating = ({ game }: GameRatingProps) => {
                 radius="xl"
                 color={i.property!.score == "PASSING" ? "green" : "red"}
                 sx={{
-                  padding: "6px",
-                  width: "3em",
+                  overflow: "visible",
                 }}
               >
                 <i.icon />

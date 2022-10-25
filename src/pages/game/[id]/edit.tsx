@@ -15,6 +15,7 @@ import authorizedRoute from "../../../util/authorizedRoute";
 import prisma from "../../../util/prisma";
 import { Game, gameSelect, User } from "../../../util/prisma-types";
 import ReactNoSSR from "react-no-ssr";
+import { useEffect, useState } from "react";
 
 interface EditGameProps {
   game: Game;
@@ -22,6 +23,14 @@ interface EditGameProps {
 }
 
 const EditGame: NextPage<EditGameProps> = ({ game, user }) => {
+  const [tab, setTab] = useState("details");
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const view = urlParams.get("view");
+    if (view) setTab(view);
+  }, []);
+
   return (
     <Framework
       activeTab="invent"
@@ -29,7 +38,7 @@ const EditGame: NextPage<EditGameProps> = ({ game, user }) => {
       modernTitle={`Editing ${game.name}`}
       modernSubtitle="Configure your games details and other settings."
     >
-      <TabNav defaultValue="details">
+      <TabNav value={tab ?? "details"} onTabChange={(t) => setTab(String(t))}>
         <TabNav.List>
           <TabNav.Tab value="details" icon={<HiViewList />}>
             Details

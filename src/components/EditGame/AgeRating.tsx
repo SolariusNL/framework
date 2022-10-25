@@ -1,6 +1,13 @@
-import { Button, Select, Stack, Title } from "@mantine/core";
 import {
-  Rating,
+  Badge,
+  Button,
+  Group,
+  Select,
+  Stack,
+  Text,
+  Title,
+} from "@mantine/core";
+import {
   RatingCategory,
   RatingCategoryScore,
   RatingType,
@@ -127,9 +134,45 @@ const AgeRating = ({ game }: AgeRatingProps) => {
             flex: 1,
           }}
         >
-          <Title order={4} mb={32}>
-            Configure age rating
-          </Title>
+          <Text mb={8}>
+            Age ratings are used to indicate the suitability of a game for
+            different age groups. You can choose from a range of age ratings
+            provided by the Entertainment Software Rating Board (ESRB).
+          </Text>
+          <Text mb={32}>
+            Note that age ratings are not required and is only used to indicate
+            the safety of a game for different age groups, and you will not
+            receive any penalties if you do not provide an age rating.
+          </Text>
+          <Stack mb={32}>
+            {[
+              [
+                "Passing",
+                "Indicates that this category passes the rating criteria",
+                "green",
+              ],
+              [
+                "Failing",
+                "Indicates that this category fails the rating criteria. Adjust your rating accordingly",
+                "red",
+              ],
+            ].map((item) => (
+              <div
+                key={item[0]}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 16,
+                  flexWrap: "inherit",
+                }}
+              >
+                <Badge color={item[2]} sx={{ overflow: "visible" }}>
+                  {item[0]}
+                </Badge>
+                <Text>{item[1]}</Text>
+              </div>
+            ))}
+          </Stack>
           <Stack>
             {[
               <>

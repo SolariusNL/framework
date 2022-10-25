@@ -1,6 +1,6 @@
-import { Badge, Button, Table } from "@mantine/core";
+import { Badge, Button, Group, Table } from "@mantine/core";
 import { useRouter } from "next/router";
-import { HiPlus } from "react-icons/hi";
+import { HiPlus, HiViewList } from "react-icons/hi";
 import { useFrameworkUser } from "../../contexts/FrameworkUser";
 import { Game } from "../../util/prisma-types";
 import ViewGameTab from "./ViewGameTab";
@@ -55,14 +55,25 @@ const ConnectionTab = ({ game }: ConnectionTabProps) => {
       </Table>
 
       {game.author.id == user?.id && (
-        <Button
-          variant="subtle"
-          size="xs"
-          leftIcon={<HiPlus />}
-          onClick={() => router.push(`/game/${game.id}/connection/add`)}
-        >
-          Add server
-        </Button>
+        <Group>
+          <Button
+            variant="subtle"
+            size="xs"
+            leftIcon={<HiPlus />}
+            onClick={() => router.push(`/game/${game.id}/connection/add`)}
+          >
+            Add server
+          </Button>
+
+          <Button
+            variant="subtle"
+            size="xs"
+            leftIcon={<HiViewList />}
+            onClick={() => router.push(`/game/${game.id}/edit?view=servers`)}
+          >
+            Manage servers
+          </Button>
+        </Group>
       )}
     </ViewGameTab>
   );
