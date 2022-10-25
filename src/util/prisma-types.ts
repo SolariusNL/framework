@@ -155,6 +155,21 @@ export const gameSelect: Prisma.GameSelect = {
   },
 };
 
+export const snippetSelect: Prisma.CodeSnippetSelect = {
+  id: true,
+  user: nonCurrentUserSelect,
+  createdAt: true,
+  code: true,
+  name: true,
+  description: true,
+};
+
+const snippet = Prisma.validator<Prisma.CodeSnippetArgs>()({
+  include: {
+    user: nonuser,
+  },
+});
+
 const game = Prisma.validator<Prisma.GameArgs>()({
   include: {
     updates: true,
@@ -218,3 +233,4 @@ export type User = Prisma.UserGetPayload<typeof user>;
 export type Game = Prisma.GameGetPayload<typeof game>;
 export type NonUser = Prisma.UserGetPayload<typeof nonuser>;
 export type NucleusKey = Prisma.NucleusKeyGetPayload<typeof nucleusKey>;
+export type Snippet = Prisma.CodeSnippetGetPayload<typeof snippet>;
