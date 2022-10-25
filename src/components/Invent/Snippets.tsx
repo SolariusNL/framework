@@ -1,15 +1,18 @@
 import {
   ActionIcon,
   Button,
+  Group,
   Modal,
   Table,
   Textarea,
   TextInput,
+  Title,
   Tooltip,
 } from "@mantine/core";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
-import { HiPencil, HiPlus } from "react-icons/hi";
+import { HiPencil, HiPlus, HiViewGrid } from "react-icons/hi";
 import { getCookie } from "../../util/cookies";
 import { User } from "../../util/prisma-types";
 import InventTab from "./InventTab";
@@ -88,16 +91,26 @@ const Snippets = ({ user }: SnippetsProps) => {
         tabTitle="Code Snippets"
         actions={
           <>
-            <Button
-              leftIcon={<HiPlus />}
-              variant="outline"
-              onClick={() => setCreateModalOpen(true)}
-            >
-              Create Code Snippet
-            </Button>
+            <Group>
+              <Link href="/snippets" passHref>
+                <Button leftIcon={<HiViewGrid />} variant="default">
+                  Browse snippets
+                </Button>
+              </Link>
+              <Button
+                leftIcon={<HiPlus />}
+                variant="default"
+                onClick={() => setCreateModalOpen(true)}
+              >
+                Create Code Snippet
+              </Button>
+            </Group>
           </>
         }
       >
+        <Title order={4} mb="lg">
+          Your snippets
+        </Title>
         <Table striped>
           <thead>
             <tr>

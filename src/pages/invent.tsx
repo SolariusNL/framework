@@ -1,6 +1,7 @@
 import { ScrollArea, Tabs } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import {
   HiClipboardCheck,
   HiCloud,
@@ -37,6 +38,15 @@ interface InventProps {
 
 const Invent: NextPage<InventProps> = ({ user }) => {
   const mobile = useMediaQuery("768");
+  const [tab, setTab] = useState("games");
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const view = params.get("view");
+    if (view) {
+      setTab(view);
+    }
+  }, []);
 
   return (
     <Framework
@@ -48,7 +58,8 @@ const Invent: NextPage<InventProps> = ({ user }) => {
       <Tabs
         variant="pills"
         orientation={mobile ? "horizontal" : "vertical"}
-        defaultValue="games"
+        value={tab}
+        onTabChange={(value) => setTab(value as string)}
       >
         <ScrollArea offsetScrollbars>
           <Tabs.List>

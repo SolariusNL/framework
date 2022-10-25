@@ -4,13 +4,19 @@ import {
   Card,
   Grid,
   Group,
+  Loader,
   Modal,
   Text,
+  TextInput,
   Title,
 } from "@mantine/core";
 import { Prism } from "@mantine/prism";
+import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
-import { HiDownload, HiEye } from "react-icons/hi";
+import Link from "next/link";
+import { useState } from "react";
+import { HiDownload, HiEye, HiPlus, HiSearch } from "react-icons/hi";
+import InfiniteScroll from "react-infinite-scroller";
 import Framework from "../../components/Framework";
 import Stateful from "../../components/Stateful";
 import UserContext from "../../components/UserContext";
@@ -46,6 +52,40 @@ const Snippets: NextPage<SnippetsProps> = ({ user, snippets }) => {
     element.click();
   };
 
+  const [snippetsState, setSnippetsState] = useState(snippets);
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [canLoadMore, setCanLoadMore] = useState(true);
+
+  const searchSnippets = async (query: string) => {
+    setLoading(true);
+
+    await fetch(`/api/snippets/search?q=${query}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: String(getCookie(".frameworksession")),
+      },
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.success) {
+          if (res.snippets.length > 0) {
+            setSnippetsState(res.snippets);
+          } else {
+            setSnippetsState(snippets);
+          }
+        } else {
+          setSnippetsState(snippets);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        setSnippetsState(snippets);
+      })
+      .finally(() => setLoading(false));
+  };
+
   return (
     <Framework
       activeTab="none"
@@ -53,81 +93,125 @@ const Snippets: NextPage<SnippetsProps> = ({ user, snippets }) => {
       modernTitle="Snippets"
       modernSubtitle="Browse community-built snippets to help you build your next project."
     >
-      <Grid columns={3}>
-        {snippets.map((snippet) => (
-          <Stateful key={snippet.id}>
-            {(viewOpen, setViewOpen) => (
-              <>
-                <Modal
-                  opened={viewOpen}
-                  onClose={() => setViewOpen(false)}
-                  title="Viewing snippet"
-                  size="lg"
-                >
-                  <Prism language="typescript" withLineNumbers>
-                    {snippet.code}
-                  </Prism>
-                </Modal>
-                <Grid.Col span={1}>
-                  <Card
-                    withBorder
-                    shadow="md"
-                    sx={{
-                      height: "auto",
-                    }}
+      <Group mb="xl">
+        <Link href={"/invent?view=snippets"} passHref>
+          <Button leftIcon={<HiPlus />}>Create Snippet</Button>
+        </Link>
+        <Group>
+          <TextInput
+            icon={<HiSearch />}
+            placeholder="Search snippets..."
+            onChange={(e) => searchSnippets(e.currentTarget.value)}
+          />
+          {loading && <Loader size="sm" />}
+        </Group>
+      </Group>
+
+      <InfiniteScroll
+        pageStart={1}
+        loadMore={() => {
+          fetch(`/api/snippets?page=${page}`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: String(getCookie(".frameworksession")),
+            },
+          })
+            .then((res) => res.json())
+            .then((res) => {
+              if (res.success) {
+                if (res.snippets.length > 0) {
+                  setSnippetsState([...snippetsState, ...res.snippets]);
+                  setPage(page + 1);
+                } else {
+                  setCanLoadMore(false);
+                }
+              }
+            })
+            .catch((err) => {
+              console.error(err);
+              setCanLoadMore(false);
+            });
+        }}
+        hasMore={canLoadMore}
+        loader={<Loader size="sm" />}
+      >
+        <Grid columns={3}>
+          {snippetsState.map((snippet) => (
+            <Stateful key={snippet.id}>
+              {(viewOpen, setViewOpen) => (
+                <>
+                  <Modal
+                    opened={viewOpen}
+                    onClose={() => setViewOpen(false)}
+                    title="Viewing snippet"
+                    size="lg"
                   >
-                    <Card.Section mb="lg">
-                      <Prism language="typescript" noCopy withLineNumbers>
-                        {snippet.code.split("\n").slice(0, 4).join("\n")}
-                      </Prism>
-                    </Card.Section>
+                    <Prism language="typescript" withLineNumbers>
+                      {snippet.code}
+                    </Prism>
+                  </Modal>
+                  <Grid.Col span={1}>
+                    <Card
+                      withBorder
+                      shadow="md"
+                      sx={{
+                        height: "auto",
+                      }}
+                    >
+                      <Card.Section mb="lg">
+                        <Prism language="typescript" noCopy withLineNumbers>
+                          {snippet.code.split("\n").slice(0, 4).join("\n")}
+                        </Prism>
+                      </Card.Section>
 
-                    <Group mb="lg">
-                      <UserContext user={snippet.user}>
-                        <Avatar
-                          src={snippet.user.avatarUri}
-                          radius="xl"
-                          size="sm"
-                        />
-                      </UserContext>
-                      <Text weight={500} color="dimmed">
-                        {snippet.user.username}
+                      <Group mb="lg">
+                        <UserContext user={snippet.user}>
+                          <Avatar
+                            src={snippet.user.avatarUri}
+                            radius="xl"
+                            size="sm"
+                          />
+                        </UserContext>
+                        <Text weight={500} color="dimmed">
+                          {snippet.user.username}
+                        </Text>
+                      </Group>
+
+                      <Title order={4} mb="sm">
+                        {snippet.name}
+                      </Title>
+                      <Text lineClamp={3} mb="lg">
+                        {snippet.description || "No description provided."}
                       </Text>
-                    </Group>
 
-                    <Title order={4} mb="sm">
-                      {snippet.name}
-                    </Title>
-                    <Text lineClamp={3} mb="lg">
-                      {snippet.description || "No description provided."}
-                    </Text>
-
-                    <Button.Group>
-                      <Button
-                        fullWidth
-                        onClick={() => setViewOpen(true)}
-                        leftIcon={<HiEye />}
-                      >
-                        View snippet
-                      </Button>
-                      <Button
-                        fullWidth
-                        variant="default"
-                        leftIcon={<HiDownload />}
-                        onClick={() =>
-                          createFile(snippet.name, snippet.code, snippet.user)
-                        }
-                      >
-                        Download
-                      </Button>
-                    </Button.Group>
-                  </Card>
-                </Grid.Col>
-              </>
-            )}
-          </Stateful>
-        ))}
-      </Grid>
+                      <Button.Group>
+                        <Button
+                          fullWidth
+                          onClick={() => setViewOpen(true)}
+                          leftIcon={<HiEye />}
+                        >
+                          View snippet
+                        </Button>
+                        <Button
+                          fullWidth
+                          variant="default"
+                          leftIcon={<HiDownload />}
+                          onClick={() =>
+                            createFile(snippet.name, snippet.code, snippet.user)
+                          }
+                        >
+                          Download
+                        </Button>
+                      </Button.Group>
+                    </Card>
+                  </Grid.Col>
+                </>
+              )}
+            </Stateful>
+          ))}
+        </Grid>
+      </InfiniteScroll>
     </Framework>
   );
 };
@@ -140,7 +224,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     orderBy: {
       createdAt: "desc",
     },
-    take: 10,
+    take: 25,
     select: snippetSelect,
   });
 
