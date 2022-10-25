@@ -198,9 +198,9 @@ class GiftRouter {
     }
 
     const prizes: GiftCodeGrant[] = [
-      GiftCodeGrant.PREMIUM_ONE_MONTH,
       GiftCodeGrant.THOUSAND_TICKETS,
       GiftCodeGrant.TWOTHOUSAND_TICKETS,
+      GiftCodeGrant.FIVETHOUSAND_TICKETS,
     ];
 
     await prisma.user.update({
