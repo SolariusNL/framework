@@ -1,8 +1,7 @@
-import { Alert, Button, Group, Tabs, Title } from "@mantine/core";
+import { Alert, Badge, Button, Group, Tabs, Title } from "@mantine/core";
 import React from "react";
 import { HiCheckCircle, HiSave, HiXCircle } from "react-icons/hi";
 import useMediaQuery from "../../util/useMediaQuery";
-import EmptyState from "../EmptyState";
 import ModernEmptyState from "../ModernEmptyState";
 
 interface SettingsTabProps {
@@ -17,6 +16,7 @@ interface SettingsTabProps {
   unavailable?: boolean;
   success?: boolean;
   setSuccess?: (success: boolean) => void;
+  unsaved?: boolean;
 }
 
 const SettingsTab = ({
@@ -28,6 +28,7 @@ const SettingsTab = ({
   unavailable,
   success,
   setSuccess,
+  unsaved,
 }: SettingsTabProps) => {
   const mobile = useMediaQuery("768");
   const [loading, setLoading] = React.useState(false);
@@ -39,9 +40,23 @@ const SettingsTab = ({
       pl={!mobile ? "lg" : undefined}
       pt={mobile ? "lg" : undefined}
     >
-      <Title order={3} mb={24}>
-        {tabTitle}
-      </Title>
+      <Group>
+        <Title order={3} mb={24} sx={{
+          alignItems: "center"
+        }}>
+          {tabTitle}{" "}
+          {unsaved && (
+            <Badge
+              sx={{
+                display: "inline-block",
+              }}
+              ml={12}
+            >
+              Unsaved Changes
+            </Badge>
+          )}
+        </Title>
+      </Group>
 
       {children}
       {unavailable && (

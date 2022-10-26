@@ -6,6 +6,7 @@ interface SideBySideProps {
   description: string;
   right: React.ReactNode;
   actions?: React.ReactNode;
+  icon?: React.ReactNode;
 }
 
 const SideBySide = ({
@@ -13,6 +14,7 @@ const SideBySide = ({
   description,
   right,
   actions,
+  icon,
 }: SideBySideProps) => {
   const mobile = useMediaQuery("768");
 
@@ -32,6 +34,11 @@ const SideBySide = ({
           }}
         >
           <Title order={4} mb={16}>
+            {icon && (
+              <div style={{ display: "inline-block", marginRight: 8 }}>
+                {icon}
+              </div>
+            )}
             {title}
           </Title>
           <Text

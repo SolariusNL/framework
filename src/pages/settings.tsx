@@ -4,7 +4,7 @@ import {
   ScrollArea,
   Stack,
   Text,
-  useMantineColorScheme,
+  useMantineColorScheme
 } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
 import Link from "next/link";
@@ -20,7 +20,7 @@ import {
   HiPhotograph,
   HiSortAscending,
   HiTrash,
-  HiUser,
+  HiUser
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import Framework from "../components/Framework";

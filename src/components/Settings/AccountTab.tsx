@@ -4,19 +4,25 @@ import {
   Button,
   Checkbox,
   FileButton,
-  Grid,
   Group,
   Modal,
   Select,
+  Stack,
+  Text,
   Textarea,
   TextInput,
+  ThemeIcon,
+  Tooltip,
 } from "@mantine/core";
-import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import {
+  HiClock,
+  HiGlobe,
   HiIdentification,
   HiInformationCircle,
+  HiOfficeBuilding,
+  HiQuestionMarkCircle,
   HiTrash,
   HiUser,
 } from "react-icons/hi";
@@ -25,10 +31,11 @@ import getTimezones from "../../data/timezones";
 import { getCookie } from "../../util/cookies";
 import { User } from "../../util/prisma-types";
 import useMediaQuery from "../../util/useMediaQuery";
+import Copy from "../Copy";
 import CountrySelect from "../CountryPicker";
 import Descriptive from "../Descriptive";
 import SettingsTab from "./SettingsTab";
-import ReactNoSSR from "react-no-ssr";
+import SideBySide from "./SideBySide";
 
 const AvatarCropNoSSR = dynamic(() => import("react-image-crop"), {
   ssr: false,
@@ -74,6 +81,7 @@ const AccountTab = ({ user }: AccountTabProps) => {
   const [updated, setUpdated] = useState<any>({});
   const update = (field: string, value: any) => {
     setUpdated({ ...updated, [field]: value });
+    setUnsavedChanges(true);
   };
   const [uploadedAvatar, setUploadedAvatar] = useState<File | null>(null);
   const [uploadedAvatarData, setUploadedAvatarData] = useState<string | null>(
@@ -84,7 +92,7 @@ const AccountTab = ({ user }: AccountTabProps) => {
   const [cropModalOpen, setCropModalOpen] = useState(false);
   const [crop, setCrop] = useState<Crop>();
   const imgRef = useRef<HTMLImageElement | null>();
-  const [usernameSelected, setUsernameSelected] = useState(false);
+  const [unsavedChanges, setUnsavedChanges] = useState(false);
 
   const onCropComplete = (crop: Crop) => {
     makeClientCrop(crop);
@@ -144,6 +152,7 @@ const AccountTab = ({ user }: AccountTabProps) => {
     reader.onload = () => {
       setUploadedAvatarData(reader.result as string);
       setUploadedAvatar(null);
+      setUnsavedChanges(true);
     };
 
     reader.readAsDataURL(uploadedAvatar);
@@ -183,6 +192,7 @@ const AccountTab = ({ user }: AccountTabProps) => {
             setUploadedAvatarData(String(croppedImage));
             setCroppedImage(null);
           }}
+          disabled={!croppedImage}
         >
           Finish
         </Button>
@@ -192,6 +202,7 @@ const AccountTab = ({ user }: AccountTabProps) => {
         tabValue="account"
         tabTitle="Profile"
         saveButtonLabel="Save"
+        unsaved={unsavedChanges}
         saveButtonAction={(setLoading, setError) => {
           updateAccount(setLoading, setError, updated, setSuccess);
 
@@ -224,6 +235,7 @@ const AccountTab = ({ user }: AccountTabProps) => {
                 if (res.success) {
                   setSuccess(true);
                   setUploadedAvatar(null);
+                  setUnsavedChanges(false);
                 }
 
                 setError(res.error);
@@ -234,161 +246,191 @@ const AccountTab = ({ user }: AccountTabProps) => {
               })
               .finally(() => setLoading(false));
           }
+
+          setUnsavedChanges(false);
         }}
         success={success}
         setSuccess={setSuccess}
       >
-        <Grid columns={2} gutter="xl">
-          <Grid.Col span={mobile ? 2 : 1}>
-            <Descriptive
-              title="Avatar"
-              description="Your avatar will be displayed next to your name."
-            >
-              <Group spacing={24}>
-                <ReactNoSSR>
-                  <Avatar
-                    src={
-                      uploadedAvatarData
-                        ? uploadedAvatarData
-                        : user.avatarUri ||
-                          `https://avatars.dicebear.com/api/identicon/${user.id}.png`
+        <Stack mb={32}>
+          <div
+            style={{
+              marginBottom: 8,
+            }}
+          >
+            <Group position="apart">
+              <Group>
+                <Avatar
+                  src={
+                    uploadedAvatarData
+                      ? uploadedAvatarData
+                      : user.avatarUri ||
+                        `https://avatars.dicebear.com/api/identicon/${user.id}.png`
+                  }
+                  alt={user.username}
+                  radius={99}
+                  size={"xl"}
+                />
+                <Stack spacing={3}>
+                  <Text weight={500}>{user.username}</Text>
+                  <Group spacing={3}>
+                    <Copy value={user.id} />
+                    <Text color="dimmed">
+                      ID: <strong>{user.id}</strong>
+                    </Text>
+                    <Tooltip label="This ID is used to uniquely identify you on the platform. You cannot change it.">
+                      <ThemeIcon
+                        variant="outline"
+                        size="sm"
+                        color="gray"
+                        ml={6}
+                      >
+                        <HiQuestionMarkCircle size={12} />
+                      </ThemeIcon>
+                    </Tooltip>
+                  </Group>
+                </Stack>
+              </Group>
+              <Group>
+                <FileButton
+                  onChange={(file) => {
+                    if (file) {
+                      setUploadedAvatar(file);
+                      setCropModalOpen(true);
+                    } else {
+                      setUploadedAvatar(null);
+                      setUploadedAvatarData(null);
                     }
-                    alt={user.username}
-                    radius={999}
-                    size={48}
-                  />
-                </ReactNoSSR>
-
-                <Group>
-                  <FileButton
-                    onChange={(file) => {
-                      if (file) {
-                        setUploadedAvatar(file);
-                        setCropModalOpen(true);
-                      } else {
-                        setUploadedAvatar(null);
-                        setUploadedAvatarData(null);
-                      }
-                    }}
-                    accept="image/png,image/jpeg"
-                  >
-                    {(props) => (
-                      <Button leftIcon={<HiIdentification />} {...props}>
-                        Change avatar
-                      </Button>
-                    )}
-                  </FileButton>
-
-                  {uploadedAvatar && (
-                    <Button
-                      leftIcon={<HiTrash />}
-                      onClick={() => {
-                        setUploadedAvatar(null);
-                        setUploadedAvatarData(null);
-                      }}
-                      color="red"
-                    >
-                      Remove avatar
+                  }}
+                  accept="image/png,image/jpeg"
+                >
+                  {(props) => (
+                    <Button leftIcon={<HiIdentification />} {...props}>
+                      Change avatar
                     </Button>
                   )}
-                </Group>
+                </FileButton>
+                {uploadedAvatar && (
+                  <Button
+                    leftIcon={<HiTrash />}
+                    onClick={() => {
+                      setUploadedAvatar(null);
+                      setUploadedAvatarData(null);
+                    }}
+                    color="red"
+                  >
+                    Remove avatar
+                  </Button>
+                )}
               </Group>
-            </Descriptive>
-          </Grid.Col>
-          <Grid.Col span={mobile ? 2 : 1}>
-            <TextInput
-              label="Username"
-              description="Your username represents you on Framework."
-              defaultValue={user.username}
-              onChange={(e) => {
-                update("username", e.target.value);
-              }}
+            </Group>
+          </div>
+          <div>
+            <SideBySide
+              title="Username"
+              description="Your username represents you on the platform."
+              actions={
+                <>
+                  <Alert icon={<HiInformationCircle size={14} />}>
+                    You will be charged 500 tickets to change your username.
+                  </Alert>
+                </>
+              }
               icon={<HiUser />}
-              onFocus={() => setUsernameSelected(true)}
-              onBlur={() => setUsernameSelected(false)}
-              styles={{
-                input: {
-                  ...(usernameSelected
-                    ? {
-                        borderBottomLeftRadius: "0!important",
-                        borderBottomRightRadius: "0!important",
-                      }
-                    : {}),
-                },
-              }}
+              right={
+                <TextInput
+                  label="Username"
+                  description="Your username represents you on Framework."
+                  defaultValue={user.username}
+                  onChange={(e) => {
+                    update("username", e.target.value);
+                  }}
+                  icon={<HiUser />}
+                />
+              }
             />
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{
-                opacity: usernameSelected ? 1 : 0,
-                height: usernameSelected ? "auto" : 0,
-              }}
-              transition={{ duration: 0.2 }}
-            >
-              <Alert
-                icon={<HiInformationCircle size={14} />}
-                sx={{
-                  borderTopRightRadius: "0!important",
-                  borderTopLeftRadius: "0!important",
-                }}
-              >
-                You will be charged 500 tickets to change your username.
-              </Alert>
-            </motion.div>
-          </Grid.Col>
-          <Grid.Col span={mobile ? 2 : 1}>
-            <Descriptive
+          </div>
+          <div>
+            <SideBySide
               title="Country"
-              description="Represent your country on Framework!"
-            >
-              <CountrySelect
-                defaultValue={user.country}
-                onChange={(code: string) => {
-                  update("country", code);
-                }}
-              />
-            </Descriptive>
-          </Grid.Col>
-          <Grid.Col span={mobile ? 2 : 1}>
-            <Descriptive
+              description="Represent your nationality on Framework. This will not be used for any purpose other than for social purposes."
+              icon={<HiGlobe />}
+              right={
+                <Descriptive
+                  title="Country"
+                  description="Represent your country on Framework!"
+                >
+                  <CountrySelect
+                    defaultValue={user.country}
+                    onChange={(code: string) => {
+                      update("country", code);
+                    }}
+                  />
+                </Descriptive>
+              }
+            />
+          </div>
+          <div>
+            <SideBySide
               title="Busy"
-              description="Let other users know you're busy."
-            >
-              <Checkbox
-                label="Enable busy status"
-                defaultChecked={user.busy}
-                onChange={(e) => {
-                  update("busy", e.currentTarget.checked);
-                }}
-              />
-            </Descriptive>
-          </Grid.Col>
-          <Grid.Col span={mobile ? 2 : 1}>
-            <Textarea
-              label="Bio"
-              description="Tell other users about yourself."
-              defaultValue={user.bio}
-              onChange={(e) => {
-                update("bio", e.target.value);
-              }}
+              description="Let people know if you are busy, like on vacation or working on something else."
+              icon={<HiOfficeBuilding />}
+              right={
+                <Descriptive
+                  title="Busy"
+                  description="Let other users know you're busy."
+                >
+                  <Checkbox
+                    label="Enable busy status"
+                    defaultChecked={user.busy}
+                    onChange={(e) => {
+                      update("busy", e.currentTarget.checked);
+                    }}
+                  />
+                </Descriptive>
+              }
             />
-          </Grid.Col>
-          <Grid.Col span={mobile ? 2 : 1}>
-            <Select
-              label="Timezone"
-              description="Select your timezone."
-              defaultValue={user.timeZone}
-              onChange={(e) => {
-                update("timeZone", String(e));
-              }}
-              data={getTimezones().map((t) => ({
-                label: t.value,
-                value: t.value,
-              }))}
-              searchable
+          </div>
+          <div>
+            <SideBySide
+              title="Bio"
+              description="Tell people about yourself, your interests, and what you do."
+              icon={<HiInformationCircle />}
+              right={
+                <Textarea
+                  label="Bio"
+                  description="Tell other users about yourself."
+                  defaultValue={user.bio}
+                  onChange={(e) => {
+                    update("bio", e.target.value);
+                  }}
+                />
+              }
             />
-          </Grid.Col>
-        </Grid>
+          </div>
+          <div>
+            <SideBySide
+              title="Timezone"
+              description="Share your time zone so others know when it's a good time to reach out to you."
+              icon={<HiClock />}
+              right={
+                <Select
+                  label="Timezone"
+                  description="Select your timezone."
+                  defaultValue={user.timeZone}
+                  onChange={(e) => {
+                    update("timeZone", String(e));
+                  }}
+                  data={getTimezones().map((t) => ({
+                    label: t.value,
+                    value: t.value,
+                  }))}
+                  searchable
+                />
+              }
+            />
+          </div>
+        </Stack>
       </SettingsTab>
     </>
   );
