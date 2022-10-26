@@ -4,11 +4,13 @@ import {
   NumberInput,
   Select,
   Stack,
+  Text,
   TextInput,
 } from "@mantine/core";
 import { GameGenre } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import React from "react";
+import { BsMarkdown } from "react-icons/bs";
 import { HiCheckCircle, HiCloud } from "react-icons/hi";
 import { Game } from "../../util/prisma-types";
 import { genreMap } from "../../util/universe/genre";
@@ -60,6 +62,18 @@ const Details = ({ game }: DetailsProps) => {
       type: EditableType.RichText,
       pointer: "description",
       title: "Description",
+      hint: (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+          }}
+        >
+          <BsMarkdown />
+          <Text color="dimmed">Rich text editing is supported</Text>
+        </div>
+      ),
     },
     {
       property: game.maxPlayersPerSession,
@@ -111,13 +125,15 @@ const Details = ({ game }: DetailsProps) => {
     <EditGameTab value="details">
       <Stack mb={32}>
         {editable.map((value, index) => {
-          const { property, label, description, type, options, title } = value;
+          const { property, label, description, type, options, title, hint } =
+            value;
 
           return (
             <SideBySide
               title={title}
               description={description}
               key={index}
+              actions={hint}
               right={
                 <>
                   {type == EditableType.Text && (
