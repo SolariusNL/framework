@@ -103,10 +103,10 @@ const Secrets = ({ user }: SecretsProps) => {
           <>
             <Button
               leftIcon={<HiPlus />}
-              variant="outline"
+              variant="default"
               onClick={() => setCreateModalOpen(true)}
             >
-              Create a Game
+              Create a secret
             </Button>
           </>
         }
