@@ -1,28 +1,39 @@
-import { Alert, Button, Grid, Group, Modal, TextInput } from "@mantine/core";
+import {
+  Alert,
+  Button,
+  Group,
+  Modal,
+  PasswordInput,
+  Stack,
+  Text,
+  TextInput,
+} from "@mantine/core";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { HiCheck, HiKey, HiPencil, HiXCircle } from "react-icons/hi";
+import {
+  HiCheck,
+  HiExclamation,
+  HiKey,
+  HiLockClosed,
+  HiMail,
+  HiPencil,
+  HiXCircle,
+} from "react-icons/hi";
 import { getCookie } from "../../util/cookies";
 import { User } from "../../util/prisma-types";
-import useMediaQuery from "../../util/useMediaQuery";
-import Descriptive from "../Descriptive";
-import { updateAccount } from "./AccountTab";
 import SettingsTab from "./SettingsTab";
+import SideBySide from "./SideBySide";
 
 interface SecurityTabProps {
   user: User;
 }
 
 const SecurityTab = ({ user }: SecurityTabProps) => {
-  const [success, setSuccess] = useState(false);
-  const mobile = useMediaQuery("768");
   const [passwordModal, setPasswordModal] = useState(false);
   const [emailModal, setEmailModal] = useState(false);
   const [emailVerificationSent, setEmailVerificationSent] = useState(false);
-
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
-
   const [newEmail, setNewEmail] = useState("");
 
   const router = useRouter();
@@ -95,12 +106,14 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
       >
         <TextInput
           label="Current Password"
+          description="Enter your current password that you use to login"
           mb={6}
           type="password"
           onChange={(e) => setCurrentPassword(e.target.value)}
         />
         <TextInput
           label="New Password"
+          description="Enter your new password"
           mb={12}
           type="password"
           onChange={(e) => setNewPassword(e.target.value)}
@@ -132,24 +145,63 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
       </Modal>
 
       <SettingsTab tabValue="security" tabTitle="Security">
-        <Grid columns={2} gutter="xl">
-          <Grid.Col span={mobile ? 2 : 1}>
-            <Descriptive title="Password" description="Change your password.">
+        <Stack>
+          <SideBySide
+            title="Password"
+            description="Your password is used to log in to your account."
+            right={
+              <PasswordInput
+                label="Password"
+                description="Your password"
+                disabled
+                icon={<HiLockClosed />}
+                value="********"
+              />
+            }
+            icon={<HiKey />}
+            actions={
               <Button
                 onClick={() => setPasswordModal(true)}
                 leftIcon={<HiKey />}
+                fullWidth
               >
                 Change password
               </Button>
-            </Descriptive>
-          </Grid.Col>
+            }
+          />
 
-          <Grid.Col span={mobile ? 2 : 1}>
-            <Descriptive
-              title="Email"
-              description="Verify or change your email."
-            >
-              <Group>
+          <SideBySide
+            title="Email"
+            description="Your email address is used to log in to your account. You can also use it to reset your password."
+            right={
+              <div>
+                <TextInput
+                  disabled
+                  label="Email"
+                  description="Your email address"
+                  value={user.email}
+                  icon={<HiLockClosed />}
+                />
+                {!user.emailVerified && (
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      marginTop: 12,
+                    }}
+                  >
+                    <HiExclamation />
+                    <Text color="dimmed">
+                      You have not verified your email address.
+                    </Text>
+                  </div>
+                )}
+              </div>
+            }
+            icon={<HiMail />}
+            actions={
+              <Group grow>
                 <Button
                   leftIcon={<HiCheck />}
                   onClick={sendEmailVerification}
@@ -168,9 +220,9 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
                   Change email
                 </Button>
               </Group>
-            </Descriptive>
-          </Grid.Col>
-        </Grid>
+            }
+          />
+        </Stack>
       </SettingsTab>
     </>
   );
