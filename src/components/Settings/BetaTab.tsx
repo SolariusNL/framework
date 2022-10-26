@@ -3,7 +3,6 @@ import { getCookie } from "cookies-next";
 import { useState } from "react";
 import { HiGift } from "react-icons/hi";
 import { User } from "../../util/prisma-types";
-import EmptyState from "../EmptyState";
 import ModernEmptyState from "../ModernEmptyState";
 import SettingsTab from "./SettingsTab";
 
@@ -48,7 +47,7 @@ const BetaTab = ({ user }: BetaTabProps) => {
             Available experiments:
           </Text>
 
-          <Table>
+          <Table striped>
             <thead>
               <tr>
                 <th>Name</th>
@@ -57,10 +56,14 @@ const BetaTab = ({ user }: BetaTabProps) => {
               </tr>
             </thead>
             <tbody>
-              <ModernEmptyState
-                title="No experiments available"
-                body="Check back later!"
-              />
+              <tr>
+                <td colSpan={3}>
+                  <ModernEmptyState
+                    title="No experiments available"
+                    body="Check back later!"
+                  />
+                </td>
+              </tr>
             </tbody>
           </Table>
         </>
