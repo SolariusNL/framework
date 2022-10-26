@@ -1,9 +1,9 @@
 import {
   Alert,
   Button,
-  Grid,
   NumberInput,
   Select,
+  Stack,
   TextInput,
 } from "@mantine/core";
 import { GameGenre } from "@prisma/client";
@@ -14,6 +14,7 @@ import { Game } from "../../util/prisma-types";
 import { genreMap } from "../../util/universe/genre";
 import Descriptive from "../Descriptive";
 import RichText from "../RichText";
+import SideBySide from "../Settings/SideBySide";
 import EditGameTab from "./EditGameTab";
 
 interface DetailsProps {
@@ -36,6 +37,7 @@ const Details = ({ game }: DetailsProps) => {
         "Use an appealing name that describes your game to drive more traffic.",
       type: EditableType.Text,
       pointer: "name",
+      title: "Name",
     },
     {
       property: game.genre,
@@ -48,6 +50,7 @@ const Details = ({ game }: DetailsProps) => {
         label: genreMap[key as GameGenre],
       })),
       pointer: "genre",
+      title: "Genre",
     },
     {
       property: game.description,
@@ -56,6 +59,7 @@ const Details = ({ game }: DetailsProps) => {
         "Describe your game in detail to help users understand what it's about.",
       type: EditableType.RichText,
       pointer: "description",
+      title: "Description",
     },
     {
       property: game.maxPlayersPerSession,
@@ -64,6 +68,7 @@ const Details = ({ game }: DetailsProps) => {
         "Set the maximum number of players that can join a server at once.",
       type: EditableType.Numeric,
       pointer: "maxPlayersPerSession",
+      title: "Players per server",
     },
   ];
 
@@ -104,75 +109,82 @@ const Details = ({ game }: DetailsProps) => {
 
   return (
     <EditGameTab value="details">
-      <Grid columns={2} mb={30}>
+      <Stack mb={32}>
         {editable.map((value, index) => {
-          const { property, label, description, type, options } = value;
+          const { property, label, description, type, options, title } = value;
 
           return (
-            <Grid.Col key={index} span={1}>
-              {type == EditableType.Text && (
-                <TextInput
-                  label={label}
-                  description={description}
-                  defaultValue={property}
-                  onChange={(event) => {
-                    setUpdated({
-                      ...updated,
-                      [value.pointer]: event.currentTarget.value,
-                    });
-                  }}
-                />
-              )}
+            <SideBySide
+              title={title}
+              description={description}
+              key={index}
+              right={
+                <>
+                  {type == EditableType.Text && (
+                    <TextInput
+                      label={label}
+                      description={description}
+                      defaultValue={property}
+                      onChange={(event) => {
+                        setUpdated({
+                          ...updated,
+                          [value.pointer]: event.currentTarget.value,
+                        });
+                      }}
+                    />
+                  )}
 
-              {type == EditableType.Select && (
-                <Select
-                  label={label}
-                  description={description}
-                  defaultValue={String(property)}
-                  data={options ?? []}
-                  onChange={(s) => {
-                    setUpdated({ ...updated, [value.pointer]: s });
-                  }}
-                />
-              )}
+                  {type == EditableType.Select && (
+                    <Select
+                      label={label}
+                      description={description}
+                      defaultValue={String(property)}
+                      data={options ?? []}
+                      onChange={(s) => {
+                        setUpdated({ ...updated, [value.pointer]: s });
+                      }}
+                    />
+                  )}
 
-              {type == EditableType.Numeric && (
-                <NumberInput
-                  label={label}
-                  description={description}
-                  defaultValue={Number(property)}
-                  onChange={(s) => {
-                    setUpdated({ ...updated, [value.pointer]: s });
-                  }}
-                />
-              )}
+                  {type == EditableType.Numeric && (
+                    <NumberInput
+                      label={label}
+                      description={description}
+                      defaultValue={Number(property)}
+                      onChange={(s) => {
+                        setUpdated({ ...updated, [value.pointer]: s });
+                      }}
+                    />
+                  )}
 
-              {type == EditableType.RichText && (
-                <Descriptive title={label} description={description}>
-                  <RichText
-                    value={String(property)}
-                    onChange={(s) => {
-                      setUpdated({ ...updated, [value.pointer]: s });
-                    }}
-                    styles={{
-                      root: {
-                        maxHeight: "300px!important",
-                        overflowY: "auto",
-                      },
-                    }}
-                    controls={[
-                      ["bold", "italic", "underline", "link"],
-                      ["h1", "h2", "h3", "h4"],
-                      ["blockquote"],
-                      ["code", "codeBlock"],
-                    ]}
-                  />
-                </Descriptive>
-              )}
-            </Grid.Col>
+                  {type == EditableType.RichText && (
+                    <Descriptive title={label} description={description}>
+                      <RichText
+                        value={String(property)}
+                        onChange={(s) => {
+                          setUpdated({ ...updated, [value.pointer]: s });
+                        }}
+                        styles={{
+                          root: {
+                            maxHeight: "300px!important",
+                            overflowY: "auto",
+                          },
+                        }}
+                        controls={[
+                          ["bold", "italic", "underline", "link"],
+                          ["h1", "h2", "h3", "h4"],
+                          ["blockquote"],
+                          ["code", "codeBlock"],
+                        ]}
+                      />
+                    </Descriptive>
+                  )}
+                </>
+              }
+            />
           );
         })}
-      </Grid>
+      </Stack>
 
       {success && (
         <Alert color="green" icon={<HiCheckCircle />} title="Success" mb={30}>
