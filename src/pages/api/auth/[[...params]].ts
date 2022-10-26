@@ -90,7 +90,7 @@ class AuthRouter {
         "LOGIN",
         `New login detected from a ${getOperatingSystemString(
           os
-        )} machine device with IP ${ip}`,
+        )} device with IP ${ip}`,
         "New Login"
       );
     }

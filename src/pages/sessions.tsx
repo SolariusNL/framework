@@ -151,7 +151,7 @@ const Sessions: NextPage<SessionsProps> = ({ user }) => {
               ))
             ) : (
               <tr>
-                {Array(4)
+                {Array(5)
                   .fill(0)
                   .map((_, i) => (
                     <td key={i}>
