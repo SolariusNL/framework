@@ -5,30 +5,25 @@ import Framework from "../components/Framework";
 
 export const meta = {
   title: "Framework Privacy Policy",
-  lastModified: "7/30/2022",
+  lastModified: "10/27/2022",
   summary: "How does Framework protect your privacy?",
 };
 export const cookies = [
   {
     name: ".frameworksession",
     purpose:
-      "Store information about your session (e.g. user ID, session ID, etc.)",
-    expiration: "2 months",
-  },
-  {
-    name: "Frameworkanalytics",
-    purpose: "Maintains a record of your usage of Framework",
-    expiration: "3 years",
+      "Stores your login session. This cookie is required for you to use Framework.",
+    expiration: "3 months",
   },
 ];
 
 ## About Framework
 
-Framework is a platform that aims to be a free, open source alternative platform to Roblox. Framework is developed by people like you, and we hope you enjoy using it.
+Framework is a platform that aims to be a free, open source alternative platform to Roblox. Framework is developed by people all around the world on their own time, and is not affiliated with Roblox in any way.
 
 ## Cookies
 
-Framework uses cookies to store information about your session. This information is used to provide you with a better experience when you visit our website.
+Framework uses cookies to store certain information pertaining to your account. These cookies are required for you to use Framework. The cookies Framework uses are as follows listed below:
 
 <Table striped>
   <thead>
@@ -54,17 +49,48 @@ Framework uses cookies to store information about your session. This information
 
 We try our best to reduce the amount of information that we collect about you. Here is a short summary of what we collect to make our service possible:
 
-- **Browser information**: We collect information about your browser, including your browser type, version, and operating system.
-- **On-site search**: We collect information about your search queries, and the results that you see when you search. This information is used to provide you with a better experience when you visit our website.
-- **Route information**: We collect information about the routes that you visit, and the results that you see when you visit those routes. This information is used to provide you with a better experience when you visit our website.
+- **IP address**: When you login, we store your IP address. We use this for abuse prevention, and to make it easier for you to identify suspicious activity on your account.
+- **Device OS**: When you login, we determine your device's operating system from your browser's user agent. We don't use this for any reason other than to make it easier for you to identify suspicious activity on your account.
 
 ## Does Framework sell my data?
 
-We do not sell your data to third parties. We will never, ever sell your data to third parties. We will only use your data for the purposes that you have given us permission to use by agreeing to this privacy policy.
+No. We do not sell your data to any third parties. We do not share your data with any third parties. We do not use your data for any purpose other than to make our service possible. Additionally, we do not implement any tracking or analytics on our website,
+to further protect your privacy.
 
-## Thats it?
+## How is my data stored?
 
-That's it! We hope you enjoy using Framework. If you have any questions, please contact us at `inquiries@framework.soodam.rocks`. We're always happy to help.
+Your data is stored in a database hosted by us in Switzerland, meaning that it is subject to Swiss law. We do not store any personally identifiable information about you, and we do not store any data that can be used to identify you except that which was provided by you when you created your account.
+
+Due to your data being stored in Switzerland, it cannot be accessed by the US or any other Five Eyes member nation. Your data is also encrypted in transit and at rest, meaning that it cannot be accessed by anyone other than you.
+
+## What are my rights?
+
+We fully implement the GDPR (General Data Protection Regulation of the European Union), meaning that you are entitled to the following rights:
+
+- **Right to be informed**: You have the right to be informed about how your data is being used.
+- **Right of access**: You have the right to access the data that we store about you.
+- **Right to rectification**: You have the right to request that we correct any data that we store about you that is inaccurate.
+- **Right to erasure**: You have the right to request that we delete any data that we store about you.
+- **Right to restrict processing**: You have the right to request that we restrict the processing of your data.
+- **Right to data portability**: You have the right to request that we transfer your data to another organization.
+- **Right to object**: You have the right to object to the processing of your data.
+
+## How do I exercise my rights?
+
+You can exercise your rights by contacting us at `legal@soodam.rocks` with your request. We will respond to your request within 30 days. In the event that we are unable to fulfill your request, we will provide you with an explanation as to why,
+and what we can do to fulfill your request to the best of our ability.
+
+## I am not in the EU. Am I still protected?
+
+Yes.
+
+Because we base our operations in the Netherlands, we are subject to the GDPR and must comply with it, regardless of where you are located.
+
+## How do I contact you?
+
+You can contact us at `info@soodam.rocks` with any questions or concerns you may have about our privacy policy. We will respond to your request within 30 days, and will do our best to answer your questions to the best of our ability.
+
+Thanks for reading!
 
 export default ({ children }) => (
   <DocWrapper meta={meta}>{children}</DocWrapper>
