@@ -512,7 +512,7 @@ const Framework = ({
             </Group>
 
             {mobile && <Burger opened={opened} onClick={toggle} size="sm" />}
-            {!mobile && (
+            {!mobile && user && (
               <Group>
                 <NotificationFlyout
                   notificationData={user && user.notifications}
@@ -663,26 +663,28 @@ const Framework = ({
               ))}
             </Stack>
 
-            <Group>
-              <CurrencyMenu
-                cx={cx}
-                classes={classes}
-                currencyMenuOpened={currencyMenuOpened}
-                theme={theme}
-                user={user}
-              />
-              <UserMenu
-                cx={cx}
-                classes={classes}
-                userMenuOpened={userMenuOpened}
-                user={user}
-                router={router}
-              />
-              <NotificationFlyout
-                notificationData={user && user.notifications}
-              />
-              <Search ref={searchRef} />
-            </Group>
+            {user && (
+              <Group>
+                <CurrencyMenu
+                  cx={cx}
+                  classes={classes}
+                  currencyMenuOpened={currencyMenuOpened}
+                  theme={theme}
+                  user={user}
+                />
+                <UserMenu
+                  cx={cx}
+                  classes={classes}
+                  userMenuOpened={userMenuOpened}
+                  user={user}
+                  router={router}
+                />
+                <NotificationFlyout
+                  notificationData={user && user.notifications}
+                />
+                <Search ref={searchRef} />
+              </Group>
+            )}
           </Container>
         </Drawer>
       </div>

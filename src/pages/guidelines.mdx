@@ -1,5 +1,8 @@
 import { Table } from "@mantine/core";
 import DocWrapper from "../components/DocWrapper";
+import authorizedRoute from "../util/authorizedRoute";
+import Framework from "../components/Framework";
+
 export const meta = {
   title: "Framework Community Guidelines",
   lastModified: "7/30/2022",
@@ -7,6 +10,7 @@ export const meta = {
 };
 
 ## User-generated Content
+
 We have some fairly basic rules for user-generated content:
 
 - **No NSFW content**: NSFW (Not Safe For Work) content is not allowed. This includes:
@@ -29,17 +33,21 @@ We have some fairly basic rules for user-generated content:
   - etc.
 
 ## Use of Profanity
+
 Although profanity is not strictly prohibited on Framework, we prefer that you use language that is more appropriate for the community.
 
 ## Exploiting
+
 Exploiting our services is strictly forbidden. We implement various measures throughout our services to prevent this, but we cannot guarantee that these measures will prevent all exploitation methods.
 
 If we find that you are utilizing tools or techniques to exploit Framework, we may take any action we deem appropriate, including, but not limited to, removing your account, blocking your IP address, and/or blocking your unique hardware identifier.
 
 ## Respecting Others
+
 We value the freedom of others, therefore we do not tolerate harassment of others. Please for the love of all that is good, just be respectful of others. We have a strict policy for harassment, and we will take appropriate action if you're found to be harassing others.
 
 Avoid using the following:
+
 - Discriminatory language or exclusionary behavior
 - Intimidating behavior intended to cause fear or panic
 - Threats to other users (e.g. "I will fucking kill you the second I see you bitch")
@@ -47,9 +55,11 @@ Avoid using the following:
 It's not hard to filter yourself and move on with your day.
 
 ## Server Rules
+
 Framework gives users the option to self host their games using our server software, Kazuha. We have some basic rules to prevent the abuse of this freedom.
 
 Regarding user privacy, server hosts are **prohibited** to:
+
 - Collect user information without their consent
 - Misuse user information (IP address, etc.)
 - Disclose user information with other parties
@@ -59,10 +69,16 @@ Using pirated content is not permitted. Servers found to be using illegal or pir
 Server hosts are responsible for ensuring that their content aligns with the Framework Privacy Policy, Community Guidelines and Terms of Service. We are authorized to, (and at our own discretion) blacklist your server from our discovery system and restrict clients from connecting to your server if you're caught to be violating our policies.
 
 ## Disclaimer
+
 Framework staff are permitted to punish users at their own discretion, that may not fall within these guidelines.
 
 Use basic common sense. Think before you hit send. Do you really need to say that? What would other people think of this?
 
 We have a very loose set of rules. It's an open platform after all. Just be kind! :^)
 
-export default ({ children }) => <DocWrapper meta={meta}>{children}</DocWrapper>
+export default ({ children }) => (
+  <DocWrapper meta={meta}>{children}</DocWrapper>
+);
+export async function getServerSideProps(context) {
+  return await authorizedRoute(context, false, false);
+}
