@@ -4,6 +4,7 @@ import {
   Container,
   ActionIcon,
   Group,
+  Stack,
 } from "@mantine/core";
 import {
   IconBrandTwitter,
@@ -142,15 +143,21 @@ const Footer = () => {
         <div className={classes.logo}>
           <SoodamLogo height={64} width={64} />
           <Text size="xs" color="dimmed" className={classes.description}>
-            {config?.footer?.description || "Passionate about open source and a better future for the web."}
+            {config?.footer?.description ||
+              "Passionate about open source and a better future for the web."}
           </Text>
         </div>
         <div className={classes.groups}>{groups}</div>
       </Container>
       <Container className={classes.afterFooter}>
-        <Text color="dimmed" size="sm">
-          © 2021-2022 Soodam.re Corporation. All rights reserved.
-        </Text>
+        <Stack spacing={8}>
+          <Text color="dimmed" size="sm">
+            © 2021-2022 Soodam.re Corporation. All rights reserved.
+          </Text>
+          <Text color="dimmed" size="sm">
+            VAT ID: NL-8188.17.147.B01. Soodam.re is based in the Netherlands.
+          </Text>
+        </Stack>
 
         <Group spacing={0} className={classes.social} position="right" noWrap>
           {config?.footer?.socials?.twitter?.show && (
