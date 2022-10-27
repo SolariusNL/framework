@@ -46,66 +46,69 @@ const DueBy = ({
 
   return (
     <>
-      <Group
-        spacing={12}
-        sx={{
-          ...(editable && {
-            "&:hover": {
-              backgroundColor:
-                colorScheme === "dark" ? colors.dark[5] : colors.gray[1],
-            },
-            width: "fit-content",
-            padding: "0.5rem",
-            cursor: "pointer",
-            borderRadius: 8,
-          }),
-        }}
-      >
-        <HiClock color={colorScheme === "dark" ? "#909296" : "#868e96"} />
-        <Tooltip
-          label={
-            editable
-              ? "Edit due date"
-              : `Due by ${new Date(date).toLocaleDateString()}`
-          }
-          position="bottom"
-        >
-          <Stateful>
-            {(editing, setEditing) => (
-              <>
-                <Modal
-                  opened={editing}
-                  onClose={() => setEditing(false)}
-                  title="Edit due date"
-                >
-                  <Calendar
-                    minDate={dayjs(new Date()).add(1, "day").toDate()}
-                    defaultValue={new Date(date).toLocaleDateString()}
-                    onChange={(date) => {
-                      onUpdate && onUpdate(new Date(date as Date));
-                      setEditing(false);
-                    }}
-                    fullWidth
-                  />
-                </Modal>
-
+      <Stateful>
+        {(editing, setEditing) => (
+          <>
+            <Modal
+              opened={editing}
+              onClose={() => setEditing(false)}
+              title="Edit due date"
+            >
+              <Calendar
+                minDate={dayjs(new Date()).add(1, "day").toDate()}
+                defaultValue={new Date(date).toLocaleDateString()}
+                onChange={(date) => {
+                  onUpdate && onUpdate(new Date(date as Date));
+                  setEditing(false);
+                }}
+                fullWidth
+              />
+            </Modal>
+            <Group
+              spacing={12}
+              sx={{
+                ...(editable && {
+                  "&:hover": {
+                    backgroundColor:
+                      colorScheme === "dark" ? colors.dark[5] : colors.gray[1],
+                  },
+                  width: "fit-content",
+                  padding: "0.5rem",
+                  cursor: "pointer",
+                  borderRadius: 8,
+                }),
+              }}
+              onClick={() => {
+                if (editable) {
+                  setEditing(true);
+                }
+              }}
+            >
+              <HiClock color={colorScheme === "dark" ? "#909296" : "#868e96"} />
+              <Tooltip
+                label={
+                  editable
+                    ? "Edit due date"
+                    : `Due by ${new Date(date).toLocaleDateString()}`
+                }
+                position="bottom"
+              >
                 <Text
-                  color="dimmed"
+                  color={
+                    new Date(date).getTime() < new Date().getTime()
+                      ? "red"
+                      : "dimmed"
+                  }
                   size="sm"
                   weight={500}
-                  onClick={() => {
-                    if (editable) {
-                      setEditing(true);
-                    }
-                  }}
                 >
                   {new Date(date).toLocaleDateString()}
                 </Text>
-              </>
-            )}
-          </Stateful>
-        </Tooltip>
-      </Group>
+              </Tooltip>
+            </Group>
+          </>
+        )}
+      </Stateful>
     </>
   );
 };

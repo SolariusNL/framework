@@ -2,6 +2,7 @@ import {
   AppShell,
   Button,
   Center,
+  Checkbox,
   Container,
   Group,
   Loader,
@@ -34,6 +35,7 @@ import ReactNoSSR from "react-no-ssr";
 import CreateChecklist from "../components/Checklists/CreateChecklist";
 import CreateTask from "../components/Checklists/CreateTask";
 import ChecklistTask from "../components/Checklists/Task";
+import Descriptive from "../components/Descriptive";
 import Framework from "../components/Framework";
 import ModernEmptyState from "../components/ModernEmptyState";
 import authorizedRoute from "../util/authorizedRoute";
@@ -72,6 +74,7 @@ const Checklists: NextPage<ChecklistsProps> = ({ user, checklistData }) => {
   const [sortBy, setSortBy] = useState<SortBy | null>(null);
   const [display, setDisplay] = useState<"cards" | "list">("cards");
   const [tagFilter, setTagFilter] = useState<string[]>([]);
+  const [showOverdue, setShowOverdue] = useState(false);
 
   const sortByLabel = (sort: SortBy) => {
     switch (sort) {
@@ -322,6 +325,19 @@ const Checklists: NextPage<ChecklistsProps> = ({ user, checklistData }) => {
                           onChange={(value) => setTagFilter(value)}
                         />
                       </Menu.Item>
+
+                      <Menu.Item closeMenuOnClick={false}>
+                        <Descriptive
+                          title="Overdue"
+                          description="Show only overdue tasks"
+                        >
+                          <Checkbox
+                            label="Show overdue"
+                            checked={showOverdue}
+                            onChange={(e) => setShowOverdue(e.target.checked)}
+                          />
+                        </Descriptive>
+                      </Menu.Item>
                     </Menu.Dropdown>
                   </Menu>
                   <Menu>
@@ -403,8 +419,14 @@ const Checklists: NextPage<ChecklistsProps> = ({ user, checklistData }) => {
                 {currentChecklist?.items
                   .filter((item) => {
                     if (tagFilter.length === 0) return true;
-
                     return tagFilter.every((tag) => item.tags.includes(tag));
+                  })
+                  .filter((item) => {
+                    if (!showOverdue) return true;
+                    return (
+                      new Date(item.scheduled as Date).getTime() <
+                      new Date().getTime()
+                    );
                   })
                   .map((task) => (
                     <ChecklistTask
