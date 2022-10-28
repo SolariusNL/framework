@@ -10,6 +10,7 @@ import {
   Text,
   Title,
   useMantineColorScheme,
+  useMantineTheme,
 } from "@mantine/core";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -38,6 +39,7 @@ interface GamesProps {
 const Games = ({ user }: GamesProps) => {
   const router = useRouter();
   const { colorScheme } = useMantineColorScheme();
+  const theme = useMantineTheme();
 
   return (
     <InventTab
@@ -47,7 +49,7 @@ const Games = ({ user }: GamesProps) => {
         <>
           <Button
             leftIcon={<HiPlus />}
-            variant="outline"
+            variant="default"
             onClick={() => router.push("/game/create")}
           >
             Create a Game
@@ -61,7 +63,6 @@ const Games = ({ user }: GamesProps) => {
 
       <div
         style={{
-          // 2 columns
           display: "flex",
           flexWrap: "wrap",
           gap: "1rem",
@@ -83,6 +84,8 @@ const Games = ({ user }: GamesProps) => {
             key={game.id}
             sx={{
               flex: 1,
+              backgroundColor:
+                colorScheme == "dark" ? theme.colors.dark[8] : "#fff",
             }}
           >
             <Group position="apart">
