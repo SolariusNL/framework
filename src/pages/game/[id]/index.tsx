@@ -3,16 +3,12 @@ import {
   Alert,
   AspectRatio,
   Avatar,
-  Badge,
   Box,
   Button,
-  Card,
-  Divider,
   Grid,
   Group,
   Image,
   Loader,
-  Progress,
   Skeleton,
   Stack,
   Tabs,
@@ -26,19 +22,14 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import {
-  HiChat,
   HiCurrencyDollar,
   HiDotsVertical,
   HiFolder,
   HiInformationCircle,
-  HiLibrary,
   HiLockClosed,
   HiPlay,
   HiServer,
-  HiThumbDown,
-  HiThumbUp,
   HiViewList,
-  HiXCircle,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import Framework from "../../../components/Framework";
@@ -53,11 +44,10 @@ import FundsTab from "../../../components/ViewGame/Funds";
 import InfoTab from "../../../components/ViewGame/Info";
 import ServersTab from "../../../components/ViewGame/Servers";
 import UpdateLogTab from "../../../components/ViewGame/UpdateLog";
+import Votes from "../../../components/ViewGame/Votes";
 import authorizedRoute from "../../../util/authorizedRoute";
-import { getCookie } from "../../../util/cookies";
 import prisma from "../../../util/prisma";
 import { Game, gameSelect, User } from "../../../util/prisma-types";
-import { getRatingTypeDescription } from "../../../util/universe/ratings";
 import useMediaQuery from "../../../util/useMediaQuery";
 
 interface GameViewProps {
@@ -68,12 +58,8 @@ interface GameViewProps {
 const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
   const mobile = useMediaQuery("768");
   const router = useRouter();
+
   const [game, setGame] = useState(gameData);
-
-  const totalFeedback = game.likedBy.length + game.dislikedBy.length;
-  const positive = (game.likedBy.length / totalFeedback) * 100;
-  const negative = (game.dislikedBy.length / totalFeedback) * 100;
-
   const [launchingOpen, setLaunchingOpen] = useState(false);
   const [similarGames, setSimilarGames] = useState<Game[] | null>(null);
 
@@ -109,9 +95,9 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
           server to play this game.
         </Alert>
       )}
-      <Grid columns={24}>
+      <Grid columns={24} gutter="xl">
         <Grid.Col span={mobile ? 24 : 16}>
-          <Title mb={16}>{game.name}</Title>
+          <Title mb={32}>{game.name}</Title>
 
           <ThumbnailCarousel
             slides={
@@ -131,9 +117,7 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
             }
           />
 
-          <Divider mt={28} mb={28} />
-
-          <Tabs variant="pills" defaultValue="info" mb={30}>
+          <Tabs variant="pills" defaultValue="info" mb={32} mt={32}>
             <Tabs.List grow>
               <div
                 style={{
@@ -155,7 +139,7 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                 </Tabs.Tab>
 
                 <Tabs.Tab icon={<HiServer />} value="connection">
-                  Connection Details
+                  Connections
                 </Tabs.Tab>
 
                 <Tabs.Tab icon={<HiViewList />} value="servers">
@@ -213,7 +197,7 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
           </ReactNoSSR>
         </Grid.Col>
         <Grid.Col span={mobile ? 24 : 8} p={10}>
-          <Group position="apart" pl={0} pr={0} p={10} mb="lg">
+          <Group position="apart" pl={0} pr={0} p={10} mb={32}>
             <Group
               onClick={() => {
                 router.push(`/profile/${game.author.username}`);
@@ -272,7 +256,7 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
             leftIcon={<HiLockClosed />}
             fullWidth
             size="lg"
-            mb="md"
+            mb={32}
             disabled={game.connection.length == 0}
             onClick={() => {
               setLaunchingOpen(true);
@@ -281,108 +265,16 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
             Play in Private Server
           </Button>
 
-          <Group position="apart" mb={6}>
-            <Group spacing={4}>
-              <HiThumbUp size={16} />
-              <Text>{game.likedBy.length}</Text>
-            </Group>
-            <Group spacing={4}>
-              <Text>{game.dislikedBy.length}</Text>
-              <HiThumbDown size={16} />
-            </Group>
-          </Group>
-          <Progress
-            sections={[
-              {
-                value: positive,
-                color: "green",
-              },
-              {
-                value: negative,
-                color: "red",
-              },
-            ]}
-            mb="sm"
-          />
-          <Group grow mb={32}>
-            <Button
-              color="green"
-              leftIcon={<HiThumbUp />}
-              size="sm"
-              disabled={
-                game.dislikedBy.find((u) => u.id == user.id) ? true : false
-              }
-              onClick={() => {
-                setGame({
-                  ...game,
-                  likedBy: game.likedBy.find((u) => u.id == user.id)
-                    ? game.likedBy.filter((u) => u.id != user.id)
-                    : [...game.likedBy, user],
-                });
-
-                fetch(`/api/games/${game.id}/like`, {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: String(getCookie(".frameworksession")),
-                  },
-                })
-                  .then((res) => res.json())
-                  .then((res) => {
-                    if (!res.success) {
-                      setGame(gameData);
-                    }
-                  })
-                  .catch((err) => {
-                    setGame(gameData);
-                  });
-              }}
-            >
-              Like{game.likedBy.find((u) => u.id == user.id) ? "d" : ""}
-            </Button>
-            <Button
-              color="red"
-              leftIcon={<HiThumbDown />}
-              size="sm"
-              disabled={
-                game.likedBy.find((u) => u.id == user.id) ? true : false
-              }
-              onClick={() => {
-                setGame({
-                  ...game,
-                  dislikedBy: game.dislikedBy.find((u) => u.id == user.id)
-                    ? game.dislikedBy.filter((u) => u.id != user.id)
-                    : [...game.dislikedBy, user],
-                });
-
-                fetch(`/api/games/${game.id}/dislike`, {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: String(getCookie(".frameworksession")),
-                  },
-                })
-                  .then((res) => res.json())
-                  .then((res) => {
-                    if (!res.success) {
-                      setGame(gameData);
-                    }
-                  })
-                  .catch((err) => {
-                    setGame(gameData);
-                  });
-              }}
-            >
-              Dislike{game.dislikedBy.find((u) => u.id == user.id) ? "d" : ""}
-            </Button>
-          </Group>
+          <ReactNoSSR>
+            <Votes game={game} setGame={setGame} />
+          </ReactNoSSR>
 
           <ReactNoSSR onSSR={<Skeleton height={350} />}>
             <Title order={4} mb={16}>
               More like this
             </Title>
 
-            <Stack spacing={12} mb={16}>
+            <Stack spacing={12} mb={32}>
               {similarGames != null &&
                 similarGames.map((game: Game, i) => (
                   <Link href={`/game/${game.id}`} key={i}>

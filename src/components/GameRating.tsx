@@ -1,4 +1,4 @@
-import { Badge, Card, Stack, Text } from "@mantine/core";
+import { Badge, Card, Stack, Text, useMantineTheme } from "@mantine/core";
 import { HiChat, HiLibrary, HiXCircle } from "react-icons/hi";
 import { Game } from "../util/prisma-types";
 import { getRatingTypeDescription } from "../util/universe/ratings";
@@ -9,9 +9,19 @@ interface GameRatingProps {
 
 const GameRating = ({ game }: GameRatingProps) => {
   const rating = game.rating!;
+  const theme = useMantineTheme();
 
   return (
-    <Card shadow="md" p="lg" radius="md" withBorder>
+    <Card
+      shadow="md"
+      p="lg"
+      radius="md"
+      withBorder
+      sx={{
+        backgroundColor:
+          theme.colorScheme === "dark" ? theme.colors.dark[8] : "#FFF",
+      }}
+    >
       <div style={{ textAlign: "center" }}>
         <Badge
           size="lg"
