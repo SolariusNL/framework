@@ -87,15 +87,18 @@ const UserContext = ({ user, children, customHref }: UserContextProps) => {
                 justifyContent: "center",
               }}
             >
-              <Button fullWidth size="xs" leftIcon={<HiUser />}>
-                View
-              </Button>
+              <Link passHref href={customHref || `/profile/${user.username}`}>
+                <Button fullWidth size="xs" leftIcon={<HiUser />}>
+                  View
+                </Button>
+              </Link>
               <Button
                 disabled={currentUser?.id === user.id}
                 color="red"
                 fullWidth
                 size="xs"
                 leftIcon={<HiFlag />}
+                onClick={() => setReportOpened(true)}
               >
                 Report
               </Button>
