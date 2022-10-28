@@ -1,6 +1,5 @@
 import {
   Card,
-  Grid,
   Text,
   Title,
   useMantineColorScheme,
@@ -9,6 +8,7 @@ import {
 import { HiMoon, HiSun } from "react-icons/hi";
 import { User } from "../../util/prisma-types";
 import useMediaQuery from "../../util/useMediaQuery";
+import Grouped from "./Grouped";
 import SettingsTab from "./SettingsTab";
 
 interface AppearanceTabProps {
@@ -22,21 +22,23 @@ const AppearanceTab = ({ user }: AppearanceTabProps) => {
 
   return (
     <SettingsTab tabValue="appearance" tabTitle="Appearance">
-      <Grid columns={2}>
-        {["Dark", "Light"].map((color) => (
-          <Grid.Col span={mobile ? 2 : 1} key={color}>
+      <Grouped title="Color Scheme">
+        <div style={{ display: "flex", gap: 16 }}>
+          {["Dark", "Light"].map((color) => (
             <Card
               shadow="sm"
               p="md"
               sx={{
                 cursor: "pointer",
+                flex: 1,
+                backgroundColor:
+                  colorScheme == "dark" ? colors.dark[7] : colors.gray[1],
               }}
               onClick={() => toggleColorScheme()}
+              key={color}
             >
               <Card
                 sx={{
-                  backgroundColor:
-                    colorScheme == "dark" ? colors.dark[7] : colors.gray[2],
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -71,9 +73,9 @@ const AppearanceTab = ({ user }: AppearanceTabProps) => {
                   : "For the light of heart."}
               </Text>
             </Card>
-          </Grid.Col>
-        ))}
-      </Grid>
+          ))}
+        </div>
+      </Grouped>
     </SettingsTab>
   );
 };

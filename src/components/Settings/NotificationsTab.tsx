@@ -1,10 +1,11 @@
-import { Alert, Card, Checkbox, Grid, Stack, Text, Title } from "@mantine/core";
+import { Alert, Checkbox, Stack } from "@mantine/core";
 import { ReceiveNotification } from "@prisma/client";
 import { useState } from "react";
 import { HiCheckCircle } from "react-icons/hi";
 import { User } from "../../util/prisma-types";
 import Descriptive from "../Descriptive";
 import { updateAccount } from "./AccountTab";
+import Grouped from "./Grouped";
 import SettingsTab from "./SettingsTab";
 import SideBySide from "./SideBySide";
 
@@ -67,59 +68,55 @@ const NotificationsTab = ({ user }: NotificationsTabProps) => {
       <Stack mb={32}>
         {Object.keys(notificationDescriptions).map((category) => {
           return (
-            <Card withBorder shadow="sm" key={category}>
-              <Text weight={750} color="dimmed" mb={16}>
-                {
-                  category.charAt(0) + category.slice(1).toLowerCase()
-                }
-              </Text>
-              <Stack>
-                {Object.keys(notificationDescriptions[category]).map((key) => {
-                  const notification = notificationDescriptions[category][
-                    key as keyof typeof ReceiveNotification
-                  ] as { title: string; description: string; label: string };
+            <Grouped
+              title={category.charAt(0) + category.slice(1).toLowerCase()}
+              key={category}
+            >
+              {Object.keys(notificationDescriptions[category]).map((key) => {
+                const notification = notificationDescriptions[category][
+                  key as keyof typeof ReceiveNotification
+                ] as { title: string; description: string; label: string };
 
-                  return (
-                    <SideBySide
-                      title={notification.title}
-                      description={notification.description}
-                      key={key}
-                      shaded
-                      noUpperBorder
-                      right={
-                        <Descriptive
-                          title={notification.title}
-                          description={notification.description}
-                        >
-                          <Checkbox
-                            defaultChecked={
-                              user.notificationPreferences.find(
-                                (n) => n == (key as ReceiveNotification)
-                              ) != null
+                return (
+                  <SideBySide
+                    title={notification.title}
+                    description={notification.description}
+                    key={key}
+                    shaded
+                    noUpperBorder
+                    right={
+                      <Descriptive
+                        title={notification.title}
+                        description={notification.description}
+                      >
+                        <Checkbox
+                          defaultChecked={
+                            user.notificationPreferences.find(
+                              (n) => n == (key as ReceiveNotification)
+                            ) != null
+                          }
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setUpdated([
+                                ...updated,
+                                key as ReceiveNotification,
+                              ]);
+                            } else {
+                              setUpdated(
+                                updated.filter(
+                                  (n) => n != (key as ReceiveNotification)
+                                )
+                              );
                             }
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setUpdated([
-                                  ...updated,
-                                  key as ReceiveNotification,
-                                ]);
-                              } else {
-                                setUpdated(
-                                  updated.filter(
-                                    (n) => n != (key as ReceiveNotification)
-                                  )
-                                );
-                              }
-                            }}
-                            label={notification.label}
-                          />
-                        </Descriptive>
-                      }
-                    />
-                  );
-                })}
-              </Stack>
-            </Card>
+                          }}
+                          label={notification.label}
+                        />
+                      </Descriptive>
+                    }
+                  />
+                );
+              })}
+            </Grouped>
           );
         })}
       </Stack>
