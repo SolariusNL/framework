@@ -124,28 +124,33 @@ const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
               style={{
                 display: "flex",
                 flexDirection: "row",
+                alignItems: "center",
               }}
             >
-              <Group>
-                {viewing.country && (
-                  <ReactCountryFlag
-                    style={{ borderRadius: "6px" }}
-                    countryCode={viewing.country}
-                    svg
-                  />
-                )}
-                <Text weight={500} size="xl" align="center">
-                  {viewing.username}
-                </Text>
-                {viewing.busy && <Badge>Busy</Badge>}
-              </Group>
+              {viewing.country && (
+                <ReactCountryFlag
+                  style={{ borderRadius: "6px", marginRight: 12 }}
+                  countryCode={viewing.country}
+                  svg
+                />
+              )}
+              <Text weight={500} size="xl" align="center">
+                {viewing.username}
+              </Text>
+            </div>
 
-              <Group spacing={4} ml={6}>
-                {viewing.premium && <HiGift title="Premium" />}
-                {viewing.role == "ADMIN" && (
-                  <HiShieldCheck title="Official Framework Staff" />
-                )}
-              </Group>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                gap: "12px",
+              }}
+            >
+              {viewing.busy && <Badge>Busy</Badge>}
+              {viewing.premium && <HiGift title="Premium" />}
+              {viewing.role == "ADMIN" && (
+                <HiShieldCheck title="Official Framework Staff" />
+              )}
             </div>
 
             <div
@@ -311,24 +316,27 @@ const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
             </Text>
 
             <ReactNoSSR>
-              <Grid>
+              <div
+                style={{
+                  // 2 columns, 12px gap
+                  display: "grid",
+                  gridColumnGap: "12px",
+                  gridTemplateColumns: `repeat(${mobile ? 1 : 2}, 1fr)`,
+                  gridRowGap: "12px",
+                }}
+              >
                 {[
-                  <AlphaBadge user={viewing} key="alpha" />,
-                  viewing.premium && (
-                    <PremiumBadge user={viewing} key="premium" />
-                  ),
-                  viewing.role == "ADMIN" && (
-                    <AdminBadge user={viewing} key="admin" />
-                  ),
-                ].map((b) => (
-                  <Grid.Col
-                    span={mobile ? 12 : 6}
-                    key={Math.floor(Math.random() * 100)}
-                  >
-                    {b}
-                  </Grid.Col>
-                ))}
-              </Grid>
+                  [<AlphaBadge user={viewing} key="alpha" />, true],
+                  [
+                    <PremiumBadge user={viewing} key="premium" />,
+                    viewing.premium,
+                  ],
+                  [
+                    <AdminBadge user={viewing} key="admin" />,
+                    viewing.role == "ADMIN",
+                  ],
+                ].map(([badge, condition]) => condition && <div>{badge}</div>)}
+              </div>
             </ReactNoSSR>
           </Grid.Col>
 
