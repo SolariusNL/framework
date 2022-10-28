@@ -73,8 +73,7 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
         color: "green",
       });
     }
-  }),
-    [];
+  }, []);
 
   return (
     <>
@@ -138,7 +137,7 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
         >
           <ModalsProvider>
             <UserInformationWrapper>
-              <NotificationsProvider position="top-center">
+              <NotificationsProvider position="top-center" zIndex={1000}>
                 <FrameworkUserProvider
                   value={pageProps && pageProps.user && pageProps.user}
                 >
