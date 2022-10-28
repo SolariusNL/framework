@@ -1,4 +1,4 @@
-import { Divider, Text, Title } from "@mantine/core";
+import { Divider, Text, Title, useMantineTheme } from "@mantine/core";
 import useMediaQuery from "../../util/useMediaQuery";
 
 interface SideBySideProps {
@@ -7,6 +7,8 @@ interface SideBySideProps {
   right: React.ReactNode;
   actions?: React.ReactNode;
   icon?: React.ReactNode;
+  shaded?: boolean;
+  noUpperBorder?: boolean;
 }
 
 const SideBySide = ({
@@ -15,16 +17,27 @@ const SideBySide = ({
   right,
   actions,
   icon,
+  shaded,
+  noUpperBorder,
 }: SideBySideProps) => {
   const mobile = useMediaQuery("768");
+  const theme = useMantineTheme();
 
   return (
     <>
-      <Divider mt={26} mb={26} />
+      {!noUpperBorder && <Divider mt={26} mb={26} />}
       <div
         style={{
           display: mobile ? "block" : "flex",
           gap: 32,
+          ...(shaded && {
+            backgroundColor:
+              theme.colorScheme == "dark"
+                ? theme.colors.dark[8]
+                : theme.colors.gray[2],
+            padding: 16,
+          }),
+          borderRadius: theme.radius.md,
         }}
       >
         <div
