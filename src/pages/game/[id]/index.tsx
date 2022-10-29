@@ -17,6 +17,7 @@ import {
   Tooltip,
   UnstyledButton,
 } from "@mantine/core";
+import isElectron from "is-electron";
 import { GetServerSidePropsContext, NextPage } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -46,6 +47,7 @@ import ServersTab from "../../../components/ViewGame/Servers";
 import UpdateLogTab from "../../../components/ViewGame/UpdateLog";
 import Votes from "../../../components/ViewGame/Votes";
 import authorizedRoute from "../../../util/authorizedRoute";
+import { getIpcRenderer } from "../../../util/electron";
 import prisma from "../../../util/prisma";
 import { Game, gameSelect, User } from "../../../util/prisma-types";
 import useMediaQuery from "../../../util/useMediaQuery";
@@ -246,7 +248,11 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
             mb="xs"
             disabled={game.connection.length == 0}
             onClick={() => {
-              setLaunchingOpen(true);
+              if (isElectron()) {
+                getIpcRenderer().send("join-game");
+              } else {
+                setLaunchingOpen(true);
+              }
             }}
           >
             Play
@@ -259,7 +265,11 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
             mb={32}
             disabled={game.connection.length == 0}
             onClick={() => {
-              setLaunchingOpen(true);
+              if (isElectron()) {
+                getIpcRenderer().send("join-game");
+              } else {
+                setLaunchingOpen(true);
+              }
             }}
           >
             Play in Private Server

@@ -1,4 +1,5 @@
 import { Grid, Title } from "@mantine/core";
+import isElectron from "is-electron";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { useEffect, useState } from "react";
 import EmptyState from "../components/EmptyState";
