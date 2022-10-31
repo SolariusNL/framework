@@ -25,6 +25,7 @@ import {
   useMantineColorScheme,
 } from "@mantine/core";
 import { useDisclosure, useLocalStorage } from "@mantine/hooks";
+import isElectron from "is-electron";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useRef, useState } from "react";
@@ -53,6 +54,7 @@ import {
 } from "react-icons/hi";
 import abbreviateNumber from "../util/abbreviate";
 import logout from "../util/api/logout";
+import { getIpcRenderer } from "../util/electron";
 import { User } from "../util/prisma-types";
 import useConfig from "../util/useConfig";
 import useMediaQuery from "../util/useMediaQuery";
@@ -472,6 +474,13 @@ const Framework = ({
           position: immersive ? "sticky" : "relative",
           top: 0,
           zIndex: 1000,
+        }}
+        onDoubleClick={() => {
+          if (isElectron()) {
+            if (process.platform === "darwin") {
+              getIpcRenderer().send("@app/maximize");
+            }
+          }
         }}
       >
         <Container
