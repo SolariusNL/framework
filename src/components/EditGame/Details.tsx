@@ -3,7 +3,6 @@ import {
   Button,
   NumberInput,
   Select,
-  Stack,
   Text,
   TextInput,
 } from "@mantine/core";
@@ -16,6 +15,7 @@ import { Game } from "../../util/prisma-types";
 import { genreMap } from "../../util/universe/genre";
 import Descriptive from "../Descriptive";
 import RichText from "../RichText";
+import Grouped from "../Settings/Grouped";
 import SideBySide from "../Settings/SideBySide";
 import EditGameTab from "./EditGameTab";
 
@@ -123,7 +123,7 @@ const Details = ({ game }: DetailsProps) => {
 
   return (
     <EditGameTab value="details">
-      <Stack mb={32}>
+      <Grouped title="General Information">
         {editable.map((value, index) => {
           const { property, label, description, type, options, title, hint } =
             value;
@@ -134,6 +134,8 @@ const Details = ({ game }: DetailsProps) => {
               description={description}
               key={index}
               actions={hint}
+              noUpperBorder
+              shaded
               right={
                 <>
                   {type == EditableType.Text && (
@@ -200,10 +202,10 @@ const Details = ({ game }: DetailsProps) => {
             />
           );
         })}
-      </Stack>
+      </Grouped>
 
       {success && (
-        <Alert color="green" icon={<HiCheckCircle />} title="Success" mb={30}>
+        <Alert color="green" icon={<HiCheckCircle />} title="Success" mt={30}>
           Your game has been updated.
         </Alert>
       )}
@@ -212,6 +214,7 @@ const Details = ({ game }: DetailsProps) => {
         leftIcon={<HiCloud />}
         onClick={updateDetails}
         loading={detailsLoading}
+        mt={30}
       >
         Save Changes
       </Button>
