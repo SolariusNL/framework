@@ -1,6 +1,5 @@
 import { Grid, Title } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
-import EmptyState from "../components/EmptyState";
 import Framework from "../components/Framework";
 import GameCard from "../components/GameCard";
 import ModernEmptyState from "../components/ModernEmptyState";

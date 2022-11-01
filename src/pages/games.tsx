@@ -10,7 +10,6 @@ import { GameGenre } from "@prisma/client";
 import { GetServerSidePropsContext, NextPage } from "next";
 import React from "react";
 import { HiFilter } from "react-icons/hi";
-import EmptyState from "../components/EmptyState";
 import AscDescFilter from "../components/Filter/AscDescFilter";
 import Framework from "../components/Framework";
 import GameCard from "../components/GameCard";

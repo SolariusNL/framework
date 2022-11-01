@@ -1,7 +1,6 @@
 import { Tabs, Title } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { HiMail, HiPaperAirplane } from "react-icons/hi";
-import EmptyState from "../components/EmptyState";
 import Framework from "../components/Framework";
 import ModernEmptyState from "../components/ModernEmptyState";
 import authorizedRoute from "../util/authorizedRoute";
