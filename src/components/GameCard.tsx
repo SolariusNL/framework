@@ -13,7 +13,6 @@ import {
 } from "@mantine/core";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { HiCheck, HiOutlineBookmark, HiOutlineShare } from "react-icons/hi";
 import { Game } from "../util/prisma-types";
 import UserContext from "./UserContext";
@@ -26,15 +25,11 @@ const useStyles = createStyles((theme) => ({
   footer: {
     padding: `${theme.spacing.xs}px ${theme.spacing.lg}px`,
     marginTop: theme.spacing.md,
-    borderTop: `1px solid ${
-      theme.colorScheme === "dark" ? theme.colors.dark[5] : theme.colors.gray[2]
-    }`,
   },
 }));
 
 const GameCard = ({ game }: GameCardProps) => {
   const { classes, theme } = useStyles();
-  const router = useRouter();
 
   return (
     <Link href={`/game/${game.id}`}>
@@ -51,7 +46,8 @@ const GameCard = ({ game }: GameCardProps) => {
           radius="md"
           sx={{
             backgroundColor:
-              theme.colorScheme === "dark" ? theme.colors.dark[8] : "#FFF",
+              theme.colorScheme === "dark" ? theme.colors.dark[9] : "#FFF",
+            overflow: "visible",
           }}
         >
           <Card.Section mb="sm">

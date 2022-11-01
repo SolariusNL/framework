@@ -198,6 +198,26 @@ class GameRouter {
     };
   }
 
+  @Get("/search")
+  @Authorized()
+  async searchGames(@Query("q") q: string) {
+    const games = await prisma.game.findMany({
+      where: {
+        name: {
+          contains: String(q),
+          mode: "insensitive",
+        },
+      },
+      select: gameSelect,
+      take: 25,
+    });
+
+    return {
+      success: true,
+      games,
+    };
+  }
+
   @Post("/:id/connection/add")
   @Authorized()
   public async createConnection(
