@@ -8,7 +8,6 @@ import {
   Title,
 } from "@mantine/core";
 import { getCookie } from "cookies-next";
-import { GetServerSidePropsContext, NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import {
@@ -19,19 +18,13 @@ import {
   HiViewGrid,
   HiXCircle,
 } from "react-icons/hi";
-import ResourceCard from "../../components/Admin/ResourceCard";
-import StatsGrid from "../../components/Admin/StatsGrid";
-import Framework from "../../components/Framework";
-import ModernEmptyState from "../../components/ModernEmptyState";
-import UserContext from "../../components/UserContext";
-import authorizedRoute from "../../util/authorizedRoute";
-import { Report, User } from "../../util/prisma-types";
-import { getRelativeTime } from "../../util/relativeTime";
-import useMediaQuery from "../../util/useMediaQuery";
-
-interface AdminProps {
-  user: User;
-}
+import { Report } from "../../../util/prisma-types";
+import { getRelativeTime } from "../../../util/relativeTime";
+import useMediaQuery from "../../../util/useMediaQuery";
+import ModernEmptyState from "../../ModernEmptyState";
+import UserContext from "../../UserContext";
+import ResourceCard from "../ResourceCard";
+import StatsGrid from "../StatsGrid";
 
 interface AdminStats {
   user: {
@@ -46,7 +39,7 @@ interface AdminStats {
   };
 }
 
-const Admin: NextPage<AdminProps> = ({ user }) => {
+const Dashboard = () => {
   const [stats, setStats] = useState<AdminStats | undefined>(undefined);
   const [reports, setReports] = useState<Report[] | undefined>(undefined);
 
@@ -82,9 +75,7 @@ const Admin: NextPage<AdminProps> = ({ user }) => {
   }, []);
 
   return (
-    <Framework user={user} activeTab="none">
-      <Title mb={24}>Admin</Title>
-
+    <>
       <StatsGrid>
         <StatsGrid.Item
           title="Users"
@@ -176,7 +167,7 @@ const Admin: NextPage<AdminProps> = ({ user }) => {
             title="Invite Keys"
             description="Create invite keys in bulk, or individually."
             icon={<HiKey size={28} />}
-            link="/admin/invites"
+            link="/admin/keys"
           />
         </Grid.Col>
 
@@ -198,12 +189,8 @@ const Admin: NextPage<AdminProps> = ({ user }) => {
           />
         </Grid.Col>
       </Grid>
-    </Framework>
+    </>
   );
 };
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return await authorizedRoute(context, true, false, true);
-}
-
-export default Admin;
+export default Dashboard;

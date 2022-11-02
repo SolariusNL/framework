@@ -1,27 +1,10 @@
-import {
-  Button,
-  Group,
-  Modal,
-  NumberInput,
-  Pagination,
-  Table,
-  Title,
-} from "@mantine/core";
-import { useClipboard } from "@mantine/hooks";
+import { Button, Group, Modal, NumberInput, Table } from "@mantine/core";
 import { Invite } from "@prisma/client";
 import { getCookie } from "cookies-next";
-import { GetServerSidePropsContext, NextPage } from "next";
 import { useEffect, useState } from "react";
 import { HiPlus } from "react-icons/hi";
-import Framework from "../../components/Framework";
-import authorizedRoute from "../../util/authorizedRoute";
-import { User } from "../../util/prisma-types";
 
-interface InvitesProps {
-  user: User;
-}
-
-const Invites: NextPage<InvitesProps> = ({ user }) => {
+const Invites = () => {
   const [keys, setKeys] = useState<Invite[] | undefined>(undefined);
 
   const [createBulkOpened, setCreateBulkOpened] = useState(false);
@@ -98,56 +81,48 @@ const Invites: NextPage<InvitesProps> = ({ user }) => {
         </Button>
       </Modal>
 
-      <Framework user={user} activeTab="none">
-        <Title mb={24}>Invite Keys</Title>
+      <Group mb={24}>
+        <Button.Group>
+          <Button
+            leftIcon={<HiPlus />}
+            onClick={() => setCreateBulkOpened(true)}
+          >
+            Create single key
+          </Button>
+          <Button
+            leftIcon={<HiPlus />}
+            onClick={() => setCreateBulkOpened(true)}
+          >
+            Create bulk keys
+          </Button>
+        </Button.Group>
+      </Group>
 
-        <Group mb={24}>
-          <Button.Group>
-            <Button
-              leftIcon={<HiPlus />}
-              onClick={() => setCreateBulkOpened(true)}
-            >
-              Create single key
-            </Button>
-            <Button
-              leftIcon={<HiPlus />}
-              onClick={() => setCreateBulkOpened(true)}
-            >
-              Create bulk keys
-            </Button>
-          </Button.Group>
-        </Group>
+      <Table>
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Used?</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
 
-        <Table>
-          <thead>
-            <tr>
-              <th>Code</th>
-              <th>Used?</th>
-              <th>Actions</th>
+        <tbody>
+          {keys?.map((key) => (
+            <tr key={key.id}>
+              <td>{key.code}</td>
+              <td>{key.used ? "Yes" : "No"}</td>
+              <td>
+                <Button size="xs" color="red">
+                  Delete
+                </Button>
+              </td>
             </tr>
-          </thead>
-
-          <tbody>
-            {keys?.map((key) => (
-              <tr key={key.id}>
-                <td>{key.code}</td>
-                <td>{key.used ? "Yes" : "No"}</td>
-                <td>
-                  <Button size="xs" color="red">
-                    Delete
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      </Framework>
+          ))}
+        </tbody>
+      </Table>
     </>
   );
 };
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return await authorizedRoute(context, true, false, true);
-}
 
 export default Invites;

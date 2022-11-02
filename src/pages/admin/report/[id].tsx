@@ -168,7 +168,7 @@ const ReportPage: NextPage<ReportProps> = ({ user, report }) => {
         <Grid columns={6} gutter="xl">
           <Grid.Col span={4}>
             <Group mb={12}>
-              <Link href="/admin">
+              <Link href="/admin/dashboard">
                 <Anchor sx={{ display: "flex", gap: 8, alignItems: "center" }}>
                   <HiArrowLeft />
                   Back to reports

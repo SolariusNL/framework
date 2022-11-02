@@ -245,7 +245,7 @@ const UserMenu = ({ classes, userMenuOpened, user, cx, router }: any) => {
           <>
             <Menu.Item
               icon={<HiLibrary />}
-              onClick={() => router.push("/admin")}
+              onClick={() => router.push("/admin/dashboard")}
             >
               Admin Dashboard
             </Menu.Item>
