@@ -1,26 +1,46 @@
-import { Alert, Container, Paper } from "@mantine/core";
+import { Alert, Anchor, Container, Paper } from "@mantine/core";
 import { GetServerSidePropsContext } from "next";
-import { HiCheckCircle } from "react-icons/hi";
+import Link from "next/link";
+import { HiCheckCircle, HiHome } from "react-icons/hi";
 import authorizedRoute from "../../util/authorizedRoute";
 import { sendMail } from "../../util/mail";
 import prisma from "../../util/prisma";
-import { User } from "../../util/prisma-types";
 
-interface VerifyEmailProps {
-  user: User;
-}
-
-const VerifyEmail = ({ user }: VerifyEmailProps) => {
+const VerifyEmail = () => {
   return (
     <Container size={460} my={30}>
-      <Paper withBorder shadow="md" p={30} radius="md" mt="xl">
+      <Paper
+        withBorder
+        shadow="md"
+        p={30}
+        radius="md"
+        mt="xl"
+        sx={(theme) => ({
+          background:
+            theme.colorScheme === "dark"
+              ? theme.colors.dark[8]
+              : theme.colors.gray[0],
+        })}
+      >
         <Alert
           title="Email verified"
           color="green"
           icon={<HiCheckCircle size={24} />}
+          mb={24}
         >
-          Your email has been verified!
+          Your email has been verified. Thanks.
         </Alert>
+        <Link href="/">
+          <Anchor
+            style={{
+              alignItems: "center",
+            }}
+            weight={500}
+          >
+            <HiHome style={{ marginRight: 8 }} />
+            Return to the homepage
+          </Anchor>
+        </Link>
       </Paper>
     </Container>
   );
@@ -65,9 +85,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   );
 
   return {
-    props: {
-      user: auth.props.user,
-    },
+    props: {},
   };
 }
 
