@@ -5,16 +5,14 @@ import {
   Group,
   Pagination,
   Stack,
-  Textarea,
+  Textarea
 } from "@mantine/core";
 import { usePagination } from "@mantine/hooks";
-import { useRouter } from "next/router";
 import { useState } from "react";
 import { HiChat } from "react-icons/hi";
 import { getCookie } from "../util/cookies";
 import { Game, NonUser, User } from "../util/prisma-types";
 import Comment from "./Comment";
-import EmptyState from "./EmptyState";
 import ModernEmptyState from "./ModernEmptyState";
 
 interface GameCommentsProps {

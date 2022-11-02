@@ -21,7 +21,6 @@ import {
 } from "react-icons/hi";
 import ResourceCard from "../../components/Admin/ResourceCard";
 import StatsGrid from "../../components/Admin/StatsGrid";
-import EmptyState from "../../components/EmptyState";
 import Framework from "../../components/Framework";
 import ModernEmptyState from "../../components/ModernEmptyState";
 import UserContext from "../../components/UserContext";

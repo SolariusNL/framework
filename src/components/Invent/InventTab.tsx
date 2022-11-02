@@ -1,6 +1,5 @@
 import { Group, Tabs, Title } from "@mantine/core";
 import useMediaQuery from "../../util/useMediaQuery";
-import EmptyState from "../EmptyState";
 import ModernEmptyState from "../ModernEmptyState";
 
 interface InventTabProps {
