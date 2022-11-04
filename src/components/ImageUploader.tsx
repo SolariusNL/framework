@@ -128,7 +128,20 @@ const ImageUploader = ({
               if (file) {
                 setImg(file);
                 if (crop) setCropOpen(true);
-                else if (onFinished) onFinished(URL.createObjectURL(file));
+                else {
+                  const reader = new FileReader();
+
+                  reader.onload = () => {
+                    if (onFinished) {
+                      if (imgRef && imgRef.current) {
+                        imgRef.current!.src = reader.result as string;
+                      }
+                      onFinished(reader.result as string);
+                    }
+                  };
+
+                  reader.readAsDataURL(file);
+                }
               } else {
                 setImg(null);
                 setCroppedImg(null);
