@@ -51,12 +51,18 @@ const GameCard = ({ game }: GameCardProps) => {
           }}
         >
           <Card.Section mb="sm">
-            <AspectRatio ratio={1 / 1} mx="auto">
+            <AspectRatio
+              ratio={1 / 1}
+              mx="auto"
+              sx={{
+                borderRadius: theme.radius.md,
+              }}
+            >
               <Image
                 src={game.iconUri}
                 alt={game.name}
-                radius="md"
                 withPlaceholder
+                radius="md"
               />
             </AspectRatio>
           </Card.Section>
