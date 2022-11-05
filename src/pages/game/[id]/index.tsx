@@ -17,6 +17,7 @@ import {
   Tooltip,
   UnstyledButton,
 } from "@mantine/core";
+import isElectron from "is-electron";
 import { GetServerSidePropsContext, NextPage } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -46,6 +47,7 @@ import ServersTab from "../../../components/ViewGame/Servers";
 import UpdateLogTab from "../../../components/ViewGame/UpdateLog";
 import Votes from "../../../components/ViewGame/Votes";
 import authorizedRoute from "../../../util/authorizedRoute";
+import { getIpcRenderer } from "../../../util/electron";
 import prisma from "../../../util/prisma";
 import { Game, gameSelect, User } from "../../../util/prisma-types";
 import useMediaQuery from "../../../util/useMediaQuery";
@@ -198,33 +200,36 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
         </Grid.Col>
         <Grid.Col span={mobile ? 24 : 8} p={10}>
           <Group position="apart" pl={0} pr={0} p={10} mb={32}>
-            <Group
-              onClick={() => {
-                router.push(`/profile/${game.author.username}`);
-              }}
-              sx={{
-                cursor: "pointer",
-              }}
-            >
-              <UserContext user={game.author}>
-                <Avatar
-                  src={
-                    game.author.avatarUri ||
-                    `https://avatars.dicebear.com/api/identicon/${game.authorId}.png`
-                  }
-                  alt={game.author.username}
-                  radius="xl"
-                  size={20}
-                  onClick={() =>
-                    router.push(`/profile/${game.author.username}`)
-                  }
-                />
-              </UserContext>
-              <Text weight={700}>{game.author.username}</Text>
-            </Group>
+            <Link href={`/profile/${game.author.username}`}>
+              <Group
+                sx={{
+                  cursor: "pointer",
+                }}
+              >
+                <UserContext user={game.author}>
+                  <Avatar
+                    src={
+                      game.author.avatarUri ||
+                      `https://avatars.dicebear.com/api/identicon/${game.authorId}.png`
+                    }
+                    alt={game.author.username}
+                    radius="xl"
+                    size={48}
+                    onClick={() =>
+                      router.push(`/profile/${game.author.username}`)
+                    }
+                  />
+                </UserContext>
+                <Stack spacing={3}>
+                  <Text weight={700}>{game.author.username}</Text>
+                  <Text color="dimmed" size="sm">
+                    Game author
+                  </Text>
+                </Stack>
+              </Group>
+            </Link>
 
             <Group>
-              <Text color="dimmed">@{game.author.username}</Text>
               {game.author.id == user.id && (
                 <Tooltip label="Edit game">
                   <ActionIcon
@@ -246,7 +251,11 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
             mb="xs"
             disabled={game.connection.length == 0}
             onClick={() => {
-              setLaunchingOpen(true);
+              if (isElectron()) {
+                getIpcRenderer().send("join-game");
+              } else {
+                setLaunchingOpen(true);
+              }
             }}
           >
             Play
@@ -259,7 +268,11 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
             mb={32}
             disabled={game.connection.length == 0}
             onClick={() => {
-              setLaunchingOpen(true);
+              if (isElectron()) {
+                getIpcRenderer().send("join-game");
+              } else {
+                setLaunchingOpen(true);
+              }
             }}
           >
             Play in Private Server

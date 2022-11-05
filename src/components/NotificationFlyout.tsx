@@ -8,7 +8,7 @@ import {
   Spoiler,
   Text,
   Timeline,
-  UnstyledButton,
+  UnstyledButton
 } from "@mantine/core";
 import { Notification, NotificationType } from "@prisma/client";
 import { useState } from "react";
@@ -17,13 +17,11 @@ import {
   HiCheckCircle,
   HiDesktopComputer,
   HiExclamationCircle,
-  HiInformationCircle,
-  HiPhone,
+  HiInformationCircle
 } from "react-icons/hi";
 import { getCookie } from "../util/cookies";
 import { getRelativeTime } from "../util/relativeTime";
 import useMediaQuery from "../util/useMediaQuery";
-import EmptyState from "./EmptyState";
 import ModernEmptyState from "./ModernEmptyState";
 
 interface NotificationFlyoutProps {

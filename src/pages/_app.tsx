@@ -30,6 +30,7 @@ import "../../flags.config";
 import { FrameworkUserProvider } from "../contexts/FrameworkUser";
 import { UserInformationWrapper } from "../contexts/UserInformationDialog";
 import "../styles/framework.css";
+import "../styles/tw.css";
 import logout from "../util/api/logout";
 
 const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
@@ -73,8 +74,7 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
         color: "green",
       });
     }
-  }),
-    [];
+  }, []);
 
   return (
     <>
@@ -113,6 +113,7 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
                             theme.colorScheme == "dark" ? 2 : 9
                           ] + "85",
                       },
+                      boxShadow: "inset 0 1.2px 0 0 hsla(0,0%,100%,.2);",
                     }),
                   },
                 }),
@@ -138,7 +139,7 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
         >
           <ModalsProvider>
             <UserInformationWrapper>
-              <NotificationsProvider position="top-center">
+              <NotificationsProvider position="top-center" zIndex={1000}>
                 <FrameworkUserProvider
                   value={pageProps && pageProps.user && pageProps.user}
                 >

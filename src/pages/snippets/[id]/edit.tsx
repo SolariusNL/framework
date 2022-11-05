@@ -1,4 +1,11 @@
-import { Affix, Button, Grid, Loader, Transition, useMantineColorScheme } from "@mantine/core";
+import {
+  Affix,
+  Button,
+  Grid,
+  Loader,
+  Transition,
+  useMantineColorScheme,
+} from "@mantine/core";
 import Editor from "@monaco-editor/react";
 import { CodeSnippet } from "@prisma/client";
 import { GetServerSidePropsContext, NextPage } from "next";
@@ -119,9 +126,7 @@ const EditSnippet: NextPage<EditSnippetProps> = ({ user, snippet }) => {
 
             setCode(String(val));
           }}
-          options={{
-            theme: !isSSR && dark ? "vs-dark" : "vs",
-          }}
+          theme={dark ? "vs-dark" : "vs"}
         />
       </Framework>
     </>

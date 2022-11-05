@@ -53,36 +53,19 @@ import prisma from "../../util/prisma";
 import { nonCurrentUserSelect, User } from "../../util/prisma-types";
 import useMediaQuery from "../../util/useMediaQuery";
 import ReactNoSSR from "react-no-ssr";
+import Donate from "../../components/Profile/Donate";
 
 interface ProfileProps {
   user: User;
-  viewing: User;
+  profile: User;
 }
 
-const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
+const Profile: NextPage<ProfileProps> = ({ user, profile }) => {
   const mobile = useMediaQuery("768");
   const [reportOpened, setReportOpened] = React.useState(false);
   const router = useRouter();
-  const { open, setOpen, setUser, setDefaultTab } = useUserInformationDialog();
-
-  const handleDonate = async (amt: number) => {
-    await fetch(`/api/users/${viewing.id}/donate/${amt}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: String(getCookie(".frameworksession")),
-      },
-    }).then(() =>
-      router
-        .replace({
-          pathname: `/profile/${viewing.username}`,
-          query: {
-            status: "success",
-          },
-        })
-        .then(() => router.reload())
-    );
-  };
+  const { setOpen, setUser, setDefaultTab } = useUserInformationDialog();
+  const [viewing, setViewing] = React.useState(profile);
 
   return (
     <>
@@ -124,28 +107,33 @@ const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
               style={{
                 display: "flex",
                 flexDirection: "row",
+                alignItems: "center",
               }}
             >
-              <Group>
-                {viewing.country && (
-                  <ReactCountryFlag
-                    style={{ borderRadius: "6px" }}
-                    countryCode={viewing.country}
-                    svg
-                  />
-                )}
-                <Text weight={500} size="xl" align="center">
-                  {viewing.username}
-                </Text>
-                {viewing.busy && <Badge>Busy</Badge>}
-              </Group>
+              {viewing.country && (
+                <ReactCountryFlag
+                  style={{ borderRadius: "6px", marginRight: 12 }}
+                  countryCode={viewing.country}
+                  svg
+                />
+              )}
+              <Text weight={500} size="xl" align="center">
+                {viewing.username}
+              </Text>
+            </div>
 
-              <Group spacing={4} ml={6}>
-                {viewing.premium && <HiGift title="Premium" />}
-                {viewing.role == "ADMIN" && (
-                  <HiShieldCheck title="Official Framework Staff" />
-                )}
-              </Group>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                gap: "12px",
+              }}
+            >
+              {viewing.busy && <Badge>Busy</Badge>}
+              {viewing.premium && <HiGift title="Premium" />}
+              {viewing.role == "ADMIN" && (
+                <HiShieldCheck title="Official Framework Staff" />
+              )}
             </div>
 
             <div
@@ -257,30 +245,9 @@ const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
                       ? "Unfollow"
                       : "Follow"}
                   </Button>
-                  <Menu shadow="md" width={240}>
-                    <Menu.Target>
-                      <Button leftIcon={<HiReceiptTax />}>Donate</Button>
-                    </Menu.Target>
-                    <Menu.Dropdown>
-                      {[100, 200, 500, 1000, 2500, 5000, 10000].map(
-                        (amount) => (
-                          <Menu.Item
-                            key={amount}
-                            icon={<HiOutlineShoppingBag />}
-                            disabled={amount > user.tickets}
-                            onClick={() => handleDonate(amount)}
-                          >
-                            Donate {amount} tickets
-                          </Menu.Item>
-                        )
-                      )}
-                      <Menu.Divider />
-                      <Menu.Label>
-                        If you did not mean to donate, contact us and we will
-                        refund your donation.
-                      </Menu.Label>
-                    </Menu.Dropdown>
-                  </Menu>
+                  <ReactNoSSR>
+                    <Donate user={viewing} />
+                  </ReactNoSSR>
                   <Button
                     leftIcon={<HiFlag />}
                     color="red"
@@ -303,32 +270,32 @@ const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
             </Text>
 
             <Text>{viewing.bio}</Text>
-
             <Divider mt={16} mb={16} />
-
             <Text weight={550} mb={10} color="dimmed">
               Badges
             </Text>
 
             <ReactNoSSR>
-              <Grid>
+              <div
+                style={{
+                  display: "grid",
+                  gridColumnGap: "12px",
+                  gridTemplateColumns: `repeat(${mobile ? 1 : 2}, 1fr)`,
+                  gridRowGap: "12px",
+                }}
+              >
                 {[
-                  <AlphaBadge user={viewing} key="alpha" />,
-                  viewing.premium && (
-                    <PremiumBadge user={viewing} key="premium" />
-                  ),
-                  viewing.role == "ADMIN" && (
-                    <AdminBadge user={viewing} key="admin" />
-                  ),
-                ].map((b) => (
-                  <Grid.Col
-                    span={mobile ? 12 : 6}
-                    key={Math.floor(Math.random() * 100)}
-                  >
-                    {b}
-                  </Grid.Col>
-                ))}
-              </Grid>
+                  [<AlphaBadge user={viewing} key="alpha" />, true],
+                  [
+                    <PremiumBadge user={viewing} key="premium" />,
+                    viewing.premium,
+                  ],
+                  [
+                    <AdminBadge user={viewing} key="admin" />,
+                    viewing.role == "ADMIN",
+                  ],
+                ].map(([badge, condition]) => condition && <div>{badge}</div>)}
+              </div>
             </ReactNoSSR>
           </Grid.Col>
 
@@ -345,7 +312,7 @@ const Profile: NextPage<ProfileProps> = ({ user, viewing }) => {
                 slides={viewing.games.map((g, i) => (
                   <Paper
                     withBorder
-                    p={12}
+                    p="md"
                     radius="md"
                     key={i}
                     shadow="md"
@@ -504,7 +471,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   return {
     props: {
       user: JSON.parse(JSON.stringify(auth.props?.user)),
-      viewing: JSON.parse(
+      profile: JSON.parse(
         JSON.stringify(exclude(viewing, "email", "inviteCode", "tickets"))
       ),
     },

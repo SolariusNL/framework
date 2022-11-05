@@ -16,7 +16,6 @@ import {
   useContext,
   useState,
 } from "react";
-import EmptyState from "../components/EmptyState";
 import ModernEmptyState from "../components/ModernEmptyState";
 import { NonUser, User } from "../util/prisma-types";
 
@@ -37,7 +36,13 @@ interface UserInformationDialogContextType {
   setDefaultTab: Dispatch<SetStateAction<"following" | "followers">>;
 }
 
-const UserItem = ({ user, finished }: { user: NonUser | User | null, finished: () => void }) => {
+const UserItem = ({
+  user,
+  finished,
+}: {
+  user: NonUser | User | null;
+  finished: () => void;
+}) => {
   const router = useRouter();
 
   return (
@@ -134,7 +139,11 @@ const UserInformationWrapper = ({
               />
             ) : (
               user?.following.map((u) => (
-                <UserItem user={u as NonUser} key={u.id} finished={() => setOpen(false)} />
+                <UserItem
+                  user={u as NonUser}
+                  key={u.id}
+                  finished={() => setOpen(false)}
+                />
               ))
             )}
           </Paper>
@@ -159,7 +168,11 @@ const UserInformationWrapper = ({
                 />
               ) : (
                 user?.followers.map((u) => (
-                  <UserItem user={u as NonUser} key={u.id} finished={() => setOpen(false)} />
+                  <UserItem
+                    user={u as NonUser}
+                    key={u.id}
+                    finished={() => setOpen(false)}
+                  />
                 ))
               )}
             </Paper>

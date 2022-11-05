@@ -36,6 +36,7 @@ yarn-error.log*
 /public/avatars
 /public/thumbnails
 /docs/site
+/public/icons
 
 framework.yml
 framework.schema.json

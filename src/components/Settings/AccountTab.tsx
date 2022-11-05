@@ -3,9 +3,7 @@ import {
   Avatar,
   Button,
   Checkbox,
-  FileButton,
   Group,
-  Modal,
   Select,
   Stack,
   Text,
@@ -14,32 +12,25 @@ import {
   ThemeIcon,
   Tooltip,
 } from "@mantine/core";
-import dynamic from "next/dynamic";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   HiClock,
   HiGlobe,
-  HiIdentification,
   HiInformationCircle,
   HiOfficeBuilding,
   HiQuestionMarkCircle,
   HiTrash,
   HiUser,
 } from "react-icons/hi";
-import { Crop } from "react-image-crop";
 import getTimezones from "../../data/timezones";
+import ImageUploader from "../ImageUploader";
 import { getCookie } from "../../util/cookies";
 import { User } from "../../util/prisma-types";
-import useMediaQuery from "../../util/useMediaQuery";
 import Copy from "../Copy";
 import CountrySelect from "../CountryPicker";
 import Descriptive from "../Descriptive";
 import SettingsTab from "./SettingsTab";
 import SideBySide from "./SideBySide";
-
-const AvatarCropNoSSR = dynamic(() => import("react-image-crop"), {
-  ssr: false,
-});
 
 interface AccountTabProps {
   user: User;
@@ -83,121 +74,13 @@ const AccountTab = ({ user }: AccountTabProps) => {
     setUpdated({ ...updated, [field]: value });
     setUnsavedChanges(true);
   };
-  const [uploadedAvatar, setUploadedAvatar] = useState<File | null>(null);
-  const [uploadedAvatarData, setUploadedAvatarData] = useState<string | null>(
-    null
-  );
-  const [croppedImage, setCroppedImage] = useState<String | null>(null);
   const [success, setSuccess] = useState(false);
-  const [cropModalOpen, setCropModalOpen] = useState(false);
-  const [crop, setCrop] = useState<Crop>();
   const imgRef = useRef<HTMLImageElement | null>();
   const [unsavedChanges, setUnsavedChanges] = useState(false);
-
-  const onCropComplete = (crop: Crop) => {
-    makeClientCrop(crop);
-  };
-
-  const makeClientCrop = async (crop: Crop) => {
-    if (crop.width && crop.height) {
-      const croppedImg = await getCroppedImg(
-        imgRef.current,
-        crop,
-        "cropped.jpeg"
-      );
-      setCroppedImage(String(croppedImg));
-    }
-  };
-
-  const getCroppedImg = (image: any, crop: Crop, fileName: string) => {
-    const canvas = document.createElement("canvas");
-    const scaleX = image.naturalWidth / image.width;
-    const scaleY = image.naturalHeight / image.height;
-    canvas.width = crop.width;
-    canvas.height = crop.height;
-    const ctx = canvas.getContext("2d");
-
-    if (ctx) {
-      ctx.drawImage(
-        image,
-        crop.x * scaleX,
-        crop.y * scaleY,
-        crop.width * scaleX,
-        crop.height * scaleY,
-        0,
-        0,
-        crop.width,
-        crop.height
-      );
-
-      try {
-        return new Promise((resolve, reject) => {
-          resolve(canvas.toDataURL("image/jpeg"));
-        });
-      } catch (e) {
-        console.error(e);
-      }
-    }
-  };
-
-  const mobile = useMediaQuery("768");
-
-  const getImageFromFile = () => {
-    if (!uploadedAvatar) {
-      return null;
-    }
-
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      setUploadedAvatarData(reader.result as string);
-      setUploadedAvatar(null);
-      setUnsavedChanges(true);
-    };
-
-    reader.readAsDataURL(uploadedAvatar);
-  };
-
-  useEffect(() => {
-    if (uploadedAvatar) {
-      getImageFromFile();
-    }
-  }),
-    [uploadedAvatar];
+  const [uploadedAvatarData, setUploadedAvatarData] = useState<string | null>();
 
   return (
     <>
-      <Modal
-        opened={cropModalOpen}
-        onClose={() => setCropModalOpen(false)}
-        title="Crop Avatar"
-      >
-        <AvatarCropNoSSR
-          crop={crop}
-          onChange={(crop) => setCrop(crop)}
-          onComplete={onCropComplete}
-        >
-          <img
-            ref={imgRef as any}
-            src={String(uploadedAvatarData)}
-            alt="avatar"
-          />
-        </AvatarCropNoSSR>
-
-        <Button
-          mt={20}
-          fullWidth
-          onClick={() => {
-            setCropModalOpen(false);
-            setUploadedAvatarData(String(croppedImage));
-            setCroppedImage(null);
-          }}
-          disabled={!croppedImage}
-        >
-          Finish
-        </Button>
-      </Modal>
-
       <SettingsTab
         tabValue="account"
         tabTitle="Profile"
@@ -234,7 +117,6 @@ const AccountTab = ({ user }: AccountTabProps) => {
               .then((res) => {
                 if (res.success) {
                   setSuccess(true);
-                  setUploadedAvatar(null);
                   setUnsavedChanges(false);
                 }
 
@@ -292,30 +174,20 @@ const AccountTab = ({ user }: AccountTabProps) => {
                 </Stack>
               </Group>
               <Group>
-                <FileButton
-                  onChange={(file) => {
-                    if (file) {
-                      setUploadedAvatar(file);
-                      setCropModalOpen(true);
-                    } else {
-                      setUploadedAvatar(null);
-                      setUploadedAvatarData(null);
-                    }
+                <ImageUploader
+                  crop={true}
+                  imgRef={imgRef as React.MutableRefObject<HTMLImageElement>}
+                  onFinished={(data) => {
+                    setUploadedAvatarData(data);
+                    setUnsavedChanges(true);
                   }}
-                  accept="image/png,image/jpeg"
-                >
-                  {(props) => (
-                    <Button leftIcon={<HiIdentification />} {...props}>
-                      Change avatar
-                    </Button>
-                  )}
-                </FileButton>
-                {uploadedAvatar && (
+                />
+                {uploadedAvatarData && (
                   <Button
                     leftIcon={<HiTrash />}
                     onClick={() => {
-                      setUploadedAvatar(null);
                       setUploadedAvatarData(null);
+                      setUnsavedChanges(true);
                     }}
                     color="red"
                   >

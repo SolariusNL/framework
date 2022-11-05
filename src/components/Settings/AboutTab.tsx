@@ -1,6 +1,8 @@
 import { Badge, Button, Skeleton, Text } from "@mantine/core";
+import isElectron from "is-electron";
 import { useEffect, useState } from "react";
-import { HiExternalLink } from "react-icons/hi";
+import { HiDownload, HiExternalLink } from "react-icons/hi";
+import { getIpcRenderer } from "../../util/electron";
 import { User } from "../../util/prisma-types";
 import SettingsTab from "./SettingsTab";
 
@@ -37,6 +39,44 @@ const AboutTab = ({ user }: AboutTabProps) => {
         been. It is a place where you can create, share, and socialize with
         others in a safe and friendly environment.
       </Text>
+
+      {isElectron() && (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "start",
+            gap: 12,
+          }}
+        >
+          <Button
+            leftIcon={<HiDownload />}
+            onClick={() => {
+              const ipcRenderer = getIpcRenderer();
+              ipcRenderer.send("check-for-updates");
+
+              [
+                "update-available",
+                "update-not-available",
+                "update-downloaded",
+              ].forEach((channel) => {
+                ipcRenderer.on(channel, (event: any, args: any) => {
+                  console.log(channel, args);
+                });
+              });
+            }}
+            mb={32}
+            disabled={process.platform === "linux"}
+          >
+            Check for Updates
+          </Button>
+          {process.platform === "linux" && (
+            <Text color="dimmed" weight={750} size="sm">
+              Automatic updates are not supported on Linux. Please update
+              Framework using your package manager.
+            </Text>
+          )}
+        </div>
+      )}
 
       <Button.Group>
         <Button

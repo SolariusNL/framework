@@ -18,6 +18,7 @@ import { useState } from "react";
 import { HiDownload, HiEye, HiPlus, HiSearch } from "react-icons/hi";
 import InfiniteScroll from "react-infinite-scroller";
 import Framework from "../../components/Framework";
+import ModernEmptyState from "../../components/ModernEmptyState";
 import Stateful from "../../components/Stateful";
 import UserContext from "../../components/UserContext";
 import authorizedRoute from "../../util/authorizedRoute";
@@ -73,7 +74,7 @@ const Snippets: NextPage<SnippetsProps> = ({ user, snippets }) => {
           if (res.snippets.length > 0) {
             setSnippetsState(res.snippets);
           } else {
-            setSnippetsState(snippets);
+            setSnippetsState([]);
           }
         } else {
           setSnippetsState(snippets);
@@ -137,6 +138,15 @@ const Snippets: NextPage<SnippetsProps> = ({ user, snippets }) => {
         loader={<Loader size="sm" />}
       >
         <Grid columns={3}>
+          {snippetsState.length === 0 && (
+            <Grid.Col span={3}>
+              <ModernEmptyState
+                title="No snippets found"
+                body="Try searching for something else."
+                shaded
+              />
+            </Grid.Col>
+          )}
           {snippetsState.map((snippet) => (
             <Stateful key={snippet.id}>
               {(viewOpen, setViewOpen) => (

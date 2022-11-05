@@ -48,6 +48,8 @@ markdown_extensions:
 
 nav:
   - Home: index.md
+  - Federation:
+      - federation/index.md
   - Instance Guides:
       - instance/index.md
       - Configuring: instance/configuration.md

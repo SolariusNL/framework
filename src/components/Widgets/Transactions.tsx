@@ -3,6 +3,7 @@ import { Transaction } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
 import { User } from "../../util/prisma-types";
+import Copy from "../Copy";
 import ModernEmptyState from "../ModernEmptyState";
 
 interface TransactionWidgetProps {
@@ -51,7 +52,10 @@ const TransactionsWidget = ({ user }: TransactionWidgetProps) => {
             {transactions !== null &&
               transactions.map((transaction) => (
                 <tr key={transaction.id}>
-                  <td>{transaction.id}</td>
+                  <td style={{ display: "flex", alignItems: "center" }}>
+                    <Copy value={transaction.id} />
+                    {transaction.id.slice(0, 8)}...
+                  </td>
                   <td>{transaction.to}</td>
                   <td>{transaction.tickets}</td>
                   <td>{transaction.description}</td>
