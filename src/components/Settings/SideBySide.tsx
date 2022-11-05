@@ -34,7 +34,7 @@ const SideBySide = ({
             backgroundColor:
               theme.colorScheme == "dark"
                 ? theme.colors.dark[8]
-                : theme.colors.gray[2],
+                : theme.colors.gray[0],
             padding: 16,
           }),
           borderRadius: theme.radius.md,
