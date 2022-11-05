@@ -12,6 +12,7 @@ import {
 import Dashboard from "../../components/Admin/Pages/Dashboard";
 import Instance from "../../components/Admin/Pages/Instance";
 import Invites from "../../components/Admin/Pages/Invites";
+import Users from "../../components/Admin/Pages/Users";
 import Framework from "../../components/Framework";
 import TabNav from "../../components/TabNav";
 import authorizedRoute from "../../util/authorizedRoute";
@@ -44,7 +45,7 @@ const pages: {
     label: "Users",
     icon: <HiUsers />,
     route: "/admin/users",
-    component: <></>,
+    component: <Users />,
     description: "Manage users, their information & their roles",
   },
   instance: {

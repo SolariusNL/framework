@@ -8,7 +8,7 @@ import {
 import { readFile } from "fs/promises";
 import { AdminAuthorized } from "../../../util/api/authorized";
 import prisma from "../../../util/prisma";
-import { nonCurrentUserSelect } from "../../../util/prisma-types";
+import { nonCurrentUserSelect, userSelect } from "../../../util/prisma-types";
 
 class AdminRouter {
   @Get("/reports")
@@ -230,6 +230,20 @@ class AdminRouter {
     return {
       version: packageFile.version,
     };
+  }
+
+  @Get("/users")
+  @AdminAuthorized()
+  public async getUsers() {
+    const users = await prisma.user.findMany({
+      select: {
+        ...userSelect,
+        sessions: true,
+      },
+      take: 100,
+    });
+
+    return users;
   }
 }
 
