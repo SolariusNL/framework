@@ -30,6 +30,7 @@ import "../../flags.config";
 import { FrameworkUserProvider } from "../contexts/FrameworkUser";
 import { UserInformationWrapper } from "../contexts/UserInformationDialog";
 import "../styles/framework.css";
+import "../styles/tw.css";
 import logout from "../util/api/logout";
 
 const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
