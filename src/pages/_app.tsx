@@ -113,7 +113,14 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
                             theme.colorScheme == "dark" ? 2 : 9
                           ] + "85",
                       },
-                      boxShadow: "inset 0 1.2px 0 0 hsla(0,0%,100%,.2);",
+                      boxShadow:
+                        colorScheme === "dark"
+                          ? `inset 0 1.2px 0 0 ${
+                              theme.colors[
+                                params.color || theme.primaryColor
+                              ][9]
+                            }`
+                          : "inset 0 1.2px 0 0 hsla(0,0%,100%,.2);",
                     }),
                   },
                 }),
