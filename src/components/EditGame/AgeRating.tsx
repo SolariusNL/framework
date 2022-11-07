@@ -157,19 +157,11 @@ const AgeRating = ({ game }: AgeRatingProps) => {
                 "red",
               ],
             ].map((item) => (
-              <div
-                key={item[0]}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 16,
-                  flexWrap: "inherit",
-                }}
-              >
-                <Badge color={item[2]} sx={{ overflow: "visible" }}>
+              <div className="flex items-center gap-4" key={item[0]}>
+                <Badge color={item[2]} className="flex-grow flex-shrink-0">
                   {item[0]}
                 </Badge>
-                <Text>{item[1]}</Text>
+                <Text className="flex-grow">{item[1]}</Text>
               </div>
             ))}
           </Stack>

@@ -22,7 +22,7 @@ const GameRating = ({ game }: GameRatingProps) => {
           theme.colorScheme === "dark" ? theme.colors.dark[8] : "#FFF",
       }}
     >
-      <div style={{ textAlign: "center" }}>
+      <div className="text-center">
         <Badge
           size="lg"
           color={
