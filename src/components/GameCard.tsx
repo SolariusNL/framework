@@ -17,7 +17,7 @@ interface GameCardProps {
 const GameCard = ({ game }: GameCardProps) => {
   const { colorScheme } = useMantineColorScheme();
   return (
-    <Link href={`/game/${game.id}`}>
+    <Link href="/game/[id]" as={`/game/${game.id}`} passHref>
       <motion.div whileHover={{ scale: 1.03 }}>
         <div className="overflow-hidden cursor-pointer">
           <div>
