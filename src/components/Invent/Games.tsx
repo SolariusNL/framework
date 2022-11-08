@@ -61,13 +61,7 @@ const Games = ({ user }: GamesProps) => {
         Your games
       </Title>
 
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "1rem",
-        }}
-      >
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {user.games.length == 0 && (
           <ModernEmptyState
             title="No games"
@@ -86,6 +80,7 @@ const Games = ({ user }: GamesProps) => {
               flex: 1,
               backgroundColor:
                 colorScheme == "dark" ? theme.colors.dark[8] : "#fff",
+              height: "auto",
             }}
           >
             <Group position="apart">
@@ -207,6 +202,25 @@ const Games = ({ user }: GamesProps) => {
             </Group>
           </Paper>
         ))}
+        <Link href="/game/create" passHref>
+          <Paper
+            withBorder
+            radius="md"
+            sx={{
+              backgroundColor:
+                colorScheme == "dark" ? theme.colors.dark[8] : "#fff",
+            }}
+            className="flex-1 opacity-50 cursor-pointer hover:opacity-100 transition-opacity duration-200 ease-in-out p-6 shadow-md py-12"
+          >
+            <Text className="text-center" size="xl" weight={500}>
+              Create a new game
+            </Text>
+            <Text color="dimmed" className="text-center" size="sm">
+              Get started with a new game and build your library for others to
+              enjoy.
+            </Text>
+          </Paper>
+        </Link>
       </div>
     </InventTab>
   );

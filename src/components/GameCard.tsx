@@ -1,126 +1,83 @@
 import {
-  ActionIcon,
   AspectRatio,
   Avatar,
-  Badge,
-  Card,
-  CopyButton,
-  createStyles,
-  Group,
   Image,
   Text,
-  Tooltip,
+  useMantineColorScheme,
 } from "@mantine/core";
-import { motion } from "framer-motion";
 import Link from "next/link";
-import { HiCheck, HiOutlineBookmark, HiOutlineShare } from "react-icons/hi";
+import { HiThumbDown, HiThumbUp, HiUsers } from "react-icons/hi";
 import { Game } from "../util/prisma-types";
-import UserContext from "./UserContext";
+import { motion } from "framer-motion";
 
 interface GameCardProps {
   game: Game;
 }
 
-const useStyles = createStyles((theme) => ({
-  footer: {
-    padding: `${theme.spacing.xs}px ${theme.spacing.lg}px`,
-    marginTop: theme.spacing.md,
-  },
-}));
-
 const GameCard = ({ game }: GameCardProps) => {
-  const { classes, theme } = useStyles();
-
+  const { colorScheme } = useMantineColorScheme();
   return (
     <Link href={`/game/${game.id}`}>
-      <motion.div
-        whileHover={{ scale: 1.02 }}
-        style={{
-          cursor: "pointer",
-        }}
-      >
-        <Card
-          shadow="sm"
-          withBorder
-          p="lg"
-          radius="md"
-          sx={{
-            backgroundColor:
-              theme.colorScheme === "dark" ? theme.colors.dark[9] : "#FFF",
-            overflow: "visible",
-          }}
-        >
-          <Card.Section mb="sm">
-            <AspectRatio
-              ratio={1 / 1}
-              mx="auto"
-              sx={{
-                borderRadius: theme.radius.md,
-              }}
-            >
-              <Image
-                src={game.iconUri}
-                alt={game.name}
-                withPlaceholder
-                radius="md"
-              />
-            </AspectRatio>
-          </Card.Section>
-
-          <Badge mb="md">{game.genre}</Badge>
-
-          <Text weight={700} mb="xl" size="lg">
-            {game.name}
-          </Text>
-
-          <Card.Section className={classes.footer}>
-            <Group position="apart">
-              <UserContext user={game.author}>
-                <Avatar
-                  src={
-                    game.author.avatarUri ||
-                    `https://avatars.dicebear.com/api/identicon/${game.author.id}.png`
-                  }
-                  radius="xl"
-                  size="sm"
+      <motion.div whileHover={{ scale: 1.03 }}>
+        <div className="overflow-hidden cursor-pointer">
+          <div>
+            <div className="relative">
+              <AspectRatio ratio={16 / 9}>
+                <Image
+                  src={game.gallery[0]}
+                  alt={game.name}
+                  className="object-cover rounded-lg"
+                  imageProps={{
+                    style: {
+                      filter: "brightness(0.8)",
+                    },
+                  }}
                 />
-              </UserContext>
+              </AspectRatio>
+              <div className="absolute -bottom-12 left-4">
+                <Avatar
+                  src={game.iconUri}
+                  alt={game.name}
+                  size="sm"
+                  className="mr-2 w-24 h-24 shadow-lg"
+                  radius="md"
+                />
+              </div>
+            </div>
+          </div>
 
-              <Group spacing={0}>
-                <ActionIcon>
-                  <HiOutlineBookmark size={18} color={theme.colors.yellow[6]} />
-                </ActionIcon>
-                <CopyButton
-                  value={
-                    typeof window !== "undefined"
-                      ? window.location.host
-                      : "" + `/game/${game.id}`
-                  }
-                  timeout={2000}
-                >
-                  {({ copied, copy }) => (
-                    <Tooltip
-                      label={copied ? "Copied" : "Copy"}
-                      withArrow
-                      position="right"
-                    >
-                      <ActionIcon
-                        color={copied ? "teal" : theme.colors.blue[6]}
-                        onClick={copy}
-                      >
-                        {copied ? (
-                          <HiCheck size={16} />
-                        ) : (
-                          <HiOutlineShare size={16} />
-                        )}
-                      </ActionIcon>
-                    </Tooltip>
-                  )}
-                </CopyButton>
-              </Group>
-            </Group>
-          </Card.Section>
-        </Card>
+          <div className="flex flex-col justify-between ml-32 mt-3">
+            <div>
+              <div className="flex items-center">
+                <Text size="lg" weight={700} className="mr-2 overflow-hidden">
+                  {game.name}
+                </Text>
+              </div>
+              <div className="flex items-center mt-2 justify-between">
+                {[
+                  { icon: HiThumbUp, value: game.likedBy.length },
+                  { icon: HiThumbDown, value: game.dislikedBy.length },
+                  { icon: HiUsers, value: game.visits },
+                ].map((stat) => (
+                  <div
+                    key={stat.value}
+                    className="flex items-center justify-center"
+                  >
+                    <div className="flex items-center">
+                      <stat.icon
+                        className="mr-2"
+                        color={colorScheme === "dark" ? "#909296" : "#868e96"}
+                      />
+                      <Text size="sm" weight={500} color="dimmed">
+                        {stat.value}
+                      </Text>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
       </motion.div>
     </Link>
   );

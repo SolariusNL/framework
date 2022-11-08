@@ -1,25 +1,15 @@
-import {
-  Button,
-  Grid,
-  Group,
-  MultiSelect,
-  Stack,
-  TextInput,
-} from "@mantine/core";
+import { Button, Grid, Group, Menu, Select, TextInput } from "@mantine/core";
 import { GameGenre } from "@prisma/client";
 import { GetServerSidePropsContext, NextPage } from "next";
 import React from "react";
 import { HiFilter, HiSearch } from "react-icons/hi";
-import AscDescFilter from "../components/Filter/AscDescFilter";
 import Framework from "../components/Framework";
 import GameCard from "../components/GameCard";
 import ModernEmptyState from "../components/ModernEmptyState";
-import ShadedCard from "../components/ShadedCard";
 import authorizedRoute from "../util/authorizedRoute";
 import { getCookie } from "../util/cookies";
 import prisma from "../util/prisma";
 import { Game, gameSelect, User } from "../util/prisma-types";
-import { genreMap } from "../util/universe/genre";
 import useMediaQuery from "../util/useMediaQuery";
 
 interface GamesProps {
@@ -98,81 +88,70 @@ const Games: NextPage<GamesProps> = ({ user, initialGames }) => {
       modernTitle="Games"
       modernSubtitle="Browse the expansive library of games on Framework."
     >
-      <Grid columns={6}>
-        <Grid.Col span={mobile ? 6 : 4}>
-          <Group mb={32}>
-            <TextInput
-              icon={<HiSearch />}
-              placeholder="Search for games"
-              onChange={(e) => searchGames(e.currentTarget.value)}
-            />
-          </Group>
-
-          <Grid columns={3}>
-            {games.length > 0 &&
-              games.map((game) => (
-                <Grid.Col span={1} key={game.id}>
-                  <GameCard game={game} />
-                </Grid.Col>
-              ))}
-            {games.length == 0 && (
-              <Grid.Col span={3}>
-                <ModernEmptyState
-                  title="No games found"
-                  body="Try switching up your filter."
-                  shaded
+      <Group mb={32}>
+        <TextInput
+          icon={<HiSearch />}
+          placeholder="Search for games"
+          onChange={(e) => searchGames(e.currentTarget.value)}
+        />
+        <Menu closeOnItemClick={false} shadow="md">
+          <Menu.Target>
+            <Button leftIcon={<HiFilter />}>Filter</Button>
+          </Menu.Target>
+          <Menu.Dropdown>
+            {[
+              {
+                label: "Likes",
+                description: "Sort by likes",
+                value: filter.likes,
+                onChange: (value: "desc" | "asc") =>
+                  setFilter({ ...filter, likes: value }),
+              },
+              {
+                label: "Dislikes",
+                description: "Sort by dislikes",
+                value: filter.dislikes,
+                onChange: (value: "desc" | "asc") =>
+                  setFilter({ ...filter, dislikes: value }),
+              },
+              {
+                label: "Visits",
+                description: "Sort by visits",
+                value: filter.visits,
+                onChange: (value: "desc" | "asc") =>
+                  setFilter({ ...filter, visits: value }),
+              },
+            ].map((item) => (
+              <Menu.Item key={item.label}>
+                <Select
+                  label={item.label}
+                  description={item.description}
+                  data={[
+                    { label: "Most", value: "desc" },
+                    { label: "Least", value: "asc" },
+                  ]}
+                  value={item.value}
+                  onChange={(value) => item.onChange(value as "desc" | "asc")}
                 />
-              </Grid.Col>
-            )}
-          </Grid>
-        </Grid.Col>
-        <Grid.Col span={mobile ? 6 : 2}>
-          <ShadedCard title="Filters" titleWithBorder>
-            <Stack spacing={12}>
-              <AscDescFilter
-                label="Likes"
-                onChange={(value) => setFilter({ ...filter, likes: value })}
-                value={filter.likes}
-                description="Sort by the number of likes"
-              />
-              <AscDescFilter
-                label="Dislikes"
-                onChange={(value) => setFilter({ ...filter, dislikes: value })}
-                value={filter.dislikes}
-                description="Sort by the number of dislikes"
-              />
-              <AscDescFilter
-                label="Visits"
-                onChange={(value) => setFilter({ ...filter, visits: value })}
-                value={filter.visits}
-                description="Sort by the number of visits"
-              />
-              <MultiSelect
-                data={Object.keys(genreMap).map((key) => ({
-                  value: key,
-                  label: genreMap[key as GameGenre],
-                }))}
-                label="Genres"
-                placeholder="No genre filter"
-                onChange={(value: GameGenre[]) =>
-                  setFilter({ ...filter, genres: value })
-                }
-                value={filter.genres || []}
-                description="Filter by genres of games"
-                searchable
-              />
-              <Button
-                variant="subtle"
-                onClick={updateGames}
-                leftIcon={<HiFilter />}
-                loading={loading}
-              >
-                Apply Filter
-              </Button>
-            </Stack>
-          </ShadedCard>
-        </Grid.Col>
-      </Grid>
+              </Menu.Item>
+            ))}
+          </Menu.Dropdown>
+        </Menu>
+      </Group>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+        {games.length > 0 &&
+          games.map((game) => <GameCard game={game} key={game.id} />)}
+        {games.length == 0 && (
+          <Grid.Col span={3}>
+            <ModernEmptyState
+              title="No games found"
+              body="Try switching up your filter."
+              shaded
+            />
+          </Grid.Col>
+        )}
+      </div>
     </Framework>
   );
 };
