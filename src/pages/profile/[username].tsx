@@ -12,7 +12,6 @@ import {
   Group,
   Image,
   Indicator,
-  Menu,
   Paper,
   Progress,
   Stack,
@@ -31,12 +30,11 @@ import {
   HiClock,
   HiFlag,
   HiGift,
-  HiOutlineShoppingBag,
-  HiReceiptTax,
   HiShieldCheck,
   HiUser,
   HiUsers,
 } from "react-icons/hi";
+import ReactNoSSR from "react-no-ssr";
 import AdminBadge from "../../components/Badges/Admin";
 import AlphaBadge from "../../components/Badges/Alpha";
 import PremiumBadge from "../../components/Badges/Premium";
@@ -44,16 +42,16 @@ import Framework from "../../components/Framework";
 import ThumbnailCarousel from "../../components/ImageCarousel";
 import ModernEmptyState from "../../components/ModernEmptyState";
 import PlaceholderGameResource from "../../components/PlaceholderGameResource";
+import Donate from "../../components/Profile/Donate";
 import ReportUser from "../../components/ReportUser";
 import { useUserInformationDialog } from "../../contexts/UserInformationDialog";
+import getTimezones from "../../data/timezones";
 import authorizedRoute from "../../util/authorizedRoute";
 import { getCookie } from "../../util/cookies";
 import { exclude } from "../../util/exclude";
 import prisma from "../../util/prisma";
 import { nonCurrentUserSelect, User } from "../../util/prisma-types";
 import useMediaQuery from "../../util/useMediaQuery";
-import ReactNoSSR from "react-no-ssr";
-import Donate from "../../components/Profile/Donate";
 
 interface ProfileProps {
   user: User;
@@ -66,6 +64,21 @@ const Profile: NextPage<ProfileProps> = ({ user, profile }) => {
   const router = useRouter();
   const { setOpen, setUser, setDefaultTab } = useUserInformationDialog();
   const [viewing, setViewing] = React.useState(profile);
+  const [viewingTime, setViewingTime] = React.useState<string>();
+
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      const utc = getTimezones().find(
+        (tz) => tz.value == viewing.timeZone
+      )?.utc;
+
+      setViewingTime(
+        new Date().toLocaleTimeString([], {
+          timeZone: utc?.[0],
+        })
+      );
+    }
+  }, [viewing]);
 
   return (
     <>
@@ -183,7 +196,10 @@ const Profile: NextPage<ProfileProps> = ({ user, profile }) => {
             >
               <Group spacing={3}>
                 <HiClock color="#868e96" style={{ marginRight: 5 }} />
-                <Text color="dimmed">{viewing.timeZone}</Text>
+                <Text color="dimmed" weight={500} mr={5}>
+                  {viewing.timeZone}
+                </Text>
+                <Text color="dimmed">{viewingTime || "Fetching..."}</Text>
               </Group>
             </div>
 

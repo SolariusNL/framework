@@ -1,5 +1,4 @@
 import {
-  Anchor,
   Avatar,
   Button,
   Center,
@@ -33,13 +32,7 @@ const UserContext = ({ user, children, customHref }: UserContextProps) => {
         opened={reportOpened}
         setOpened={setReportOpened}
       />
-      <HoverCard
-        width={320}
-        shadow="md"
-        withArrow
-        openDelay={200}
-        closeDelay={400}
-      >
+      <HoverCard shadow="md" withArrow openDelay={200} closeDelay={400}>
         <HoverCard.Target>
           <div style={{ cursor: "pointer" }}>{children}</div>
         </HoverCard.Target>
@@ -62,13 +55,15 @@ const UserContext = ({ user, children, customHref }: UserContextProps) => {
             </Indicator>
 
             <Stack spacing={5} align="center" mb={16}>
-              <Text size="sm" weight={700} sx={{ lineHeight: 1 }}>
-                {user.username}
-              </Text>
               <Link href={customHref || `/profile/${user.username}`} passHref>
-                <Anchor color="dimmed" size="xs" sx={{ lineHeight: 1 }}>
-                  @{user.username}
-                </Anchor>
+                <div className="text-center cursor-pointer">
+                  <Text size="sm" weight={700} mb={6} sx={{ lineHeight: 1 }}>
+                    {user.username}
+                  </Text>
+                  <Text color="dimmed" size="xs" lineClamp={1}>
+                    {user.bio}
+                  </Text>
+                </div>
               </Link>
             </Stack>
 
@@ -81,15 +76,10 @@ const UserContext = ({ user, children, customHref }: UserContextProps) => {
               </Text>
             </Group>
 
-            <Button.Group
-              sx={{
-                width: "100%",
-                justifyContent: "center",
-              }}
-            >
+            <Button.Group>
               <Link passHref href={customHref || `/profile/${user.username}`}>
-                <Button fullWidth size="xs" leftIcon={<HiUser />}>
-                  View
+                <Button fullWidth size="xs">
+                  <HiUser />
                 </Button>
               </Link>
               <Button
@@ -97,10 +87,9 @@ const UserContext = ({ user, children, customHref }: UserContextProps) => {
                 color="red"
                 fullWidth
                 size="xs"
-                leftIcon={<HiFlag />}
                 onClick={() => setReportOpened(true)}
               >
-                Report
+                <HiFlag />
               </Button>
             </Button.Group>
           </Center>
