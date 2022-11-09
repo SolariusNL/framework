@@ -52,9 +52,11 @@ const TransactionsWidget = ({ user }: TransactionWidgetProps) => {
             {transactions !== null &&
               transactions.map((transaction) => (
                 <tr key={transaction.id}>
-                  <td style={{ display: "flex", alignItems: "center" }}>
-                    <Copy value={transaction.id} />
-                    {transaction.id.slice(0, 8)}...
+                  <td>
+                    <div className="flex items-center">
+                      <Copy value={transaction.id} />
+                      {transaction.id.slice(0, 8)}...
+                    </div>
                   </td>
                   <td>{transaction.to}</td>
                   <td>{transaction.tickets}</td>
