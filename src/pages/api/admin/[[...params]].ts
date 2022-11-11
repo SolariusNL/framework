@@ -218,13 +218,13 @@ class AdminRouter {
 
     const keys = Array.from({ length: amount }).map(() => createKey());
 
-    const invites = await prisma.invite.createMany({
+    await prisma.invite.createMany({
       data: keys.map((key) => ({
         code: key,
       })),
     });
 
-    return invites;
+    return keys;
   }
 
   @Post("/invites/delete/:id")
