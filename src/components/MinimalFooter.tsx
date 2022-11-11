@@ -34,7 +34,7 @@ const MinimalFooter = () => {
             <Anchor size="sm">Privacy</Anchor>
           </Link>
 
-          <Link href="/tos">
+          <Link href="/terms">
             <Anchor size="sm">Terms of Service</Anchor>
           </Link>
 

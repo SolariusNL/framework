@@ -102,7 +102,7 @@ const ReportUser = ({ user, opened, setOpened }: ReportUserProps) => {
           <Anchor>Community Guidelines</Anchor>
         </Link>{" "}
         and the{" "}
-        <Link passHref href="/tos" target="_blank">
+        <Link passHref href="/terms" target="_blank">
           <Anchor>Terms of Service</Anchor>
         </Link>{" "}
         of Framework.
