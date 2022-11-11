@@ -86,6 +86,17 @@ model User {
   timeZone                   String                @default("UTC+12")
   donatedFunds               GameFund[]            @relation("donatedFunds")
   checklists                 Checklist[]           @relation("userChecklists")
+  oauthApps                  OAuth2Client[]        @relation("oauth2Clients")
+  connectedAccounts          ConnectedAccount[]    @relation("connectedAccounts")
+  oauthAccessTokens          OAuth2Access[]        @relation("oauth2Access")
+}
+
+model ConnectedAccount {
+  id        String @id @default(uuid())
+  type      String
+  accountId String
+  user      User   @relation("connectedAccounts", fields: [userId], references: [id])
+  userId    Int
 }
 
 model Avatar {
@@ -386,4 +397,33 @@ model RatingScore {
   category    RatingCategory
   score       RatingCategoryScore
   description String
+}
+
+model OAuth2Client {
+  id          String         @id @default(uuid())
+  name        String
+  description String
+  secret      String         @default(uuid())
+  redirectUri String[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @default(now())
+  grants      Grant[]
+  users       User[]         @relation("oauth2Clients")
+  access      OAuth2Access[] @relation("oauth2ClientAccess")
+}
+
+enum Grant {
+  USER_READ
+  USER_CONNECTIONS_ADD
+}
+
+model OAuth2Access {
+  id        String       @id @default(uuid())
+  client    OAuth2Client @relation("oauth2ClientAccess", fields: [clientId], references: [id])
+  clientId  String
+  user      User         @relation("oauth2Access", fields: [userId], references: [id])
+  userId    Int
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @default(now())
+  expiresAt DateTime
 }
