@@ -12,6 +12,7 @@ import {
 import Dashboard from "../../components/Admin/Pages/Dashboard";
 import Instance from "../../components/Admin/Pages/Instance";
 import Invites from "../../components/Admin/Pages/Invites";
+import Reports from "../../components/Admin/Pages/Reports";
 import Users from "../../components/Admin/Pages/Users";
 import Framework from "../../components/Framework";
 import TabNav from "../../components/TabNav";
@@ -59,7 +60,7 @@ const pages: {
     label: "Reports",
     icon: <HiBookmark />,
     route: "/admin/reports",
-    component: <></>,
+    component: <Reports />,
     description: "Review reports made by users",
   },
   metrics: {

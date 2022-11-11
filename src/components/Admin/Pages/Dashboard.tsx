@@ -1,12 +1,4 @@
-import {
-  Avatar,
-  Divider,
-  Grid,
-  Group,
-  Paper,
-  Text,
-  Title,
-} from "@mantine/core";
+import { Divider, Grid, Title } from "@mantine/core";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -19,10 +11,9 @@ import {
   HiXCircle,
 } from "react-icons/hi";
 import { Report } from "../../../util/prisma-types";
-import { getRelativeTime } from "../../../util/relativeTime";
 import useMediaQuery from "../../../util/useMediaQuery";
 import ModernEmptyState from "../../ModernEmptyState";
-import UserContext from "../../UserContext";
+import ReportCard from "../../ReportCard";
 import ResourceCard from "../ResourceCard";
 import StatsGrid from "../StatsGrid";
 
@@ -106,54 +97,9 @@ const Dashboard = () => {
         <ModernEmptyState title="No reports" body="No reports to show." />
       ) : (
         <Grid columns={6}>
-          {reports?.map((report) => (
+          {reports?.slice(0, 6).map((report) => (
             <Grid.Col key={report.id} span={mobile ? 6 : 2}>
-              <Paper
-                radius="md"
-                withBorder
-                p="lg"
-                sx={(theme) => ({
-                  backgroundColor:
-                    theme.colorScheme === "dark"
-                      ? theme.colors.dark[8]
-                      : theme.white,
-                  cursor: "pointer",
-                })}
-                onClick={() => router.push(`/admin/report/${report.id}`)}
-                onMouseDown={(e: React.MouseEvent) => {
-                  if (e.button === 1) {
-                    window.open(`/admin/report/${report.id}`, "_blank");
-                  }
-                }}
-              >
-                <Group mb={10}>
-                  <UserContext user={report.author}>
-                    <Avatar
-                      src={report.author.avatarUri}
-                      alt={report.author.username}
-                      radius={99}
-                      size={28}
-                    />
-                  </UserContext>
-
-                  <Text size="sm" color="dimmed" weight={500}>
-                    {report.author.username} • Report author
-                  </Text>
-                </Group>
-
-                <Title order={4} mb={10}>
-                  {report.reason}
-                </Title>
-                <Text lineClamp={3} mb={24}>
-                  {report.description.length > 0
-                    ? report.description
-                    : "No description"}
-                </Text>
-
-                <Text size="sm" color="dimmed" weight={500}>
-                  {getRelativeTime(new Date(report.createdAt))}
-                </Text>
-              </Paper>
+              <ReportCard report={report} />
             </Grid.Col>
           ))}
         </Grid>
