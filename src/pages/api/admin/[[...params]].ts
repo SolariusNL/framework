@@ -204,17 +204,54 @@ class AdminRouter {
       };
     }
 
+    function createKey() {
+      const key = Array.from({ length: 4 })
+        .map(() =>
+          Math.floor(Math.random() * 10000)
+            .toString()
+            .padStart(4, "0")
+        )
+        .join("-");
+
+      return key;
+    }
+
+    const keys = Array.from({ length: amount }).map(() => createKey());
+
     const invites = await prisma.invite.createMany({
-      data: Array.from({ length: amount }, () => ({
-        code: `${Math.floor(Math.random() * 10000)}-${Math.floor(
-          Math.random() * 10000
-        )}-${Math.floor(Math.random() * 10000)}-${Math.floor(
-          Math.random() * 10000
-        )}`,
+      data: keys.map((key) => ({
+        code: key,
       })),
     });
 
     return invites;
+  }
+
+  @Post("/invites/delete/:id")
+  @AdminAuthorized()
+  public async deleteInvite(@Param("id") id: string) {
+    const invite = await prisma.invite.findFirst({
+      where: {
+        id: String(id),
+      },
+    });
+
+    if (!invite) {
+      return {
+        success: false,
+        error: "Invite not found",
+      };
+    }
+
+    await prisma.invite.delete({
+      where: {
+        id: String(id),
+      },
+    });
+
+    return {
+      success: true,
+    };
   }
 
   @Get("/instance")

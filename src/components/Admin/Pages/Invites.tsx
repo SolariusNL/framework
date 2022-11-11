@@ -1,4 +1,11 @@
-import { Button, Group, Modal, NumberInput, Table } from "@mantine/core";
+import {
+  Button,
+  Group,
+  Modal,
+  NumberInput,
+  Pagination,
+  Table,
+} from "@mantine/core";
 import { Invite } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
@@ -6,11 +13,10 @@ import { HiPlus } from "react-icons/hi";
 
 const Invites = () => {
   const [keys, setKeys] = useState<Invite[] | undefined>(undefined);
-
   const [createBulkOpened, setCreateBulkOpened] = useState(false);
   const [bulkAmount, setBulkAmount] = useState(1);
-
   const [createIndividualOpened, setCreateIndividualOpened] = useState(false);
+  const [page, setPage] = useState(1);
 
   const getKeys = async () => {
     await fetch("/api/admin/invites", {
@@ -38,8 +44,22 @@ const Invites = () => {
       },
     })
       .then((res) => res.json())
-      .then((res) => {
+      .then(() => {
         setCreateBulkOpened(false);
+        getKeys();
+      });
+  };
+
+  const deleteKey = async (id: string) => {
+    await fetch(`/api/admin/invites/delete/${id}`, {
+      method: "POST",
+      headers: {
+        Authorization: String(getCookie(".frameworksession")),
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then(() => {
         getKeys();
       });
   };
@@ -75,6 +95,7 @@ const Invites = () => {
           onClick={() => {
             setBulkAmount(1);
             handleBulkCreate();
+            setCreateIndividualOpened(false);
           }}
         >
           Create individual invite
@@ -85,7 +106,7 @@ const Invites = () => {
         <Button.Group>
           <Button
             leftIcon={<HiPlus />}
-            onClick={() => setCreateBulkOpened(true)}
+            onClick={() => setCreateIndividualOpened(true)}
           >
             Create single key
           </Button>
@@ -98,6 +119,14 @@ const Invites = () => {
         </Button.Group>
       </Group>
 
+      <Pagination
+        mb={24}
+        total={keys ? Math.ceil(keys.length / 10) : 0}
+        page={page}
+        onChange={setPage}
+        withEdges
+      />
+
       <Table>
         <thead>
           <tr>
@@ -108,12 +137,12 @@ const Invites = () => {
         </thead>
 
         <tbody>
-          {keys?.map((key) => (
+          {keys?.slice((page - 1) * 10, page * 10).map((key) => (
             <tr key={key.id}>
               <td>{key.code}</td>
               <td>{key.used ? "Yes" : "No"}</td>
               <td>
-                <Button size="xs" color="red">
+                <Button size="xs" color="red" onClick={() => deleteKey(key.id)}>
                   Delete
                 </Button>
               </td>
