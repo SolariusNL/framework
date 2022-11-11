@@ -2,6 +2,8 @@ import {
   AspectRatio,
   Avatar,
   Image,
+  MantineColor,
+  Paper,
   Text,
   useMantineColorScheme,
 } from "@mantine/core";
@@ -16,6 +18,19 @@ interface GameCardProps {
 
 const GameCard = ({ game }: GameCardProps) => {
   const { colorScheme } = useMantineColorScheme();
+
+  const gradientPairs: Array<[MantineColor, MantineColor]> = [
+    ["red", "pink"],
+    ["blue", "cyan"],
+    ["teal", "lime"],
+    ["violet", "purple"],
+    ["orange", "yellow"],
+    ["cyan", "blue"],
+    ["lime", "teal"],
+    ["pink", "red"],
+    ["purple", "violet"],
+  ];
+
   return (
     <Link href="/game/[id]" as={`/game/${game.id}`} passHref>
       <motion.div whileHover={{ scale: 1.03 }}>
@@ -23,25 +38,53 @@ const GameCard = ({ game }: GameCardProps) => {
           <div>
             <div className="relative">
               <AspectRatio ratio={16 / 9}>
-                <Image
-                  src={game.gallery[0]}
-                  alt={game.name}
-                  className="object-cover rounded-lg"
-                  imageProps={{
-                    style: {
-                      filter: "brightness(0.8)",
-                    },
-                  }}
-                />
+                {game.gallery.length > 0 ? (
+                  <Image
+                    src={game.gallery[0]}
+                    alt={game.name}
+                    className="object-cover rounded-lg"
+                    imageProps={{
+                      style: {
+                        filter: "brightness(0.8)",
+                      },
+                    }}
+                  />
+                ) : (
+                  <Paper
+                    sx={(theme) => ({
+                      backgroundImage: theme.fn.gradient({
+                        from: gradientPairs[game.id % gradientPairs.length][0],
+                        to: gradientPairs[game.id % gradientPairs.length][1],
+                      }),
+                    })}
+                    className="rounded-lg"
+                  />
+                )}
               </AspectRatio>
               <div className="absolute -bottom-12 left-4">
-                <Avatar
-                  src={game.iconUri}
-                  alt={game.name}
-                  size="sm"
-                  className="mr-2 w-24 h-24 shadow-lg"
-                  radius="md"
-                />
+                {game.iconUri ? (
+                  <Avatar
+                    src={game.iconUri}
+                    alt={game.name}
+                    size="sm"
+                    className="mr-2 w-24 h-24 shadow-lg"
+                    radius="lg"
+                  />
+                ) : (
+                  <Paper
+                    sx={(theme) => ({
+                      backgroundImage: theme.fn.gradient({
+                        from: gradientPairs[
+                          Math.floor(Math.random() * gradientPairs.length)
+                        ][0],
+                        to: gradientPairs[
+                          Math.floor(Math.random() * gradientPairs.length)
+                        ][1],
+                      }),
+                    })}
+                    className="w-24 h-24 shadow-lg"
+                  />
+                )}
               </div>
             </div>
           </div>
