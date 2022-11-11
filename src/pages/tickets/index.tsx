@@ -13,12 +13,15 @@ import Framework from "../../components/Framework";
 import TransactionsWidget from "../../components/Widgets/Transactions";
 import authorizedRoute from "../../util/authorizedRoute";
 import { User } from "../../util/prisma-types";
+import useMediaQuery from "../../util/useMediaQuery";
 
 interface TicketsProps {
   user: User;
 }
 
 const Tickets: NextPage<TicketsProps> = ({ user }) => {
+  const mobile = useMediaQuery("768");
+
   return (
     <Framework
       user={user}
@@ -35,7 +38,7 @@ const Tickets: NextPage<TicketsProps> = ({ user }) => {
       >
         <div
           style={{
-            width: "30%",
+            width: mobile ? "100%" : "30%",
           }}
         >
           <Card withBorder shadow="md">
@@ -89,7 +92,8 @@ const Tickets: NextPage<TicketsProps> = ({ user }) => {
 
         <div
           style={{
-            width: "66%",
+            width: mobile ? "100%" : "66%",
+            marginTop: mobile ? 16 : 0,
           }}
         >
           <Title order={3} mb={16}>
