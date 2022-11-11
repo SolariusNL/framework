@@ -14,12 +14,16 @@ import { HiEyeOff, HiLockOpen, HiServer, HiXCircle } from "react-icons/hi";
 const useStyles = createStyles((theme) => ({
   wrapper: {
     padding: `${theme.spacing.xl * 2}px ${theme.spacing.xl}px`,
+    backgroundColor:
+      theme.colorScheme === "dark"
+        ? theme.colors.dark[9]
+        : theme.colors.gray[1],
+    borderRadius: theme.radius.md,
   },
 
   title: {
     fontFamily: `Inter, ${theme.fontFamily}`,
     fontSize: 36,
-    fontWeight: 900,
     lineHeight: 1.1,
     marginBottom: theme.spacing.md,
     color: theme.colorScheme === "dark" ? theme.white[5] : theme.black[5],
@@ -32,28 +36,32 @@ const features = [
     title: "Free and open source",
     description:
       "Framework is free and open source, licensed under the MIT license. Framework is developed by ordinary people around the world!",
+    gradient: { from: "pink", to: "grape" },
   },
   {
     icon: HiEyeOff,
     title: "Privacy and security",
     description:
       "Framework is built on top of the most secure and secure technologies available today. We use the latest web technologies to protect your data.",
+    gradient: { from: "teal", to: "cyan" },
   },
   {
     icon: HiXCircle,
     title: "Safe community",
     description:
       "Our staff is committed to providing a safe and friendly community for everyone to enjoy.",
+    gradient: { from: "red", to: "orange" },
   },
   {
     icon: HiServer,
     title: "Self-hosting",
     description:
       "Games and other services are self-hosted on your own server, giving you freedom and control over your content.",
+    gradient: { from: "blue", to: "indigo" },
   },
 ];
 
-const Features = () => {
+const Pros = () => {
   const { classes } = useStyles();
 
   const items = features.map((feature) => (
@@ -62,7 +70,7 @@ const Features = () => {
         size={44}
         radius="md"
         variant="gradient"
-        gradient={{ deg: 133, from: "blue", to: "cyan" }}
+        gradient={{ deg: 133, ...feature.gradient }}
       >
         <feature.icon size={26} stroke={"1.5"} />
       </ThemeIcon>
@@ -114,4 +122,4 @@ const Features = () => {
   );
 };
 
-export default Features;
+export default Pros;

@@ -60,6 +60,7 @@ import useConfig from "../util/useConfig";
 import useMediaQuery from "../util/useMediaQuery";
 import EmailReminder from "./EmailReminder";
 import Footer from "./Footer";
+import FrameworkLogo from "./FrameworkLogo";
 import NotificationFlyout from "./NotificationFlyout";
 import TabNav from "./TabNav";
 
@@ -87,25 +88,6 @@ interface FrameworkProps {
     href: string;
   };
 }
-
-const HeaderStyle = {
-  marginTop: 0,
-  marginBottom: 0,
-  backgroundImage:
-    "url('https://assets-global.website-files.com/600ead1452cf056d0e52dbed/603408f80d379f66929884cf_PurpleBackground%20(1).png')",
-  backgroundPosition: "0 15%",
-  backgroundSize: "cover",
-  fontSize: "1.2rem",
-  lineHeight: "1em",
-  fontWeight: "900",
-  WebkitBackgroundClip: "text",
-  backgroundClip: "text",
-  WebkitTextFillColor: "transparent",
-  opacity: 1,
-  transform:
-    "translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg)",
-  transformStyle: "preserve-3d",
-} as React.CSSProperties;
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -493,29 +475,7 @@ const Framework = ({
           <Group position="apart">
             <Group spacing={12}>
               <Link href="/" passHref>
-                <Title
-                  // @ts-ignore
-                  sx={{
-                    ":hover": {
-                      backgroundPosition: "0 100%",
-                      backgroundRepeat: "no-repeat",
-                      transition: "all 0.8s ease",
-                    },
-                    transition: "all 0.8s ease",
-                    cursor: "pointer",
-                    ":active": {
-                      transform: "scale(0.9)",
-                      transition: "transform 0.3s ease",
-                    },
-                    ":focus": {
-                      outline: "none",
-                    },
-                    ...HeaderStyle,
-                  }}
-                  order={5}
-                >
-                  Framework
-                </Title>
+                <FrameworkLogo />
               </Link>
               {process.env.NODE_ENV === "development" && <Badge>Preview</Badge>}
             </Group>

@@ -9,7 +9,6 @@ const useStyles = createStyles((theme) => ({
   title: {
     fontFamily: `Inter, ${theme.fontFamily}`,
     fontSize: 36,
-    fontWeight: 900,
     lineHeight: 1.1,
     marginBottom: theme.spacing.md,
     color: theme.colorScheme === "dark" ? theme.white[5] : theme.black[5],
@@ -17,59 +16,58 @@ const useStyles = createStyles((theme) => ({
 }));
 
 const Power = () => {
-  const { classes, cx, theme } = useStyles();
-  const joinleave = `
-import Players from "@framework/services/players";
+  const { classes } = useStyles();
+  const codeExamples = [
+    [
+      "Greeting",
+      `import { players, chat } from "@frameworkts/services";
+players.on("join", ({ username }) => {
+  chat.broadcast(\`Welcome to the server, \${username}!\`);
+});`,
+    ],
+    [
+      "Tools",
+      `import { tool, interactable, part } from "@frameworkts/services";
+import Tools from "@frameworkts/tools";
+import { getOreTool } from "./ores";
 
-Players.on("playerJoin", (plr) => {
-  plr.getWorld().sendMessage(String.format("%s has joined the server!", plr.getName()));
-      
-  plr.on("beforeDisconnect", () => {
-    plr.getWorld().sendMessage(String.format("%s has left the server!", plr.getName()));
-  });
-});
-  `.trim();
+const pickaxe = new Tools.Held("pickaxe-tool", {
+  cooldown: 0.5,
+  onUse: (plr, pickaxe, target) => {
+    if (part.hasTag(target, "minable")) {
+      const { ore } = part.getMetadata(target);
+      plr.inventory.add(getOreTool(ore), 1);
+    }
+  },
+  durability: {
+    max: 100,
+    current: 100,
+    type: Tools.DurabilityType.USES,
+  }
+);
 
-  const refundTransaction = `
-import TransactionService from "@framework/services/transaction";
-import Broadcastable from "@framework/fxconnect/broadcastable";
-
-const event = game.Events.WaitFor("RefundFlashlight").subscribe((evt) => {
-  const plr = evt.getPlayer();
-  plr.services.framework.broadcast(new Broadcastable("Refund", {
-    uid: plr.id,
-  })).then(() => {
-    println("Refunded flashlight");
-  }).catch((err) => {
-    println(err);
-  }).finally(() => {
-    plr.notifications.invoke({
-      title: "Refunded flashlight",
-      message: "You have been refunded the flashlight.",
-    });
-  });
-});
-  `.trim();
+tool.registerGlobal(pickaxe);`,
+    ],
+  ];
 
   return (
     <div className={classes.wrapper}>
       <Grid gutter={80}>
         <Col span={12} md={7}>
-          <Prism.Tabs defaultValue="send-msg">
+          <Prism.Tabs defaultValue={codeExamples[0][0]}>
             <Prism.TabsList>
-              <Prism.Tab value="send-msg">
-                Example #1
-              </Prism.Tab>
-
-              <Prism.Tab value="refund-flashlight">Example #2</Prism.Tab>
+              {codeExamples.map(([name], index) => (
+                <Prism.Tab key={index} value={name}>
+                  {name}
+                </Prism.Tab>
+              ))}
             </Prism.TabsList>
 
-            <Prism.Panel value="send-msg" language="tsx">
-              {joinleave}
-            </Prism.Panel>
-            <Prism.Panel value="refund-flashlight" language="tsx">
-              {refundTransaction}
-            </Prism.Panel>
+            {codeExamples.map(([name, code], index) => (
+              <Prism.Panel key={index} value={name} language="tsx">
+                {code}
+              </Prism.Panel>
+            ))}
           </Prism.Tabs>
         </Col>
         <Col span={12} md={5}>

@@ -1,8 +1,11 @@
+import { Button, Container, createStyles, Text, Title } from "@mantine/core";
 import { NextPage } from "next";
-import { createStyles, Title, Text, Button, Container } from "@mantine/core";
-import Features from "../components/Landing/Pros";
-import Power from "../components/Landing/Power";
 import Link from "next/link";
+import Footer from "../components/Footer";
+import Features from "../components/Landing/Features";
+import Power from "../components/Landing/Power";
+import Pros from "../components/Landing/Pros";
+import LandingHeader from "../components/LandingHeader";
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -82,6 +85,7 @@ const Landing: NextPage = () => {
 
   return (
     <>
+      <LandingHeader />
       <Container className={classes.wrapper} size={1400}>
         <div className={classes.inner}>
           <Title className={classes.title}>
@@ -98,28 +102,35 @@ const Landing: NextPage = () => {
 
           <Container p={0} size={600}>
             <Text size="lg" color="dimmed" className={classes.description}>
-              Join <strong>0</strong> other players across <strong>0</strong>{" "}
-              servers, on Framework, the new, and better Roblox.
+              Join our ever-growing community of imaginative people. Come
+              together in our continuously expanding library of{" "}
+              <span className="font-semibold">immersive</span> games.
             </Text>
           </Container>
 
           <div className={classes.controls}>
             <Link href="/register" passHref>
-              <Button className={classes.control} size="lg" component="a">
+              <Button
+                className={classes.control}
+                size="lg"
+                component="a"
+                variant="gradient"
+                gradient={{ from: "pink", to: "violet" }}
+              >
                 Join Now
               </Button>
             </Link>
           </div>
         </div>
 
-        <div className={classes.spacer}>
-          <Features />
-        </div>
-
-        <div>
-          <Power />
-        </div>
+        {[Pros, Power, Features].map((Component, index) => (
+          <div key={index} className={classes.spacer}>
+            <Component />
+          </div>
+        ))}
       </Container>
+
+      <Footer />
     </>
   );
 };
