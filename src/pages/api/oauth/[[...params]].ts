@@ -124,9 +124,12 @@ class OAuth2Router {
       };
     }
 
-    if (found.userId !== undefined && found.userId !== account.id) {
+    if (
+      found.userId != null ||
+      found.createdAt.getTime() + 1000 * 60 * 5 < Date.now()
+    ) {
       return {
-        error: "Code already used",
+        error: "Invalid code",
       };
     }
 
