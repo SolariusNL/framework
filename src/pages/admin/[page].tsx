@@ -1,3 +1,4 @@
+import { ScrollArea } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { useRouter } from "next/router";
 import {
@@ -7,7 +8,7 @@ import {
   HiKey,
   HiServer,
   HiUsers,
-  HiViewGrid,
+  HiViewGrid
 } from "react-icons/hi";
 import Dashboard from "../../components/Admin/Pages/Dashboard";
 import Instance from "../../components/Admin/Pages/Instance";
@@ -18,6 +19,7 @@ import Framework from "../../components/Framework";
 import TabNav from "../../components/TabNav";
 import authorizedRoute from "../../util/authorizedRoute";
 import { User } from "../../util/prisma-types";
+import useMediaQuery from "../../util/useMediaQuery";
 
 const pages: {
   [key: string]: {
@@ -87,6 +89,7 @@ interface AdminPageProps {
 const AdminPage: NextPage<AdminPageProps> = ({ user, pageStr }) => {
   const page = pages[pages[pageStr] ? pageStr : "dashboard"];
   const router = useRouter();
+  const mobile = useMediaQuery("768");
 
   return (
     <Framework
@@ -99,14 +102,24 @@ const AdminPage: NextPage<AdminPageProps> = ({ user, pageStr }) => {
         value={pageStr}
         onTabChange={(t) => router.push(String(t))}
         mb={32}
+        orientation={mobile ? "vertical" : "horizontal"}
       >
-        <TabNav.List>
-          {Object.keys(pages).map((p) => (
-            <TabNav.Tab key={p} value={p} icon={pages[p].icon}>
-              {pages[p].label}
-            </TabNav.Tab>
-          ))}
-        </TabNav.List>
+        <ScrollArea
+          offsetScrollbars
+          sx={{
+            width: mobile ? "100%" : "auto",
+          }}
+        >
+          <div className="flex flex-1 flex-col">
+            <TabNav.List>
+              {Object.keys(pages).map((p) => (
+                <TabNav.Tab key={p} value={p} icon={pages[p].icon}>
+                  {pages[p].label}
+                </TabNav.Tab>
+              ))}
+            </TabNav.List>
+          </div>
+        </ScrollArea>
       </TabNav>
       {page.component}
     </Framework>

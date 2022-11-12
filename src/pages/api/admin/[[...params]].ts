@@ -276,6 +276,7 @@ class AdminRouter {
       select: {
         ...userSelect,
         sessions: true,
+        discordAccount: true,
       },
       take: 100,
     });

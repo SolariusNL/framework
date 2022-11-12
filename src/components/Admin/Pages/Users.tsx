@@ -1,35 +1,30 @@
 import {
   Avatar,
   Badge,
-  Button,
-  Card,
   Group,
-  Stack,
-  Table,
-  Tabs,
   Text,
   TextInput,
-  Title,
+  UnstyledButton,
 } from "@mantine/core";
-import { Session } from "@prisma/client";
+import { DiscordConnectCode, Session } from "@prisma/client";
 import { getCookie } from "cookies-next";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { HiSearch } from "react-icons/hi";
-import { useUserInformationDialog } from "../../../contexts/UserInformationDialog";
+import ReactNoSSR from "react-no-ssr";
 import { User } from "../../../util/prisma-types";
-import Copy from "../../Copy";
+import useMediaQuery from "../../../util/useMediaQuery";
+import UserView from "../UserView";
 
-type UserWithSessions = User & { sessions: Session[] };
+export type AdminViewUser = User & {
+  sessions: Session[];
+  discordAccount: DiscordConnectCode | null;
+};
 
 const Users = () => {
-  const [users, setUsers] = useState<UserWithSessions[]>([]);
+  const [users, setUsers] = useState<AdminViewUser[]>([]);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
-  const [selectedUser, setSelectedUser] = useState<UserWithSessions | null>(
-    null
-  );
-
-  const { setOpen, setUser, setDefaultTab } = useUserInformationDialog();
+  const [selectedUser, setSelectedUser] = useState<AdminViewUser | null>(null);
+  const mobile = useMediaQuery("768");
 
   const fetchUsers = async () => {
     await fetch("/api/admin/users", {
@@ -53,169 +48,63 @@ const Users = () => {
       <div
         style={{
           display: "flex",
+          flexWrap: "wrap",
+          justifyContent: "space-between",
         }}
       >
-        <div
-          style={{
-            width: "50%",
-          }}
-        >
+        <div style={{ width: mobile ? "100%" : "38%" }}>
           <Group mb={12}>
             <TextInput icon={<HiSearch />} placeholder="Search users" />
           </Group>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
             {users.map((u) => (
-              <Card
-                key={u.id}
+              <UnstyledButton
+                sx={(theme) => ({
+                  padding: theme.spacing.xs,
+                  borderRadius: theme.radius.md,
+                  color:
+                    theme.colorScheme === "dark"
+                      ? theme.colors.dark[0]
+                      : theme.black,
+                  "&:hover": {
+                    backgroundColor:
+                      theme.colorScheme === "dark"
+                        ? theme.colors.dark[6]
+                        : theme.colors.gray[0],
+                  },
+                  width: "100%",
+                  display: "flex",
+                })}
                 onClick={() => {
                   setSelectedUserId(u.id);
                   setSelectedUser(u);
                 }}
-                className={
-                  "cursor-pointer" +
-                  (selectedUserId === u.id
-                    ? " bg-blue-500 text-white border-blue-600"
-                    : "")
-                }
+                key={u.id}
               >
-                <Group>
-                  <Avatar src={u.avatarUri} size={24} radius="xl" />
-                  <Text weight={750}>{u.username}</Text>
-                </Group>
-              </Card>
+                <Avatar src={u.avatarUri} className="mr-3" />
+                <div>
+                  <div className="flex items-center">
+                    <Text weight={600} className="mr-2">
+                      {u.username}
+                    </Text>
+                    {u.role === "ADMIN" && <Badge>Staff</Badge>}
+                    {u.banned && <Badge color="red">Banned</Badge>}
+                  </div>
+                  <Text size="sm" color="dimmed">
+                    {u.email}
+                  </Text>
+                </div>
+              </UnstyledButton>
             ))}
           </div>
         </div>
         <div
-          style={{
-            width: "50%",
-          }}
+          style={{ width: mobile ? "100%" : "58%", marginTop: mobile ? 16 : 0 }}
         >
           {selectedUserId ? (
-            <>
-              <Group mb={18}>
-                <Avatar size="xl" radius={999} src={selectedUser?.avatarUri} />
-                <Stack spacing={3}>
-                  <Group>
-                    <Title order={3}>{selectedUser?.username}</Title>
-                    {selectedUser?.role === "ADMIN" && <Badge>Staff</Badge>}
-                    {selectedUser?.banned && <Badge color="red">Banned</Badge>}
-                  </Group>
-                  <Text color="dimmed">{selectedUser?.bio}</Text>
-                </Stack>
-              </Group>
-
-              <Group mb={18}>
-                <Button color="red" disabled={selectedUser?.banned}>
-                  Ban
-                </Button>
-                <Button.Group>
-                  <Button>Impersonate</Button>
-                  <Link href={`/profile/${selectedUser?.username}`}>
-                    <Button>View Profile</Button>
-                  </Link>
-                </Button.Group>
-              </Group>
-
-              <Tabs defaultValue="info" variant="pills">
-                <Tabs.List mb="md">
-                  <Tabs.Tab value="info">Info</Tabs.Tab>
-                  <Tabs.Tab value="sessions">Sessions</Tabs.Tab>
-                  <Tabs.Tab value="activity">History</Tabs.Tab>
-                </Tabs.List>
-
-                <Tabs.Panel value="info">
-                  <Table striped>
-                    <tbody>
-                      {[
-                        ["Username", selectedUser?.username],
-                        ["ID", selectedUser?.id],
-                        ["Email", selectedUser?.email],
-                        ["Role", selectedUser?.role],
-                        ["Bio", selectedUser?.bio],
-                        ["Avatar URI", selectedUser?.avatarUri],
-                        ["Created at", selectedUser?.createdAt],
-                        ["Premium", selectedUser?.premium],
-                        ["Banned", selectedUser?.banned],
-                        ["Tickets", selectedUser?.tickets],
-                        [
-                          "Games",
-                          selectedUser?.games.map((g) => g.id).join(", "),
-                        ],
-                        [
-                          "Followers",
-                          <div
-                            onClick={() => {
-                              setOpen(true);
-                              setUser(selectedUser);
-                              setDefaultTab("followers");
-                            }}
-                            key={Array.from(
-                              { length: 10 },
-                              () => Math.random().toString(36)[2]
-                            ).join("")}
-                            className="cursor-pointer text-blue-500 underline"
-                          >
-                            {selectedUser?.followers.length}
-                          </div>,
-                        ],
-                        [
-                          "Following",
-                          <div
-                            key={Array.from(
-                              { length: 10 },
-                              () => Math.random().toString(36)[2]
-                            ).join("")}
-                            className="cursor-pointer text-blue-500 underline"
-                            onClick={() => {
-                              setOpen(true);
-                              setUser(selectedUser);
-                              setDefaultTab("following");
-                            }}
-                          >
-                            {selectedUser?.following.length}
-                          </div>,
-                        ],
-                        ["Country", selectedUser?.country],
-                        ["Last seen", selectedUser?.lastSeen],
-                        ["Busy", selectedUser?.busy],
-                        ["Verified", selectedUser?.emailVerified],
-                      ].map((h) => (
-                        <tr key={String(h[0])}>
-                          <td className="font-semibold">{String(h[0])}</td>
-                          <td>
-                            {h[1] as string | number | JSX.Element | null}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </Table>
-                </Tabs.Panel>
-                <Tabs.Panel value="sessions">
-                  <Table striped>
-                    <thead>
-                      <tr>
-                        <th>ID</th>
-                        <th>OS</th>
-                        <th>Token</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {selectedUser?.sessions.map((s) => (
-                        <tr key={s.id}>
-                          <td>{s.id.substring(0, 8)}</td>
-                          <td>{s.os}</td>
-                          <td className="flex items-center">
-                            <Copy value={s.token} />
-                            <Text>{s.token.substring(0, 23)}</Text>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </Table>
-                </Tabs.Panel>
-              </Tabs>
-            </>
+            <ReactNoSSR>
+              <UserView user={selectedUser as AdminViewUser} />
+            </ReactNoSSR>
           ) : (
             <Text size="xl" weight={700}>
               Select a user to view their profile.
