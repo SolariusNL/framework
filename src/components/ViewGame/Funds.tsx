@@ -1,12 +1,4 @@
-import {
-  ActionIcon,
-  Badge,
-  Button,
-  Modal,
-  NumberInput,
-  Table,
-  Text,
-} from "@mantine/core";
+import { Badge, Button, Modal, NumberInput, Text, Title } from "@mantine/core";
 import { GameFund } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/router";
@@ -16,6 +8,7 @@ import { useFrameworkUser } from "../../contexts/FrameworkUser";
 import { Game } from "../../util/prisma-types";
 import useMediaQuery from "../../util/useMediaQuery";
 import ModernEmptyState from "../ModernEmptyState";
+import ShadedCard from "../ShadedCard";
 import ViewGameTab from "./ViewGameTab";
 
 interface FundsTabProps {
@@ -83,7 +76,9 @@ const FundsTab = ({ game }: FundsTabProps) => {
           mb={16}
         />
 
-        <Button onClick={handleFund}>Donate</Button>
+        <Button onClick={handleFund} fullWidth>
+          Donate
+        </Button>
       </Modal>
 
       <ViewGameTab value="funds" title="Funds">
@@ -92,68 +87,56 @@ const FundsTab = ({ game }: FundsTabProps) => {
           will be able to continue to maintain and develop this game to be the
           best it can be.
         </Text>
-        {game.funds.length > 0 ? (
-          <Table striped mb={10}>
-            <thead>
-              <tr>
-                <th>Status</th>
-                <th>Name</th>
-                <th>Goal</th>
-                <th>Amount Raised</th>
-                <th>Started</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {game.funds.map((fund, i) => (
-                <tr key={i}>
-                  <td>
-                    <Badge
-                      variant="dot"
-                      color={fund.current >= fund.target ? "blue" : "green"}
-                    >
-                      {fund.current >= fund.target ? "Complete" : "Active"}
-                    </Badge>
-                  </td>
-                  <td>{fund.name}</td>
-                  <td>{fund.target}</td>
-                  <td>{fund.current}</td>
-                  <td>{new Date(fund.createdAt).toLocaleDateString()}</td>
-                  <td>
-                    {mobile ? (
-                      <ActionIcon
-                        onClick={() => {
-                          setToFund(fund);
-                          setFundOpen(true);
-                        }}
-                        color="blue"
-                      >
-                        <HiCurrencyDollar />
-                      </ActionIcon>
-                    ) : (
-                      <Button
-                        size="xs"
-                        leftIcon={<HiCurrencyDollar />}
-                        onClick={() => {
-                          setToFund(fund);
-                          setFundOpen(true);
-                        }}
-                      >
-                        Donate
-                      </Button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        ) : (
-          <ModernEmptyState
-            title="No funds"
-            body="The developer hasn't set up any funds yet."
-          />
-        )}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {game.funds.length > 0 ? (
+            game.funds.map((fund) => (
+              <ShadedCard
+                className="text-center content-center"
+                key={fund.id}
+                withBorder
+              >
+                <Badge
+                  variant="dot"
+                  color={fund.current >= fund.target ? "blue" : "green"}
+                  mb={8}
+                >
+                  {fund.current >= fund.target ? "Complete" : "Active"}
+                </Badge>
+                <Title order={4} mb={16}>
+                  {fund.name}
+                </Title>
+                {[
+                  ["Goal", `${fund.target} tickets`],
+                  ["Current", `${fund.current} tickets`],
+                ].map((item) => (
+                  <div className="flex justify-between" key={item[0]}>
+                    <Text color="dimmed">{item[0]}</Text>
+                    <Text color="dimmed" weight={600}>
+                      {item[1]}
+                    </Text>
+                  </div>
+                ))}
+                <Button
+                  mt={24}
+                  fullWidth
+                  onClick={() => {
+                    setToFund(fund);
+                    setFundOpen(true);
+                  }}
+                  disabled={game.authorId === user?.id}
+                  leftIcon={<HiCurrencyDollar />}
+                >
+                  Donate
+                </Button>
+              </ShadedCard>
+            ))
+          ) : (
+            <ModernEmptyState
+              title="No funds"
+              body="The developer hasn't set up any funds yet."
+            />
+          )}
+        </div>
       </ViewGameTab>
     </>
   );
