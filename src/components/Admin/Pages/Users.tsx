@@ -6,7 +6,7 @@ import {
   TextInput,
   UnstyledButton,
 } from "@mantine/core";
-import { DiscordConnectCode, Session } from "@prisma/client";
+import { DiscordConnectCode, Notification, Session } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
 import { HiSearch } from "react-icons/hi";
@@ -18,6 +18,7 @@ import UserView from "../UserView";
 export type AdminViewUser = User & {
   sessions: Session[];
   discordAccount: DiscordConnectCode | null;
+  notifications: Notification[];
 };
 
 const Users = () => {

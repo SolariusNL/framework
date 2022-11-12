@@ -63,6 +63,8 @@ const UserView = ({ user }: UserViewProps) => {
           <Tabs.Tab value="info">Info</Tabs.Tab>
           <Tabs.Tab value="sessions">Sessions</Tabs.Tab>
           <Tabs.Tab value="punishment">Punishment</Tabs.Tab>
+          <Tabs.Tab value="notifications">Notifications</Tabs.Tab>
+          <Tabs.Tab value="secrets">Secrets</Tabs.Tab>
         </Tabs.List>
 
         <Tabs.Panel value="info">
@@ -179,7 +181,7 @@ const UserView = ({ user }: UserViewProps) => {
                 ]
                   .filter((i) => i.condition)
                   .map((data) => (
-                    <Card key={randomKey()}>
+                    <Card key={randomKey()} withBorder>
                       <Card.Section inheritPadding py="xs" mb={16} withBorder>
                         <Text color="dimmed" weight={700} size="sm">
                           {data.title}
@@ -197,6 +199,59 @@ const UserView = ({ user }: UserViewProps) => {
               </Stack>
             </>
           )}
+        </Tabs.Panel>
+
+        <Tabs.Panel value="notifications">
+          <Table striped>
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Title</th>
+                <th>Body</th>
+                <th>Created at</th>
+              </tr>
+            </thead>
+            <tbody>
+              {user.notifications
+                .sort(
+                  (a, b) =>
+                    new Date(b.createdAt).getTime() -
+                    new Date(a.createdAt).getTime()
+                )
+                .map((n) => (
+                  <tr key={n.id}>
+                    <td>
+                      <Badge>{n.type}</Badge>
+                    </td>
+                    <td>{n.title}</td>
+                    <td>{n.message}</td>
+                    <td>{new Date(n.createdAt).toLocaleString()}</td>
+                  </tr>
+                ))}
+            </tbody>
+          </Table>
+        </Tabs.Panel>
+
+        <Tabs.Panel value="secrets">
+          <Table striped>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              {user.secrets.map((s) => (
+                <tr key={s.id}>
+                  <td>{s.name}</td>
+                  <td className="flex items-center">
+                    <Copy value={s.code} />
+                    <Text>{s.code.substring(0, 23)}</Text>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
         </Tabs.Panel>
       </Tabs>
     </>

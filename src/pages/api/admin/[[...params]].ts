@@ -279,6 +279,7 @@ class AdminRouter {
         ...userSelect,
         sessions: true,
         discordAccount: true,
+        notifications: true,
       },
       take: 100,
     });
