@@ -1,11 +1,4 @@
-import {
-  Box,
-  Loader,
-  ScrollArea,
-  Stack,
-  Text,
-  useMantineColorScheme,
-} from "@mantine/core";
+import { Box, Divider, Loader, ScrollArea, Stack, Text } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
 import Link from "next/link";
 import {
@@ -13,12 +6,10 @@ import {
   HiBell,
   HiEye,
   HiGift,
-  HiGlobe,
   HiInformationCircle,
   HiKey,
   HiPhone,
   HiPhotograph,
-  HiSortAscending,
   HiTrash,
   HiUser,
 } from "react-icons/hi";
@@ -45,23 +36,20 @@ interface SettingsProps {
 interface SettingsGroupProps {
   title: string;
   children: React.ReactNode;
-  icon: React.ReactNode;
 }
 
-const SettingsGroup = ({ title, children, icon }: SettingsGroupProps) => {
-  const { colorScheme } = useMantineColorScheme();
+const SettingsGroup = ({ title, children }: SettingsGroupProps) => {
   return (
     <>
-      <Text color="dimmed" size="sm" weight={700}>
-        <div
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            marginRight: 10,
-          }}
-        >
-          {icon}
-        </div>
+      <Text
+        color="dimmed"
+        size="sm"
+        weight={700}
+        sx={{
+          padding: "6px 8px",
+          marginLeft: "8px",
+        }}
+      >
         {title}
       </Text>
 
@@ -95,7 +83,7 @@ const Settings: NextPage<SettingsProps> = ({ user }) => {
               }}
             >
               <Stack spacing={10}>
-                <SettingsGroup title="Account" icon={<HiUser />}>
+                <SettingsGroup title="Account">
                   <TabNav.Tab value="account" icon={<HiUser />}>
                     Profile
                   </TabNav.Tab>
@@ -123,7 +111,9 @@ const Settings: NextPage<SettingsProps> = ({ user }) => {
                   </Link>
                 </SettingsGroup>
 
-                <SettingsGroup title="App" icon={<HiGlobe />}>
+                <Divider />
+
+                <SettingsGroup title="App">
                   <TabNav.Tab value="appearance" icon={<HiPhotograph />}>
                     Appearance
                   </TabNav.Tab>
@@ -133,7 +123,9 @@ const Settings: NextPage<SettingsProps> = ({ user }) => {
                   </TabNav.Tab>
                 </SettingsGroup>
 
-                <SettingsGroup title="Other" icon={<HiSortAscending />}>
+                <Divider />
+
+                <SettingsGroup title="Other">
                   <TabNav.Tab value="about" icon={<HiInformationCircle />}>
                     About Framework
                   </TabNav.Tab>
