@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Post,
+  Query,
 } from "@storyofams/next-api-decorators";
 import { readFile } from "fs/promises";
 import { AdminAuthorized } from "../../../util/api/authorized";
@@ -315,6 +316,60 @@ class AdminRouter {
 
     return {
       code,
+    };
+  }
+
+  @Get("/bannedips")
+  @AdminAuthorized()
+  public async getBannedIps() {
+    const ips = await prisma.bannedIP.findMany();
+    return ips;
+  }
+
+  @Post("/bannedips/new/:ip")
+  @AdminAuthorized()
+  public async createBannedIp(@Param("ip") ip: string, @Query("reason") reason: string) {
+    if (!ip.match(/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/)) {
+      return {
+        success: false,
+        error: "Invalid IP",
+      };
+    }
+
+    const created = await prisma.bannedIP.create({
+      data: {
+        ip,
+        reason,
+      },
+    });
+
+    return created;
+  }
+
+  @Post("/bannedips/delete/:id")
+  @AdminAuthorized()
+  public async deleteBannedIp(@Param("id") id: string) {
+    const ip = await prisma.bannedIP.findFirst({
+      where: {
+        id: String(id),
+      },
+    });
+
+    if (!ip) {
+      return {
+        success: false,
+        error: "IP not found",
+      };
+    }
+
+    await prisma.bannedIP.delete({
+      where: {
+        id: String(id),
+      },
+    });
+
+    return {
+      success: true,
     };
   }
 }

@@ -440,3 +440,10 @@ model OAuth2Access {
   updatedAt DateTime     @default(now())
   expiresAt DateTime
 }
+
+model BannedIP {
+  id        String   @id @default(uuid())
+  ip        String
+  reason    String
+  createdAt DateTime @default(now())
+}

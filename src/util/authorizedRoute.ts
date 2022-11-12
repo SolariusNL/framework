@@ -1,5 +1,6 @@
 import { Session } from "@prisma/client";
 import { GetServerSidePropsContext } from "next";
+import { getClientIp } from "request-ip";
 import { exclude } from "./exclude";
 import prisma from "./prisma";
 import { User, userSelect } from "./prisma-types";
@@ -30,6 +31,21 @@ const authorizedRoute = async (
 
   const account = await getAccountFromSession(token);
   const isAuthorized = !!account;
+
+  const bannedIps = await prisma.bannedIP.findMany({
+    where: {
+      ip: String(getClientIp(context.req)),
+    },
+  });
+
+  if (bannedIps.length > 0) {
+    return {
+      redirect: {
+        destination: "/403",
+        permanent: false,
+      },
+    };
+  }
 
   switch (isAuthorized) {
     case true:

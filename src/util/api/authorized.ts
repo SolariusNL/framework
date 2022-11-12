@@ -4,6 +4,7 @@ import {
   createParamDecorator,
 } from "@storyofams/next-api-decorators";
 import { NextApiRequest, NextApiResponse } from "next";
+import { getClientIp } from "request-ip";
 import { getAccountFromSession } from "../authorizedRoute";
 import prisma from "../prisma";
 import { nucleusKeySelect } from "../prisma-types";
@@ -25,6 +26,18 @@ const AuthorizedBase = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   if (player.banned) {
+    return res.status(403).json({
+      error: "You are banned from Framework",
+    });
+  }
+
+  const bannedIps = await prisma.bannedIP.findMany({
+    where: {
+      ip: String(getClientIp(req)),
+    },
+  });
+
+  if (bannedIps.length > 0) {
     return res.status(403).json({
       error: "You are banned from Framework",
     });

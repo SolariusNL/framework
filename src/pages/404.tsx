@@ -2,7 +2,7 @@ import { createStyles, Title, Text, Button, Container, Group } from "@mantine/co
 import { NextPage } from "next";
 import Link from "next/link";
 
-const useStyles = createStyles((theme) => ({
+export const errorTitle = createStyles((theme) => ({
   root: {
     paddingTop: 80,
     paddingBottom: 80,
@@ -41,7 +41,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 const NotFound: NextPage = () => {
-  const { classes } = useStyles();
+  const { classes } = errorTitle();
 
   return (
     <Container className={classes.root}>

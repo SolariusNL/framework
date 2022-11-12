@@ -15,6 +15,7 @@ import Instance from "../../components/Admin/Pages/Instance";
 import Invites from "../../components/Admin/Pages/Invites";
 import Reports from "../../components/Admin/Pages/Reports";
 import Users from "../../components/Admin/Pages/Users";
+import BannedIPs from "../../components/Admin/Pages/BannedIPs";
 import Framework from "../../components/Framework";
 import TabNav from "../../components/TabNav";
 import authorizedRoute from "../../util/authorizedRoute";
@@ -65,12 +66,12 @@ const pages: {
     component: <Reports />,
     description: "Review reports made by users",
   },
-  metrics: {
-    label: "Metrics",
+  bannedIps: {
+    label: "Banned IPs",
     icon: <HiChartBar />,
-    route: "/admin/metrics",
-    component: <></>,
-    description: "View analytics about your instance",
+    route: "/admin/bannedips",
+    component: <BannedIPs />,
+    description: "Manage banned IPs",
   },
   games: {
     label: "Games",
