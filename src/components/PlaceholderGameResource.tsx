@@ -1,4 +1,5 @@
-import { useMantineTheme } from "@mantine/core";
+import { Paper } from "@mantine/core";
+import { gradientPairs } from "./GameCard";
 
 interface PlaceholderGameResourceProps {
   height?: number;
@@ -11,21 +12,21 @@ const PlaceholderGameResource = ({
   radius,
   width,
 }: PlaceholderGameResourceProps) => {
-  const theme = useMantineTheme();
-
   return (
-    <div
-      style={{
-        background: `linear-gradient(
-          ${Math.floor(Math.random() * 360)}deg,
-          ${theme.colors.grape[3]},
-          ${theme.colors.indigo[5]},
-          ${theme.colors.green[3]}
-        )`,
+    <Paper
+      sx={(theme) => ({
+        background: theme.fn.gradient({
+          from: gradientPairs[
+            Math.floor(Math.random() * gradientPairs.length)
+          ][0],
+          to: gradientPairs[
+            Math.floor(Math.random() * gradientPairs.length)
+          ][1],
+        }),
         height: `${height}px`,
         width: `${width}px`,
         ...(radius ? { borderRadius: `${radius}px` } : {}),
-      }}
+      })}
     />
   );
 };

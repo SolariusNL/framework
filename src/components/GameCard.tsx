@@ -16,20 +16,20 @@ interface GameCardProps {
   game: Game;
 }
 
+export const gradientPairs: Array<[MantineColor, MantineColor]> = [
+  ["red", "pink"],
+  ["blue", "cyan"],
+  ["teal", "lime"],
+  ["violet", "purple"],
+  ["orange", "yellow"],
+  ["cyan", "blue"],
+  ["lime", "teal"],
+  ["pink", "red"],
+  ["purple", "violet"],
+];
+
 const GameCard = ({ game }: GameCardProps) => {
   const { colorScheme } = useMantineColorScheme();
-
-  const gradientPairs: Array<[MantineColor, MantineColor]> = [
-    ["red", "pink"],
-    ["blue", "cyan"],
-    ["teal", "lime"],
-    ["violet", "purple"],
-    ["orange", "yellow"],
-    ["cyan", "blue"],
-    ["lime", "teal"],
-    ["pink", "red"],
-    ["purple", "violet"],
-  ];
 
   return (
     <Link href="/game/[id]" as={`/game/${game.id}`} passHref>
