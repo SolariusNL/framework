@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Query,
 } from "@storyofams/next-api-decorators";
 import { category } from "../../../components/ReportUser";
 import countries from "../../../data/countries";
@@ -14,6 +15,7 @@ import { hashPass, isSamePass } from "../../../util/hash/password";
 import createNotification from "../../../util/notifications";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
+import { nonCurrentUserSelect } from "../../../util/prisma-types";
 import { RateLimitMiddleware } from "../../../util/rateLimit";
 import { verificationEmail } from "../../../util/templates/verification-email";
 import { logTransaction } from "../../../util/transactionHistory";
@@ -530,6 +532,31 @@ class UserRouter {
       message: "Sessions retrieved successfully.",
       sessions,
     };
+  }
+
+  @Get("/search")
+  @Authorized()
+  @RateLimitMiddleware(100)()
+  public async searchUsers(@Account() user: User, @Query("q") query: string) {
+    if (!query) {
+      return {
+        success: false,
+        message: "No query provided",
+      };
+    }
+
+    const users = await prisma.user.findMany({
+      where: {
+        username: {
+          contains: query,
+          mode: "insensitive",
+        },
+      },
+      take: 10,
+      ...nonCurrentUserSelect,
+    });
+
+    return users;
   }
 }
 

@@ -1,3 +1,4 @@
+import { NotificationType } from "@prisma/client";
 import {
   Body,
   createHandler,
@@ -328,7 +329,10 @@ class AdminRouter {
 
   @Post("/bannedips/new/:ip")
   @AdminAuthorized()
-  public async createBannedIp(@Param("ip") ip: string, @Query("reason") reason: string) {
+  public async createBannedIp(
+    @Param("ip") ip: string,
+    @Query("reason") reason: string
+  ) {
     if (!ip.match(/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/)) {
       return {
         success: false,
@@ -367,6 +371,60 @@ class AdminRouter {
         id: String(id),
       },
     });
+
+    return {
+      success: true,
+    };
+  }
+
+  @Post("/notifications/send/:to")
+  @AdminAuthorized()
+  public async sendNotification(
+    @Param("to") to: string | number,
+    @Body() body: { title: string; message: string }
+  ) {
+    if (to === "all") {
+      const users = await prisma.user.findMany({
+        select: {
+          id: true,
+        },
+      });
+
+      await prisma.notification.createMany({
+        data: users.map((user) => ({
+          userId: Number(user.id),
+          title: body.title,
+          message: body.message,
+          type: NotificationType.INFO,
+        })),
+      });
+    } else {
+      const user = await prisma.user.findFirst({
+        where: {
+          id: Number(to),
+        },
+      });
+
+      if (!user) {
+        return {
+          success: false,
+          error: "User not found",
+        };
+      }
+
+      await prisma.notification.create({
+        data: {
+          user: {
+            connect: {
+              id: Number(to),
+            },
+          },
+          title: body.title,
+          message: body.message,
+          type: NotificationType.INFO,
+        },
+      });
+    }
 
     return {
       success: true,

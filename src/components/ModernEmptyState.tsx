@@ -28,22 +28,8 @@ const ModernEmptyState = ({
       })}
     >
       <div style={{ textAlign: "center" }}>
-        <ThemeIcon
-          sx={{
-            border: "1px solid",
-            borderColor: "gray",
-          }}
-          mb={12}
-          /**
-           * Variant can include default for
-           * some reason its a type error
-           */
-          /** @ts-ignore */
-          variant="default"
-        >
-          {icon || <HiXCircle />}
-        </ThemeIcon>
-        <Title order={4} mb={4}>
+        {icon || <HiXCircle size={28} />}
+        <Title order={4} mb={4} mt={12}>
           {title}
         </Title>
         <Text color="dimmed" size="sm">
