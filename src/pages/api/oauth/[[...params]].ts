@@ -1,13 +1,17 @@
 import {
+  Body,
   createHandler,
   Get,
   Param,
+  Post,
   Query,
   Res,
 } from "@storyofams/next-api-decorators";
 import type { NextApiResponse } from "next";
+import Authorized, { Account } from "../../../util/api/authorized";
 import prisma from "../../../util/prisma";
 import { nonCurrentUserSelect } from "../../../util/prisma-types";
+import type { User } from "../../../util/prisma-types";
 
 class OAuth2Router {
   @Get("/authorize")
@@ -99,6 +103,53 @@ class OAuth2Router {
     return {
       success: true,
       user,
+    };
+  }
+
+  @Post("/services/discord/connect")
+  @Authorized()
+  public async connectDiscord(
+    @Body() body: { code: string },
+    @Account() account: User
+  ) {
+    const found = await prisma.discordConnectCode.findFirst({
+      where: {
+        code: body.code,
+      },
+      include: {
+        user: true,
+      },
+    });
+
+    if (!found) {
+      return {
+        error: "Invalid code",
+      };
+    }
+
+    if (found.user) {
+      return {
+        error: "Code already used",
+      };
+    }
+
+    await prisma.discordConnectCode.update({
+      where: {
+        id: found.id,
+      },
+      data: {
+        user: {
+          connect: {
+            id: account.id,
+          },
+        },
+      },
+    });
+
+    return {
+      imageUrl: found.imageUrl,
+      username: found.username,
+      discriminator: found.discriminator,
     };
   }
 }

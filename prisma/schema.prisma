@@ -89,6 +89,7 @@ model User {
   oauthApps                  OAuth2Client[]        @relation("oauth2Clients")
   connectedAccounts          ConnectedAccount[]    @relation("connectedAccounts")
   oauthAccessTokens          OAuth2Access[]        @relation("oauth2Access")
+  discordAccount             DiscordConnectCode?   @relation("discordAccount")
 }
 
 model ConnectedAccount {
@@ -97,6 +98,18 @@ model ConnectedAccount {
   accountId String
   user      User   @relation("connectedAccounts", fields: [userId], references: [id])
   userId    Int
+}
+
+model DiscordConnectCode {
+  id            String   @id @default(uuid())
+  code          String
+  imageUrl      String
+  username      String
+  discriminator String
+  discordId     String
+  createdAt     DateTime @default(now())
+  user          User?    @relation("discordAccount", fields: [userId], references: [id])
+  userId        Int?     @unique
 }
 
 model Avatar {

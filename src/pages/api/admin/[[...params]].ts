@@ -282,6 +282,40 @@ class AdminRouter {
 
     return users;
   }
+
+  @Post("/service/discord/connect/new")
+  @AdminAuthorized()
+  public async connectDiscord(
+    @Body()
+    body: {
+      imageUrl: string;
+      username: string;
+      discriminator: string;
+      id: string;
+    }
+  ) {
+    const code = Array.from({ length: 3 })
+      .map(() =>
+        Math.floor(Math.random() * 1000)
+          .toString()
+          .padStart(3, "0")
+      )
+      .join("-");
+
+    await prisma.discordConnectCode.create({
+      data: {
+        code,
+        imageUrl: String(body.imageUrl),
+        username: String(body.username),
+        discriminator: String(body.discriminator),
+        discordId: String(body.id),
+      },
+    });
+
+    return {
+      code,
+    };
+  }
 }
 
 export default createHandler(AdminRouter);
