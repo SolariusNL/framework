@@ -135,7 +135,7 @@ const BannedIPs = () => {
           ) : banned.length === 0 ? (
             <tr>
               <td colSpan={3}>
-                <ModernEmptyState title="No banned IPs" body="No banned IPs. :)" />
+                <ModernEmptyState title="No banned IPs" body="There are no banned IPs." />
               </td>
             </tr>
           ) : (
