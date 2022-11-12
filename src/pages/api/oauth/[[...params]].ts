@@ -127,7 +127,7 @@ class OAuth2Router {
       };
     }
 
-    if (found.user) {
+    if (found.user?.id !== account.id) {
       return {
         error: "Code already used",
       };
