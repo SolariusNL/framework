@@ -32,7 +32,13 @@ const UserContext = ({ user, children, customHref }: UserContextProps) => {
         opened={reportOpened}
         setOpened={setReportOpened}
       />
-      <HoverCard shadow="md" withArrow openDelay={200} closeDelay={400}>
+      <HoverCard
+        shadow="md"
+        withArrow
+        openDelay={200}
+        closeDelay={400}
+        width={250}
+      >
         <HoverCard.Target>
           <div style={{ cursor: "pointer" }}>{children}</div>
         </HoverCard.Target>
@@ -78,24 +84,24 @@ const UserContext = ({ user, children, customHref }: UserContextProps) => {
                 <b>{user.followers.length}</b> Followers
               </Text>
             </Group>
-
-            <Button.Group>
-              <Link passHref href={customHref || `/profile/${user.username}`}>
-                <Button fullWidth size="xs">
-                  <HiUser />
-                </Button>
-              </Link>
-              <Button
-                disabled={currentUser?.id === user.id}
-                color="red"
-                fullWidth
-                size="xs"
-                onClick={() => setReportOpened(true)}
-              >
-                <HiFlag />
-              </Button>
-            </Button.Group>
           </Center>
+
+          <Button.Group className="p-0 px-0 py-0">
+            <Link passHref href={customHref || `/profile/${user.username}`}>
+              <Button fullWidth size="xs">
+                <HiUser />
+              </Button>
+            </Link>
+            <Button
+              disabled={currentUser?.id === user.id}
+              color="red"
+              fullWidth
+              size="xs"
+              onClick={() => setReportOpened(true)}
+            >
+              <HiFlag />
+            </Button>
+          </Button.Group>
         </HoverCard.Dropdown>
       </HoverCard>
     </>
