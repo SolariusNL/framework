@@ -20,6 +20,7 @@ import {
   Tooltip,
 } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
+import { NextSeo } from "next-seo";
 import { useRouter } from "next/router";
 import React from "react";
 import ReactCountryFlag from "react-country-flag";
@@ -86,6 +87,22 @@ const Profile: NextPage<ProfileProps> = ({ user, profile }) => {
         user={viewing}
         opened={reportOpened}
         setOpened={setReportOpened}
+      />
+      <NextSeo
+        title={String(viewing.username)}
+        description={String(viewing.bio)}
+        openGraph={{
+          title: `${String(viewing.username)} on Framework`,
+          description: String(viewing.bio),
+          ...(viewing.avatarUri && {
+            images: [
+              {
+                url: String(viewing.avatarUri),
+                alt: `${String(viewing.username)}'s avatar`,
+              },
+            ],
+          }),
+        }}
       />
       <Framework user={user} activeTab="none">
         <Center

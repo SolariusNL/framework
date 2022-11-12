@@ -19,6 +19,7 @@ import {
 } from "@mantine/notifications";
 import { getCookie, setCookie } from "cookies-next";
 import { GetServerSidePropsContext } from "next";
+import { DefaultSeo } from "next-seo";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import Link from "next/link";
@@ -85,6 +86,18 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
           content="minimum-scale=1, initial-scale=1, width=device-width"
         />
       </Head>
+
+      <DefaultSeo
+        openGraph={{
+          type: "website",
+          locale: "en_US",
+          url: "https://framework.soodam.rocks/",
+          siteName: "Framework",
+        }}
+        titleTemplate="%s | Framework"
+        description="Framework is a free and open-source alternative to Roblox."
+        canonical="https://framework.soodam.rocks/"
+      />
 
       <ColorSchemeProvider
         colorScheme={colorScheme}
