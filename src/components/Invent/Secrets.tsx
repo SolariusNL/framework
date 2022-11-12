@@ -9,10 +9,10 @@ import {
   Tooltip,
 } from "@mantine/core";
 import { getCookie } from "cookies-next";
-import { useRouter } from "next/router";
 import { useState } from "react";
 import { HiPlus, HiTrash } from "react-icons/hi";
 import { User } from "../../util/prisma-types";
+import Copy from "../Copy";
 import InventTab from "./InventTab";
 
 interface SecretsProps {
@@ -23,10 +23,7 @@ const Secrets = ({ user }: SecretsProps) => {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [enteredName, setEnteredName] = useState("");
   const [enteredValue, setEnteredValue] = useState("");
-
   const [shownIndexes, setShownIndexes] = useState<string[]>([]);
-  const router = useRouter();
-
   const [secrets, setSecrets] = useState(user.secrets);
 
   const createSecret = async () => {
@@ -129,7 +126,8 @@ const Secrets = ({ user }: SecretsProps) => {
             {secrets.map((secret) => (
               <tr key={secret.id}>
                 <td>{secret.name}</td>
-                <td>
+                <td className="items-center flex">
+                  <Copy value={secret.code} />
                   {shownIndexes.includes(secret.id) ? (
                     <Tooltip label="Hide whole value">
                       <Button
