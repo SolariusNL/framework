@@ -116,9 +116,6 @@ class OAuth2Router {
       where: {
         code: body.code,
       },
-      include: {
-        user: true,
-      },
     });
 
     if (!found) {
@@ -127,7 +124,7 @@ class OAuth2Router {
       };
     }
 
-    if (found.user && found.user.id !== account.id) {
+    if (found.userId !== undefined && found.userId !== account.id) {
       return {
         error: "Code already used",
       };
