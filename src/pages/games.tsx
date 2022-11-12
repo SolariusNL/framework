@@ -1,7 +1,7 @@
 import { Button, Grid, Group, Menu, Select, TextInput } from "@mantine/core";
 import { GameGenre } from "@prisma/client";
 import { GetServerSidePropsContext, NextPage } from "next";
-import React from "react";
+import React, { useEffect } from "react";
 import { HiFilter, HiSearch } from "react-icons/hi";
 import Framework from "../components/Framework";
 import GameCard from "../components/GameCard";
@@ -25,7 +25,6 @@ interface GameFilter {
 }
 
 const Games: NextPage<GamesProps> = ({ user, initialGames }) => {
-  const mobile = useMediaQuery("768");
   const [filter, setFilter] = React.useState<GameFilter>({
     likes: "desc",
     dislikes: "asc",
@@ -60,6 +59,10 @@ const Games: NextPage<GamesProps> = ({ user, initialGames }) => {
         alert(err + "\nPlease report this to Soodam.re");
       });
   };
+
+  useEffect(() => {
+    updateGames();
+  }, [filter]);
 
   const searchGames = async (query: string) => {
     await fetch(`/api/games/search?q=${query}`, {

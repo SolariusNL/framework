@@ -56,6 +56,7 @@ const GameCard = ({ game }: GameCardProps) => {
                         from: gradientPairs[game.id % gradientPairs.length][0],
                         to: gradientPairs[game.id % gradientPairs.length][1],
                       }),
+                      filter: "brightness(0.6)",
                     })}
                     className="rounded-lg"
                   />
@@ -81,6 +82,7 @@ const GameCard = ({ game }: GameCardProps) => {
                           Math.floor(Math.random() * gradientPairs.length)
                         ][1],
                       }),
+                      filter: "brightness(0.6)",
                     })}
                     className="w-24 h-24 shadow-lg"
                   />

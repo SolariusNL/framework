@@ -55,7 +55,10 @@ const UserContext = ({ user, children, customHref }: UserContextProps) => {
             </Indicator>
 
             <Stack spacing={5} align="center" mb={16}>
-              <Link href={customHref || `/profile/${user.username}`} passHref>
+              <Link
+                href={customHref || "/profile/[username]"}
+                as={`/profile/${user.username}`}
+              >
                 <div className="text-center cursor-pointer">
                   <Text size="sm" weight={700} mb={6} sx={{ lineHeight: 1 }}>
                     {user.username}

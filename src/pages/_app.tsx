@@ -151,7 +151,7 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
                   value={pageProps && pageProps.user && pageProps.user}
                 >
                   <NextNProgress />
-                  <Component {...pageProps} />
+                  <Component {...pageProps} key={router.asPath} />
                   <Modal
                     withCloseButton={false}
                     opened={

@@ -8,7 +8,6 @@ import {
   UnstyledButton,
 } from "@mantine/core";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import {
   createContext,
   Dispatch,
@@ -43,47 +42,46 @@ const UserItem = ({
   user: NonUser | User | null;
   finished: () => void;
 }) => {
-  const router = useRouter();
-
   return (
-    <UnstyledButton
-      onClick={() => {
-        router.push(`/profile/${user?.username}`);
-        finished();
-      }}
-      sx={(theme) => ({
-        padding: theme.spacing.xs,
-        borderRadius: theme.radius.md,
-        color:
-          theme.colorScheme === "dark" ? theme.colors.dark[0] : theme.black,
-
-        "&:hover": {
-          backgroundColor:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[6]
-              : theme.colors.gray[0],
-        },
-      })}
-    >
-      <Group>
+    <Link href="/profile/[username]" as={`/profile/${user?.username}`} passHref>
+      <UnstyledButton
+        onClick={() => {
+          finished();
+        }}
+        sx={(theme) => ({
+          padding: theme.spacing.xs,
+          borderRadius: theme.radius.md,
+          color:
+            theme.colorScheme === "dark" ? theme.colors.dark[0] : theme.black,
+          "&:hover": {
+            backgroundColor:
+              theme.colorScheme === "dark"
+                ? theme.colors.dark[6]
+                : theme.colors.gray[0],
+          },
+          width: "100%",
+        })}
+      >
         <Group>
-          <Avatar
-            src={user?.avatarUri}
-            size={26}
-            radius="xl"
-            alt={user?.username}
-          />
+          <Group>
+            <Avatar
+              src={user?.avatarUri}
+              size={26}
+              radius="xl"
+              alt={user?.username}
+            />
+          </Group>
+          <Group>
+            <Text weight={490}>{user?.username}</Text>
+          </Group>
+          <Group>
+            <Text color="dimmed" lineClamp={1}>
+              {user?.bio}
+            </Text>
+          </Group>
         </Group>
-        <Group>
-          <Text weight={490}>{user?.username}</Text>
-        </Group>
-        <Group>
-          <Text color="dimmed" lineClamp={1}>
-            {user?.bio}
-          </Text>
-        </Group>
-      </Group>
-    </UnstyledButton>
+      </UnstyledButton>
+    </Link>
   );
 };
 
