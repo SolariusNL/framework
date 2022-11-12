@@ -127,12 +127,10 @@ class OAuth2Router {
       };
     }
 
-    if (typeof found.user?.id === "string") {
-      if (found.user.id !== account.id) {
-        return {
-          error: "Code already used",
-        };
-      }
+    if (found.user && found.user.id !== account.id) {
+      return {
+        error: "Code already used",
+      };
     }
 
     await prisma.discordConnectCode.update({
