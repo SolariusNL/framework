@@ -1,4 +1,4 @@
-import { ReceiveNotification } from "@prisma/client";
+import { NotificationType, ReceiveNotification } from "@prisma/client";
 import {
   Body,
   createHandler,
@@ -221,6 +221,19 @@ class UserRouter {
       },
     });
 
+    const adminsToNotify = await prisma.user.findMany({
+      where: { notificationPreferences: { has: "ADMIN_REPORTS" } },
+    });
+
+    adminsToNotify.forEach(async (admin) => {
+      await createNotification(
+        admin.id,
+        NotificationType.INFO,
+        `There is a new report to review for ${reportingUser.username}. Please review it as soon as possible.`,
+        "New Report"
+      );
+    });
+
     return {
       success: true,
       message: "User reported successfully",
@@ -431,6 +444,10 @@ class UserRouter {
           if (!Array.isArray(value)) return false;
           for (const v of value) {
             if (!Object.keys(ReceiveNotification).includes(v)) return false;
+          }
+
+          if (value.includes("ADMIN_REPORTS") && user.role !== "ADMIN") {
+            return false;
           }
 
           return true;

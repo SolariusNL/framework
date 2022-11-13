@@ -19,6 +19,7 @@ enum ReceiveNotification {
   RECEIVED_DONATION
   SENT_DONATION
   LOGIN
+  ADMIN_REPORTS
 }
 
 enum PremiumSubscriptionType {
