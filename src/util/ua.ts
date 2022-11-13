@@ -32,7 +32,7 @@ function getOperatingSystemDevice(os: OperatingSystem): Device {
 function getOperatingSystem(userAgent: string): OperatingSystem {
   const regex = {
     windows: /Windows/i,
-    macos: /Macintosh|Mac OS|OS X/i,
+    macos: /Macintosh/i,
     linux: /Linux/i,
     android: /Android/i,
     ios: /iPhone|iPad|iPod/i,
