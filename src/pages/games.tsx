@@ -1,16 +1,27 @@
-import { Button, Grid, Group, Menu, Select, TextInput } from "@mantine/core";
+import {
+  Button,
+  Grid,
+  Group,
+  Menu,
+  MultiSelect,
+  Select,
+  Stack,
+  TextInput,
+} from "@mantine/core";
 import { GameGenre } from "@prisma/client";
 import { GetServerSidePropsContext, NextPage } from "next";
 import React, { useEffect } from "react";
 import { HiFilter, HiSearch } from "react-icons/hi";
+import AscDescFilter from "../components/Filter/AscDescFilter";
 import Framework from "../components/Framework";
 import GameCard from "../components/GameCard";
 import ModernEmptyState from "../components/ModernEmptyState";
+import ShadedCard from "../components/ShadedCard";
 import authorizedRoute from "../util/authorizedRoute";
 import { getCookie } from "../util/cookies";
 import prisma from "../util/prisma";
 import { Game, gameSelect, User } from "../util/prisma-types";
-import useMediaQuery from "../util/useMediaQuery";
+import { genreMap } from "../util/universe/genre";
 
 interface GamesProps {
   user: User;
@@ -142,18 +153,81 @@ const Games: NextPage<GamesProps> = ({ user, initialGames }) => {
         </Menu>
       </Group>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-        {games.length > 0 &&
-          games.map((game) => <GameCard game={game} key={game.id} />)}
-        {games.length == 0 && (
-          <Grid.Col span={3}>
-            <ModernEmptyState
-              title="No games found"
-              body="Try switching up your filter."
-              shaded
-            />
-          </Grid.Col>
-        )}
+      <div className="grid grid-cols-1 md:grid-cols-6 gap-8">
+        <div className="md:col-span-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {games.length > 0 &&
+              games.map((game) => <GameCard game={game} key={game.id} />)}
+            {games.length == 0 && (
+              <Grid.Col span={3}>
+                <ModernEmptyState
+                  title="No games found"
+                  body="Try switching up your filter."
+                  shaded
+                />
+              </Grid.Col>
+            )}
+          </div>
+        </div>
+        <div className="md:col-span-2">
+          <ShadedCard title="Filters" withBorder shadow="md">
+            <Stack spacing={12}>
+              {[
+                {
+                  label: "Likes",
+                  onChange: (value: "desc" | "asc") =>
+                    setFilter({ ...filter, likes: value }),
+                  value: filter.likes,
+                  description: "Sort by number of likes",
+                },
+                {
+                  label: "Dislikes",
+                  onChange: (value: "desc" | "asc") =>
+                    setFilter({ ...filter, dislikes: value }),
+                  value: filter.dislikes,
+                  description: "Sort by number of dislikes",
+                },
+                {
+                  label: "Visits",
+                  onChange: (value: "desc" | "asc") =>
+                    setFilter({ ...filter, visits: value }),
+                  value: filter.visits,
+                  description: "Sort by number of visits",
+                },
+              ].map((item) => (
+                <AscDescFilter
+                  key={item.label}
+                  label={item.label}
+                  description={item.description}
+                  value={item.value}
+                  onChange={item.onChange}
+                />
+              ))}
+              <MultiSelect
+                data={Object.keys(genreMap).map((key) => ({
+                  value: key,
+                  label: genreMap[key as GameGenre],
+                }))}
+                label="Genres"
+                placeholder="No genre filter"
+                onChange={(value: GameGenre[]) =>
+                  setFilter({ ...filter, genres: value })
+                }
+                value={filter.genres || []}
+                description="Filter by genres of games"
+                searchable
+              />
+              <Button
+                variant="subtle"
+                onClick={updateGames}
+                leftIcon={<HiFilter />}
+                loading={loading}
+              >
+                Apply Filter
+              </Button>
+            </Stack>
+          </ShadedCard>
+        </div>
       </div>
     </Framework>
   );

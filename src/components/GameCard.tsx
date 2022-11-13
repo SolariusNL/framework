@@ -1,16 +1,17 @@
 import {
   AspectRatio,
   Avatar,
+  Badge,
+  Card, createStyles,
+  Group,
   Image,
-  MantineColor,
-  Paper,
-  Text,
-  useMantineColorScheme,
+  MantineColor, Text
 } from "@mantine/core";
-import Link from "next/link";
-import { HiThumbDown, HiThumbUp, HiUsers } from "react-icons/hi";
-import { Game } from "../util/prisma-types";
 import { motion } from "framer-motion";
+import Link from "next/link";
+import { Game } from "../util/prisma-types";
+import PlaceholderGameResource from "./PlaceholderGameResource";
+import UserContext from "./UserContext";
 
 interface GameCardProps {
   game: Game;
@@ -28,101 +29,77 @@ export const gradientPairs: Array<[MantineColor, MantineColor]> = [
   ["purple", "violet"],
 ];
 
+const useStyles = createStyles((theme) => ({
+  footer: {
+    padding: `${theme.spacing.xs}px ${theme.spacing.lg}px`,
+    marginTop: theme.spacing.md,
+  },
+}));
+
 const GameCard = ({ game }: GameCardProps) => {
-  const { colorScheme } = useMantineColorScheme();
+  const { classes, theme } = useStyles();
 
   return (
-    <Link href="/game/[id]" as={`/game/${game.id}`} passHref>
-      <motion.div whileHover={{ scale: 1.03 }}>
-        <div className="overflow-hidden cursor-pointer">
-          <div>
-            <div className="relative">
-              <AspectRatio ratio={16 / 9}>
-                {game.gallery.length > 0 ? (
-                  <Image
-                    src={game.gallery[0]}
-                    alt={game.name}
-                    className="object-cover rounded-lg"
-                    imageProps={{
-                      style: {
-                        filter: "brightness(0.8)",
-                      },
-                    }}
-                  />
-                ) : (
-                  <Paper
-                    sx={(theme) => ({
-                      backgroundImage: theme.fn.gradient({
-                        from: gradientPairs[game.id % gradientPairs.length][0],
-                        to: gradientPairs[game.id % gradientPairs.length][1],
-                      }),
-                      filter: "brightness(0.6)",
-                    })}
-                    className="rounded-lg"
-                  />
-                )}
-              </AspectRatio>
-              <div className="absolute -bottom-12 left-4">
-                {game.iconUri ? (
-                  <Avatar
-                    src={game.iconUri}
-                    alt={game.name}
-                    size="sm"
-                    className="mr-2 w-24 h-24 shadow-lg"
-                    radius="lg"
-                  />
-                ) : (
-                  <Paper
-                    sx={(theme) => ({
-                      backgroundImage: theme.fn.gradient({
-                        from: gradientPairs[
-                          Math.floor(Math.random() * gradientPairs.length)
-                        ][0],
-                        to: gradientPairs[
-                          Math.floor(Math.random() * gradientPairs.length)
-                        ][1],
-                      }),
-                      filter: "brightness(0.6)",
-                    })}
-                    className="w-24 h-24 shadow-lg"
-                  />
-                )}
-              </div>
-            </div>
-          </div>
+    <Link href={`/game/${game.id}`}>
+      <motion.div
+        whileHover={{ scale: 1.02 }}
+        style={{
+          cursor: "pointer",
+        }}
+      >
+        <Card
+          shadow="sm"
+          withBorder
+          p="lg"
+          radius="md"
+          sx={(theme) => ({
+            backgroundColor:
+              theme.colorScheme === "dark" ? theme.colors.dark[9] : "#FFF",
+            overflow: "visible",
+          })}
+        >
+          <Card.Section mb="sm">
+            <AspectRatio
+              ratio={1 / 1}
+              mx="auto"
+              sx={(theme) => ({
+                borderRadius: theme.radius.md,
+              })}
+            >
+              {game.iconUri ? (
+                <Image
+                src={game.iconUri}
+                alt={game.name}
+                withPlaceholder
+                radius="md"
+              />
+              ) : (
+                <PlaceholderGameResource game={game} />
+              )}
+            </AspectRatio>
+          </Card.Section>
 
-          <div className="flex flex-col justify-between ml-32 mt-3">
-            <div>
-              <div className="flex items-center">
-                <Text size="lg" weight={700} className="mr-2 overflow-hidden">
-                  {game.name}
-                </Text>
-              </div>
-              <div className="flex items-center mt-2 justify-between">
-                {[
-                  { icon: HiThumbUp, value: game.likedBy.length },
-                  { icon: HiThumbDown, value: game.dislikedBy.length },
-                  { icon: HiUsers, value: game.visits },
-                ].map((stat) => (
-                  <div
-                    key={stat.value}
-                    className="flex items-center justify-center"
-                  >
-                    <div className="flex items-center">
-                      <stat.icon
-                        className="mr-2"
-                        color={colorScheme === "dark" ? "#909296" : "#868e96"}
-                      />
-                      <Text size="sm" weight={500} color="dimmed">
-                        {stat.value}
-                      </Text>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
+          <Badge mb="md">{game.genre}</Badge>
+
+          <Text weight={700} mb="xl" size="lg">
+            {game.name}
+          </Text>
+
+          <Card.Section className={classes.footer}>
+            <Group position="apart">
+              <UserContext user={game.author}>
+                <Avatar
+                  src={
+                    game.author.avatarUri ||
+                    `https://avatars.dicebear.com/api/identicon/${game.author.id}.png`
+                  }
+                  radius="xl"
+                  size="sm"
+                />
+              </UserContext>
+            </Group>
+          </Card.Section>
+        </Card>
       </motion.div>
     </Link>
   );
