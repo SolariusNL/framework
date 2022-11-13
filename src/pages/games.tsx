@@ -1,12 +1,7 @@
 import {
   Button,
-  Grid,
-  Group,
-  Menu,
-  MultiSelect,
-  Select,
-  Stack,
-  TextInput,
+  Grid, MultiSelect, Stack,
+  TextInput
 } from "@mantine/core";
 import { GameGenre } from "@prisma/client";
 import { GetServerSidePropsContext, NextPage } from "next";
@@ -102,56 +97,12 @@ const Games: NextPage<GamesProps> = ({ user, initialGames }) => {
       modernTitle="Games"
       modernSubtitle="Browse the expansive library of games on Framework."
     >
-      <Group mb={32}>
-        <TextInput
-          icon={<HiSearch />}
-          placeholder="Search for games"
-          onChange={(e) => searchGames(e.currentTarget.value)}
-        />
-        <Menu closeOnItemClick={false} shadow="md">
-          <Menu.Target>
-            <Button leftIcon={<HiFilter />}>Filter</Button>
-          </Menu.Target>
-          <Menu.Dropdown>
-            {[
-              {
-                label: "Likes",
-                description: "Sort by likes",
-                value: filter.likes,
-                onChange: (value: "desc" | "asc") =>
-                  setFilter({ ...filter, likes: value }),
-              },
-              {
-                label: "Dislikes",
-                description: "Sort by dislikes",
-                value: filter.dislikes,
-                onChange: (value: "desc" | "asc") =>
-                  setFilter({ ...filter, dislikes: value }),
-              },
-              {
-                label: "Visits",
-                description: "Sort by visits",
-                value: filter.visits,
-                onChange: (value: "desc" | "asc") =>
-                  setFilter({ ...filter, visits: value }),
-              },
-            ].map((item) => (
-              <Menu.Item key={item.label}>
-                <Select
-                  label={item.label}
-                  description={item.description}
-                  data={[
-                    { label: "Most", value: "desc" },
-                    { label: "Least", value: "asc" },
-                  ]}
-                  value={item.value}
-                  onChange={(value) => item.onChange(value as "desc" | "asc")}
-                />
-              </Menu.Item>
-            ))}
-          </Menu.Dropdown>
-        </Menu>
-      </Group>
+      <TextInput
+        icon={<HiSearch />}
+        placeholder="Search for games"
+        onChange={(e) => searchGames(e.currentTarget.value)}
+        mb={32}
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-6 gap-8">
         <div className="md:col-span-4">
