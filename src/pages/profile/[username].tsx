@@ -7,7 +7,6 @@ import {
   Center,
   Container,
   CopyButton,
-  Divider,
   Grid,
   Group,
   Image,
@@ -16,6 +15,7 @@ import {
   Progress,
   Stack,
   Text,
+  ThemeIcon,
   Title,
   Tooltip,
 } from "@mantine/core";
@@ -29,8 +29,11 @@ import {
   HiCheck,
   HiClipboardCopy,
   HiClock,
+  HiDesktopComputer,
   HiFlag,
   HiGift,
+  HiGlobe,
+  HiOfficeBuilding,
   HiShieldCheck,
   HiUser,
   HiUsers,
@@ -45,7 +48,9 @@ import ModernEmptyState from "../../components/ModernEmptyState";
 import PlaceholderGameResource from "../../components/PlaceholderGameResource";
 import Donate from "../../components/Profile/Donate";
 import ReportUser from "../../components/ReportUser";
+import ShadedCard from "../../components/ShadedCard";
 import { useUserInformationDialog } from "../../contexts/UserInformationDialog";
+import countries from "../../data/countries";
 import getTimezones from "../../data/timezones";
 import authorizedRoute from "../../util/authorizedRoute";
 import { getCookie } from "../../util/cookies";
@@ -294,161 +299,203 @@ const Profile: NextPage<ProfileProps> = ({ user, profile }) => {
           </Stack>
         </Center>
 
-        <Divider mt={25} mb={25} />
-
-        <Grid columns={24}>
-          <Grid.Col span={mobile ? 24 : 14}>
-            <Text weight={550} mb={10} color="dimmed">
-              About {viewing.username}
-            </Text>
-
-            <Text>{viewing.bio}</Text>
-            <Divider mt={16} mb={16} />
-            <Text weight={550} mb={10} color="dimmed">
-              Badges
-            </Text>
-
-            <ReactNoSSR>
-              <div
-                style={{
-                  display: "grid",
-                  gridColumnGap: "12px",
-                  gridTemplateColumns: `repeat(${mobile ? 1 : 2}, 1fr)`,
-                  gridRowGap: "12px",
-                }}
-              >
-                {[
-                  [<AlphaBadge user={viewing} key="alpha" />, true],
-                  [
-                    <PremiumBadge user={viewing} key="premium" />,
-                    viewing.premium,
-                  ],
-                  [
-                    <AdminBadge user={viewing} key="admin" />,
-                    viewing.role == "ADMIN",
-                  ],
-                ].map(([badge, condition]) => condition && <div>{badge}</div>)}
+        <Paper
+          sx={(theme) => ({
+            backgroundColor:
+              theme.colorScheme == "dark"
+                ? theme.colors.dark[9]
+                : theme.colors.gray[1],
+          })}
+          p={16}
+          mt={50}
+        >
+          <Grid columns={24}>
+            <Grid.Col span={mobile ? 24 : 14}>
+              <Text weight={550} mb={10} color="dimmed">
+                About {viewing.username}
+              </Text>
+              <Text mb={16}>{viewing.bio}</Text>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <ShadedCard withBorder shadow="md" className="h-fit">
+                  <Stack spacing={6}>
+                    {[
+                      [HiClock, viewing.timeZone, "Timezone"],
+                      [
+                        HiGlobe,
+                        countries.find((c) => c.code == viewing.country)?.name,
+                        "Country",
+                      ],
+                      [
+                        HiOfficeBuilding,
+                        viewing.busy ? "Busy" : "Available" || "Available",
+                        "Status",
+                      ],
+                      [
+                        HiDesktopComputer,
+                        new Date(viewing.lastSeen).toLocaleString(),
+                        "Last seen",
+                      ],
+                    ]
+                      .filter(([, value]) => value)
+                      .map(([Icon, value, label]: any) => (
+                        <Group spacing={3} key={label}>
+                          <Tooltip label={label} key={value}>
+                            <ThemeIcon color="transparent">
+                              <Icon
+                                color="#868e96"
+                                style={{ marginRight: 5 }}
+                              />
+                            </ThemeIcon>
+                          </Tooltip>
+                          <Text color="dimmed" mr={5}>
+                            {String(value)}
+                          </Text>
+                        </Group>
+                      ))}
+                  </Stack>
+                </ShadedCard>
+                <ShadedCard withBorder shadow="md" className="h-fit">
+                  <Stack spacing={12}>
+                    {[
+                      {
+                        icon: HiClock,
+                        label: "Member since",
+                        value: new Date(viewing.createdAt).toLocaleDateString(),
+                      },
+                      {
+                        icon: HiUsers,
+                        label: "Place visits",
+                        value: viewing.games
+                          .map((g) => g.visits)
+                          .reduce((a, b) => a + b, 0),
+                      },
+                      {
+                        icon: HiClock,
+                        label: "Hours played",
+                        value: 0,
+                      },
+                    ].map(({ icon: Icon, label, value }) => (
+                      <Group key={String(value)} spacing={3}>
+                        <Icon color="#868e96" style={{ marginRight: 12 }} />
+                        <div className="items-start">
+                          <Text color="dimmed" weight={600}>
+                            {label}
+                          </Text>
+                          <Text color="dimmed">{String(value)}</Text>
+                        </div>
+                      </Group>
+                    ))}
+                  </Stack>
+                </ShadedCard>
               </div>
-            </ReactNoSSR>
-          </Grid.Col>
+              <Text weight={550} mb={10} color="dimmed" mt={50}>
+                Badges
+              </Text>
 
-          <Grid.Col span={mobile ? 24 : 10}>
-            {viewing.games.length == 0 && (
-              <ModernEmptyState
-                title="No games"
-                body={`${viewing.username} has no games.`}
-              />
-            )}
-            <ReactNoSSR>
-              <ThumbnailCarousel
-                p={8}
-                slides={viewing.games.map((g, i) => (
-                  <Paper
-                    withBorder
-                    p="md"
-                    radius="md"
-                    key={i}
-                    shadow="md"
-                    sx={{
-                      marginRight: i != viewing.games.length - 1 ? 8 : 0,
-                    }}
-                  >
-                    <Container p={0} mb={16}>
-                      {g.gallery.length > 0 && (
-                        <ThumbnailCarousel
-                          slides={g.gallery.map((gal, j) => (
-                            <Image
-                              height={180}
-                              src={gal}
-                              key={j}
-                              alt={g.name}
-                            />
-                          ))}
-                        />
-                      )}
-
-                      {g.gallery.length == 0 && (
-                        <PlaceholderGameResource height={180} radius={6} />
-                      )}
-                    </Container>
-
-                    <Title order={3}>{g.name}</Title>
-                    <Text size="sm" color="dimmed" mb={16}>
-                      @{g.author.username}
-                    </Text>
-
-                    <Progress
-                      sections={[
-                        {
-                          value:
-                            (g.likedBy.length / g.likedBy.length +
-                              g.dislikedBy.length) *
-                            100,
-                          color: "green",
-                        },
-                        {
-                          value:
-                            (g.likedBy.length / g.likedBy.length +
-                              g.dislikedBy.length) *
-                            100,
-                          color: "red",
-                        },
-                      ]}
-                      mb="md"
-                    />
-
-                    <Button
-                      fullWidth
-                      leftIcon={<HiArrowRight />}
-                      onClick={() => router.push(`/game/${g.id}`)}
-                    >
-                      View
-                    </Button>
-                  </Paper>
-                ))}
-              />
-            </ReactNoSSR>
-          </Grid.Col>
-        </Grid>
-
-        <Divider mt={25} mb={25} />
-
-        <Paper px={60} radius="md" mb={32}>
-          <Group position="apart">
-            {[
-              {
-                icon: HiClock,
-                label: "Member since",
-                value: new Date(viewing.createdAt).toLocaleDateString(),
-              },
-              {
-                icon: HiUsers,
-                label: "Place visits",
-                value: viewing.games
-                  .map((g) => g.visits)
-                  .reduce((a, b) => a + b, 0),
-              },
-              {
-                icon: HiClock,
-                label: "Hours played",
-                value: 0,
-              },
-            ].map((stat) => (
-              <Stack align="center" spacing={4} key={stat.label}>
-                <stat.icon
+              <ReactNoSSR>
+                <div
                   style={{
-                    marginBottom: 16,
+                    display: "grid",
+                    gridColumnGap: "12px",
+                    gridTemplateColumns: `repeat(${mobile ? 1 : 2}, 1fr)`,
+                    gridRowGap: "12px",
                   }}
+                >
+                  {[
+                    [<AlphaBadge user={viewing} key="alpha" />, true],
+                    [
+                      <PremiumBadge user={viewing} key="premium" />,
+                      viewing.premium,
+                    ],
+                    [
+                      <AdminBadge user={viewing} key="admin" />,
+                      viewing.role == "ADMIN",
+                    ],
+                  ].map(
+                    ([badge, condition]) => condition && <div>{badge}</div>
+                  )}
+                </div>
+              </ReactNoSSR>
+            </Grid.Col>
+
+            <Grid.Col span={mobile ? 24 : 10}>
+              {viewing.games.length == 0 && (
+                <ModernEmptyState
+                  title="No games"
+                  body={`${viewing.username} has no games.`}
                 />
-                <Text weight={500} size="lg" sx={{ lineHeight: 1 }}>
-                  {stat.value}
-                </Text>
-                <Text size="sm" color="dimmed">
-                  {stat.label}
-                </Text>
-              </Stack>
-            ))}
-          </Group>
+              )}
+              <ReactNoSSR>
+                <ThumbnailCarousel
+                  p={8}
+                  slides={viewing.games.map((g, i) => (
+                    <Paper
+                      withBorder
+                      p="md"
+                      radius="md"
+                      key={i}
+                      shadow="md"
+                      sx={{
+                        marginRight: i != viewing.games.length - 1 ? 8 : 0,
+                      }}
+                    >
+                      <Container p={0} mb={16}>
+                        {g.gallery.length > 0 && (
+                          <ThumbnailCarousel
+                            slides={g.gallery.map((gal, j) => (
+                              <Image
+                                height={180}
+                                src={gal}
+                                key={j}
+                                alt={g.name}
+                              />
+                            ))}
+                          />
+                        )}
+
+                        {g.gallery.length == 0 && (
+                          <PlaceholderGameResource height={180} radius={6} />
+                        )}
+                      </Container>
+
+                      <Title order={3}>{g.name}</Title>
+                      <Text size="sm" color="dimmed" mb={16}>
+                        @{g.author.username}
+                      </Text>
+
+                      <Progress
+                        sections={[
+                          {
+                            value:
+                              (g.likedBy.length / g.likedBy.length +
+                                g.dislikedBy.length) *
+                              100,
+                            color: "green",
+                          },
+                          {
+                            value:
+                              (g.likedBy.length / g.likedBy.length +
+                                g.dislikedBy.length) *
+                              100,
+                            color: "red",
+                          },
+                        ]}
+                        mb="md"
+                      />
+
+                      <Button
+                        fullWidth
+                        leftIcon={<HiArrowRight />}
+                        onClick={() => router.push(`/game/${g.id}`)}
+                      >
+                        View
+                      </Button>
+                    </Paper>
+                  ))}
+                />
+              </ReactNoSSR>
+            </Grid.Col>
+          </Grid>
         </Paper>
       </Framework>
     </>

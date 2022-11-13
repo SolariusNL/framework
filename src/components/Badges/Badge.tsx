@@ -9,7 +9,18 @@ interface BadgeProps {
 }
 
 const Badge = ({ user, title, description, icon }: BadgeProps) => (
-  <Paper withBorder shadow="md" p={12} radius="md">
+  <Paper
+    withBorder
+    shadow="md"
+    p={12}
+    radius="md"
+    sx={(theme) => ({
+      backgroundColor:
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[9]
+          : theme.colors.gray[0],
+    })}
+  >
     <div
       style={{
         display: "flex",
