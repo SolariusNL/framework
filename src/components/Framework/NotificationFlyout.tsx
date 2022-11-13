@@ -19,10 +19,10 @@ import {
   HiExclamationCircle,
   HiInformationCircle
 } from "react-icons/hi";
-import { getCookie } from "../util/cookies";
-import { getRelativeTime } from "../util/relativeTime";
-import useMediaQuery from "../util/useMediaQuery";
-import ModernEmptyState from "./ModernEmptyState";
+import { getCookie } from "../../util/cookies";
+import { getRelativeTime } from "../../util/relativeTime";
+import useMediaQuery from "../../util/useMediaQuery";
+import ModernEmptyState from "../ModernEmptyState";
 
 interface NotificationFlyoutProps {
   notificationData: Notification[];

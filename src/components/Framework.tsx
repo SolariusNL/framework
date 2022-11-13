@@ -2,27 +2,19 @@ import { useFlags } from "@happykit/flags/client";
 import {
   ActionIcon,
   Alert,
-  Anchor,
-  Autocomplete,
-  Avatar,
-  Badge,
+  Anchor, Badge,
   Box,
   Burger,
   Container,
   createStyles,
   Drawer,
-  Group,
-  Kbd,
-  Menu,
-  Popover,
+  Group, Popover,
   ScrollArea,
   Stack,
   Tabs,
   Text,
   ThemeIcon,
-  Title,
-  UnstyledButton,
-  useMantineColorScheme,
+  Title
 } from "@mantine/core";
 import { useDisclosure, useLocalStorage } from "@mantine/hooks";
 import isElectron from "is-electron";
@@ -30,38 +22,22 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useRef, useState } from "react";
 import {
-  HiArrowLeft,
-  HiChevronDown,
-  HiCog,
-  HiCurrencyDollar,
-  HiGift,
-  HiHome,
-  HiLibrary,
-  HiLightBulb,
-  HiLogout,
-  HiMail,
-  HiMoon,
-  HiSearch,
-  HiSearchCircle,
-  HiShoppingBag,
-  HiSpeakerphone,
-  HiStar,
-  HiSun,
-  HiTicket,
-  HiUser,
-  HiViewGrid,
-  HiViewList,
+  HiArrowLeft, HiCog, HiGift,
+  HiHome, HiLightBulb, HiMail, HiSearch, HiShoppingBag,
+  HiSpeakerphone, HiUser,
+  HiViewGrid
 } from "react-icons/hi";
-import abbreviateNumber from "../util/abbreviate";
-import logout from "../util/api/logout";
 import { getIpcRenderer } from "../util/electron";
 import { User } from "../util/prisma-types";
 import useConfig from "../util/useConfig";
 import useMediaQuery from "../util/useMediaQuery";
 import EmailReminder from "./EmailReminder";
 import Footer from "./Footer";
+import CurrencyMenu from "./Framework/CurrencyMenu";
+import NotificationFlyout from "./Framework/NotificationFlyout";
+import Search from "./Framework/Search";
+import UserMenu from "./Framework/UserMenu";
 import FrameworkLogo from "./FrameworkLogo";
-import NotificationFlyout from "./NotificationFlyout";
 import TabNav from "./TabNav";
 
 interface FrameworkProps {
@@ -89,7 +65,7 @@ interface FrameworkProps {
   };
 }
 
-const useStyles = createStyles((theme) => ({
+export const frameworkStyles = createStyles((theme) => ({
   header: {
     paddingTop: theme.spacing.sm,
     backgroundColor:
@@ -144,216 +120,6 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-const Search = ({ ref }: { ref: React.RefObject<HTMLInputElement> }) => {
-  const [search, setSearch] = React.useState("");
-  const router = useRouter();
-  const searchOptions = [
-    search.trim().length > 0
-      ? ["games", "users", "catalog", "sounds"].map((provider) => {
-          return {
-            value: `Search ${provider} for "${search}"`,
-            provider: provider,
-            query: search,
-          };
-        })
-      : [],
-  ].flat();
-
-  return (
-    <Autocomplete
-      icon={<HiSearchCircle />}
-      placeholder="Search Framework"
-      variant="default"
-      type="search"
-      styles={{ rightSection: { pointerEvents: "none" } }}
-      rightSectionWidth={90}
-      rightSection={
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <Kbd>Ctrl</Kbd>
-          <span style={{ margin: "0 5px" }}>+</span>
-          <Kbd>K</Kbd>
-        </div>
-      }
-      value={search}
-      onChange={setSearch}
-      data={searchOptions}
-      onItemSubmit={(item) => {
-        const { provider, query } = item;
-
-        setSearch("");
-        router.push(`/search?query=${query}&category=${provider}`);
-      }}
-      ref={ref}
-    />
-  );
-};
-
-const UserMenu = ({ classes, userMenuOpened, user, cx, router }: any) => {
-  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
-
-  return (
-    <Menu transition="pop-top-right" width={240}>
-      <Menu.Target>
-        <UnstyledButton
-          className={cx(classes.user, {
-            [classes.userActive]: userMenuOpened,
-          })}
-        >
-          <Group spacing={12}>
-            <Avatar
-              src={
-                user.avatarUri ||
-                `https://avatars.dicebear.com/api/identicon/${user.id}.png`
-              }
-              alt={user.username}
-              radius="xl"
-              size={20}
-            />
-            <Text weight={500} size="sm" sx={{ lineHeight: 1 }} mr={3}>
-              {user.username}
-            </Text>
-            <HiChevronDown size={12} stroke="1.5" />
-          </Group>
-        </UnstyledButton>
-      </Menu.Target>
-
-      <Menu.Dropdown>
-        <Menu.Label>
-          👻 Framework {process.env.NEXT_PUBLIC_VERSION} - Built by Emil, Rosé{" "}
-          {"&"} contributors
-        </Menu.Label>
-        <Menu.Divider />
-        {user.role == "ADMIN" && (
-          <>
-            <Menu.Item
-              icon={<HiLibrary />}
-              onClick={() => router.push("/admin/dashboard")}
-            >
-              Admin Dashboard
-            </Menu.Item>
-            <Menu.Divider />
-          </>
-        )}
-        <Menu.Item icon={<HiGift />} onClick={() => router.push("/prizes")}>
-          Daily prizes
-        </Menu.Item>
-        <Menu.Item icon={<HiTicket />} onClick={() => router.push("/redeem")}>
-          Redeem prizes
-        </Menu.Item>
-        <Menu.Divider />
-        <Menu.Item
-          icon={<HiUser />}
-          onClick={() => router.push(`/profile/${user.username}`)}
-        >
-          Profile
-        </Menu.Item>
-        <Menu.Item
-          icon={
-            colorScheme === "dark" ? <HiMoon size={18} /> : <HiSun size={18} />
-          }
-          color={colorScheme === "dark" ? "yellow" : "blue"}
-          onClick={() => toggleColorScheme()}
-        >
-          Change theme{" "}
-          <Badge color={colorScheme === "dark" ? "yellow" : "blue"}>WIP</Badge>
-        </Menu.Item>
-        <Menu.Divider />
-        <Menu.Item
-          icon={<HiCog size={18} />}
-          onClick={() => router.push("/settings")}
-        >
-          Settings
-        </Menu.Item>
-        <Menu.Item
-          icon={<HiUser size={18} />}
-          onClick={() => router.push("/avatar")}
-        >
-          Avatar
-        </Menu.Item>
-        <Menu.Divider />
-        <Menu.Item
-          sx={{ fontWeight: 500 }}
-          color="red"
-          icon={<HiLogout />}
-          onClick={async () => await logout().then(() => router.push("/login"))}
-        >
-          Logout
-        </Menu.Item>
-      </Menu.Dropdown>
-    </Menu>
-  );
-};
-
-const CurrencyMenu = ({
-  cx,
-  classes,
-  currencyMenuOpened,
-  theme,
-  user,
-}: any) => {
-  const router = useRouter();
-  return (
-    <Menu transition="pop-top-right">
-      <Menu.Target>
-        <UnstyledButton
-          className={cx(classes.currency, {
-            [classes.currencyActive]: currencyMenuOpened,
-          })}
-        >
-          <Group spacing={6}>
-            <HiCurrencyDollar color={theme.colors.green[3]} />
-            <Text
-              color={theme.colors.green[4]}
-              weight={500}
-              size="sm"
-              sx={{ lineHeight: 1 }}
-            >
-              {abbreviateNumber(user.tickets)}
-            </Text>
-          </Group>
-        </UnstyledButton>
-      </Menu.Target>
-
-      <Menu.Dropdown>
-        <Menu.Label>
-          You have{" "}
-          {Math.round(user.tickets)
-            .toString()
-            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}{" "}
-          tickets
-        </Menu.Label>
-
-        <Menu.Item
-          icon={<HiCurrencyDollar />}
-          onClick={() => router.push("/tickets")}
-        >
-          Your Tickets
-        </Menu.Item>
-        <Menu.Divider />
-        <Menu.Item icon={<HiShoppingBag />}>Purchase tickets</Menu.Item>
-        <Menu.Item
-          icon={<HiViewList />}
-          onClick={() => router.push("/tickets/transactions")}
-        >
-          Transaction history
-        </Menu.Item>
-
-        {!user.premium && (
-          <>
-            <Menu.Divider />
-            <Menu.Item
-              icon={<HiStar />}
-              onClick={() => router.push("/premium")}
-            >
-              Get premium
-            </Menu.Item>
-          </>
-        )}
-      </Menu.Dropdown>
-    </Menu>
-  );
-};
-
 const Framework = ({
   user,
   children,
@@ -366,7 +132,7 @@ const Framework = ({
   beta,
   returnTo,
 }: FrameworkProps) => {
-  const { classes, theme, cx } = useStyles();
+  const { classes, theme, cx } = frameworkStyles();
   const [opened, { toggle }] = useDisclosure(false);
   const [userMenuOpened, setUserMenuOpened] = useState(false);
   const [currencyMenuOpened, setCurrencyMenuOpened] = useState(false);
@@ -487,18 +253,10 @@ const Framework = ({
                   notificationData={user && user.notifications}
                 />
                 <CurrencyMenu
-                  cx={cx}
-                  classes={classes}
                   currencyMenuOpened={currencyMenuOpened}
-                  theme={theme}
-                  user={user}
                 />
                 <UserMenu
-                  cx={cx}
-                  classes={classes}
                   userMenuOpened={userMenuOpened}
-                  user={user}
-                  router={router}
                 />
               </Group>
             )}
@@ -635,18 +393,10 @@ const Framework = ({
             {user && (
               <Group>
                 <CurrencyMenu
-                  cx={cx}
-                  classes={classes}
                   currencyMenuOpened={currencyMenuOpened}
-                  theme={theme}
-                  user={user}
                 />
                 <UserMenu
-                  cx={cx}
-                  classes={classes}
                   userMenuOpened={userMenuOpened}
-                  user={user}
-                  router={router}
                 />
                 <NotificationFlyout
                   notificationData={user && user.notifications}
