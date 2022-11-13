@@ -1,6 +1,6 @@
 import {
   Button,
-  Grid, MultiSelect, Stack,
+  Grid, Group, MultiSelect, Stack,
   TextInput
 } from "@mantine/core";
 import { GameGenre } from "@prisma/client";
@@ -97,12 +97,12 @@ const Games: NextPage<GamesProps> = ({ user, initialGames }) => {
       modernTitle="Games"
       modernSubtitle="Browse the expansive library of games on Framework."
     >
-      <TextInput
+      <Group><TextInput
         icon={<HiSearch />}
         placeholder="Search for games"
         onChange={(e) => searchGames(e.currentTarget.value)}
         mb={32}
-      />
+      /></Group>
 
       <div className="grid grid-cols-1 md:grid-cols-6 gap-8">
         <div className="md:col-span-4">
