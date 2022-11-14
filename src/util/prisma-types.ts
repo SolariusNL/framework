@@ -140,6 +140,7 @@ export const gameSelect: Prisma.GameSelect = {
       text: true,
       user: nonCurrentUserSelect,
       createdAt: true,
+      id: true,
     },
   },
   playing: true,
@@ -182,6 +183,7 @@ const game = Prisma.validator<Prisma.GameArgs>()({
         text: true,
         user: nonCurrentUserSelect,
         createdAt: true,
+        id: true,
       },
     },
     funds: {
