@@ -181,6 +181,7 @@ const AccountTab = ({ user }: AccountTabProps) => {
                     setUploadedAvatarData(data);
                     setUnsavedChanges(true);
                   }}
+                  ratio={1}
                 />
                 {uploadedAvatarData && (
                   <Button

@@ -9,8 +9,8 @@ interface ImageUploaderProps {
   button?: React.ReactNode;
   crop?: boolean;
   imgRef?: React.RefObject<HTMLImageElement>;
-  onCropComplete?: (crop: Crop) => void;
   onFinished?: (img: string) => void;
+  ratio?: number;
 }
 
 const Cropper = dynamic(() => import("react-image-crop"), {
@@ -22,6 +22,7 @@ const ImageUploader = ({
   crop,
   imgRef,
   onFinished,
+  ratio,
 }: ImageUploaderProps) => {
   const [img, setImg] = useState<File | null>(null);
   const [croppedImg, setCroppedImg] = useState<string | null>(null);
@@ -102,6 +103,7 @@ const ImageUploader = ({
               onChange={(newCrop: Crop) => setCropData(newCrop)}
               onComplete={onCropComplete}
               crop={cropData}
+              aspect={ratio}
             >
               <img
                 ref={imgRef as any}
