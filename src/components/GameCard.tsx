@@ -2,10 +2,12 @@ import {
   AspectRatio,
   Avatar,
   Badge,
-  Card, createStyles,
+  Card,
+  createStyles,
   Group,
   Image,
-  MantineColor, Text
+  MantineColor,
+  Text,
 } from "@mantine/core";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -59,22 +61,19 @@ const GameCard = ({ game }: GameCardProps) => {
           })}
         >
           <Card.Section mb="sm">
-            <AspectRatio
-              ratio={1 / 1}
-              mx="auto"
-              sx={(theme) => ({
-                borderRadius: theme.radius.md,
-              })}
-            >
+            <AspectRatio ratio={1 / 1}>
               {game.iconUri ? (
                 <Image
-                src={game.iconUri}
-                alt={game.name}
-                withPlaceholder
-                radius="md"
-              />
+                  src={game.iconUri}
+                  alt={game.name}
+                  withPlaceholder
+                  sx={{
+                    borderTopLeftRadius: theme.radius.md,
+                    borderTopRightRadius: theme.radius.md,
+                  }}
+                />
               ) : (
-                <PlaceholderGameResource game={game} />
+                <PlaceholderGameResource game={game} noBottomRadius />
               )}
             </AspectRatio>
           </Card.Section>

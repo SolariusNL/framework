@@ -7,6 +7,7 @@ interface PlaceholderGameResourceProps {
   radius?: number;
   width?: number;
   game?: Game;
+  noBottomRadius?: boolean;
 }
 
 const PlaceholderGameResource = ({
@@ -14,6 +15,7 @@ const PlaceholderGameResource = ({
   radius,
   width,
   game,
+  noBottomRadius,
 }: PlaceholderGameResourceProps) => {
   function rand() {
     return gradientPairs[
@@ -35,6 +37,9 @@ const PlaceholderGameResource = ({
         height: `${height}px`,
         width: `${width}px`,
         ...(radius ? { borderRadius: `${radius}px` } : {}),
+        ...(noBottomRadius
+          ? { borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }
+          : {}),
       })}
     />
   );
