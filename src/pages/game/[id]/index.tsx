@@ -31,7 +31,6 @@ import {
   HiLockClosed,
   HiPlay,
   HiServer,
-  HiViewList,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import Framework from "../../../components/Framework";
@@ -40,11 +39,11 @@ import GameRating from "../../../components/GameRating";
 import ThumbnailCarousel from "../../../components/ImageCarousel";
 import Launching from "../../../components/Launching";
 import PlaceholderGameResource from "../../../components/PlaceholderGameResource";
+import ShadedCard from "../../../components/ShadedCard";
 import UserContext from "../../../components/UserContext";
 import ConnectionTab from "../../../components/ViewGame/Connection";
 import FundsTab from "../../../components/ViewGame/Funds";
 import InfoTab from "../../../components/ViewGame/Info";
-import ServersTab from "../../../components/ViewGame/Servers";
 import UpdateLogTab from "../../../components/ViewGame/UpdateLog";
 import Votes from "../../../components/ViewGame/Votes";
 import authorizedRoute from "../../../util/authorizedRoute";
@@ -141,69 +140,67 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
               }
             />
 
-            <Tabs variant="pills" defaultValue="info" mb={32} mt={32}>
-              <Tabs.List grow>
-                <div
-                  style={{
-                    ...(mobile
-                      ? {
-                          display: "flex",
-                          flexDirection: "column",
-                          flex: 1,
-                        }
-                      : {
-                          display: "flex",
-                          flexDirection: "row",
-                          flex: 1,
-                        }),
-                  }}
-                >
-                  <Tabs.Tab icon={<HiInformationCircle />} value="info">
-                    Information
-                  </Tabs.Tab>
-
-                  <Tabs.Tab icon={<HiServer />} value="connection">
-                    Connections
-                  </Tabs.Tab>
-
-                  <Tabs.Tab icon={<HiViewList />} value="servers">
-                    Servers
-                  </Tabs.Tab>
-
-                  <Tabs.Tab icon={<HiCurrencyDollar />} value="funds">
-                    Funds
-                  </Tabs.Tab>
-
-                  <Tabs.Tab icon={<HiFolder />} value="updatelog">
-                    Update Log
-                  </Tabs.Tab>
-                </div>
-              </Tabs.List>
-
-              {[InfoTab, ConnectionTab, ServersTab, FundsTab, UpdateLogTab].map(
-                (Tab, i) => (
-                  <ReactNoSSR
-                    key={i}
-                    onSSR={
-                      i == 0 ? (
-                        <Box
-                          sx={{
-                            alignItems: "center",
+            <ShadedCard mb={32} mt={32}>
+              <Tabs variant="pills" defaultValue="info">
+                <Tabs.List grow>
+                  <div
+                    style={{
+                      ...(mobile
+                        ? {
                             display: "flex",
-                            justifyContent: "center",
-                            width: "100%",
-                          }}
-                        >
-                          <Loader />
-                        </Box>
-                      ) : undefined
-                    }
+                            flexDirection: "column",
+                            flex: 1,
+                          }
+                        : {
+                            display: "flex",
+                            flexDirection: "row",
+                            flex: 1,
+                          }),
+                    }}
                   >
-                    <Tab game={game} key={i} />
-                  </ReactNoSSR>
-                )
-              )}
-            </Tabs>
+                    <Tabs.Tab icon={<HiInformationCircle />} value="info">
+                      Information
+                    </Tabs.Tab>
+
+                    <Tabs.Tab icon={<HiServer />} value="connection">
+                      Connections
+                    </Tabs.Tab>
+
+                    <Tabs.Tab icon={<HiCurrencyDollar />} value="funds">
+                      Funds
+                    </Tabs.Tab>
+
+                    <Tabs.Tab icon={<HiFolder />} value="updatelog">
+                      Update Log
+                    </Tabs.Tab>
+                  </div>
+                </Tabs.List>
+
+                {[InfoTab, ConnectionTab, FundsTab, UpdateLogTab].map(
+                  (Tab, i) => (
+                    <ReactNoSSR
+                      key={i}
+                      onSSR={
+                        i == 0 ? (
+                          <Box
+                            sx={{
+                              alignItems: "center",
+                              display: "flex",
+                              justifyContent: "center",
+                              width: "100%",
+                            }}
+                          >
+                            <Loader />
+                          </Box>
+                        ) : undefined
+                      }
+                    >
+                      <Tab game={game} key={i} />
+                    </ReactNoSSR>
+                  )
+                )}
+              </Tabs>
+            </ShadedCard>
 
             <ReactNoSSR
               onSSR={

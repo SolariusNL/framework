@@ -1,5 +1,6 @@
 import { ActionIcon, Progress, Tooltip } from "@mantine/core";
 import { getCookie } from "cookies-next";
+import React from "react";
 import { HiThumbDown, HiThumbUp } from "react-icons/hi";
 import { useFrameworkUser } from "../../contexts/FrameworkUser";
 import { Game, NonUser } from "../../util/prisma-types";
@@ -50,7 +51,7 @@ const Votes = ({ game, setGame }: VotesProps) => {
         : [...game.dislikedBy, user as NonUser],
     });
 
-    fetch(`/api/games/${game.id}/dislike`, {
+    await fetch(`/api/games/${game.id}/dislike`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -68,6 +69,9 @@ const Votes = ({ game, setGame }: VotesProps) => {
       });
   };
 
+  const liked = game.likedBy.find((u) => u.id == user?.id) != undefined;
+  const disliked = game.dislikedBy.find((u) => u.id == user?.id) != undefined;
+
   return (
     <>
       <div
@@ -81,11 +85,9 @@ const Votes = ({ game, setGame }: VotesProps) => {
         <ActionIcon
           radius="xl"
           mr={6}
-          variant="subtle"
+          variant={liked ? "light" : "subtle"}
           color="teal"
-          disabled={
-            game.dislikedBy.find((u) => u.id == user?.id) ? true : false
-          }
+          disabled={disliked}
           onClick={like}
         >
           <HiThumbUp size={14} />
@@ -114,9 +116,9 @@ const Votes = ({ game, setGame }: VotesProps) => {
         <ActionIcon
           radius="xl"
           ml={6}
-          variant="subtle"
+          variant={disliked ? "light" : "subtle"}
           color="red"
-          disabled={game.likedBy.find((u) => u.id == user?.id) ? true : false}
+          disabled={liked}
           onClick={dislike}
         >
           <HiThumbDown size={14} />
