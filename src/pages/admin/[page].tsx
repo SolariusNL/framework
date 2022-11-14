@@ -1,4 +1,4 @@
-import { ActionIcon, Checkbox, Group, Menu, ScrollArea } from "@mantine/core";
+import { ActionIcon, Checkbox, Menu, ScrollArea } from "@mantine/core";
 import { ReceiveNotification } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
@@ -106,12 +106,13 @@ const AdminPage: NextPage<AdminPageProps> = ({ user, pageStr }) => {
       modernTitle={page.label}
       modernSubtitle={page.description}
     >
-      <Group position="apart" className="items-center" mb={32}>
+      <div className="items-center mb-16 flex md:flex-row flex-col justify-between w-full">
         <TabNav
           value={pageStr}
           onTabChange={(t) => router.push(String(t))}
           orientation={mobile ? "vertical" : "horizontal"}
           mb={0}
+          className="w-full"
         >
           <ScrollArea
             offsetScrollbars
@@ -171,7 +172,7 @@ const AdminPage: NextPage<AdminPageProps> = ({ user, pageStr }) => {
             </Menu.Item>
           </Menu.Dropdown>
         </Menu>
-      </Group>
+      </div>
       {page.component}
     </Framework>
   );

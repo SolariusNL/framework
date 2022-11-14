@@ -189,12 +189,110 @@ class GameRouter {
         text: true,
         user: nonCurrentUserSelect,
         createdAt: true,
+        id: true,
       },
     });
 
     return {
       success: true,
       comment,
+    };
+  }
+
+  @Post("/:id/comment/:id/delete")
+  @Authorized()
+  async deleteComment(@Param("id") id: string, @Account() user: User) {
+    const comment = await prisma.gameComment.findFirst({
+      where: {
+        id: String(id),
+      },
+      select: {
+        user: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+
+    if (!comment) {
+      return {
+        error: "Comment not found",
+      };
+    }
+
+    if (comment.user.id !== user.id) {
+      return {
+        error: "You can only delete your own comments",
+      };
+    }
+
+    await prisma.gameComment.delete({
+      where: {
+        id: String(id),
+      },
+    });
+
+    return {
+      success: true,
+    };
+  }
+
+  @Post("/:id/comment/:id/edit")
+  @Authorized()
+  async editComment(
+    @Param("id") id: string,
+    @Account() user: User,
+    @Body() body: { message: string }
+  ) {
+    const comment = await prisma.gameComment.findFirst({
+      where: {
+        id: String(id),
+      },
+      select: {
+        user: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+
+    if (!comment) {
+      return {
+        error: "Comment not found",
+      };
+    }
+
+    if (comment.user.id !== user.id) {
+      return {
+        error: "You can only edit your own comments",
+      };
+    }
+
+    if (body.message.length > 500) {
+      return {
+        error: "Comment body too long",
+      };
+    }
+
+    if (!body.message) {
+      return {
+        error: "Invalid comment body",
+      };
+    }
+
+    await prisma.gameComment.update({
+      where: {
+        id: String(id),
+      },
+      data: {
+        text: body.message,
+      },
+    });
+
+    return {
+      success: true,
     };
   }
 

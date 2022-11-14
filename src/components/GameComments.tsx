@@ -5,7 +5,7 @@ import {
   Group,
   Pagination,
   Stack,
-  Textarea
+  Textarea,
 } from "@mantine/core";
 import { usePagination } from "@mantine/hooks";
 import { useState } from "react";
@@ -24,6 +24,7 @@ interface Comment {
   user: NonUser;
   text: string;
   createdAt: Date;
+  id: string;
 }
 
 const GameComments = ({ user, game }: GameCommentsProps) => {
@@ -148,6 +149,11 @@ const GameComments = ({ user, game }: GameCommentsProps) => {
                   body={comment.text}
                   key={Math.floor(Math.random() * 1000000)}
                   postedAt={comment.createdAt}
+                  id={comment.id}
+                  destroy={() => {
+                    setComments(comments.filter((c) => c.id !== comment.id));
+                  }}
+                  gameId={game.id}
                 />
               ))}
           </Stack>
