@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Badge,
   Button,
   Card,
@@ -7,9 +8,8 @@ import {
   Table,
   Tabs,
   Text,
-  Title
+  Title,
 } from "@mantine/core";
-import Image from "next/image";
 import Link from "next/link";
 import { useUserInformationDialog } from "../../contexts/UserInformationDialog";
 import Copy from "../Copy";
@@ -30,15 +30,7 @@ const UserView = ({ user }: UserViewProps) => {
   return (
     <>
       <Group mb={18}>
-        <Image
-          width={84}
-          height={84}
-          className="rounded-full"
-          src={
-            user.avatarUri ||
-            `https://avatars.dicebear.com/api/identicon/${user.id}.png`
-          }
-        />
+        <Avatar size="xl" radius={999} src={user.avatarUri} />
         <Stack spacing={3}>
           <Group>
             <Title order={3}>{user.username}</Title>

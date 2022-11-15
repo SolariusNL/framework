@@ -1,13 +1,15 @@
 import {
-  AspectRatio, Badge,
+  AspectRatio,
+  Avatar,
+  Badge,
   Card,
   createStyles,
   Group,
+  Image,
   MantineColor,
-  Text
+  Text,
 } from "@mantine/core";
 import { motion } from "framer-motion";
-import Image from "next/image";
 import Link from "next/link";
 import { Game } from "../util/prisma-types";
 import PlaceholderGameResource from "./PlaceholderGameResource";
@@ -64,7 +66,8 @@ const GameCard = ({ game }: GameCardProps) => {
                 <Image
                   src={game.iconUri}
                   alt={game.name}
-                  style={{
+                  withPlaceholder
+                  sx={{
                     borderTopLeftRadius: theme.radius.md,
                     borderTopRightRadius: theme.radius.md,
                   }}
@@ -84,13 +87,13 @@ const GameCard = ({ game }: GameCardProps) => {
           <Card.Section className={classes.footer}>
             <Group position="apart">
               <UserContext user={game.author}>
-                <Image
+                <Avatar
                   src={
                     game.author.avatarUri ||
                     `https://avatars.dicebear.com/api/identicon/${game.author.id}.png`
                   }
-                  width={26}
-                  height={26}
+                  radius="xl"
+                  size="sm"
                 />
               </UserContext>
             </Group>

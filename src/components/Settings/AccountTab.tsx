@@ -1,5 +1,7 @@
 import {
-  Alert, Button,
+  Alert,
+  Avatar,
+  Button,
   Checkbox,
   Group,
   Select,
@@ -8,9 +10,8 @@ import {
   Textarea,
   TextInput,
   ThemeIcon,
-  Tooltip
+  Tooltip,
 } from "@mantine/core";
-import Image from "next/image";
 import { useRef, useState } from "react";
 import {
   HiClock,
@@ -19,15 +20,15 @@ import {
   HiOfficeBuilding,
   HiQuestionMarkCircle,
   HiTrash,
-  HiUser
+  HiUser,
 } from "react-icons/hi";
 import getTimezones from "../../data/timezones";
+import ImageUploader from "../ImageUploader";
 import { getCookie } from "../../util/cookies";
 import { User } from "../../util/prisma-types";
 import Copy from "../Copy";
 import CountrySelect from "../CountryPicker";
 import Descriptive from "../Descriptive";
-import ImageUploader from "../ImageUploader";
 import SettingsTab from "./SettingsTab";
 import SideBySide from "./SideBySide";
 
@@ -141,7 +142,7 @@ const AccountTab = ({ user }: AccountTabProps) => {
           >
             <Group position="apart">
               <Group>
-                <Image
+                <Avatar
                   src={
                     uploadedAvatarData
                       ? uploadedAvatarData
@@ -149,9 +150,8 @@ const AccountTab = ({ user }: AccountTabProps) => {
                         `https://avatars.dicebear.com/api/identicon/${user.id}.png`
                   }
                   alt={user.username}
-                  width={84}
-                  height={84}
-                  className="rounded-full"
+                  radius={99}
+                  size={"xl"}
                 />
                 <Stack spacing={3}>
                   <Text weight={500}>{user.username}</Text>

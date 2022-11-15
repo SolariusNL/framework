@@ -1,23 +1,6 @@
-import {
-  Group,
-  Menu,
-  Text,
-  UnstyledButton,
-  useMantineColorScheme
-} from "@mantine/core";
-import Image from "next/image";
+import { Avatar, Group, Menu, Text, UnstyledButton, useMantineColorScheme } from "@mantine/core";
 import { useRouter } from "next/router";
-import {
-  HiChevronDown,
-  HiCog,
-  HiGift,
-  HiLibrary,
-  HiLogout,
-  HiMoon,
-  HiSun,
-  HiTicket,
-  HiUser
-} from "react-icons/hi";
+import { HiChevronDown, HiCog, HiGift, HiLibrary, HiLogout, HiMoon, HiSun, HiTicket, HiUser } from "react-icons/hi";
 import { useFrameworkUser } from "../../contexts/FrameworkUser";
 import logout from "../../util/api/logout";
 import { User } from "../../util/prisma-types";
@@ -38,15 +21,14 @@ const UserMenu = ({ userMenuOpened }: { userMenuOpened: boolean }) => {
           })}
         >
           <Group spacing={12}>
-            <Image
+            <Avatar
               src={
                 user.avatarUri ||
                 `https://avatars.dicebear.com/api/identicon/${user.id}.png`
               }
               alt={user.username}
-              width={20}
-              height={20}
-              className="rounded-full"
+              radius="xl"
+              size={20}
             />
             <Text weight={500} size="sm" sx={{ lineHeight: 1 }} mr={3}>
               {user.username}

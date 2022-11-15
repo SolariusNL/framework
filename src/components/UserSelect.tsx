@@ -1,6 +1,5 @@
-import { Badge, Group, Select, SelectProps, Text } from "@mantine/core";
+import { Avatar, Badge, Group, Select, SelectProps, Text } from "@mantine/core";
 import { getCookie } from "cookies-next";
-import Image from "next/image";
 import { forwardRef, useState } from "react";
 import { exclude } from "../util/exclude";
 import { NonUser } from "../util/prisma-types";
@@ -21,13 +20,7 @@ const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
   ({ avatarUri, username, bio, banned, role, ...others }: ItemProps, ref) => (
     <div ref={ref} {...others}>
       <Group noWrap>
-        <Image
-          src={
-            avatarUri ||
-            `https://avatars.dicebear.com/api/identicon/${username}.png`
-          }
-          className="rounded-full"
-        />
+        <Avatar src={avatarUri} />
 
         <div>
           <Group spacing={8}>

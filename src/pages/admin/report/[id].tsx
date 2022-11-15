@@ -1,6 +1,8 @@
 import {
   Alert,
-  Anchor, Badge,
+  Anchor,
+  Avatar,
+  Badge,
   Button,
   Grid,
   Group,
@@ -10,12 +12,11 @@ import {
   Text,
   Textarea,
   ThemeIcon,
-  Title
+  Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -25,7 +26,7 @@ import {
   HiDocument,
   HiShieldCheck,
   HiShieldExclamation,
-  HiX
+  HiX,
 } from "react-icons/hi";
 import Framework from "../../../components/Framework";
 import UserContext from "../../../components/UserContext";
@@ -35,7 +36,7 @@ import {
   nonCurrentUserSelect,
   NonUser,
   Report,
-  User
+  User,
 } from "../../../util/prisma-types";
 
 interface ReportProps {
@@ -47,12 +48,11 @@ const UserSection = ({ user, hint }: { user: NonUser; hint: string }) => {
   return (
     <Group>
       <UserContext user={user}>
-        <Image
-          width={36}
-          height={36}
+        <Avatar
+          size={36}
           src={user.avatarUri}
           alt={user.username}
-          className="rounded-full"
+          radius={99}
         />
       </UserContext>
       <Stack spacing={3}>
@@ -129,15 +129,7 @@ const ReportPage: NextPage<ReportProps> = ({ user, report }) => {
       >
         <Group mb={24}>
           <Group>
-            <Image
-              width={36}
-              height={36}
-              src={
-                punishUser?.avatarUri ||
-                `https://avatars.dicebear.com/api/identicon/${punishUser?.id}.png`
-              }
-              className="rounded-full"
-            />
+            <Avatar size={36} src={punishUser?.avatarUri} radius={99} />
             <Stack spacing={3}>
               <Text size="sm" color="dimmed">
                 Receiving punishment
