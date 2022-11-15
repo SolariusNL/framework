@@ -1,13 +1,13 @@
 import {
-  Avatar,
   Button,
   Center,
   Group,
   HoverCard,
   Indicator,
   Stack,
-  Text,
+  Text
 } from "@mantine/core";
+import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { HiFlag, HiUser } from "react-icons/hi";
@@ -57,7 +57,14 @@ const UserContext = ({ user, children, customHref }: UserContextProps) => {
               }
               mb={16}
             >
-              <Avatar src={user.avatarUri} alt={user.username} radius="xl" />
+              <Image
+                src={
+                  user.avatarUri ||
+                  `https://avatars.dicebear.com/api/identicon/${user.id}.png`
+                }
+                alt={user.username}
+                className="rounded-full"
+              />
             </Indicator>
 
             <Stack spacing={5} align="center" mb={16}>

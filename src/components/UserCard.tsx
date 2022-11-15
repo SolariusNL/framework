@@ -1,13 +1,13 @@
 import {
-  Avatar,
   Button,
   Group,
   Indicator,
   Paper,
   Text,
   ThemeIcon,
-  Tooltip,
+  Tooltip
 } from "@mantine/core";
+import Image from "next/image";
 import Link from "next/link";
 import { HiXCircle } from "react-icons/hi";
 import { NonUser } from "../util/prisma-types";
@@ -38,7 +38,7 @@ const UserCard = ({ user, minimal }: UserCardProps) => {
           }
           position="bottom-end"
         >
-          <Avatar src={user.avatarUri} size={120} radius={120} mx="auto" />
+          <Image src={user.avatarUri} width={120} height={120} className="mx-auto rounded-full" />
         </Indicator>
       </Group>
       <Text align="center" size="lg" weight={500} mt="md">

@@ -1,9 +1,7 @@
 import {
   ActionIcon,
   Alert,
-  AspectRatio,
-  Avatar,
-  Box,
+  AspectRatio, Box,
   Button,
   Grid,
   Group,
@@ -15,7 +13,7 @@ import {
   Text,
   Title,
   Tooltip,
-  UnstyledButton,
+  UnstyledButton
 } from "@mantine/core";
 import isElectron from "is-electron";
 import { GetServerSidePropsContext, NextPage } from "next";
@@ -30,7 +28,7 @@ import {
   HiInformationCircle,
   HiLockClosed,
   HiPlay,
-  HiServer,
+  HiServer
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import Framework from "../../../components/Framework";
@@ -226,14 +224,15 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                   }}
                 >
                   <UserContext user={game.author}>
-                    <Avatar
+                    <Image
                       src={
                         game.author.avatarUri ||
                         `https://avatars.dicebear.com/api/identicon/${game.authorId}.png`
                       }
                       alt={game.author.username}
                       radius="xl"
-                      size={48}
+                      width={48}
+                      height={48}
                       onClick={() =>
                         router.push(`/profile/${game.author.username}`)
                       }

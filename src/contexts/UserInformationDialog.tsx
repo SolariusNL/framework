@@ -1,19 +1,19 @@
 import {
-  Avatar,
   Group,
   Modal,
   Paper,
   SegmentedControl,
   Text,
-  UnstyledButton,
+  UnstyledButton
 } from "@mantine/core";
+import Image from "next/image";
 import Link from "next/link";
 import {
   createContext,
   Dispatch,
   SetStateAction,
   useContext,
-  useState,
+  useState
 } from "react";
 import ModernEmptyState from "../components/ModernEmptyState";
 import { NonUser, User } from "../util/prisma-types";
@@ -64,10 +64,14 @@ const UserItem = ({
       >
         <Group>
           <Group>
-            <Avatar
-              src={user?.avatarUri}
-              size={26}
-              radius="xl"
+            <Image
+              src={
+                user?.avatarUri ||
+                `https://avatars.dicebear.com/api/identicon/${user?.id}.png`
+              }
+              width={26}
+              height={26}
+              className="rounded-full"
               alt={user?.username}
             />
           </Group>

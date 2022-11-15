@@ -1,13 +1,13 @@
 import {
-  Avatar,
   Button,
   Divider,
   Group,
   Pagination,
   Stack,
-  Textarea,
+  Textarea
 } from "@mantine/core";
 import { usePagination } from "@mantine/hooks";
+import Image from "next/image";
 import { useState } from "react";
 import { HiChat } from "react-icons/hi";
 import { getCookie } from "../util/cookies";
@@ -80,14 +80,15 @@ const GameComments = ({ user, game }: GameCommentsProps) => {
             flexGrow: 0,
           }}
         >
-          <Avatar
+          <Image
             src={
               user.avatarUri ||
               `https://avatars.dicebear.com/api/identicon/${user.id}.png`
             }
             alt={user.username}
-            radius="xl"
-            size={32}
+            className="rounded-full"
+            width={32}
+            height={32}
           />
         </div>
 

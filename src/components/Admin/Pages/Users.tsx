@@ -1,13 +1,7 @@
-import {
-  Avatar,
-  Badge,
-  Group,
-  Text,
-  TextInput,
-  UnstyledButton,
-} from "@mantine/core";
+import { Badge, Group, Text, TextInput, UnstyledButton } from "@mantine/core";
 import { DiscordConnectCode, Notification, Session } from "@prisma/client";
 import { getCookie } from "cookies-next";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { HiSearch } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
@@ -82,7 +76,13 @@ const Users = () => {
                 }}
                 key={u.id}
               >
-                <Avatar src={u.avatarUri} className="mr-3" />
+                <Image
+                  src={
+                    u.avatarUri ||
+                    `https://avatars.dicebear.com/api/identicon/${u.id}.png`
+                  }
+                  className="mr-3 rounded-full"
+                />
                 <div>
                   <div className="flex items-center">
                     <Text weight={600} className="mr-2">

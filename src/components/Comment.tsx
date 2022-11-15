@@ -1,16 +1,15 @@
 import {
-  ActionIcon,
-  Avatar,
-  Button,
+  ActionIcon, Button,
   createStyles,
   Menu,
   Paper,
   Stack,
   Text,
   Textarea,
-  Tooltip,
+  Tooltip
 } from "@mantine/core";
 import { getCookie } from "cookies-next";
+import Image from "next/image";
 import { useState } from "react";
 import {
   HiChevronDown,
@@ -21,13 +20,12 @@ import {
   HiGift,
   HiPencil,
   HiShieldCheck,
-  HiTrash,
+  HiTrash
 } from "react-icons/hi";
 import { useFrameworkUser } from "../contexts/FrameworkUser";
 import { NonUser } from "../util/prisma-types";
 import { getRelativeTime } from "../util/relativeTime";
 import ReportUser from "./ReportUser";
-import Stateful from "./Stateful";
 import UserContext from "./UserContext";
 
 const useStyles = createStyles((theme) => ({
@@ -96,13 +94,13 @@ const Comment = ({
             <div className="justify-between flex">
               <div className="flex gap-2">
                 <UserContext user={user}>
-                  <Avatar
+                  <Image
                     src={
                       user.avatarUri ||
                       `https://avatars.dicebear.com/api/identicon/${user.id}.png`
                     }
                     alt={user.username}
-                    radius="xl"
+                    className="rounded-full"
                   />
                 </UserContext>
                 <div className="flex flex-col ml-2 gap-1">

@@ -9,7 +9,6 @@ import {
   CopyButton,
   Grid,
   Group,
-  Image,
   Indicator,
   Paper,
   Progress,
@@ -17,10 +16,11 @@ import {
   Text,
   ThemeIcon,
   Title,
-  Tooltip,
+  Tooltip
 } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { NextSeo } from "next-seo";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import React from "react";
 import ReactCountryFlag from "react-country-flag";
@@ -36,7 +36,7 @@ import {
   HiOfficeBuilding,
   HiShieldCheck,
   HiUser,
-  HiUsers,
+  HiUsers
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import AdminBadge from "../../components/Badges/Admin";

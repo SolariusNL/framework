@@ -1,4 +1,5 @@
-import { Avatar, Group, Paper, Text, Title } from "@mantine/core";
+import { Group, Paper, Text, Title } from "@mantine/core";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { Report } from "../util/prisma-types";
 import { getRelativeTime } from "../util/relativeTime";
@@ -30,11 +31,12 @@ const ReportCard = ({ report }: ReportCardProps) => {
     >
       <Group mb={10}>
         <UserContext user={report.author}>
-          <Avatar
+          <Image
             src={report.author.avatarUri}
             alt={report.author.username}
-            radius={99}
-            size={28}
+            className="rounded-full"
+            width={28}
+            height={28}
           />
         </UserContext>
 

@@ -1,5 +1,4 @@
 import {
-  Avatar,
   Button,
   Card,
   Grid,
@@ -8,11 +7,12 @@ import {
   Modal,
   Text,
   TextInput,
-  Title,
+  Title
 } from "@mantine/core";
 import { Prism } from "@mantine/prism";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { HiDownload, HiEye, HiPlus, HiSearch } from "react-icons/hi";
@@ -177,10 +177,11 @@ const Snippets: NextPage<SnippetsProps> = ({ user, snippets }) => {
 
                       <Group mb="lg">
                         <UserContext user={snippet.user}>
-                          <Avatar
+                          <Image
                             src={snippet.user.avatarUri}
-                            radius="xl"
-                            size="sm"
+                            className="rounded-full"
+                            width={26}
+                            height={26}
                           />
                         </UserContext>
                         <Text weight={500} color="dimmed">
