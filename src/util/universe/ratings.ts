@@ -1,4 +1,5 @@
-import { RatingType } from "@prisma/client";
+import { MantineColor } from "@mantine/core";
+import { Rating, RatingType } from "@prisma/client";
 
 function getRatingTypeDescription(type: RatingType): string {
   switch (type) {
@@ -16,7 +17,20 @@ function getRatingTypeDescription(type: RatingType): string {
       return "Adults only 18 and older can play this game.";
     case RatingType.RP:
       return "Rating Pending";
+    default:
+      return "Rating Pending";
   }
 }
 
-export { getRatingTypeDescription };
+function getRatingColor(rating: Rating): MantineColor {
+  return rating.type === "EC" ||
+    rating.type === "E" ||
+    rating.type === "E10" ||
+    rating.type === "T"
+    ? "green"
+    : rating.type === "M" || rating.type === "AO" || rating.type === "RP"
+    ? "red"
+    : "gray";
+}
+
+export { getRatingTypeDescription, getRatingColor };
