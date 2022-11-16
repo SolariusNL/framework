@@ -18,6 +18,7 @@ import {
   ThemeIcon,
   Title,
   Tooltip,
+  TypographyStylesProvider,
 } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { NextSeo } from "next-seo";
@@ -95,10 +96,10 @@ const Profile: NextPage<ProfileProps> = ({ user, profile }) => {
       />
       <NextSeo
         title={String(viewing.username)}
-        description={String(viewing.bio)}
+        description={String(viewing.bio.substring(0, 160))}
         openGraph={{
           title: `${String(viewing.username)} on Framework`,
-          description: String(viewing.bio),
+          description: String(viewing.bio.substring(0, 160)),
           ...(viewing.avatarUri && {
             images: [
               {
@@ -314,7 +315,16 @@ const Profile: NextPage<ProfileProps> = ({ user, profile }) => {
               <Text weight={550} mb={10} color="dimmed">
                 About {viewing.username}
               </Text>
-              <Text mb={16}>{viewing.bio}</Text>
+              <Text mb={16}>
+                {viewing.bio
+                  ? viewing.bio.split("\n").map((line, i) => (
+                      <React.Fragment key={i}>
+                        {line}
+                        <br />
+                      </React.Fragment>
+                    ))
+                  : "No bio"}
+              </Text>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <ShadedCard withBorder shadow="md" className="h-fit">
                   <Stack spacing={6}>

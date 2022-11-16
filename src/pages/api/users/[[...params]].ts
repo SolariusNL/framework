@@ -431,7 +431,10 @@ class UserRouter {
       {
         name: "bio",
         error: "Bio must be less than 1024 characters",
-        verify: async (value: string) => value.length <= 1024,
+        // newlines screw up <- stuff, and newlines are allowed so
+        verify: (value: string) => value
+          .replace(/(\r\n|\n|\r)/gm, "")
+          .length <= 1024,
       },
       {
         name: "busy",

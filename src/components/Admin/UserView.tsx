@@ -8,9 +8,10 @@ import {
   Table,
   Tabs,
   Text,
-  Title,
+  Title
 } from "@mantine/core";
 import Link from "next/link";
+import React from "react";
 import { useUserInformationDialog } from "../../contexts/UserInformationDialog";
 import Copy from "../Copy";
 import ModernEmptyState from "../ModernEmptyState";
@@ -37,7 +38,14 @@ const UserView = ({ user }: UserViewProps) => {
             {user.role === "ADMIN" && <Badge>Staff</Badge>}
             {user.banned && <Badge color="red">Banned</Badge>}
           </Group>
-          <Text color="dimmed">{user.bio}</Text>
+          <Text color="dimmed">
+            {user.bio.split("\n").map((line, i) => (
+              <React.Fragment key={randomKey()}>
+                {line}
+                <br />
+              </React.Fragment>
+            ))}
+          </Text>
         </Stack>
       </Group>
 

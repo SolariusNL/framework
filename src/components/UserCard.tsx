@@ -57,7 +57,7 @@ const UserCard = ({ user, minimal }: UserCardProps) => {
             {user.followers.length} followers • {user.following.length}{" "}
             following
           </Text>
-          <Text align="center" color="dimmed" size="sm" lineClamp={2}>
+          <Text align="center" color="dimmed" size="sm" lineClamp={1}>
             {user.bio || "No bio"}
           </Text>
         </>
