@@ -430,8 +430,8 @@ class UserRouter {
       },
       {
         name: "bio",
-        regex: /^.{0,1024}$/,
         error: "Bio must be less than 1024 characters",
+        verify: async (value: string) => value.length <= 1024,
       },
       {
         name: "busy",
