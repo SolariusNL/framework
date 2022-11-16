@@ -240,7 +240,7 @@ const AccountTab = ({ user }: AccountTabProps) => {
                   label="Alias"
                   placeholder="Create an alias"
                   description="Your alias is a non-unique username."
-                  defaultValue={user.alias}
+                  defaultValue={user.alias || ""}
                   onChange={(e) => {
                     update("alias", e.target.value);
                   }}
