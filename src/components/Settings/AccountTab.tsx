@@ -15,7 +15,6 @@ import {
 import { useRef, useState } from "react";
 import {
   HiClock,
-  HiDocumentText,
   HiGlobe,
   HiInformationCircle,
   HiOfficeBuilding,
@@ -24,12 +23,12 @@ import {
   HiUser,
 } from "react-icons/hi";
 import getTimezones from "../../data/timezones";
+import ImageUploader from "../ImageUploader";
 import { getCookie } from "../../util/cookies";
 import { User } from "../../util/prisma-types";
 import Copy from "../Copy";
 import CountrySelect from "../CountryPicker";
 import Descriptive from "../Descriptive";
-import ImageUploader from "../ImageUploader";
 import SettingsTab from "./SettingsTab";
 import SideBySide from "./SideBySide";
 
@@ -220,37 +219,6 @@ const AccountTab = ({ user }: AccountTabProps) => {
                     update("username", e.target.value);
                   }}
                   icon={<HiUser />}
-                  error={
-                    updated.username &&
-                    !updated.username.match(/^[a-zA-Z0-9_]{3,24}$/)
-                      ? "Your username must be between 3 and 24 characters and can only contain letters, numbers, and underscores."
-                      : undefined
-                  }
-                />
-              }
-            />
-          </div>
-          <div>
-            <SideBySide
-              title="Aliases"
-              description="Your aliases are non-unique."
-              icon={<HiUser />}
-              right={
-                <TextInput
-                  label="Alias"
-                  placeholder="Create an alias"
-                  description="Your alias is a non-unique username."
-                  defaultValue={user.alias || ""}
-                  onChange={(e) => {
-                    update("alias", e.target.value);
-                  }}
-                  icon={<HiDocumentText />}
-                  error={
-                    updated.alias &&
-                    !updated.alias.match(/^[a-zA-Z0-9_]{3,24}$/)
-                      ? "Your alias must be between 3 and 24 characters and can only contain letters, numbers, and underscores."
-                      : undefined
-                  }
                 />
               }
             />

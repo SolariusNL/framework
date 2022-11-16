@@ -153,33 +153,9 @@ const Profile: NextPage<ProfileProps> = ({ user, profile }) => {
                   svg
                 />
               )}
-              <Tooltip
-                label={
-                  user.previousUsernames.length > 0 &&
-                  `This user was previously known as: ${viewing.previousUsernames.join(
-                    ", "
-                  )}.`
-                }
-              >
-                <Text weight={500} size="xl" align="center">
-                  {viewing.username}
-                </Text>
-              </Tooltip>
-              {viewing.alias && (
-                <ReactNoSSR>
-                  <Tooltip label="This user has an alias:">
-                    <Text
-                      weight={500}
-                      size="xl"
-                      align="center"
-                      color="dimmed"
-                      sx={{ marginLeft: 8 }}
-                    >
-                      ({viewing.alias})
-                    </Text>
-                  </Tooltip>
-                </ReactNoSSR>
-              )}
+              <Text weight={500} size="xl" align="center">
+                {viewing.username}
+              </Text>
             </div>
 
             <div
@@ -189,13 +165,11 @@ const Profile: NextPage<ProfileProps> = ({ user, profile }) => {
                 gap: "12px",
               }}
             >
-              <ReactNoSSR>
-                {viewing.busy && <Badge>Busy</Badge>}
-                {viewing.premium && <HiGift title="Premium" />}
-                {viewing.role == "ADMIN" && (
-                  <HiShieldCheck title="Official Framework Staff" />
-                )}
-              </ReactNoSSR>
+              {viewing.busy && <Badge>Busy</Badge>}
+              {viewing.premium && <HiGift title="Premium" />}
+              {viewing.role == "ADMIN" && (
+                <HiShieldCheck title="Official Framework Staff" />
+              )}
             </div>
 
             <div
@@ -342,95 +316,88 @@ const Profile: NextPage<ProfileProps> = ({ user, profile }) => {
                 About {viewing.username}
               </Text>
               <Text mb={16}>
-                <ReactNoSSR>
-                  {viewing.bio
-                    ? viewing.bio.split("\n").map((line, i) => (
-                        <React.Fragment key={i}>
-                          {line}
-                          <br />
-                        </React.Fragment>
-                      ))
-                    : "No bio"}
-                </ReactNoSSR>
+                {viewing.bio
+                  ? viewing.bio.split("\n").map((line, i) => (
+                      <React.Fragment key={i}>
+                        {line}
+                        <br />
+                      </React.Fragment>
+                    ))
+                  : "No bio"}
               </Text>
-              <ReactNoSSR>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <ShadedCard withBorder shadow="md" className="h-fit">
-                    <Stack spacing={6}>
-                      {[
-                        [HiClock, viewing.timeZone, "Timezone"],
-                        [
-                          HiGlobe,
-                          countries.find((c) => c.code == viewing.country)
-                            ?.name,
-                          "Country",
-                        ],
-                        [
-                          HiOfficeBuilding,
-                          viewing.busy ? "Busy" : "Available" || "Available",
-                          "Status",
-                        ],
-                        [
-                          HiDesktopComputer,
-                          new Date(viewing.lastSeen).toLocaleString(),
-                          "Last seen",
-                        ],
-                      ]
-                        .filter(([, value]) => value)
-                        .map(([Icon, value, label]: any) => (
-                          <Group spacing={3} key={label}>
-                            <Tooltip label={label} key={value}>
-                              <ThemeIcon color="transparent">
-                                <Icon
-                                  color="#868e96"
-                                  style={{ marginRight: 5 }}
-                                />
-                              </ThemeIcon>
-                            </Tooltip>
-                            <Text color="dimmed" mr={5}>
-                              {String(value)}
-                            </Text>
-                          </Group>
-                        ))}
-                    </Stack>
-                  </ShadedCard>
-                  <ShadedCard withBorder shadow="md" className="h-fit">
-                    <Stack spacing={12}>
-                      {[
-                        {
-                          icon: HiClock,
-                          label: "Member since",
-                          value: new Date(
-                            viewing.createdAt
-                          ).toLocaleDateString(),
-                        },
-                        {
-                          icon: HiUsers,
-                          label: "Place visits",
-                          value: viewing.games
-                            .map((g) => g.visits)
-                            .reduce((a, b) => a + b, 0),
-                        },
-                        {
-                          icon: HiClock,
-                          label: "Hours played",
-                          value: 0,
-                        },
-                      ].map(({ icon: Icon, label, value }) => (
-                        <Group key={String(value)} spacing={3}>
-                          <Icon color="#868e96" style={{ marginRight: 12 }} />
-                          <div className="items-start">
-                            <Text color="dimmed" weight={600}>
-                              {label}
-                            </Text>
-                            <Text color="dimmed">{String(value)}</Text>
-                          </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <ShadedCard withBorder shadow="md" className="h-fit">
+                  <Stack spacing={6}>
+                    {[
+                      [HiClock, viewing.timeZone, "Timezone"],
+                      [
+                        HiGlobe,
+                        countries.find((c) => c.code == viewing.country)?.name,
+                        "Country",
+                      ],
+                      [
+                        HiOfficeBuilding,
+                        viewing.busy ? "Busy" : "Available" || "Available",
+                        "Status",
+                      ],
+                      [
+                        HiDesktopComputer,
+                        new Date(viewing.lastSeen).toLocaleString(),
+                        "Last seen",
+                      ],
+                    ]
+                      .filter(([, value]) => value)
+                      .map(([Icon, value, label]: any) => (
+                        <Group spacing={3} key={label}>
+                          <Tooltip label={label} key={value}>
+                            <ThemeIcon color="transparent">
+                              <Icon
+                                color="#868e96"
+                                style={{ marginRight: 5 }}
+                              />
+                            </ThemeIcon>
+                          </Tooltip>
+                          <Text color="dimmed" mr={5}>
+                            {String(value)}
+                          </Text>
                         </Group>
                       ))}
-                    </Stack>
-                  </ShadedCard>
-                </div>
-              </ReactNoSSR>
+                  </Stack>
+                </ShadedCard>
+                <ShadedCard withBorder shadow="md" className="h-fit">
+                  <Stack spacing={12}>
+                    {[
+                      {
+                        icon: HiClock,
+                        label: "Member since",
+                        value: new Date(viewing.createdAt).toLocaleDateString(),
+                      },
+                      {
+                        icon: HiUsers,
+                        label: "Place visits",
+                        value: viewing.games
+                          .map((g) => g.visits)
+                          .reduce((a, b) => a + b, 0),
+                      },
+                      {
+                        icon: HiClock,
+                        label: "Hours played",
+                        value: 0,
+                      },
+                    ].map(({ icon: Icon, label, value }) => (
+                      <Group key={String(value)} spacing={3}>
+                        <Icon color="#868e96" style={{ marginRight: 12 }} />
+                        <div className="items-start">
+                          <Text color="dimmed" weight={600}>
+                            {label}
+                          </Text>
+                          <Text color="dimmed">{String(value)}</Text>
+                        </div>
+                      </Group>
+                    ))}
+                  </Stack>
+                </ShadedCard>
+              </div>
               <Text weight={550} mb={10} color="dimmed" mt={50}>
                 Badges
               </Text>
@@ -579,8 +546,6 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       following: nonCurrentUserSelect,
       timeZone: true,
       lastSeen: true,
-      alias: true,
-      previousUsernames: true,
     },
   });
 
