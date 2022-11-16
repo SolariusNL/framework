@@ -182,7 +182,7 @@ const tabs = [
         icon: BsDiscord,
         title: "Discord",
         description: "Join the Framework community on Discord",
-        href: "https://discord.gg/_",
+        href: "https://discord.gg/g88JS6Tmte",
       },
     ],
     footer: {

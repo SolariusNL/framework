@@ -89,22 +89,24 @@ const Landing: NextPage = () => {
       <Container className={classes.wrapper} size={1400}>
         <div className={classes.inner}>
           <Title className={classes.title}>
+            Roblox{" "}
             <Text
               component="span"
               variant="gradient"
               gradient={{ from: "pink", to: "grape" }}
               inherit
             >
-              Roblox
-            </Text>{" "}
-            redefined.
+              redefined.
+            </Text>
           </Title>
 
           <Container p={0} size={600}>
             <Text size="lg" color="dimmed" className={classes.description}>
-              Join our ever-growing community of imaginative people. Come
-              together in our continuously expanding library of{" "}
-              <span className="font-semibold">immersive</span> games.
+              Join our free, open-source federated network of what we call a{" "}
+              <span className="font-semibold">better Roblox</span>. Come and
+              explore the possibilities of limitless creativity and
+              self-expression in a decentralized, censorship-resistant, and
+              permissionless environment.
             </Text>
           </Container>
 

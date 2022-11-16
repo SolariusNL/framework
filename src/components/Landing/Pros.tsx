@@ -42,21 +42,21 @@ const features = [
     icon: HiEyeOff,
     title: "Privacy and security",
     description:
-      "Framework is built on top of the most secure and secure technologies available today. We use the latest web technologies to protect your data.",
+      "Framework is built on top of the most secure technologies available today. We use the latest web technologies that are constantly being improved by the community.",
     gradient: { from: "teal", to: "cyan" },
   },
   {
     icon: HiXCircle,
     title: "Safe community",
     description:
-      "Our staff is committed to providing a safe and friendly community for everyone to enjoy.",
+      "Our staff is committed to providing a safe and friendly community for everyone to enjoy. Being federated, moderation is decentralized and generally more effective.",
     gradient: { from: "red", to: "orange" },
   },
   {
     icon: HiServer,
     title: "Self-hosting",
     description:
-      "Games and other services are self-hosted on your own server, giving you freedom and control over your content.",
+      "Framework is designed to be self-hosted. You can host your own instance of Framework and be interoperable with the rest of the Framework fediverse.",
     gradient: { from: "blue", to: "indigo" },
   },
 ];
@@ -88,7 +88,7 @@ const Pros = () => {
       <Grid gutter={80}>
         <Col span={12} md={5}>
           <Title className={classes.title} order={2}>
-            Pros of using Framework
+            Our Standards
           </Title>
           <Text color="dimmed">
             Framework unlocks creativity, freedom, and imagination. Our powerful

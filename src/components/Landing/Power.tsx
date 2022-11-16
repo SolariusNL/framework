@@ -48,6 +48,39 @@ const pickaxe = new Tools.Held("pickaxe-tool", {
 
 tool.registerGlobal(pickaxe);`,
     ],
+    [
+      "Datastores",
+      `import { datastore, players } from "@frameworkts/services";
+import type { DatastoreBase } from "@frameworkts/services/datastore";
+const master = datastore.createMaster<{
+  xp: number;
+  gold: number;
+} extends DatastoreBase<infer T> ? T : never>("master", {
+  initialData: {
+    xp: 0,
+    gold: 50,
+  },
+  onSet: (key, value) => {
+    console.log(\`Set \${key} to \${value}\`);
+  },
+  onGet: (key, value) => {
+    console.log(\`Got \${key} as \${value}\`);
+  },
+  onRemove: (key) => {
+    console.log(\`Removed \${key}\`);
+  },
+}).factory().getClient();
+
+const plrDs = master.createBucket("player", master.types.default);
+
+players.on("exit", async (plr) => {
+  await plrDs.saveAsync({
+    xp: plr.getTag<number>("xp"),
+    gold: plr.getTag<number>("gold"),
+  });
+});
+      `
+    ]
   ];
 
   return (
@@ -72,12 +105,13 @@ tool.registerGlobal(pickaxe);`,
         </Col>
         <Col span={12} md={5}>
           <Title className={classes.title} order={2}>
-            Power to the players
+            Power at your fingertips
           </Title>
           <Text color="dimmed">
-            Framework is an open platform built on modern technologies that
-            integrate seamlessly with your existing workflow. Building your
-            first game is as easy as it gets.
+            Framework unlocks creativity, freedom, and imagination. This is
+            achieved by our use and consistent support of modern technologies
+            such as TypeScript, React, and Node.js. Our powerful tools empower
+            people like you to create stunning experiences without the hassle.
           </Text>
         </Col>
       </Grid>
