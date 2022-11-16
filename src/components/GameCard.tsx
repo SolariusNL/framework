@@ -122,7 +122,7 @@ const GameCard = ({ game }: GameCardProps) => {
             classes.footer + " flex justify-between items-center gap-2"
           }
         >
-          <Link href={`/games/${game.id}`} passHref>
+          <Link href={`/game/${game.id}`} passHref>
             <Button leftIcon={<HiArrowRight />} fullWidth>
               View
             </Button>
