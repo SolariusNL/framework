@@ -113,7 +113,7 @@ const Comment = ({
                     {user.role == "ADMIN" && (
                       <HiShieldCheck title="Framework Staff Member" />
                     )}
-                    {!user.premium && <HiGift title="Premium Member" />}
+                    {user.premium && <HiGift title="Premium Member" />}
                   </div>
                   <Tooltip
                     label={new Date(postedAt).toISOString()}
