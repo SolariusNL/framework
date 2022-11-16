@@ -1,7 +1,10 @@
 import { Badge, Card, Stack, Text, useMantineTheme } from "@mantine/core";
 import { HiChat, HiLibrary, HiXCircle } from "react-icons/hi";
 import { Game } from "../util/prisma-types";
-import { getRatingTypeDescription } from "../util/universe/ratings";
+import {
+  getRatingColor,
+  getRatingTypeDescription,
+} from "../util/universe/ratings";
 
 interface GameRatingProps {
   game: Game;
@@ -23,22 +26,7 @@ const GameRating = ({ game }: GameRatingProps) => {
       }}
     >
       <div className="text-center">
-        <Badge
-          size="lg"
-          color={
-            rating.type === "EC" ||
-            rating.type === "E" ||
-            rating.type === "E10" ||
-            rating.type === "T"
-              ? "green"
-              : rating.type === "M" ||
-                rating.type === "AO" ||
-                rating.type === "RP"
-              ? "red"
-              : "gray"
-          }
-          mb={6}
-        >
+        <Badge size="lg" color={getRatingColor(rating)} mb={6}>
           {rating.type}
         </Badge>
 
