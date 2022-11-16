@@ -185,6 +185,7 @@ class AuthRouter {
             avatar: {
               create: {},
             },
+            alias: ""
           },
         },
         token: Array(12)

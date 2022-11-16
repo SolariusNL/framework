@@ -91,6 +91,8 @@ model User {
   connectedAccounts          ConnectedAccount[]    @relation("connectedAccounts")
   oauthAccessTokens          OAuth2Access[]        @relation("oauth2Access")
   discordAccount             DiscordConnectCode?   @relation("discordAccount")
+  previousUsernames          String[]
+  alias                      String
 }
 
 model ConnectedAccount {

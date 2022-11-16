@@ -407,7 +407,12 @@ class UserRouter {
 
           await prisma.user.update({
             where: { id: user.id },
-            data: { tickets: { decrement: 500 } },
+            data: {
+              tickets: { decrement: 500 },
+              previousUsernames: {
+                push: user.username,
+              },
+            },
           });
 
           await logTransaction(
@@ -431,10 +436,8 @@ class UserRouter {
       {
         name: "bio",
         error: "Bio must be less than 1024 characters",
-        // newlines screw up <- stuff, and newlines are allowed so
-        verify: (value: string) => value
-          .replace(/(\r\n|\n|\r)/gm, "")
-          .length <= 1024,
+        verify: (value: string) =>
+          value.replace(/(\r\n|\n|\r)/gm, "").length <= 1024,
       },
       {
         name: "busy",
@@ -465,6 +468,14 @@ class UserRouter {
           return false;
         },
         error: "Invalid timezone",
+      },
+      {
+        name: "alias",
+        verify: async (value: any) => {
+          if (!value.match(/^[a-zA-Z0-9_]{3,24}$/)) return false;
+
+          return true;
+        },
       },
     ];
 
