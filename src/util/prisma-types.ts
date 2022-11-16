@@ -16,6 +16,8 @@ export const nonCurrentUserSelect = {
     lastSeen: true,
     timeZone: true,
     role: true,
+    alias: true,
+    previousUsernames: true,
   },
 };
 
@@ -65,6 +67,8 @@ const nonuser = Prisma.validator<Prisma.UserArgs>()({
     lastSeen: true,
     timeZone: true,
     role: true,
+    alias: true,
+    previousUsernames: true,
   },
 });
 
@@ -117,6 +121,8 @@ export const userSelect: Prisma.UserSelect = {
   enrolledInPreview: true,
   timeZone: true,
   premiumSubscription: true,
+  alias: true,
+  previousUsernames: true,
 };
 
 export const gameSelect: Prisma.GameSelect = {

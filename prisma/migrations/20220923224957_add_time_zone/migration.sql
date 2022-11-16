@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE "User" ADD COLUMN     "timeZone" TEXT NOT NULL DEFAULT 'UTC+12';
