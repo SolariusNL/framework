@@ -124,6 +124,7 @@ export const userSelect: Prisma.UserSelect = {
   alias: true,
   previousUsernames: true,
   emailRequiredLogin: true,
+  lastUsernameChange: true,
 };
 
 export const gameSelect: Prisma.GameSelect = {

@@ -394,14 +394,18 @@ class UserRouter {
           }
 
           const userExists = await prisma.user.findFirst({
-            where: { username: String(value) },
+            where: {
+              username: String(value),
+              previousUsernames: { has: value },
+            },
           });
 
-          if (userExists) {
-            return false;
-          }
-
-          if (user.tickets < 500) {
+          if (
+            userExists ||
+            user.tickets < 500 ||
+            new Date(user.lastUsernameChange as Date).getTime() + 86400000 >
+              Date.now()
+          ) {
             return false;
           }
 
@@ -412,6 +416,7 @@ class UserRouter {
               previousUsernames: {
                 push: user.username,
               },
+              lastUsernameChange: new Date(),
             },
           });
 
@@ -425,7 +430,7 @@ class UserRouter {
           return true;
         },
         error:
-          "You either cannot afford to change your username or your username is invalid. (Internal system error)",
+          "Username must be between 3 and 24 characters, and can only contain letters, numbers, and underscores. You may only change your username once every 24 hours, and it costs 500 tickets.",
       },
       {
         name: "country",

@@ -95,6 +95,7 @@ model User {
   previousUsernames          String[]
   emailRequiredLogin         Boolean               @default(false)
   emailLoginRequests         EmailLoginRequest[]   @relation("emailLoginRequests")
+  lastUsernameChange         DateTime?
 }
 
 model ConnectedAccount {
