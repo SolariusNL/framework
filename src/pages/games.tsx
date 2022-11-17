@@ -1,11 +1,9 @@
 import {
-  Button,
-  Grid,
-  Group,
+  Button, Group,
   Modal,
   MultiSelect,
   Stack,
-  TextInput,
+  TextInput
 } from "@mantine/core";
 import { GameGenre } from "@prisma/client";
 import { GetServerSidePropsContext, NextPage } from "next";
@@ -194,13 +192,13 @@ const Games: NextPage<GamesProps> = ({ user, initialGames }) => {
             {games.length > 0 &&
               games.map((game) => <GameCard game={game} key={game.id} />)}
             {games.length == 0 && (
-              <Grid.Col span={3}>
+              <div className="col-span-2">
                 <ModernEmptyState
                   title="No games found"
                   body="Try switching up your filter."
                   shaded
                 />
-              </Grid.Col>
+              </div>
             )}
           </div>
         </div>
