@@ -10,11 +10,23 @@ import Authorized, { Account } from "../../../util/api/authorized";
 import { getAccountFromSession } from "../../../util/authorizedRoute";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
+import sharp from "sharp";
 
 export const config = {
   api: {
     bodyParser: false,
   },
+};
+
+const convertToWebp = (file: any) => {
+  return sharp(file)
+    .webp({ quality: 95 })
+    .toBuffer()
+    .then((data) => data)
+    .catch((err) => {
+      console.log(err);
+      return file;
+    });
 };
 
 const imageOnly = (req: any, file: any, callback: any) => {
@@ -23,6 +35,10 @@ const imageOnly = (req: any, file: any, callback: any) => {
   if (ext !== ".png" && ext !== ".jpg" && ext !== ".jpeg") {
     return callback(new Error("Only images are allowed"));
   }
+
+  convertToWebp(file).then((data) => {
+    file.buffer = data;
+  });
 
   callback(null, true);
 };
@@ -41,10 +57,11 @@ const avatars = multer({
       await prisma.user.update({
         where: { id: user?.id },
         data: {
-          avatarUri: `/avatars/${String(user?.username)}.png`,
+          avatarUri: `/avatars/${String(user?.username)}.webp`,
         },
       });
-      cb(null, user?.username + ".png");
+      
+      cb(null, user?.username + ".webp");
     },
   }),
   fileFilter: imageOnly,
@@ -80,12 +97,12 @@ const gameThumbnails = multer({
         },
         data: {
           gallery: {
-            set: [`/thumbnails/${game.id}.png`],
+            set: [`/thumbnails/${game.id}.webp`],
           },
         },
       });
 
-      cb(null, game.id + ".png");
+      cb(null, game.id + ".webp");
     },
   }),
   fileFilter: imageOnly,
@@ -120,11 +137,11 @@ const gameIcon = multer({
           id: Number.parseInt(req.params.gameId),
         },
         data: {
-          iconUri: `/icons/${game.id}.png`,
+          iconUri: `/icons/${game.id}.webp`,
         },
       });
 
-      cb(null, game.id + ".png");
+      cb(null, game.id + ".webp");
     },
   }),
   fileFilter: imageOnly,
@@ -136,7 +153,7 @@ class MediaRouter {
   @UseMiddleware(avatars)
   async uploadAvatar(@Account() account: User) {
     return {
-      avatar: `/avatars/${account.username}.png`,
+      avatar: `/avatars/${account.username}.webp`,
       success: true,
     };
   }
@@ -149,7 +166,7 @@ class MediaRouter {
     @Param("gameId") gameId: number
   ) {
     return {
-      thumbnail: `/thumbnails/${gameId}.png`,
+      thumbnail: `/thumbnails/${gameId}.webp`,
       success: true,
     };
   }
@@ -159,7 +176,7 @@ class MediaRouter {
   @UseMiddleware(gameIcon)
   async uploadIcon(@Account() account: User, @Param("gameId") gameId: number) {
     return {
-      icon: `/icons/${account.username}.png`,
+      icon: `/icons/${account.username}.webp`,
       success: true,
     };
   }
