@@ -123,6 +123,7 @@ export const userSelect: Prisma.UserSelect = {
   premiumSubscription: true,
   alias: true,
   previousUsernames: true,
+  emailRequiredLogin: true,
 };
 
 export const gameSelect: Prisma.GameSelect = {

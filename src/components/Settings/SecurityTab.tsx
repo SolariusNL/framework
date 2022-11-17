@@ -5,6 +5,7 @@ import {
   Modal,
   PasswordInput,
   Stack,
+  Switch,
   Text,
   TextInput,
 } from "@mantine/core";
@@ -21,6 +22,9 @@ import {
 } from "react-icons/hi";
 import { getCookie } from "../../util/cookies";
 import { User } from "../../util/prisma-types";
+import Descriptive from "../Descriptive";
+import { updateAccount } from "./AccountTab";
+import Grouped from "./Grouped";
 import SettingsTab from "./SettingsTab";
 import SideBySide from "./SideBySide";
 
@@ -35,8 +39,14 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [newEmail, setNewEmail] = useState("");
-
+  const [updated, setUpdated] = useState<any>({});
+  const update = (field: string, value: any) => {
+    setUpdated({ ...updated, [field]: value });
+    setUnsavedChanges(true);
+  };
   const router = useRouter();
+  const [unsavedChanges, setUnsavedChanges] = useState(false);
+  const [success, setSuccess] = useState<boolean>(false);
 
   const sendEmailVerification = async () => {
     await fetch("/api/users/@me/verifyemail", {
@@ -144,84 +154,133 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
         <Button onClick={changeEmail}>Confirm</Button>
       </Modal>
 
-      <SettingsTab tabValue="security" tabTitle="Security">
-        <Stack>
-          <SideBySide
-            title="Password"
-            description="Your password is used to log in to your account."
-            right={
-              <PasswordInput
-                label="Password"
-                description="Your password"
-                disabled
-                icon={<HiLockClosed />}
-                value="********"
-              />
-            }
-            icon={<HiKey />}
-            actions={
-              <Button
-                onClick={() => setPasswordModal(true)}
-                leftIcon={<HiKey />}
-                fullWidth
-              >
-                Change password
-              </Button>
-            }
-          />
-
-          <SideBySide
-            title="Email"
-            description="Your email address is used to log in to your account. You can also use it to reset your password."
-            right={
-              <div>
-                <TextInput
-                  disabled
-                  label="Email"
-                  description="Your email address"
-                  value={user.email}
-                  icon={<HiLockClosed />}
-                />
-                {!user.emailVerified && (
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 8,
-                      marginTop: 12,
-                    }}
+      <SettingsTab
+        tabValue="security"
+        tabTitle="Security"
+        unsaved={unsavedChanges}
+        saveButtonAction={async (setLoading, setError) => {
+          updateAccount(setLoading, setError, updated, setSuccess);
+        }}
+        saveButtonLabel="Save"
+        setSuccess={setSuccess}
+        success={success}
+      >
+        <Stack spacing={32}>
+          <Grouped title="Credentials">
+            <Stack>
+              <SideBySide
+                title="Password"
+                description="Your password is used to log in to your account."
+                right={
+                  <PasswordInput
+                    label="Password"
+                    description="Your password"
+                    disabled
+                    icon={<HiLockClosed />}
+                    value="********"
+                  />
+                }
+                icon={<HiKey />}
+                actions={
+                  <Button
+                    onClick={() => setPasswordModal(true)}
+                    leftIcon={<HiKey />}
+                    fullWidth
                   >
-                    <HiExclamation />
-                    <Text color="dimmed">
-                      You have not verified your email address.
-                    </Text>
+                    Change password
+                  </Button>
+                }
+                shaded
+                noUpperBorder
+              />
+
+              <SideBySide
+                title="Email"
+                description="Your email address is used to log in to your account. You can also use it to reset your password."
+                right={
+                  <div>
+                    <TextInput
+                      disabled
+                      label="Email"
+                      description="Your email address"
+                      value={user.email}
+                      icon={<HiLockClosed />}
+                    />
+                    {!user.emailVerified && (
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                          marginTop: 12,
+                        }}
+                      >
+                        <HiExclamation />
+                        <Text color="dimmed">
+                          You have not verified your email address.
+                        </Text>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            }
-            icon={<HiMail />}
-            actions={
-              <Group grow>
-                <Button
-                  leftIcon={<HiCheck />}
-                  onClick={sendEmailVerification}
-                  disabled={emailVerificationSent || user.emailVerified}
+                }
+                icon={<HiMail />}
+                actions={
+                  <Group grow>
+                    <Button
+                      leftIcon={<HiCheck />}
+                      onClick={sendEmailVerification}
+                      disabled={emailVerificationSent || user.emailVerified}
+                    >
+                      {user.emailVerified
+                        ? "Verified"
+                        : emailVerificationSent
+                        ? "Sent!"
+                        : "Verify email"}
+                    </Button>
+                    <Button
+                      leftIcon={<HiPencil />}
+                      onClick={() => setEmailModal(true)}
+                    >
+                      Change email
+                    </Button>
+                  </Group>
+                }
+                shaded
+                noUpperBorder
+              />
+            </Stack>
+          </Grouped>
+          <Grouped title="Login">
+            <SideBySide
+              title="Email Verification"
+              description="Require email verification before logging into your account."
+              right={
+                <Descriptive
+                  title="Enable two-factor authentication"
+                  description="Require a code from your inbox before logging into your account."
                 >
-                  {user.emailVerified
-                    ? "Verified"
-                    : emailVerificationSent
-                    ? "Sent!"
-                    : "Verify email"}
-                </Button>
-                <Button
-                  leftIcon={<HiPencil />}
-                  onClick={() => setEmailModal(true)}
-                >
-                  Change email
-                </Button>
-              </Group>
-            }
-          />
+                  <Switch
+                    defaultChecked={user.emailRequiredLogin}
+                    onChange={async (e) => {
+                      update("emailRequiredLogin", e.target.checked);
+                    }}
+                    disabled={!user.emailVerified}
+                  />
+                </Descriptive>
+              }
+              icon={<HiMail />}
+              shaded
+              noUpperBorder
+              actions={
+                !user.emailVerified && (
+                  <Alert color="orange" title="Warning" icon={<HiXCircle />}>
+                    You must verify your email address before enabling this
+                    feature.
+                  </Alert>
+                )
+              }
+            />
+          </Grouped>
         </Stack>
       </SettingsTab>
     </>

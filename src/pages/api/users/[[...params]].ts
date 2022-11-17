@@ -476,6 +476,17 @@ class UserRouter {
 
           return true;
         },
+        error: "Invalid alias",
+      },
+      {
+        name: "emailRequiredLogin",
+        verify: async (value: any) => {
+          if (typeof value !== "boolean") return false;
+          if (!user.emailVerified) return false;
+
+          return true;
+        },
+        error: "You must verify your email before modifying this setting",
       },
     ];
 

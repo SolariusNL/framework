@@ -93,6 +93,8 @@ model User {
   discordAccount             DiscordConnectCode?   @relation("discordAccount")
   alias                      String?
   previousUsernames          String[]
+  emailRequiredLogin         Boolean               @default(false)
+  emailLoginRequests         EmailLoginRequest[]   @relation("emailLoginRequests")
 }
 
 model ConnectedAccount {
@@ -449,4 +451,12 @@ model BannedIP {
   ip        String
   reason    String
   createdAt DateTime @default(now())
+}
+
+model EmailLoginRequest {
+  id        String   @id @default(uuid())
+  user      User     @relation("emailLoginRequests", fields: [userId], references: [id])
+  userId    Int
+  createdAt DateTime @default(now())
+  code      String?
 }

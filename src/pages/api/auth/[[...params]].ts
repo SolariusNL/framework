@@ -2,12 +2,14 @@ import { OperatingSystem } from "@prisma/client";
 import {
   Body,
   createHandler,
+  Param,
   Post,
   Req,
 } from "@storyofams/next-api-decorators";
 import type { NextApiRequest } from "next";
 import { getClientIp } from "request-ip";
 import { hashPass, isSamePass } from "../../../util/hash/password";
+import { sendMail } from "../../../util/mail";
 import createNotification from "../../../util/notifications";
 import prisma from "../../../util/prisma";
 import { RateLimitMiddleware } from "../../../util/rateLimit";
@@ -28,9 +30,12 @@ interface RegisterBody {
 
 class AuthRouter {
   @Post("/login")
-  @RateLimitMiddleware(5)()
+  @RateLimitMiddleware(2)()
   public async login(@Body() body: LoginBody, @Req() request: NextApiRequest) {
     const { username, password } = body;
+    const ip = getClientIp(request);
+    const os = getOperatingSystem(String(request.headers["user-agent"] || ""));
+
     if (!username || !password) {
       return {
         status: 400,
@@ -58,6 +63,60 @@ class AuthRouter {
       };
     }
 
+    if (account.emailRequiredLogin) {
+      const emailAuth = await prisma.emailLoginRequest.create({
+        data: {
+          user: {
+            connect: {
+              id: account.id,
+            },
+          },
+          createdAt: new Date(),
+          code:
+            Array(6)
+              .fill(0)
+              .map(() => Math.floor(Math.random() * 10))
+              .join("") + "",
+        },
+      });
+
+      await createNotification(
+        Number(account.id),
+        "LOGIN",
+        `New attempt to login to your account from a ${getOperatingSystemString(
+          os
+        )} device with IP ${ip}. They've been sent an email to verify their identity. If this wasn't you, you can change your password to prevent this from happening again.`,
+        "New Login"
+      );
+
+      sendMail(
+        account.email,
+        "Login Authorization",
+        `
+          <h1>Verify login for ${account.username}</h1>
+          <p style="margin-bottom: 25px;">
+            Someone is trying to login to your account from a ${getOperatingSystemString(
+              os
+            )} device with IP ${ip}. If this wasn't you, you can change your password to prevent this from happening again. Your code is:
+          </p>
+          <h3 style="margin-bottom: 25px;">${emailAuth.code}</h3>
+          <a href="${
+            process.env.NODE_ENV === "production"
+              ? "https://framework.soodam.rocks/verifyemail/login"
+              : "http://localhost:3000/verifyemail/login"
+          }/${
+          emailAuth.id
+        }" style="padding: 10px 15px; background-color: #000; color: #fff; text-decoration: none; border-radius: 5px; margin-bottom: 12px;">Verify Login</a>
+        `
+      );
+
+      return {
+        success: true,
+        requiresEmail: true,
+        emailId: emailAuth.id,
+      };
+    }
+
     const session = await prisma.session.create({
       data: {
         user: {
@@ -80,11 +139,6 @@ class AuthRouter {
     });
 
     if (account.notificationPreferences.includes("LOGIN")) {
-      const ip = getClientIp(request);
-      const os = getOperatingSystem(
-        String(request.headers["user-agent"] || "")
-      );
-
       await createNotification(
         Number(account.id),
         "LOGIN",
@@ -235,6 +289,65 @@ class AuthRouter {
 
     return {
       finished: true,
+    };
+  }
+
+  @Post("/email/:emailid/:code")
+  public async emailLogin(
+    @Param("emailid") emailId: string,
+    @Param("code") code: string,
+    @Req() request: NextApiRequest
+  ) {
+    const emailAuth = await prisma.emailLoginRequest.findFirst({
+      where: {
+        id: String(emailId),
+      },
+    });
+
+    if (!emailAuth) {
+      return {
+        status: 400,
+        message: "Invalid email login request",
+      };
+    }
+
+    if (emailAuth.code !== code) {
+      return {
+        status: 400,
+        message: "Invalid code",
+      };
+    }
+
+    const session = await prisma.session.create({
+      data: {
+        user: {
+          connect: {
+            id: Number(emailAuth.userId),
+          },
+        },
+        token: Array(12)
+          .fill(0)
+          .map(() => Math.random().toString(36).substring(2))
+          .join(""),
+        ip: String(getClientIp(request)),
+        ua: String(request.headers["user-agent"] || "Unknown"),
+        os: OperatingSystem[
+          getOperatingSystem(
+            String(request.headers["user-agent"]) || ""
+          ) as keyof typeof OperatingSystem
+        ],
+      },
+    });
+
+    await prisma.emailLoginRequest.delete({
+      where: {
+        id: emailAuth.id,
+      },
+    });
+
+    return {
+      success: true,
+      token: session.token,
     };
   }
 }

@@ -1,23 +1,22 @@
-import type { GetServerSidePropsContext, NextPage } from "next";
 import {
-  TextInput,
-  PasswordInput,
-  Checkbox,
   Anchor,
-  Paper,
-  Title,
-  Text,
+  Button,
+  Checkbox,
   Container,
   Group,
-  Button,
+  Paper,
   Stack,
+  Text,
+  TextInput,
+  Title,
 } from "@mantine/core";
-import Link from "next/link";
-import authorizedRoute from "../util/authorizedRoute";
 import { useForm } from "@mantine/form";
-import { setCookie } from "../util/cookies";
+import type { GetServerSidePropsContext, NextPage } from "next";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import MinimalFooter from "../components/MinimalFooter";
+import authorizedRoute from "../util/authorizedRoute";
+import { setCookie } from "../util/cookies";
 
 interface FormValues {
   username: string;
@@ -59,8 +58,12 @@ const Login: NextPage = () => {
       .then((res) => res.json())
       .then((res) => {
         if (res.success) {
-          setCookie(".frameworksession", res.token, 60);
-          router.push("/");
+          if (res.requiresEmail) {
+            router.push("/verifyemail/login/" + res.emailId);
+          } else {
+            setCookie(".frameworksession", res.token, 60);
+            router.push("/");
+          }
         } else {
           form.setErrors({
             username: "Invalid login",
