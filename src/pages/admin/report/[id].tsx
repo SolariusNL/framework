@@ -31,6 +31,7 @@ import {
 import Framework from "../../../components/Framework";
 import UserContext from "../../../components/UserContext";
 import authorizedRoute from "../../../util/authorizedRoute";
+import getMediaUrl from "../../../util/getMedia";
 import prisma from "../../../util/prisma";
 import {
   nonCurrentUserSelect,
@@ -50,7 +51,7 @@ const UserSection = ({ user, hint }: { user: NonUser; hint: string }) => {
       <UserContext user={user}>
         <Avatar
           size={36}
-          src={user.avatarUri}
+          src={getMediaUrl(user.avatarUri)}
           alt={user.username}
           radius={99}
         />
@@ -129,7 +130,7 @@ const ReportPage: NextPage<ReportProps> = ({ user, report }) => {
       >
         <Group mb={24}>
           <Group>
-            <Avatar size={36} src={punishUser?.avatarUri} radius={99} />
+            <Avatar size={36} src={getMediaUrl(punishUser!.avatarUri)} radius={99} />
             <Stack spacing={3}>
               <Text size="sm" color="dimmed">
                 Receiving punishment

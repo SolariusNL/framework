@@ -16,6 +16,7 @@ import React from "react";
 import { BsMarkdown } from "react-icons/bs";
 import { HiCheckCircle, HiCloud } from "react-icons/hi";
 import getFileFromImg from "../../util/getFileFromImg";
+import getMediaUrl from "../../util/getMedia";
 import { Game } from "../../util/prisma-types";
 import { genreMap } from "../../util/universe/genre";
 import Descriptive from "../Descriptive";
@@ -268,7 +269,7 @@ const Details = ({ game }: DetailsProps) => {
                   }}
                 >
                   <Image
-                    src={uploadedIcon ?? game.iconUri}
+                    src={uploadedIcon ?? getMediaUrl(game.iconUri)}
                     alt={`No icon uploaded for ${game.name}`}
                     height={128}
                     width={128}
@@ -289,7 +290,7 @@ const Details = ({ game }: DetailsProps) => {
               <>
                 <AspectRatio ratio={16 / 9}>
                   <Image
-                    src={uploadedThumbnail ?? game.gallery[0]}
+                    src={uploadedThumbnail ?? getMediaUrl(game.gallery[0])}
                     alt={`No thumbnail uploaded for ${game.name}`}
                     width="100%"
                     height="100%"

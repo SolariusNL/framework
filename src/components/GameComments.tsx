@@ -11,6 +11,7 @@ import { usePagination } from "@mantine/hooks";
 import { useState } from "react";
 import { HiChat } from "react-icons/hi";
 import { getCookie } from "../util/cookies";
+import getMediaUrl from "../util/getMedia";
 import { Game, NonUser, User } from "../util/prisma-types";
 import Comment from "./Comment";
 import ModernEmptyState from "./ModernEmptyState";
@@ -82,7 +83,7 @@ const GameComments = ({ user, game }: GameCommentsProps) => {
         >
           <Avatar
             src={
-              user.avatarUri ||
+              getMediaUrl(user.avatarUri) ||
               `https://avatars.dicebear.com/api/identicon/${user.id}.png`
             }
             alt={user.username}

@@ -12,6 +12,7 @@ import Link from "next/link";
 import React from "react";
 import { HiFlag, HiUser } from "react-icons/hi";
 import { useFrameworkUser } from "../contexts/FrameworkUser";
+import getMediaUrl from "../util/getMedia";
 import { NonUser } from "../util/prisma-types";
 import ReportUser from "./ReportUser";
 
@@ -57,7 +58,7 @@ const UserContext = ({ user, children, customHref }: UserContextProps) => {
               }
               mb={16}
             >
-              <Avatar src={user.avatarUri} alt={user.username} radius="xl" />
+              <Avatar src={getMediaUrl(user.avatarUri)} alt={user.username} radius="xl" />
             </Indicator>
 
             <Stack spacing={5} align="center" mb={16}>

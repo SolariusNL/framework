@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { HiChevronDown, HiCog, HiGift, HiLibrary, HiLogout, HiMoon, HiSun, HiTicket, HiUser } from "react-icons/hi";
 import { useFrameworkUser } from "../../contexts/FrameworkUser";
 import logout from "../../util/api/logout";
+import getMediaUrl from "../../util/getMedia";
 import { User } from "../../util/prisma-types";
 import { frameworkStyles } from "../Framework";
 
@@ -23,7 +24,7 @@ const UserMenu = ({ userMenuOpened }: { userMenuOpened: boolean }) => {
           <Group spacing={12}>
             <Avatar
               src={
-                user.avatarUri ||
+                getMediaUrl(user.avatarUri) ||
                 `https://avatars.dicebear.com/api/identicon/${user.id}.png`
               }
               alt={user.username}

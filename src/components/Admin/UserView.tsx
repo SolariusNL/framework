@@ -13,6 +13,7 @@ import {
 import Link from "next/link";
 import React from "react";
 import { useUserInformationDialog } from "../../contexts/UserInformationDialog";
+import getMediaUrl from "../../util/getMedia";
 import Copy from "../Copy";
 import ModernEmptyState from "../ModernEmptyState";
 import { AdminViewUser } from "./Pages/Users";
@@ -31,7 +32,7 @@ const UserView = ({ user }: UserViewProps) => {
   return (
     <>
       <Group mb={18}>
-        <Avatar size="xl" radius={999} src={user.avatarUri} />
+        <Avatar size="xl" radius={999} src={getMediaUrl(user.avatarUri)} />
         <Stack spacing={3}>
           <Group>
             <Title order={3}>{user.username}</Title>

@@ -33,7 +33,7 @@ extra:
         checked: false
 
 copyright: >
-  Copyright &copy; 2022 Soodam.re and contributors. All rights reserved. –
+  Copyright &copy; 2022 Soodam.re A.B. and contributors. All rights reserved. -
   <a href="#__consent">Change cookie settings</a>
 
 markdown_extensions:
@@ -45,13 +45,12 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences
+  - admonition
+  - pymdownx.details
 
 nav:
   - Home: index.md
-  - Federation:
-      - federation/index.md
-  - Instance Guides:
-      - instance/index.md
-      - Configuring: instance/configuration.md
+  - Getting Started:
+    - Installation: getting-started/installation.md
 
 repo_url: https://github.com/Tsodinq/framework

@@ -20,6 +20,7 @@ import {
   HiThumbUp,
   HiUserGroup,
 } from "react-icons/hi";
+import getMediaUrl from "../util/getMedia";
 import { Game } from "../util/prisma-types";
 import { getRatingColor } from "../util/universe/ratings";
 import PlaceholderGameResource from "./PlaceholderGameResource";
@@ -75,7 +76,7 @@ const GameCard = ({ game }: GameCardProps) => {
           <Group grow className="align-top items-start">
             {game.iconUri ? (
               <Image
-                src={game.iconUri}
+                src={getMediaUrl(game.iconUri)}
                 alt={game.name}
                 radius={theme.radius.md}
                 withPlaceholder
@@ -89,7 +90,7 @@ const GameCard = ({ game }: GameCardProps) => {
               <div className="flex gap-2 items-center justify-center mb-4">
                 <UserContext user={game.author}>
                   <Avatar
-                    src={game.author.avatarUri}
+                    src={getMediaUrl(game.author.avatarUri)}
                     alt={game.author.username}
                     className="rounded-full"
                     size="sm"

@@ -56,6 +56,7 @@ import getTimezones from "../../data/timezones";
 import authorizedRoute from "../../util/authorizedRoute";
 import { getCookie } from "../../util/cookies";
 import { exclude } from "../../util/exclude";
+import getMediaUrl from "../../util/getMedia";
 import prisma from "../../util/prisma";
 import { nonCurrentUserSelect, User } from "../../util/prisma-types";
 import useMediaQuery from "../../util/useMediaQuery";
@@ -129,7 +130,7 @@ const Profile: NextPage<ProfileProps> = ({ user, profile }) => {
               >
                 <Avatar
                   src={
-                    viewing.avatarUri ||
+                    getMediaUrl(viewing.avatarUri) ||
                     `https://avatars.dicebear.com/api/identicon/${viewing.id}.png`
                   }
                   alt={viewing.username}
@@ -489,7 +490,7 @@ const Profile: NextPage<ProfileProps> = ({ user, profile }) => {
                             slides={g.gallery.map((gal, j) => (
                               <Image
                                 height={180}
-                                src={gal}
+                                src={getMediaUrl(gal)}
                                 key={j}
                                 alt={g.name}
                               />

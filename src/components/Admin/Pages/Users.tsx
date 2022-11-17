@@ -11,6 +11,7 @@ import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
 import { HiSearch } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
+import getMediaUrl from "../../../util/getMedia";
 import { User } from "../../../util/prisma-types";
 import useMediaQuery from "../../../util/useMediaQuery";
 import UserView from "../UserView";
@@ -82,7 +83,7 @@ const Users = () => {
                 }}
                 key={u.id}
               >
-                <Avatar src={u.avatarUri} className="mr-3" />
+                <Avatar src={getMediaUrl(u.avatarUri)} className="mr-3" />
                 <div>
                   <div className="flex items-center">
                     <Text weight={600} className="mr-2">

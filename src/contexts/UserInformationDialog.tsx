@@ -16,6 +16,7 @@ import {
   useState,
 } from "react";
 import ModernEmptyState from "../components/ModernEmptyState";
+import getMediaUrl from "../util/getMedia";
 import { NonUser, User } from "../util/prisma-types";
 
 const UserInformationDialogContext =
@@ -65,7 +66,7 @@ const UserItem = ({
         <Group>
           <Group>
             <Avatar
-              src={user?.avatarUri}
+              src={getMediaUrl(user!.avatarUri)}
               size={26}
               radius="xl"
               alt={user?.username}

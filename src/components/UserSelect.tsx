@@ -2,6 +2,7 @@ import { Avatar, Badge, Group, Select, SelectProps, Text } from "@mantine/core";
 import { getCookie } from "cookies-next";
 import { forwardRef, useState } from "react";
 import { exclude } from "../util/exclude";
+import getMediaUrl from "../util/getMedia";
 import { NonUser } from "../util/prisma-types";
 
 interface UserSelectProps {
@@ -20,7 +21,7 @@ const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
   ({ avatarUri, username, bio, banned, role, ...others }: ItemProps, ref) => (
     <div ref={ref} {...others}>
       <Group noWrap>
-        <Avatar src={avatarUri} />
+        <Avatar src={getMediaUrl(avatarUri)} />
 
         <div>
           <Group spacing={8}>

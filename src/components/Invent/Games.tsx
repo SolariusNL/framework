@@ -27,6 +27,7 @@ import {
   HiXCircle,
 } from "react-icons/hi";
 import abbreviateNumber from "../../util/abbreviate";
+import getMediaUrl from "../../util/getMedia";
 import { User } from "../../util/prisma-types";
 import Copy from "../Copy";
 import ModernEmptyState from "../ModernEmptyState";
@@ -87,7 +88,7 @@ const Games = ({ user }: GamesProps) => {
               <Group>
                 <Group>
                   <Image
-                    src={game.iconUri}
+                    src={getMediaUrl(game.iconUri)}
                     width={48}
                     height={48}
                     withPlaceholder

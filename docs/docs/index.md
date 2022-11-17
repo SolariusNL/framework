@@ -20,32 +20,10 @@ Framework is open source on GitHub, and we welcome all contributions. If you fin
 
 ## How can I get in touch?
 
-As we are not an organized / structured company, we do not have a support email. However, you can reach out to us on our Discord server, or by opening an issue on our GitHub repository.
+You can find us on [Discord](https://discord.gg/g88JS6Tmte), where we have multiple channels for you to get in touch with us. You can also email us at [contact@soodam.rocks](mailto:contact@soodam.rocks) if you have any questions or concerns that you'd like to discuss privately.
 
 ## What is the current state of Framework?
 
-Framework is currently in a closed beta. We are currently working on the core features of our platform, and are not accepting any new users at this time. We will be opening up our platform to the public in the near future, so stay tuned!
-
-We are currently working on the following features:
-
-- [x] User accounts
-- [x] Project management
-- [x] Plugin management
-- [x] Plugin store
-- [ ] Catalog
-  - [x] Base UI
-  - [ ] API
-  - [ ] Uploading items
-- [ ] Avatars
-  - [x] Base UI
-  - [x] Semi-functioning editor
-    - [ ] API    
-    - [ ] Saving
-- [ ] Game client
-- [ ] Game server
-  - [x] Authentication
-  - [x] Synchronization with master server
-    - [ ] Game server API    
-    - [x] Game server management
+Framework is currently in a closed alpha state. We are working on the core features of our platform, and are not accepting any new users at this time. We will be opening up our platform to the public in the near future, so stay tuned!
 
 We can't wait to see what you build with Framework, and we can't wait to finally open our platform to the public! The wait will be worth it, we promise.

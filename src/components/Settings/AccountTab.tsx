@@ -25,6 +25,7 @@ import {
 } from "react-icons/hi";
 import getTimezones from "../../data/timezones";
 import { getCookie } from "../../util/cookies";
+import getMediaUrl from "../../util/getMedia";
 import { User } from "../../util/prisma-types";
 import Copy from "../Copy";
 import CountrySelect from "../CountryPicker";
@@ -147,7 +148,7 @@ const AccountTab = ({ user }: AccountTabProps) => {
                   src={
                     uploadedAvatarData
                       ? uploadedAvatarData
-                      : user.avatarUri ||
+                      : getMediaUrl(user.avatarUri) ||
                         `https://avatars.dicebear.com/api/identicon/${user.id}.png`
                   }
                   alt={user.username}

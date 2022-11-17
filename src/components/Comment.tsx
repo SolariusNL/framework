@@ -24,6 +24,7 @@ import {
   HiTrash,
 } from "react-icons/hi";
 import { useFrameworkUser } from "../contexts/FrameworkUser";
+import getMediaUrl from "../util/getMedia";
 import { NonUser } from "../util/prisma-types";
 import { getRelativeTime } from "../util/relativeTime";
 import ReportUser from "./ReportUser";
@@ -98,7 +99,7 @@ const Comment = ({
                 <UserContext user={user}>
                   <Avatar
                     src={
-                      user.avatarUri ||
+                      getMediaUrl(user.avatarUri) ||
                       `https://avatars.dicebear.com/api/identicon/${user.id}.png`
                     }
                     alt={user.username}

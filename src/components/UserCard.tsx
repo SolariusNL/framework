@@ -10,6 +10,7 @@ import {
 } from "@mantine/core";
 import Link from "next/link";
 import { HiXCircle } from "react-icons/hi";
+import getMediaUrl from "../util/getMedia";
 import { NonUser } from "../util/prisma-types";
 
 interface UserCardProps {
@@ -38,7 +39,7 @@ const UserCard = ({ user, minimal }: UserCardProps) => {
           }
           position="bottom-end"
         >
-          <Avatar src={user.avatarUri} size={120} radius={120} mx="auto" />
+          <Avatar src={getMediaUrl(user.avatarUri)} size={120} radius={120} mx="auto" />
         </Indicator>
       </Group>
       <Text align="center" size="lg" weight={500} mt="md">

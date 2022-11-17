@@ -18,6 +18,7 @@ import { HiCheckCircle } from "react-icons/hi";
 import { useState } from "react";
 import { setCookie } from "cookies-next";
 import { useRouter } from "next/router";
+import getMediaUrl from "../../../util/getMedia";
 
 interface EmailLoginProps {
   emailId: string;
@@ -51,7 +52,7 @@ const EmailLogin: NextPage<EmailLoginProps> = ({ emailId, request }) => {
         className="flex flex-col items-center"
       >
         <Avatar
-          src={request.user.avatarUri}
+          src={getMediaUrl(request.user.avatarUri)}
           size="lg"
           className="mb-4 rounded-full"
         />

@@ -22,6 +22,7 @@ import ModernEmptyState from "../../components/ModernEmptyState";
 import Stateful from "../../components/Stateful";
 import UserContext from "../../components/UserContext";
 import authorizedRoute from "../../util/authorizedRoute";
+import getMediaUrl from "../../util/getMedia";
 import prisma from "../../util/prisma";
 import { NonUser, Snippet, snippetSelect, User } from "../../util/prisma-types";
 
@@ -178,7 +179,7 @@ const Snippets: NextPage<SnippetsProps> = ({ user, snippets }) => {
                       <Group mb="lg">
                         <UserContext user={snippet.user}>
                           <Avatar
-                            src={snippet.user.avatarUri}
+                            src={getMediaUrl(snippet.user.avatarUri)}
                             radius="xl"
                             size="sm"
                           />

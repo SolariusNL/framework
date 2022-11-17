@@ -14,6 +14,7 @@ import { GetServerSidePropsContext, NextPage } from "next";
 import { useState } from "react";
 import Framework from "../../components/Framework";
 import authorizedRoute from "../../util/authorizedRoute";
+import getMediaUrl from "../../util/getMedia";
 import { User } from "../../util/prisma-types";
 
 interface DiscordServiceProps {
@@ -71,7 +72,7 @@ const DiscordService: NextPage<DiscordServiceProps> = ({ user }) => {
           {success ? (
             <div className="items-center flex flex-col">
               <Avatar
-                src={fetchedInfo?.imageUrl}
+                src={getMediaUrl(fetchedInfo!.imageUrl)}
                 size="xl"
                 radius={999}
                 mb={24}

@@ -1,5 +1,6 @@
 import { Avatar, Group, Paper, Text, Title } from "@mantine/core";
 import { useRouter } from "next/router";
+import getMediaUrl from "../util/getMedia";
 import { Report } from "../util/prisma-types";
 import { getRelativeTime } from "../util/relativeTime";
 import UserContext from "./UserContext";
@@ -31,7 +32,7 @@ const ReportCard = ({ report }: ReportCardProps) => {
       <Group mb={10}>
         <UserContext user={report.author}>
           <Avatar
-            src={report.author.avatarUri}
+            src={getMediaUrl(report.author.avatarUri)}
             alt={report.author.username}
             radius={99}
             size={28}

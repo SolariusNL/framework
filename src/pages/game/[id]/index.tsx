@@ -48,6 +48,7 @@ import UpdateLogTab from "../../../components/ViewGame/UpdateLog";
 import Votes from "../../../components/ViewGame/Votes";
 import authorizedRoute from "../../../util/authorizedRoute";
 import { getIpcRenderer } from "../../../util/electron";
+import getMediaUrl from "../../../util/getMedia";
 import prisma from "../../../util/prisma";
 import { Game, gameSelect, User } from "../../../util/prisma-types";
 import useMediaQuery from "../../../util/useMediaQuery";
@@ -127,7 +128,7 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                 game.gallery.length > 0
                   ? game.gallery.map((image, i) => (
                       <AspectRatio ratio={16 / 9} key={i}>
-                        <Image src={image} key={i} alt={game.name} />
+                        <Image src={getMediaUrl(image)} key={i} alt={game.name} />
                       </AspectRatio>
                     ))
                   : Array(3)
@@ -228,7 +229,7 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                   <UserContext user={game.author}>
                     <Avatar
                       src={
-                        game.author.avatarUri ||
+                        getMediaUrl(game.author.avatarUri) ||
                         `https://avatars.dicebear.com/api/identicon/${game.authorId}.png`
                       }
                       alt={game.author.username}
@@ -331,7 +332,7 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                       >
                         <Group spacing={12}>
                           <Image
-                            src={game.iconUri}
+                            src={getMediaUrl(game.iconUri)}
                             alt={game.name}
                             width={50}
                             height={50}
@@ -343,7 +344,7 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                             <Group spacing={6}>
                               <UserContext user={game.author}>
                                 <Image
-                                  src={game.author.avatarUri}
+                                  src={getMediaUrl(game.author.avatarUri)}
                                   width={20}
                                   height={20}
                                   radius="xl"
