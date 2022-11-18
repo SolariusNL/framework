@@ -210,10 +210,10 @@ const AccountTab = ({ user }: AccountTabProps) => {
                     You will be charged 500 tickets to change your username.
                   </Alert>
                   {new Date(user.lastUsernameChange as Date).getTime() +
-                    86400000 >
+                    604800000 >
                     Date.now() && (
                     <Alert icon={<HiInformationCircle size={14} />} mt={12}>
-                      You can only change your username once every 24 hours.
+                      You can only change your username once every 7 days.
                     </Alert>
                   )}
                 </>
@@ -236,8 +236,8 @@ const AccountTab = ({ user }: AccountTabProps) => {
                   }
                   disabled={
                     new Date(user.lastUsernameChange as Date).getTime() +
-                      86400000 >
-                    Date.now()
+                      604800000 >
+                      Date.now() || user.tickets < 500
                   }
                 />
               }

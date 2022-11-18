@@ -1,6 +1,11 @@
 import { Group, Menu, Text, UnstyledButton } from "@mantine/core";
 import { useRouter } from "next/router";
-import { HiCurrencyDollar, HiShoppingBag, HiStar, HiViewList } from "react-icons/hi";
+import {
+  HiCurrencyDollar,
+  HiShoppingBag,
+  HiStar,
+  HiViewList,
+} from "react-icons/hi";
 import { useFrameworkUser } from "../../contexts/FrameworkUser";
 import abbreviateNumber from "../../util/abbreviate";
 import { User } from "../../util/prisma-types";
@@ -53,7 +58,12 @@ const CurrencyMenu = ({
           Your Tickets
         </Menu.Item>
         <Menu.Divider />
-        <Menu.Item icon={<HiShoppingBag />}>Purchase tickets</Menu.Item>
+        <Menu.Item
+          icon={<HiShoppingBag />}
+          onClick={() => router.push("/tickets/buy")}
+        >
+          Purchase tickets
+        </Menu.Item>
         <Menu.Item
           icon={<HiViewList />}
           onClick={() => router.push("/tickets/transactions")}

@@ -403,8 +403,8 @@ class UserRouter {
           if (
             userExists ||
             user.tickets < 500 ||
-            new Date(user.lastUsernameChange as Date).getTime() + 86400000 >
-              Date.now()
+            new Date(user.lastUsernameChange as Date).getTime() >
+              new Date().getTime() - 604800000
           ) {
             return false;
           }
