@@ -1,13 +1,4 @@
-import {
-  Accordion,
-  Badge,
-  Button,
-  Divider,
-  Stack,
-  Text,
-  TextInput,
-  Title,
-} from "@mantine/core";
+import { Accordion, Badge, Button, Stack, Text, Title } from "@mantine/core";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { useState } from "react";
@@ -45,6 +36,9 @@ export const products = [
     price: "€39.99",
     grant: 5000,
     goodDeal: true,
+    rawPrice: 39.99,
+    percentOff: 10,
+    altPrice: 49.99,
   },
   {
     name: "Tickets 10000",
@@ -52,12 +46,15 @@ export const products = [
     price: "€79.99",
     grant: 10000,
     goodDeal: true,
+    rawPrice: 79.99,
+    percentOff: 20,
+    altPrice: 99.99,
   },
 ];
 
 const BuyTickets: NextPage<BuyTicketsProps> = ({ user }) => {
   const [loading, setLoading] = useState(false);
-  const [selected, setSelected] = useState(0);
+  const [selected, setSelected] = useState(1);
 
   const handler = async () => {
     setLoading(true);
@@ -106,7 +103,7 @@ const BuyTickets: NextPage<BuyTicketsProps> = ({ user }) => {
           <Title order={2} mb={24}>
             Choose a package
           </Title>
-          <Accordion>
+          <Accordion defaultValue="about" mb={12}>
             <Accordion.Item value="about">
               <Accordion.Control>About Tickets</Accordion.Control>
               <Accordion.Panel>
@@ -137,6 +134,20 @@ const BuyTickets: NextPage<BuyTicketsProps> = ({ user }) => {
               </Accordion.Panel>
             </Accordion.Item>
           </Accordion>
+          <Text color="dimmed" size="sm" mb={6}>
+            Terms and conditions apply. By purchasing tickets, you agree to our
+            Terms of Service and Privacy Policy. You will be charged the price
+            shown above. At any time, we reserve the right to modify or revoke
+            your tickets, and/or ban you from the service for violating our
+            Terms of Service.
+          </Text>
+          <Text color="dimmed" size="sm" mb={6}>
+            You will be charged in EUR. If you are not in the EU, your bank may
+            charge you an additional fee. We are not responsible for any fees
+            charged by your bank. Soodam.re reserves the right to change prices,
+            at any time. We cannot be held liable for fees associated with
+            currency exchange.
+          </Text>
         </div>
         <div className="flex-1">
           <Stack spacing={12}>
@@ -144,11 +155,46 @@ const BuyTickets: NextPage<BuyTicketsProps> = ({ user }) => {
               <CheckboxCard
                 key={i}
                 title={
-                  <div className="items-center flex gap-2">
-                    <Title order={5}>{product.name}</Title>
-                    {product.goodDeal && (
-                      <Badge variant="filled">Good Deal</Badge>
-                    )}
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <Text
+                        color="dimmed"
+                        size="sm"
+                        weight={500}
+                        sx={{
+                          textDecoration: product.goodDeal
+                            ? "line-through"
+                            : "none",
+                        }}
+                      >
+                        {product.goodDeal
+                          ? `€${product.altPrice}`
+                          : product.price}
+                      </Text>
+                      {product.goodDeal && (
+                        <Text color="dimmed" size="sm" weight={700}>
+                          {product.price}
+                        </Text>
+                      )}
+                    </div>
+                    <div className="items-center flex gap-2">
+                      <Title order={5}>{product.name}</Title>
+                      {product.goodDeal && (
+                        <Badge
+                          variant="gradient"
+                          gradient={{
+                            from: "pink",
+                            to: "grape",
+                          }}
+                        >
+                          {product.grant === 5000
+                            ? "10% off"
+                            : product.grant === 10000
+                            ? "20% off"
+                            : ""}
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                 }
                 description={`You will receive ${product.grant} tickets.`}
