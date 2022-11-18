@@ -1,4 +1,4 @@
-import { Title } from "@mantine/core";
+import { Title, TitleProps } from "@mantine/core";
 
 const HeaderStyle = {
   marginTop: 0,
@@ -19,7 +19,7 @@ const HeaderStyle = {
   transformStyle: "preserve-3d",
 } as React.CSSProperties;
 
-const FrameworkLogo = () => {
+const FrameworkLogo = (props: TitleProps) => {
   return (
     <Title
       // @ts-ignore
@@ -41,6 +41,7 @@ const FrameworkLogo = () => {
         ...HeaderStyle,
       }}
       order={5}
+      {...props}
     >
       Framework
     </Title>
