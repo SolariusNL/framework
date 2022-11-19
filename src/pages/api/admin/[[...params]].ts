@@ -431,6 +431,30 @@ class AdminRouter {
       success: true,
     };
   }
+
+  @Get("/users/discord/:discordid")
+  @AdminAuthorized()
+  public async getUserByDiscordId(@Param("discordid") discordId: string) {
+    const user = await prisma.user.findFirst({
+      where: {
+        discordAccount: {
+          discordId: String(discordId),
+        },
+      },
+    });
+
+    if (!user) {
+      return {
+        success: false,
+        error: "User not found",
+      };
+    }
+
+    return {
+      success: true,
+      user,
+    };
+  }
 }
 
 export default createHandler(AdminRouter);
