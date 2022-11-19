@@ -6,6 +6,7 @@ import {
   Divider,
   Indicator,
   Pagination,
+  Skeleton,
   Stack,
   Text,
   Textarea,
@@ -25,6 +26,7 @@ import { exclude } from "../util/exclude";
 import getMediaUrl from "../util/getMedia";
 import { NonUser, User } from "../util/prisma-types";
 import { getRelativeTime } from "../util/relativeTime";
+import ReactNoSSR from "react-no-ssr";
 
 interface HomeProps {
   user: User;
@@ -112,100 +114,102 @@ const Home: NextPage<HomeProps> = ({ user }) => {
     >
       <div className="flex flex-col md:flex-row gap-4">
         <div className="flex-1">
-          <ShadedCard withBorder>
-            <div className="flex justify-between">
-              <div className="flex items-center gap-2 mb-6">
-                <HiUserGroup size={24} />
-                <Title order={3}>Friends</Title>
-              </div>
-              <div>
-                <Badge variant="dot" color="green">
-                  {onlineFriends.length} online
-                </Badge>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              {friends
-                .slice(
-                  (friendsTab - 1) * 4,
-                  friendsTab * 4 > friends.length
-                    ? friends.length
-                    : friendsTab * 4
-                )
-                .map((friend) => (
-                  <Link href={`/profile/${friend.username}`} key={friend.id}>
-                    <div className="cursor-pointer">
-                      <Card
-                        shadow="sm"
-                        p="md"
-                        className="justify-center flex flex-col items-center"
-                        withBorder
-                      >
-                        <Indicator
-                          disabled={!onlineFriends.includes(friend)}
-                          color="green"
-                          inline
-                        >
-                          <Avatar
-                            size={64}
-                            className="rounded-full"
-                            src={getMediaUrl(friend.avatarUri)}
-                            mb={16}
-                          />
-                        </Indicator>
-                        {friend.alias && (
-                          <Text
-                            weight={700}
-                            color="dimmed"
-                            lineClamp={1}
-                            mb={6}
-                          >
-                            {friend.alias}
-                          </Text>
-                        )}
-                        <Text weight={500} lineClamp={1} mb={12}>
-                          @{friend.username}
-                        </Text>
-                        <div className="flex justify-around w-full">
-                          {[
-                            ["Following", friend.following.length],
-                            ["Followers", friend.followers.length],
-                          ].map(([label, count]) => (
-                            <div
-                              className="flex flex-col items-center"
-                              key={label}
-                            >
-                              <Text weight={700} color="dimmed">
-                                {count}
-                              </Text>
-                              <Text size="sm" color="dimmed">
-                                {label}
-                              </Text>
-                            </div>
-                          ))}
-                        </div>
-                      </Card>
-                    </div>
-                  </Link>
-                ))}
-
-              {friends.length === 0 && (
-                <div className="w-full flex justify-center">
-                  <ModernEmptyState
-                    title="No friends yet"
-                    body="Find some friends to connect with on Framework."
-                  />
+          <ReactNoSSR onSSR={<Skeleton height={300} />}>
+            <ShadedCard withBorder>
+              <div className="flex justify-between">
+                <div className="flex items-center gap-2 mb-6">
+                  <HiUserGroup size={24} />
+                  <Title order={3}>Friends</Title>
                 </div>
-              )}
-            </div>
-            <div className="w-full justify-center flex mt-4">
-              <Pagination
-                total={Math.ceil(friends.length / 4)}
-                onChange={setFriendsTab}
-                radius="lg"
-              />
-            </div>
-          </ShadedCard>
+                <div>
+                  <Badge variant="dot" color="green">
+                    {onlineFriends.length} online
+                  </Badge>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                {friends
+                  .slice(
+                    (friendsTab - 1) * 4,
+                    friendsTab * 4 > friends.length
+                      ? friends.length
+                      : friendsTab * 4
+                  )
+                  .map((friend) => (
+                    <Link href={`/profile/${friend.username}`} key={friend.id}>
+                      <div className="cursor-pointer">
+                        <Card
+                          shadow="sm"
+                          p="md"
+                          className="justify-center flex flex-col items-center"
+                          withBorder
+                        >
+                          <Indicator
+                            disabled={!onlineFriends.includes(friend)}
+                            color="green"
+                            inline
+                          >
+                            <Avatar
+                              size={64}
+                              className="rounded-full"
+                              src={getMediaUrl(friend.avatarUri)}
+                              mb={16}
+                            />
+                          </Indicator>
+                          {friend.alias && (
+                            <Text
+                              weight={700}
+                              color="dimmed"
+                              lineClamp={1}
+                              mb={6}
+                            >
+                              {friend.alias}
+                            </Text>
+                          )}
+                          <Text weight={500} lineClamp={1} mb={12}>
+                            @{friend.username}
+                          </Text>
+                          <div className="flex justify-around w-full">
+                            {[
+                              ["Following", friend.following.length],
+                              ["Followers", friend.followers.length],
+                            ].map(([label, count]) => (
+                              <div
+                                className="flex flex-col items-center"
+                                key={label}
+                              >
+                                <Text weight={700} color="dimmed">
+                                  {count}
+                                </Text>
+                                <Text size="sm" color="dimmed">
+                                  {label}
+                                </Text>
+                              </div>
+                            ))}
+                          </div>
+                        </Card>
+                      </div>
+                    </Link>
+                  ))}
+
+                {friends.length === 0 && (
+                  <div className="w-full flex justify-center">
+                    <ModernEmptyState
+                      title="No friends yet"
+                      body="Find some friends to connect with on Framework."
+                    />
+                  </div>
+                )}
+              </div>
+              <div className="w-full justify-center flex mt-4">
+                <Pagination
+                  total={Math.ceil(friends.length / 4)}
+                  onChange={setFriendsTab}
+                  radius="lg"
+                />
+              </div>
+            </ShadedCard>
+          </ReactNoSSR>
         </div>
         <div className="flex-1">
           <div className="flex flex-grow">
@@ -241,61 +245,63 @@ const Home: NextPage<HomeProps> = ({ user }) => {
             </div>
           </div>
           <Divider mt={32} mb={32} />
-          {statusPosts.length === 0 ? (
-            <ShadedCard>
-              <ModernEmptyState
-                title="No status posts yet"
-                body="Your friends will post here when they have something to say."
-              />
-            </ShadedCard>
-          ) : (
-            <>
-              <div className="w-full flex justify-center mb-4">
-                <Pagination
-                  total={Math.ceil(statusPosts.length / 5)}
-                  onChange={setStatusPage}
-                  radius="lg"
+          <ReactNoSSR onSSR={<Skeleton height={430} />}>
+            {statusPosts.length === 0 ? (
+              <ShadedCard>
+                <ModernEmptyState
+                  title="No status posts yet"
+                  body="Your friends will post here when they have something to say."
                 />
-              </div>
-              <Stack spacing={16}>
-                {statusPosts
-                  .slice(
-                    (statusPage - 1) * 5,
-                    statusPage * 5 > statusPosts.length
-                      ? statusPosts.length
-                      : statusPage * 5
-                  )
-                  .map((status) => (
-                    <div key={status.id} className="flex">
-                      <div>
-                        <UserContext user={status.user}>
-                          <Avatar
-                            size={42}
-                            src={getMediaUrl(status.user.avatarUri)}
-                            mr={12}
-                            className="rounded-full"
-                          />
-                        </UserContext>
-                      </div>
-                      <div className="flex-grow">
-                        <div className="flex gap-2">
-                          <Text color="dimmed" size="xs" mb={6} weight={600}>
-                            @{status.user.username}
-                          </Text>
-                          <Text size="xs">{" • "}</Text>
-                          <Text color="dimmed" size="xs" mb={6}>
-                            {getRelativeTime(
-                              new Date(status.createdAt as Date)
-                            )}
-                          </Text>
+              </ShadedCard>
+            ) : (
+              <>
+                <div className="w-full flex justify-center mb-4">
+                  <Pagination
+                    total={Math.ceil(statusPosts.length / 5)}
+                    onChange={setStatusPage}
+                    radius="lg"
+                  />
+                </div>
+                <Stack spacing={16}>
+                  {statusPosts
+                    .slice(
+                      (statusPage - 1) * 5,
+                      statusPage * 5 > statusPosts.length
+                        ? statusPosts.length
+                        : statusPage * 5
+                    )
+                    .map((status) => (
+                      <div key={status.id} className="flex">
+                        <div>
+                          <UserContext user={status.user}>
+                            <Avatar
+                              size={42}
+                              src={getMediaUrl(status.user.avatarUri)}
+                              mr={12}
+                              className="rounded-full"
+                            />
+                          </UserContext>
                         </div>
-                        <Text>{status.content}</Text>
+                        <div className="flex-grow">
+                          <div className="flex gap-2">
+                            <Text color="dimmed" size="xs" mb={6} weight={600}>
+                              @{status.user.username}
+                            </Text>
+                            <Text size="xs">{" • "}</Text>
+                            <Text color="dimmed" size="xs" mb={6}>
+                              {getRelativeTime(
+                                new Date(status.createdAt as Date)
+                              )}
+                            </Text>
+                          </div>
+                          <Text>{status.content}</Text>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-              </Stack>
-            </>
-          )}
+                    ))}
+                </Stack>
+              </>
+            )}
+          </ReactNoSSR>
         </div>
       </div>
     </Framework>
