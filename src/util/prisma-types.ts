@@ -18,6 +18,7 @@ export const nonCurrentUserSelect = {
     role: true,
     alias: true,
     previousUsernames: true,
+    statusPosts: true,
   },
 };
 
@@ -48,6 +49,7 @@ const user = Prisma.validator<Prisma.UserArgs>()({
     notifications: true,
     secrets: true,
     premiumSubscription: true,
+    statusPosts: true,
   },
 });
 
@@ -69,6 +71,7 @@ const nonuser = Prisma.validator<Prisma.UserArgs>()({
     role: true,
     alias: true,
     previousUsernames: true,
+    statusPosts: true,
   },
 });
 
@@ -125,6 +128,7 @@ export const userSelect: Prisma.UserSelect = {
   previousUsernames: true,
   emailRequiredLogin: true,
   lastUsernameChange: true,
+  statusPosts: true,
 };
 
 export const gameSelect: Prisma.GameSelect = {

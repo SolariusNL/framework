@@ -11,6 +11,7 @@ import { category } from "../../../components/ReportUser";
 import countries from "../../../data/countries";
 import getTimezones from "../../../data/timezones";
 import Authorized, { Account } from "../../../util/api/authorized";
+import { exclude } from "../../../util/exclude";
 import { hashPass, isSamePass } from "../../../util/hash/password";
 import createNotification from "../../../util/notifications";
 import prisma from "../../../util/prisma";
@@ -249,6 +250,52 @@ class UserRouter {
     });
 
     return transactions;
+  }
+
+  @Post("/@me/status")
+  @Authorized()
+  public async updateStatus(
+    @Account() user: User,
+    @Body()
+    data: {
+      status: string;
+    }
+  ) {
+    const { status } = data;
+
+    if (!status) {
+      return {
+        status: 400,
+        message: "Missing status",
+      };
+    }
+
+    if (status.length === 0 || status.length > 256) {
+      return {
+        status: 400,
+        message: "Status must be between 1 and 256 characters",
+      };
+    }
+
+    const s = await prisma.statusPosts.create({
+      data: {
+        content: String(status),
+        createdAt: new Date(),
+        user: {
+          connect: {
+            id: user.id,
+          },
+        },
+      },
+      include: {
+        user: exclude(nonCurrentUserSelect, ["statusPosts"]),
+      },
+    });
+
+    return {
+      success: true,
+      status: s,
+    };
   }
 
   @Post("/:id/follow")

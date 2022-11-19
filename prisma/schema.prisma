@@ -96,6 +96,7 @@ model User {
   emailRequiredLogin         Boolean               @default(false)
   emailLoginRequests         EmailLoginRequest[]   @relation("emailLoginRequests")
   lastUsernameChange         DateTime?
+  statusPosts                StatusPosts[]         @relation("statusPosts")
 }
 
 model ConnectedAccount {
@@ -460,4 +461,12 @@ model EmailLoginRequest {
   userId    Int
   createdAt DateTime @default(now())
   code      String?
+}
+
+model StatusPosts {
+  id        String   @id @default(uuid())
+  user      User     @relation("statusPosts", fields: [userId], references: [id])
+  userId    Int
+  createdAt DateTime @default(now())
+  content   String
 }
