@@ -287,7 +287,7 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
 };
 
 Framework.getInitialProps = ({ ctx }: { ctx: GetServerSidePropsContext }) => ({
-  colorScheme: getCookie("mantine-color-scheme", ctx) || "light",
+  colorScheme: getCookie("mantine-color-scheme", ctx) || "dark",
 });
 
 export default Framework;
