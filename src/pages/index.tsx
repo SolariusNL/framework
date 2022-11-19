@@ -2,7 +2,6 @@ import {
   Avatar,
   Badge,
   Button,
-  Card,
   Divider,
   Indicator,
   Pagination,
@@ -10,13 +9,24 @@ import {
   Stack,
   Text,
   Textarea,
+  ThemeIcon,
   Title,
 } from "@mantine/core";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { HiChat, HiUserGroup } from "react-icons/hi";
+import {
+  HiArrowRight,
+  HiChat,
+  HiClipboardList,
+  HiCog,
+  HiGift,
+  HiShieldCheck,
+  HiSparkles,
+  HiUserGroup,
+} from "react-icons/hi";
+import ReactNoSSR from "react-no-ssr";
 import Framework from "../components/Framework";
 import ModernEmptyState from "../components/ModernEmptyState";
 import ShadedCard from "../components/ShadedCard";
@@ -26,7 +36,6 @@ import { exclude } from "../util/exclude";
 import getMediaUrl from "../util/getMedia";
 import { NonUser, User } from "../util/prisma-types";
 import { getRelativeTime } from "../util/relativeTime";
-import ReactNoSSR from "react-no-ssr";
 import useMediaQuery from "../util/useMediaQuery";
 
 interface HomeProps {
@@ -118,85 +127,59 @@ const Home: NextPage<HomeProps> = ({ user }) => {
         <div className="flex-1">
           <ReactNoSSR onSSR={<Skeleton height={300} />}>
             <ShadedCard withBorder>
-              <div className="flex justify-between">
-                <div className="flex items-center gap-2 mb-6">
-                  <HiUserGroup size={24} />
-                  <Title order={3}>Friends</Title>
-                </div>
-                <div>
-                  <Badge variant="dot" color="green">
-                    {onlineFriends.length} online
-                  </Badge>
-                </div>
+              <div className="flex justify-center mb-4">
+                <Badge variant="dot" color="green">
+                  {onlineFriends.length} online
+                </Badge>
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                {friends
-                  .slice(
-                    (friendsTab - 1) * 4,
-                    friendsTab * 4 > friends.length
-                      ? friends.length
-                      : friendsTab * 4
-                  )
-                  .map((friend) => (
-                    <Link href={`/profile/${friend.username}`} key={friend.id}>
-                      <div className="cursor-pointer">
-                        <Card
-                          shadow="sm"
-                          p="md"
-                          className="justify-center flex flex-col items-center"
-                          withBorder
+              <div>
+                <Stack spacing={12}>
+                  {friends
+                    .slice(
+                      (friendsTab - 1) * 4,
+                      friendsTab * 4 > friends.length
+                        ? friends.length
+                        : friendsTab * 4
+                    )
+                    .map((friend, i) => (
+                      <>
+                        <Link
+                          href={`/profile/${friend.username}`}
+                          key={friend.id}
                         >
-                          <Indicator
-                            disabled={!onlineFriends.includes(friend)}
-                            color="green"
-                            inline
-                          >
-                            <Avatar
-                              size={64}
-                              className="rounded-full"
-                              src={getMediaUrl(friend.avatarUri)}
-                              mb={16}
-                            />
-                          </Indicator>
-                          {friend.alias && (
-                            <Text
-                              weight={700}
-                              color="dimmed"
-                              lineClamp={1}
-                              mb={6}
-                            >
-                              {friend.alias}
-                            </Text>
-                          )}
-                          <Text weight={500} lineClamp={1} mb={12}>
-                            @{friend.username}
-                          </Text>
-                          <div
-                            className={`flex ${
-                              mobile ? "flex-col gap-2" : "justify-around gap-4"
-                            }`}
-                          >
-                            {[
-                              ["Following", friend.following.length],
-                              ["Followers", friend.followers.length],
-                            ].map(([label, count]) => (
-                              <div
-                                className="flex flex-col items-center"
-                                key={label}
+                          <div className="cursor-pointer flex justify-between">
+                            <div className="flex items-center gap-2">
+                              <Indicator
+                                disabled={!onlineFriends.includes(friend)}
+                                color="green"
+                                inline
                               >
-                                <Text weight={700} color="dimmed">
-                                  {count}
-                                </Text>
-                                <Text size="sm" color="dimmed">
-                                  {label}
-                                </Text>
+                                <Avatar
+                                  size={32}
+                                  className="rounded-full"
+                                  src={getMediaUrl(friend.avatarUri)}
+                                />
+                              </Indicator>
+                              <div className="flex items-center gap-1">
+                                <Text weight={600}>{friend.username}</Text>
+                                {friend.role === "ADMIN" && <HiShieldCheck />}
+                                {friend.premium && <HiSparkles />}
                               </div>
-                            ))}
+                              {friend.alias && (
+                                <Text size="sm" color="gray" weight={500}>
+                                  ({friend.alias})
+                                </Text>
+                              )}
+                            </div>
+                            <HiArrowRight />
                           </div>
-                        </Card>
-                      </div>
-                    </Link>
-                  ))}
+                        </Link>
+                        {i !== friends.length - 1 && (
+                          <Divider className="opacity-50" />
+                        )}
+                      </>
+                    ))}
+                </Stack>
 
                 {friends.length === 0 && (
                   <div className="col-span-2">
@@ -213,6 +196,62 @@ const Home: NextPage<HomeProps> = ({ user }) => {
                   onChange={setFriendsTab}
                   radius="lg"
                 />
+              </div>
+            </ShadedCard>
+          </ReactNoSSR>
+
+          <ReactNoSSR onSSR={<Skeleton height={300} />}>
+            <ShadedCard withBorder className="mt-4">
+              <div className="grid grid-cols-2 gap-8">
+                {[
+                  {
+                    title: "Browse games",
+                    description: "Find games to play on Framework.",
+                    icon: <HiUserGroup />,
+                    color: "blue",
+                    link: "/games",
+                  },
+                  {
+                    title: "View your profile",
+                    description:
+                      "View your profile, edit your settings, and more.",
+                    icon: <HiClipboardList />,
+                    color: "teal",
+                    link: `/profile/${user.username}`,
+                  },
+                  {
+                    title: "Manage settings",
+                    description:
+                      "Manage your account settings, privacy, security, and more.",
+                    icon: <HiCog />,
+                    color: "grape",
+                    link: "/settings",
+                  },
+                  {
+                    title: "Daily prize",
+                    description: "Claim your daily prize.",
+                    icon: <HiGift />,
+                    color: "pink",
+                    link: "/prizes",
+                  },
+                ].map(({ title, description, icon, color, link }) => (
+                  <Link href={link} key={title}>
+                    <div className="flex flex-col gap-4 cursor-pointer">
+                      <div className="flex justify-between items-center">
+                        <ThemeIcon variant="light" color={color} size={38}>
+                          {icon}
+                        </ThemeIcon>
+                        <HiArrowRight />
+                      </div>
+                      <div>
+                        <Title order={5} mb={6}>
+                          {title}
+                        </Title>
+                        <Text color="dimmed">{description}</Text>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
               </div>
             </ShadedCard>
           </ReactNoSSR>
