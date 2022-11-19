@@ -4,17 +4,15 @@ import {
   Avatar,
   Badge,
   Button,
+  Card,
   Grid,
   Group,
-  Modal,
-  Select,
   Stack,
   Text,
-  Textarea,
   ThemeIcon,
   Title,
 } from "@mantine/core";
-import { useForm } from "@mantine/form";
+import { UserAdminNotes } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
 import Link from "next/link";
@@ -28,9 +26,14 @@ import {
   HiShieldExclamation,
   HiX,
 } from "react-icons/hi";
+import ReactNoSSR from "react-no-ssr";
+import NoteTable, { NoteUser } from "../../../components/Admin/NoteTable";
+import Punishment from "../../../components/Admin/Punishment";
 import Framework from "../../../components/Framework";
+import ShadedCard from "../../../components/ShadedCard";
 import UserContext from "../../../components/UserContext";
 import authorizedRoute from "../../../util/authorizedRoute";
+import { exclude } from "../../../util/exclude";
 import getMediaUrl from "../../../util/getMedia";
 import prisma from "../../../util/prisma";
 import {
@@ -42,10 +45,35 @@ import {
 
 interface ReportProps {
   user: User;
-  report: Report;
+  report: Report & {
+    author: {
+      notes: UserAdminNotes &
+        {
+          author: NonUser;
+          user: NonUser;
+        }[];
+    };
+    user: {
+      notes: UserAdminNotes &
+        {
+          author: NonUser;
+          user: NonUser;
+        }[];
+    };
+  };
 }
 
-const UserSection = ({ user, hint }: { user: NonUser; hint: string }) => {
+const UserSection = ({
+  user,
+  hint,
+}: {
+  user: NonUser & {
+    notes: {
+      author: NonUser;
+    };
+  };
+  hint: string;
+}) => {
   return (
     <Group>
       <UserContext user={user}>
@@ -66,104 +94,42 @@ const UserSection = ({ user, hint }: { user: NonUser; hint: string }) => {
   );
 };
 
-interface IPunishmentForm {
-  category: "warning" | "ban";
-  reason: string;
-}
-
 const ReportPage: NextPage<ReportProps> = ({ user, report }) => {
   const [punishOpened, setPunishOpened] = useState(false);
   const [punishUser, setPunishUser] = useState<NonUser | undefined>(undefined);
-
   const router = useRouter();
 
-  const punishmentForm = useForm<IPunishmentForm>({
-    initialValues: {
-      category: "warning",
-      reason: "",
-    },
-    validate: {
-      reason: (value) => {
-        if (value.length < 10) {
-          return "Reason must be at least 10 characters long";
-        }
+  const closeReport = async () => {
+    await fetch(`/api/admin/report/${report.id}/close`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: String(getCookie(".frameworksession")),
       },
-    },
-  });
-
-  const submitPunishment = async (values: IPunishmentForm) => {
-    await fetch(
-      `/api/admin/report/${report.id}/punish/${
-        punishUser?.id === report.authorId ? "author" : "reported"
-      }`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: String(getCookie(".frameworksession")),
-        },
-        body: JSON.stringify({
-          category: values.category,
-          description: values.reason,
-        }),
-      }
-    )
+    })
       .then((res) => res.json())
       .then((res) => {
         if (res.success) {
           router.reload();
         } else {
-          alert("An error occurred while punishing the user.");
+          alert("An error occurred while closing the report.");
         }
       })
       .catch(() => {
-        alert("An error occurred while punishing the user.");
+        alert("An error occurred while closing the report.");
       });
   };
 
   return (
     <>
-      <Modal
-        title="Punishment"
-        opened={punishOpened}
-        onClose={() => setPunishOpened(false)}
-      >
-        <Group mb={24}>
-          <Group>
-            <Avatar size={36} src={getMediaUrl(punishUser!.avatarUri)} radius={99} />
-            <Stack spacing={3}>
-              <Text size="sm" color="dimmed">
-                Receiving punishment
-              </Text>
-              <Text weight={650}>{punishUser?.username}</Text>
-            </Stack>
-          </Group>
-        </Group>
-
-        <form onSubmit={punishmentForm.onSubmit(submitPunishment)}>
-          <Stack spacing={8} mb={24}>
-            <Select
-              label="Category"
-              description="Select punishment category"
-              data={[
-                { label: "Warning", value: "warning" },
-                { label: "Ban", value: "ban" },
-              ]}
-              {...punishmentForm.getInputProps("category")}
-            />
-
-            <Textarea
-              label="Reason"
-              description="Explain the punishment"
-              {...punishmentForm.getInputProps("reason")}
-            />
-          </Stack>
-
-          <Button fullWidth type="submit" leftIcon={<HiShieldCheck />}>
-            Punish
-          </Button>
-        </form>
-      </Modal>
+      <Punishment
+        user={punishUser as NonUser}
+        setPunishOpened={setPunishOpened}
+        punishOpened={punishOpened}
+        onCompleted={() => {
+          closeReport();
+        }}
+      />
 
       <Framework activeTab="none" user={user}>
         <Grid columns={6} gutter="xl">
@@ -180,17 +146,23 @@ const ReportPage: NextPage<ReportProps> = ({ user, report }) => {
               Report {report.id}{" "}
               {report.processed && (
                 <Badge>
-                  <HiShieldCheck /> Processed
+                  <HiShieldCheck /> Closed
                 </Badge>
               )}
             </Title>
 
             <Grid mb={24}>
               <Grid.Col span={4}>
-                <UserSection user={report.author} hint="Author" />
+                <UserSection
+                  user={exclude(report.author, ["notes"])}
+                  hint="Author"
+                />
               </Grid.Col>
               <Grid.Col span={4}>
-                <UserSection user={report.user} hint="Reported" />
+                <UserSection
+                  user={exclude(report.user, ["notes"])}
+                  hint="Reported"
+                />
               </Grid.Col>
               <Grid.Col span={4}>
                 <Group>
@@ -264,29 +236,22 @@ const ReportPage: NextPage<ReportProps> = ({ user, report }) => {
                 leftIcon={<HiX />}
                 disabled={report.processed}
                 fullWidth
-                onClick={async () => {
-                  await fetch(`/api/admin/report/${report.id}/close`, {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                      Authorization: String(getCookie(".frameworksession")),
-                    },
-                  })
-                    .then((res) => res.json())
-                    .then((res) => {
-                      if (res.success) {
-                        router.reload();
-                      } else {
-                        alert("An error occurred while closing the report.");
-                      }
-                    })
-                    .catch(() => {
-                      alert("An error occurred while closing the report.");
-                    });
+                onClick={() => {
+                  closeReport();
                 }}
               >
                 Close report
               </Button>
+
+              <ReactNoSSR>
+                <ShadedCard withBorder shadow="md">
+                  {[report.user, report.author].map((user) => (
+                    <Card.Section withBorder p="md" key={user.id}>
+                      <NoteTable user={user as unknown as NoteUser} />
+                    </Card.Section>
+                  ))}
+                </ShadedCard>
+              </ReactNoSSR>
             </Stack>
           </Grid.Col>
         </Grid>
@@ -307,9 +272,46 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     where: {
       id: String(id),
     },
-    include: {
-      user: nonCurrentUserSelect,
-      author: nonCurrentUserSelect,
+    select: {
+      user: {
+        select: {
+          ...nonCurrentUserSelect.select,
+          notes: {
+            select: {
+              author: {
+                select: {
+                  ...nonCurrentUserSelect.select,
+                },
+              },
+              content: true,
+              createdAt: true,
+              id: true,
+            },
+          },
+        },
+      },
+      author: {
+        select: {
+          ...nonCurrentUserSelect.select,
+          notes: {
+            select: {
+              author: {
+                select: {
+                  ...nonCurrentUserSelect.select,
+                },
+              },
+              content: true,
+              createdAt: true,
+              id: true,
+            },
+          },
+        },
+      },
+      description: true,
+      id: true,
+      reason: true,
+      processed: true,
+      createdAt: true,
     },
   });
 

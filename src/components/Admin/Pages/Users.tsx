@@ -6,13 +6,18 @@ import {
   TextInput,
   UnstyledButton,
 } from "@mantine/core";
-import { DiscordConnectCode, Notification, Session } from "@prisma/client";
+import {
+  DiscordConnectCode,
+  Notification,
+  Session,
+  UserAdminNotes,
+} from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
 import { HiSearch } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import getMediaUrl from "../../../util/getMedia";
-import { User } from "../../../util/prisma-types";
+import { NonUser, User } from "../../../util/prisma-types";
 import useMediaQuery from "../../../util/useMediaQuery";
 import UserView from "../UserView";
 
@@ -20,6 +25,11 @@ export type AdminViewUser = User & {
   sessions: Session[];
   discordAccount: DiscordConnectCode | null;
   notifications: Notification[];
+  notes: UserAdminNotes &
+    {
+      author: NonUser;
+      user: NonUser;
+    }[];
 };
 
 const Users = () => {

@@ -98,6 +98,8 @@ model User {
   lastUsernameChange         DateTime?
   statusPosts                StatusPosts[]         @relation("statusPosts")
   profileLinks               ProfileLink[]         @relation("profileLinks")
+  notes                      UserAdminNotes[]      @relation("adminNotes")
+  authoredNotes              UserAdminNotes[]      @relation("adminNotesAuthor")
 }
 
 model ConnectedAccount {
@@ -479,4 +481,14 @@ model ProfileLink {
   name      String
   url       String
   createdAt DateTime @default(now())
+}
+
+model UserAdminNotes {
+  id        String   @id @default(uuid())
+  user      User     @relation("adminNotes", fields: [userId], references: [id])
+  userId    Int
+  author    User     @relation("adminNotesAuthor", fields: [authorId], references: [id])
+  authorId  Int
+  createdAt DateTime @default(now())
+  content   String
 }

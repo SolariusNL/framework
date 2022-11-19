@@ -8,9 +8,11 @@ import {
   Query,
 } from "@storyofams/next-api-decorators";
 import { readFile } from "fs/promises";
-import { AdminAuthorized } from "../../../util/api/authorized";
+import { Account, AdminAuthorized } from "../../../util/api/authorized";
 import prisma from "../../../util/prisma";
 import { nonCurrentUserSelect, userSelect } from "../../../util/prisma-types";
+import type { User } from "../../../util/prisma-types";
+import { RateLimitMiddleware } from "../../../util/rateLimit";
 
 class AdminRouter {
   @Get("/reports")
@@ -45,97 +47,6 @@ class AdminRouter {
         success: false,
         error: "Report not found",
       };
-    }
-
-    await prisma.userReport.update({
-      where: {
-        id: String(id),
-      },
-      data: {
-        processed: true,
-      },
-    });
-
-    return {
-      success: true,
-    };
-  }
-
-  @Post("/report/:id/punish/:type")
-  @AdminAuthorized()
-  public async punishReportMember(
-    @Param("id") id: string,
-    @Param("type") type: "author" | "reported",
-    @Body() body: { description: string; category: "warning" | "ban" }
-  ) {
-    if (type !== "author" && type !== "reported") {
-      return {
-        success: false,
-        error: "Invalid type",
-      };
-    }
-
-    if (body.category !== "warning" && body.category !== "ban") {
-      return {
-        success: false,
-        error: "Invalid type",
-      };
-    }
-
-    if (body.description.length > 1000 || body.description.length < 10) {
-      return {
-        success: false,
-        error: "Description must be between 10 and 1000 characters",
-      };
-    }
-
-    const report = await prisma.userReport.findFirst({
-      where: {
-        id: String(id),
-      },
-      include: {
-        user: true,
-        author: true,
-      },
-    });
-
-    if (!report) {
-      return {
-        success: false,
-        error: "Report not found",
-      };
-    }
-
-    if (report.processed) {
-      return {
-        success: false,
-        error: "Report already processed",
-      };
-    }
-
-    switch (body.category) {
-      case "warning":
-        await prisma.user.update({
-          where: {
-            id: type === "author" ? report.authorId : report.userId,
-          },
-          data: {
-            warningViewed: false,
-            warning: body.description,
-          },
-        });
-        break;
-      case "ban":
-        await prisma.user.update({
-          where: {
-            id: type === "author" ? report.authorId : report.userId,
-          },
-          data: {
-            banned: true,
-            banReason: body.description,
-          },
-        });
-        break;
     }
 
     await prisma.userReport.update({
@@ -280,6 +191,12 @@ class AdminRouter {
         sessions: true,
         discordAccount: true,
         notifications: true,
+        notes: {
+          include: {
+            author: nonCurrentUserSelect,
+            user: nonCurrentUserSelect,
+          },
+        },
       },
       take: 100,
     });
@@ -453,6 +370,126 @@ class AdminRouter {
     return {
       success: true,
       user,
+    };
+  }
+
+  @Post("/users/:uid/punish/:category")
+  @AdminAuthorized()
+  @RateLimitMiddleware(15)()
+  public async punishUser(
+    @Param("uid") uid: string,
+    @Param("category") category: "ban" | "warning",
+    @Body() body: { reason: string }
+  ) {
+    if (body.reason.length < 3 || body.reason.length > 1024) {
+      return {
+        success: false,
+        error: "Reason must be between 3 and 1024 characters",
+      };
+    }
+
+    if (category !== "ban" && category !== "warning") {
+      return {
+        success: false,
+        error: "Invalid category",
+      };
+    }
+
+    const user = await prisma.user.findFirst({
+      where: {
+        id: Number(uid),
+      },
+    });
+
+    if (!user) {
+      return {
+        success: false,
+        error: "User not found",
+      };
+    }
+
+    if (category === "ban") {
+      await prisma.user.update({
+        where: {
+          id: Number(uid),
+        },
+        data: {
+          banned: true,
+          banReason: body.reason,
+        },
+      });
+    } else {
+      await prisma.user.update({
+        where: {
+          id: Number(uid),
+        },
+        data: {
+          warningViewed: false,
+          warning: body.reason,
+        },
+      });
+    }
+
+    return {
+      success: true,
+    };
+  }
+
+  @Post("/users/:uid/note/new")
+  @AdminAuthorized()
+  @RateLimitMiddleware(15)()
+  public async addNoteToUser(
+    @Param("uid") uid: string,
+    @Body() body: { note: string },
+    @Account() account: User
+  ) {
+    if (body.note.length < 3 || body.note.length > 1024) {
+      return {
+        success: false,
+        error: "Note must be between 3 and 1024 characters",
+      };
+    }
+
+    const user = await prisma.user.findFirst({
+      where: {
+        id: Number(uid),
+      },
+    });
+
+    if (!user) {
+      return {
+        success: false,
+        error: "User not found",
+      };
+    }
+
+    const note = await prisma.userAdminNotes.create({
+      data: {
+        content: String(body.note),
+        author: {
+          connect: {
+            id: Number(account.id),
+          },
+        },
+        user: {
+          connect: {
+            id: Number(uid),
+          },
+        },
+        createdAt: new Date(),
+      },
+      select: {
+        author: nonCurrentUserSelect,
+        user: nonCurrentUserSelect,
+        content: true,
+        createdAt: true,
+        id: true,
+      },
+    });
+
+    return {
+      success: true,
+      note: note,
     };
   }
 }

@@ -8,7 +8,7 @@ import {
   Table,
   Tabs,
   Text,
-  Title
+  Title,
 } from "@mantine/core";
 import Link from "next/link";
 import React from "react";
@@ -16,6 +16,7 @@ import { useUserInformationDialog } from "../../contexts/UserInformationDialog";
 import getMediaUrl from "../../util/getMedia";
 import Copy from "../Copy";
 import ModernEmptyState from "../ModernEmptyState";
+import NoteTable, { NoteUser } from "./NoteTable";
 import { AdminViewUser } from "./Pages/Users";
 
 interface UserViewProps {
@@ -77,7 +78,7 @@ const UserView = ({ user }: UserViewProps) => {
         </Tabs.List>
 
         <Tabs.Panel value="info">
-          <Table striped>
+          <Table striped mb={6}>
             <tbody>
               {[
                 ["Username", user.username],
@@ -139,6 +140,7 @@ const UserView = ({ user }: UserViewProps) => {
                 ))}
             </tbody>
           </Table>
+          <NoteTable user={user as unknown as NoteUser} />
         </Tabs.Panel>
 
         <Tabs.Panel value="sessions">
