@@ -268,7 +268,7 @@ const LandingHeader = () => {
   ));
 
   return (
-    <Box>
+    <Box className="sticky top-0 z-50">
       <Header height={60} px="md">
         <Group position="apart" sx={{ height: "100%" }}>
           <FrameworkLogo />

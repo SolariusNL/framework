@@ -27,6 +27,7 @@ import getMediaUrl from "../util/getMedia";
 import { NonUser, User } from "../util/prisma-types";
 import { getRelativeTime } from "../util/relativeTime";
 import ReactNoSSR from "react-no-ssr";
+import useMediaQuery from "../util/useMediaQuery";
 
 interface HomeProps {
   user: User;
@@ -71,6 +72,7 @@ const Home: NextPage<HomeProps> = ({ user }) => {
   const [statusMsg, setStatusMsg] = useState("");
   const [loading, setLoading] = useState(false);
   const [statusPage, setStatusPage] = useState(1);
+  const mobile = useMediaQuery("768");
 
   useEffect(() => {
     setTimeMessage(
@@ -169,7 +171,11 @@ const Home: NextPage<HomeProps> = ({ user }) => {
                           <Text weight={500} lineClamp={1} mb={12}>
                             @{friend.username}
                           </Text>
-                          <div className="flex justify-around w-full">
+                          <div
+                            className={`flex ${
+                              mobile ? "flex-col gap-2" : "justify-around gap-4"
+                            }`}
+                          >
                             {[
                               ["Following", friend.following.length],
                               ["Followers", friend.followers.length],
@@ -193,7 +199,7 @@ const Home: NextPage<HomeProps> = ({ user }) => {
                   ))}
 
                 {friends.length === 0 && (
-                  <div className="w-full flex justify-center">
+                  <div className="col-span-2">
                     <ModernEmptyState
                       title="No friends yet"
                       body="Find some friends to connect with on Framework."
