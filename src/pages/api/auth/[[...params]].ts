@@ -217,14 +217,22 @@ class AuthRouter {
 
     const userAlreadyExists = await prisma.user.findFirst({
       where: {
-        OR: [{ email: String(email) }, { username: String(username) }],
+        OR: [
+          { email: String(email) },
+          { username: String(username) },
+          {
+            previousUsernames: {
+              has: String(username),
+            },
+          },
+        ],
       },
     });
 
     if (userAlreadyExists) {
       return {
         status: 400,
-        message: "User already exists",
+        message: "User already exists, or username has been taken",
       };
     }
 

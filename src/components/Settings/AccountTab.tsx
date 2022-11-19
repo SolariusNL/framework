@@ -209,6 +209,13 @@ const AccountTab = ({ user }: AccountTabProps) => {
                   <Alert icon={<HiInformationCircle size={14} />}>
                     You will be charged 500 tickets to change your username.
                   </Alert>
+                  {new Date(user.lastUsernameChange as Date).getTime() +
+                    604800000 >
+                    Date.now() && (
+                    <Alert icon={<HiInformationCircle size={14} />} mt={12}>
+                      You can only change your username once every 7 days.
+                    </Alert>
+                  )}
                 </>
               }
               icon={<HiUser />}
@@ -226,6 +233,11 @@ const AccountTab = ({ user }: AccountTabProps) => {
                     !updated.username.match(/^[a-zA-Z0-9_]{3,24}$/)
                       ? "Your username must be between 3 and 24 characters and can only contain letters, numbers, and underscores."
                       : undefined
+                  }
+                  disabled={
+                    new Date(user.lastUsernameChange as Date).getTime() +
+                      604800000 >
+                      Date.now() || user.tickets < 500
                   }
                 />
               }

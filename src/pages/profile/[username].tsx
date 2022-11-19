@@ -18,7 +18,6 @@ import {
   ThemeIcon,
   Title,
   Tooltip,
-  TypographyStylesProvider,
 } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { NextSeo } from "next-seo";
@@ -156,7 +155,7 @@ const Profile: NextPage<ProfileProps> = ({ user, profile }) => {
               )}
               <Tooltip
                 label={
-                  user.previousUsernames.length > 0
+                  viewing.previousUsernames.length > 0
                     ? `This user was previously known as: ${viewing.previousUsernames.join(
                         ", "
                       )}.`

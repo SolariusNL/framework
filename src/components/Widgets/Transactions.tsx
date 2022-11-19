@@ -8,15 +8,19 @@ import ModernEmptyState from "../ModernEmptyState";
 
 interface TransactionWidgetProps {
   user: User;
+  onTransactionsLoaded?: (transactions: Transaction[]) => void;
 }
 
-const TransactionsWidget = ({ user }: TransactionWidgetProps) => {
+const TransactionsWidget = ({
+  user,
+  onTransactionsLoaded,
+}: TransactionWidgetProps) => {
   const [loading, setLoading] = useState(true);
   const [transactions, setTransactions] = useState<Transaction[] | null>(null);
   const [page, setPage] = useState(1);
 
   const getTransactions = async () => {
-    await fetch(`/api/users/@me/transactions/${page}`, {
+    await fetch("/api/users/@me/transactions", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -27,6 +31,7 @@ const TransactionsWidget = ({ user }: TransactionWidgetProps) => {
       .then((res) => {
         setTransactions(res);
         setLoading(false);
+        if (onTransactionsLoaded) onTransactionsLoaded(res);
       });
   };
 
@@ -50,22 +55,24 @@ const TransactionsWidget = ({ user }: TransactionWidgetProps) => {
 
           <tbody>
             {transactions !== null &&
-              transactions.map((transaction) => (
-                <tr key={transaction.id}>
-                  <td>
-                    <div className="flex items-center">
-                      <Copy value={transaction.id} />
-                      {transaction.id.slice(0, 8)}...
-                    </div>
-                  </td>
-                  <td>{transaction.to}</td>
-                  <td>{transaction.tickets}</td>
-                  <td>{transaction.description}</td>
-                  <td>
-                    {new Date(transaction.createdAt).toLocaleDateString()}
-                  </td>
-                </tr>
-              ))}
+              transactions
+                .slice((page - 1) * 8, page * 8)
+                .map((transaction) => (
+                  <tr key={transaction.id}>
+                    <td>
+                      <div className="flex items-center">
+                        <Copy value={transaction.id} />
+                        {transaction.id.slice(0, 8)}...
+                      </div>
+                    </td>
+                    <td>{transaction.to}</td>
+                    <td>{transaction.tickets}</td>
+                    <td>{transaction.description}</td>
+                    <td>
+                      {new Date(transaction.createdAt).toLocaleDateString()}
+                    </td>
+                  </tr>
+                ))}
 
             {transactions !== null && transactions.length === 0 && (
               <tr>
@@ -103,9 +110,7 @@ const TransactionsWidget = ({ user }: TransactionWidgetProps) => {
       </ScrollArea>
 
       <Pagination
-        total={Math.ceil(
-          (transactions?.length && transactions.length / 10) || 0
-        )}
+        total={Math.ceil((transactions?.length ?? 0) / 8)}
         page={page}
         onChange={setPage}
       />
