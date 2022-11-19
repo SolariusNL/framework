@@ -41,18 +41,27 @@ const NoteTable: React.FC<NoteTable> = ({ user }) => {
           </tr>
         </thead>
         <tbody>
-          {notes.map((note) => (
-            <tr key={note.id}>
-              <td>
-                <div className="flex items-center gap-2">
-                  <Avatar size={24} src={getMediaUrl(note.author.avatarUri)} />
-                  {note.author.username}
-                </div>
-              </td>
-              <td>{note.content}</td>
-              <td>{new Date(note.createdAt).toLocaleDateString()}</td>
-            </tr>
-          ))}
+          {notes
+            .sort(
+              (a, b) =>
+                new Date(b.createdAt).getTime() -
+                new Date(a.createdAt).getTime()
+            )
+            .map((note) => (
+              <tr key={note.id}>
+                <td>
+                  <div className="flex items-center gap-2">
+                    <Avatar
+                      size={24}
+                      src={getMediaUrl(note.author.avatarUri)}
+                    />
+                    {note.author.username}
+                  </div>
+                </td>
+                <td>{note.content}</td>
+                <td>{new Date(note.createdAt).toLocaleDateString()}</td>
+              </tr>
+            ))}
           {notes.length === 0 && (
             <tr>
               <td colSpan={3}>

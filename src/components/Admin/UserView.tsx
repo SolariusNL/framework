@@ -18,6 +18,7 @@ import Copy from "../Copy";
 import ModernEmptyState from "../ModernEmptyState";
 import NoteTable, { NoteUser } from "./NoteTable";
 import { AdminViewUser } from "./Pages/Users";
+import Punishment from "./Punishment";
 
 interface UserViewProps {
   user: AdminViewUser;
@@ -29,9 +30,18 @@ const UserView = ({ user }: UserViewProps) => {
   };
 
   const { setOpen, setUser, setDefaultTab } = useUserInformationDialog();
+  const [punishOpened, setPunishOpened] = React.useState(false);
 
   return (
     <>
+      <Punishment
+        user={user}
+        punishOpened={punishOpened}
+        setPunishOpened={setPunishOpened}
+        onCompleted={() => {
+          setPunishOpened(false);
+        }}
+      />
       <Group mb={18}>
         <Avatar size="xl" radius={999} src={getMediaUrl(user.avatarUri)} />
         <Stack spacing={3}>
@@ -52,14 +62,14 @@ const UserView = ({ user }: UserViewProps) => {
       </Group>
 
       <Group mb={18}>
-        <Button.Group>
-          <Button color="red" disabled={user.banned}>
-            Ban
-          </Button>
-          <Button color="red" disabled={user.warning !== ""}>
-            Warn
-          </Button>
-        </Button.Group>
+        <Button
+          color="red"
+          onClick={() => {
+            setPunishOpened(true);
+          }}
+        >
+          Punish
+        </Button>
         <Button.Group>
           <Button>Impersonate</Button>
           <Link href={`/profile/${user.username}`}>
