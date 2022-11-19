@@ -50,6 +50,7 @@ const user = Prisma.validator<Prisma.UserArgs>()({
     secrets: true,
     premiumSubscription: true,
     statusPosts: true,
+    profileLinks: true,
   },
 });
 
@@ -129,6 +130,7 @@ export const userSelect: Prisma.UserSelect = {
   emailRequiredLogin: true,
   lastUsernameChange: true,
   statusPosts: true,
+  profileLinks: true,
 };
 
 export const gameSelect: Prisma.GameSelect = {

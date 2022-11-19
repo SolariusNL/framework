@@ -97,6 +97,7 @@ model User {
   emailLoginRequests         EmailLoginRequest[]   @relation("emailLoginRequests")
   lastUsernameChange         DateTime?
   statusPosts                StatusPosts[]         @relation("statusPosts")
+  profileLinks               ProfileLink[]         @relation("profileLinks")
 }
 
 model ConnectedAccount {
@@ -469,4 +470,13 @@ model StatusPosts {
   userId    Int
   createdAt DateTime @default(now())
   content   String
+}
+
+model ProfileLink {
+  id        String   @id @default(uuid())
+  user      User     @relation("profileLinks", fields: [userId], references: [id])
+  userId    Int
+  name      String
+  url       String
+  createdAt DateTime @default(now())
 }

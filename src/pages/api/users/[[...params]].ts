@@ -584,6 +584,64 @@ class UserRouter {
     };
   }
 
+  @Post("/@me/update/links")
+  @Authorized()
+  @RateLimitMiddleware(20)()
+  public async updateProfileLinks(
+    @Account() user: User,
+    @Body()
+    data: Array<{
+      name: string;
+      url: string;
+    }>
+  ) {
+    if (data.length > 3) {
+      return {
+        error: "You can only have up to 3 profile links",
+        status: 400,
+      };
+    }
+
+    for (const link of data) {
+      if (!link.name.match(/^[a-zA-Z0-9_ ]{3,24}$/)) {
+        return {
+          error: "Invalid link name",
+          status: 400,
+        };
+      }
+
+      if (
+        !link.url.match(
+          /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/
+        )
+      ) {
+        return {
+          error: "Invalid link URL",
+          status: 400,
+        };
+      }
+    }
+
+    await prisma.profileLink.deleteMany({
+      where: {
+        userId: user.id,
+      },
+    });
+
+    await prisma.profileLink.createMany({
+      data: data.map((link) => ({
+        name: link.name,
+        url: link.url,
+        userId: user.id,
+      })),
+    });
+
+    return {
+      success: true,
+      message: "Profile links updated successfully.",
+    };
+  }
+
   @Post("/@me/preview/enroll")
   @Authorized()
   public async enrollInPreview(@Account() user: User) {

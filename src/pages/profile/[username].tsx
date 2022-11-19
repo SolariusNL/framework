@@ -47,6 +47,7 @@ import ThumbnailCarousel from "../../components/ImageCarousel";
 import ModernEmptyState from "../../components/ModernEmptyState";
 import PlaceholderGameResource from "../../components/PlaceholderGameResource";
 import Donate from "../../components/Profile/Donate";
+import Links from "../../components/Profile/Links";
 import ReportUser from "../../components/ReportUser";
 import ShadedCard from "../../components/ShadedCard";
 import { useUserInformationDialog } from "../../contexts/UserInformationDialog";
@@ -433,6 +434,21 @@ const Profile: NextPage<ProfileProps> = ({ user, profile }) => {
                 </div>
               </ReactNoSSR>
               <Text weight={550} mb={10} color="dimmed" mt={50}>
+                Contacts
+              </Text>
+              <Links
+                user={viewing}
+                mb={16}
+                sx={(theme) => ({
+                  backgroundColor:
+                    theme.colorScheme == "dark"
+                      ? theme.colors.dark[9]
+                      : "#FFF",
+                })}
+                shadow="md"
+              />
+
+              <Text weight={550} mb={10} color="dimmed" mt={50}>
                 Badges
               </Text>
 
@@ -582,6 +598,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       lastSeen: true,
       alias: true,
       previousUsernames: true,
+      profileLinks: true,
     },
   });
 
