@@ -1,6 +1,7 @@
 import { GetServerSidePropsContext, NextPage } from "next";
 import {
   HiCurrencyDollar,
+  HiDatabase,
   HiExclamationCircle,
   HiServer,
   HiViewList,
@@ -16,9 +17,19 @@ import prisma from "../../../util/prisma";
 import { Game, gameSelect, User } from "../../../util/prisma-types";
 import ReactNoSSR from "react-no-ssr";
 import { useEffect, useState } from "react";
+import Datastores from "../../../components/EditGame/Datastores";
+
+export type GameWithDatastore = Game & {
+  datastores: {
+    id: number;
+    name: string;
+    desc: string;
+    createdAt: Date;
+  }[];
+};
 
 interface EditGameProps {
-  game: Game;
+  game: GameWithDatastore;
   user: User;
 }
 
@@ -52,13 +63,18 @@ const EditGame: NextPage<EditGameProps> = ({ game, user }) => {
           <TabNav.Tab value="age" icon={<HiExclamationCircle />}>
             Age Rating
           </TabNav.Tab>
+          <TabNav.Tab value="datastores" icon={<HiDatabase />}>
+            Datastores
+          </TabNav.Tab>
         </TabNav.List>
 
-        {[Details, Funding, Servers, AgeRating].map((Component, index) => (
-          <ReactNoSSR key={index}>
-            <Component game={game} />
-          </ReactNoSSR>
-        ))}
+        {[Details, Funding, Servers, AgeRating, Datastores].map(
+          (Component, index) => (
+            <ReactNoSSR key={index}>
+              <Component game={game} />
+            </ReactNoSSR>
+          )
+        )}
       </TabNav>
     </Framework>
   );
@@ -76,7 +92,17 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     JSON.stringify(
       await prisma.game.findFirst({
         where: { id: Number(id) },
-        select: gameSelect,
+        select: {
+          ...gameSelect,
+          datastores: {
+            select: {
+              id: true,
+              name: true,
+              desc: true,
+              createdAt: true,
+            },
+          },
+        },
       })
     )
   );

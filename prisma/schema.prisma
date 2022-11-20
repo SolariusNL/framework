@@ -238,26 +238,27 @@ enum GameGenre {
 }
 
 model Game {
-  id                   Int           @id @default(autoincrement())
+  id                   Int             @id @default(autoincrement())
   name                 String
   genre                GameGenre
   description          String
-  maxPlayersPerSession Int           @default(15)
-  updates              Update[]      @relation("updates")
-  author               User          @relation("gameAuthor", fields: [authorId], references: [id])
+  maxPlayersPerSession Int             @default(15)
+  updates              Update[]        @relation("updates")
+  author               User            @relation("gameAuthor", fields: [authorId], references: [id])
   authorId             Int
-  createdAt            DateTime      @default(now())
-  updatedAt            DateTime      @default(now())
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @default(now())
   iconUri              String
   gallery              String[]
-  likedBy              User[]        @relation("likedGames")
-  dislikedBy           User[]        @relation("dislikedGames")
-  visits               Int           @default(0)
-  connection           Connection[]  @relation("gameConnection")
-  comments             GameComment[] @relation("gameComments")
-  playing              Int           @default(0)
-  funds                GameFund[]    @relation("gameFunds")
-  rating               Rating?       @relation("gameRating")
+  likedBy              User[]          @relation("likedGames")
+  dislikedBy           User[]          @relation("dislikedGames")
+  visits               Int             @default(0)
+  connection           Connection[]    @relation("gameConnection")
+  comments             GameComment[]   @relation("gameComments")
+  playing              Int             @default(0)
+  funds                GameFund[]      @relation("gameFunds")
+  rating               Rating?         @relation("gameRating")
+  datastores           GameDatastore[] @relation("gameDatastore")
 }
 
 model GameComment {
@@ -294,6 +295,26 @@ model GameFund {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @default(now())
   lastDonation DateTime @default(now())
+}
+
+model GameDatastore {
+  id        String                      @id @default(uuid())
+  game      Game                        @relation("gameDatastore", fields: [gameId], references: [id])
+  gameId    Int
+  data      GameDatastoreKeyValuePair[] @relation("gameDatastoreData")
+  storeId   String
+  name      String
+  desc      String
+  createdAt DateTime                    @default(now())
+  updatedAt DateTime                    @default(now())
+}
+
+model GameDatastoreKeyValuePair {
+  id              String        @id @default(uuid())
+  key             String
+  value           Json
+  gameDatastore   GameDatastore @relation("gameDatastoreData", fields: [gameDatastoreId], references: [id])
+  gameDatastoreId String
 }
 
 model NucleusAuthTicket {
