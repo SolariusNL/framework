@@ -441,9 +441,7 @@ const Profile: NextPage<ProfileProps> = ({ user, profile }) => {
                 mb={16}
                 sx={(theme) => ({
                   backgroundColor:
-                    theme.colorScheme == "dark"
-                      ? theme.colors.dark[9]
-                      : "#FFF",
+                    theme.colorScheme == "dark" ? theme.colors.dark[9] : "#FFF",
                 })}
                 shadow="md"
               />
@@ -495,9 +493,13 @@ const Profile: NextPage<ProfileProps> = ({ user, profile }) => {
                       radius="md"
                       key={i}
                       shadow="md"
-                      sx={{
+                      sx={(theme) => ({
                         marginRight: i != viewing.games.length - 1 ? 8 : 0,
-                      }}
+                        backgroundColor:
+                          theme.colorScheme == "dark"
+                            ? theme.colors.dark[9]
+                            : "#FFF",
+                      })}
                     >
                       <Container p={0} mb={16}>
                         {g.gallery.length > 0 && (
@@ -520,7 +522,7 @@ const Profile: NextPage<ProfileProps> = ({ user, profile }) => {
 
                       <Title order={3}>{g.name}</Title>
                       <Text size="sm" color="dimmed" mb={16}>
-                        @{g.author.username}
+                        @{viewing.username}
                       </Text>
 
                       <Progress
@@ -577,12 +579,10 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       games: {
         include: {
           updates: true,
-          author: nonCurrentUserSelect,
-          likedBy: nonCurrentUserSelect,
-          dislikedBy: nonCurrentUserSelect,
+          likedBy: { select: { id: true } },
+          dislikedBy: { select: { id: true } },
         },
       },
-      avatar: true,
       avatarUri: true,
       premium: true,
       role: true,
@@ -592,8 +592,8 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       bio: true,
       busy: true,
       country: true,
-      followers: nonCurrentUserSelect,
-      following: nonCurrentUserSelect,
+      followers: { select: { id: true, username: true, avatarUri: true } },
+      following: { select: { id: true, username: true, avatarUri: true } },
       timeZone: true,
       lastSeen: true,
       alias: true,
