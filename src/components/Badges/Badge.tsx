@@ -1,14 +1,15 @@
-import { Group, Paper, Stack, Text } from "@mantine/core";
+import { Group, MantineColor, Paper, Stack, Text } from "@mantine/core";
 import { User } from "../../util/prisma-types";
 
 interface BadgeProps {
   user: User;
   title: string;
   description: string;
-  icon: React.ReactNode;
+  icon: React.FC<{ color: MantineColor; size: number }>;
+  color: MantineColor;
 }
 
-const Badge = ({ user, title, description, icon }: BadgeProps) => (
+const Badge = ({ user, title, description, icon: Icon, color }: BadgeProps) => (
   <Paper
     withBorder
     shadow="md"
@@ -19,6 +20,7 @@ const Badge = ({ user, title, description, icon }: BadgeProps) => (
         theme.colorScheme === "dark"
           ? theme.colors.dark[9]
           : theme.colors.gray[0],
+      border: `1px solid ${color}`,
     })}
   >
     <div
@@ -28,7 +30,9 @@ const Badge = ({ user, title, description, icon }: BadgeProps) => (
         width: "100%",
       }}
     >
-      <div>{icon}</div>
+      <div>
+        <Icon color={color} size={24} />
+      </div>
       <Group>
         <Stack spacing={3}>
           <Text weight={500} size="lg">

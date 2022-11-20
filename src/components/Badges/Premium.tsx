@@ -1,4 +1,4 @@
-import { Paper, Text, useMantineTheme } from "@mantine/core";
+import { useMantineTheme } from "@mantine/core";
 import { HiOutlineSparkles } from "react-icons/hi";
 import { User } from "../../util/prisma-types";
 import Badge from "./Badge";
@@ -10,7 +10,8 @@ const PremiumBadge = ({ user }: { user: User }) => {
       title="Premium subscriber"
       description={`${user.username} is currently a Framework Premium subscriber.`}
       user={user}
-      icon={<HiOutlineSparkles size={24} color={theme.colors.grape[7]} />}
+      icon={HiOutlineSparkles}
+      color={theme.colors.grape[7]}
     />
   );
 };
