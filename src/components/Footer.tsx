@@ -1,17 +1,20 @@
 import {
-  createStyles,
-  Text,
-  Container,
   ActionIcon,
+  Badge,
+  Container,
+  createStyles,
   Group,
   Stack,
+  Text,
 } from "@mantine/core";
 import {
+  IconBrandInstagram,
   IconBrandTwitter,
   IconBrandYoutube,
-  IconBrandInstagram,
 } from "@tabler/icons";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import ReactNoSSR from "react-no-ssr";
 import useConfig from "../util/useConfig";
 import SoodamLogo from "./SoodamLogo";
 
@@ -119,6 +122,9 @@ const useStyles = createStyles((theme) => ({
 const Footer = () => {
   const { classes } = useStyles();
   const config = useConfig();
+  const [status, setStatus] = useState<
+    "up" | "problems" | "disabled" | "loading"
+  >("loading");
 
   const groups = config?.footer?.links?.map((group) => {
     const links = group.links?.map((link, index) => (
@@ -137,6 +143,22 @@ const Footer = () => {
     );
   });
 
+  const getStatus = async () => {
+    if (process.env.NEXT_PUBLIC_BETTER_UPTIME_ENABLED === "true") {
+      await fetch("/api/doc/status")
+        .then((res) => res.json())
+        .then((res) => {
+          setStatus(res.status);
+        });
+    } else {
+      setStatus("disabled");
+    }
+  };
+
+  useEffect(() => {
+    getStatus();
+  }, []);
+
   return (
     <footer className={classes.footer}>
       <Container className={classes.inner}>
@@ -146,6 +168,33 @@ const Footer = () => {
             {config?.footer?.description ||
               "Passionate about open source and a better future for the web."}
           </Text>
+          <ReactNoSSR>
+            {process.env.NEXT_PUBLIC_BETTER_UPTIME_ENABLED === "true" && (
+              <a
+                href={String(process.env.NEXT_PUBLIC_STATUSPAGE_URL)}
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                <Badge
+                  variant="dot"
+                  color={
+                    status === "up"
+                      ? "green"
+                      : status === "problems"
+                      ? "red"
+                      : "blue"
+                  }
+                  className="cursor-pointer mt-2"
+                >
+                  {status === "up"
+                    ? "All systems operational"
+                    : status === "problems"
+                    ? "Some systems experiencing issues"
+                    : "..."}
+                </Badge>
+              </a>
+            )}
+          </ReactNoSSR>
         </div>
         <div className={classes.groups}>{groups}</div>
       </Container>
