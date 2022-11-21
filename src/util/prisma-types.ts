@@ -18,7 +18,9 @@ export const nonCurrentUserSelect = {
     role: true,
     alias: true,
     previousUsernames: true,
-    statusPosts: true,
+    statusPosts: {
+      take: 5,
+    },
   },
 };
 
@@ -129,7 +131,9 @@ export const userSelect: Prisma.UserSelect = {
   previousUsernames: true,
   emailRequiredLogin: true,
   lastUsernameChange: true,
-  statusPosts: true,
+  statusPosts: {
+    take: 5,
+  },
   profileLinks: true,
   hiddenHomeWidgets: true,
 };
