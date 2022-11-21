@@ -4,10 +4,7 @@ import {
   Header,
   Param,
   Post,
-  Req,
-  Res,
 } from "@storyofams/next-api-decorators";
-import type { NextApiRequest, NextApiResponse } from "next";
 import Authorized, {
   Account,
   Nucleus,
@@ -20,11 +17,7 @@ import { RateLimitMiddleware } from "../../../util/rateLimit";
 
 class NucleusRouter {
   @Post("/auth")
-  public async authorize(
-    @Header("authorization") authorization: string,
-    @Req() request: NextApiRequest,
-    @Res() response: NextApiResponse
-  ) {
+  public async authorize(@Header("authorization") authorization: string) {
     const match = await prisma.nucleusKey.findFirst({
       where: {
         key: authorization,
@@ -62,6 +55,44 @@ class NucleusRouter {
         },
       };
     }
+  }
+
+  @Post("/disconnect")
+  @NucleusAuthorized()
+  public async disconnect(@Header("authorization") authorization: string) {
+    const match = await prisma.nucleusKey.findFirst({
+      where: {
+        key: authorization,
+      },
+      include: {
+        connection: {
+          include: {
+            game: true,
+          },
+        },
+      },
+    });
+
+    if (!match) {
+      return {
+        success: false,
+        message: "Invalid authorization key",
+      };
+    }
+
+    await prisma.connection.update({
+      where: {
+        id: String(match.connectionId),
+      },
+      data: {
+        online: false,
+      },
+    });
+
+    return {
+      success: true,
+      message: "Disconnected",
+    };
   }
 
   @Post("/:key/delete")
