@@ -8,6 +8,7 @@ import FeedWidget from "../components/Home/FeedWidget";
 import FriendsWidget from "../components/Home/FriendsWidget";
 import NotificationsWidget from "../components/Home/NotificationsWidget";
 import QuickLinksWidget from "../components/Home/QuickLinksWidget";
+import SubscriptionWidget from "../components/Home/SubscriptionWidget";
 import ModernEmptyState from "../components/ModernEmptyState";
 import authorizedRoute from "../util/authorizedRoute";
 import { User } from "../util/prisma-types";
@@ -29,6 +30,13 @@ const widgets = [
     description: "Quick access to some common pages.",
     id: "quick-links",
     component: <QuickLinksWidget />,
+    side: "left",
+  },
+  {
+    title: "Subscription Renewal",
+    description: "See when your subscription renews.",
+    id: "subscription",
+    component: <SubscriptionWidget />,
     side: "left",
   },
   {

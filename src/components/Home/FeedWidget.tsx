@@ -76,7 +76,7 @@ const FeedWidget: React.FC = () => {
   };
 
   return (
-    <>
+    <ShadedCard withBorder>
       <div className="flex flex-grow">
         <Avatar
           size={42}
@@ -165,7 +165,7 @@ const FeedWidget: React.FC = () => {
           </>
         )}
       </ReactNoSSR>
-    </>
+    </ShadedCard>
   );
 };
 
