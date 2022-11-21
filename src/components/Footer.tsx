@@ -174,6 +174,7 @@ const Footer = () => {
                 href={String(process.env.NEXT_PUBLIC_STATUSPAGE_URL)}
                 target="_blank"
                 rel="noreferrer noopener"
+                style={{ textDecoration: "none" }}
               >
                 <Badge
                   variant="dot"
