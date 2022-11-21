@@ -131,6 +131,7 @@ export const userSelect: Prisma.UserSelect = {
   lastUsernameChange: true,
   statusPosts: true,
   profileLinks: true,
+  hiddenHomeWidgets: true,
 };
 
 export const gameSelect: Prisma.GameSelect = {

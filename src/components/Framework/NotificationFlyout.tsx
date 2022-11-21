@@ -1,28 +1,15 @@
 import {
-  Anchor,
   createStyles,
   Group,
   Indicator,
-  Pagination,
   Popover,
-  Spoiler,
-  Text,
-  Timeline,
-  UnstyledButton
+  UnstyledButton,
 } from "@mantine/core";
-import { Notification, NotificationType } from "@prisma/client";
+import { Notification } from "@prisma/client";
 import { useState } from "react";
-import {
-  HiBell,
-  HiCheckCircle,
-  HiDesktopComputer,
-  HiExclamationCircle,
-  HiInformationCircle
-} from "react-icons/hi";
-import { getCookie } from "../../util/cookies";
-import { getRelativeTime } from "../../util/relativeTime";
-import useMediaQuery from "../../util/useMediaQuery";
+import { HiBell } from "react-icons/hi";
 import ModernEmptyState from "../ModernEmptyState";
+import Notifications from "../Widgets/Notifications";
 
 interface NotificationFlyoutProps {
   notificationData: Notification[];
@@ -49,42 +36,11 @@ const useStyles = createStyles((theme) => ({
 
 const NotificationFlyout = ({ notificationData }: NotificationFlyoutProps) => {
   const [opened, setOpened] = useState(false);
-  const { classes, cx, theme } = useStyles();
-
+  const { classes, cx } = useStyles();
   const [notifications, setNotifications] = useState(notificationData);
-  const [activePage, setActivePage] = useState(1);
-
-  const typeIcon = (type: NotificationType) => {
-    switch (type) {
-      case "ALERT":
-        return <HiExclamationCircle size={12} />;
-      case "INFO":
-        return <HiInformationCircle size={12} />;
-      case "LOGIN":
-        return <HiDesktopComputer size={12} />;
-      case "SUCCESS":
-        return <HiCheckCircle size={12} />;
-      default:
-        return <HiInformationCircle size={12} />;
-    }
-  };
-
-  const handleReadNotification = (notification: Notification) => {
-    setNotifications(notifications.filter((n) => n.id !== notification.id));
-
-    fetch(`/api/notifications/${notification.id}/read`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: String(getCookie(".frameworksession")),
-      },
-    }).catch(() => alert("Error marking notification as read"));
-  };
-
-  const mobile = useMediaQuery("768");
 
   return (
-    <Popover transition="pop-top-right">
+    <Popover transition="pop-top-right" width={360}>
       <Popover.Target>
         <UnstyledButton
           className={cx(classes.flyout, {
@@ -112,61 +68,10 @@ const NotificationFlyout = ({ notificationData }: NotificationFlyoutProps) => {
           />
         ) : (
           <>
-            <Group sx={{ width: "100%", justifyContent: "center" }} mb={16}>
-              <Pagination
-                size="sm"
-                radius="xl"
-                withEdges
-                total={Math.ceil(notifications.length / (mobile ? 3 : 5))}
-                page={activePage}
-                onChange={setActivePage}
-                align="center"
-              />
-            </Group>
-
-            <Timeline
-              active={notifications.length}
-              bulletSize={24}
-              lineWidth={2}
-              p={10}
-              sx={{
-                maxWidth: "360px",
-              }}
-            >
-              {notifications
-                .sort(
-                  (a, b) =>
-                    new Date(b.createdAt).getTime() -
-                    new Date(a.createdAt).getTime()
-                )
-                .slice((activePage - 1) * (mobile ? 3 : 5), activePage * 5)
-                .map((notification) => (
-                  <Timeline.Item
-                    key={notification.id}
-                    bullet={typeIcon(notification.type)}
-                    title={notification.title}
-                  >
-                    <Spoiler
-                      maxHeight={40}
-                      showLabel="See more"
-                      hideLabel="Collapse"
-                    >
-                      <Text color="dimmed" size="sm">
-                        {notification.message}
-                      </Text>
-                    </Spoiler>
-                    <Text size="xs" mt={4}>
-                      {getRelativeTime(new Date(notification.createdAt))}
-                      {" - "}
-                      <Anchor
-                        onClick={() => handleReadNotification(notification)}
-                      >
-                        Mark as read
-                      </Anchor>
-                    </Text>
-                  </Timeline.Item>
-                ))}
-            </Timeline>
+            <Notifications
+              notifications={notifications}
+              setNotifications={setNotifications}
+            />
           </>
         )}
       </Popover.Dropdown>

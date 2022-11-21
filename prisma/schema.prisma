@@ -100,6 +100,7 @@ model User {
   profileLinks               ProfileLink[]         @relation("profileLinks")
   notes                      UserAdminNotes[]      @relation("adminNotes")
   authoredNotes              UserAdminNotes[]      @relation("adminNotesAuthor")
+  hiddenHomeWidgets          String[]
 }
 
 model ConnectedAccount {

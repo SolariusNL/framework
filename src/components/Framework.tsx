@@ -2,19 +2,21 @@ import { useFlags } from "@happykit/flags/client";
 import {
   ActionIcon,
   Alert,
-  Anchor, Badge,
+  Anchor,
+  Badge,
   Box,
   Burger,
   Container,
   createStyles,
   Drawer,
-  Group, Popover,
+  Group,
+  Popover,
   ScrollArea,
   Stack,
   Tabs,
   Text,
   ThemeIcon,
-  Title
+  Title,
 } from "@mantine/core";
 import { useDisclosure, useLocalStorage } from "@mantine/hooks";
 import isElectron from "is-electron";
@@ -22,10 +24,17 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useRef, useState } from "react";
 import {
-  HiArrowLeft, HiCog, HiGift,
-  HiHome, HiLightBulb, HiMail, HiSearch, HiShoppingBag,
-  HiSpeakerphone, HiUser,
-  HiViewGrid
+  HiArrowLeft,
+  HiCog,
+  HiGift,
+  HiHome,
+  HiLightBulb,
+  HiMail,
+  HiSearch,
+  HiShoppingBag,
+  HiSpeakerphone,
+  HiUser,
+  HiViewGrid,
 } from "react-icons/hi";
 import { getIpcRenderer } from "../util/electron";
 import { User } from "../util/prisma-types";
@@ -63,6 +72,7 @@ interface FrameworkProps {
     label: string;
     href: string;
   };
+  actions?: [string, () => void][];
 }
 
 export const frameworkStyles = createStyles((theme) => ({
@@ -131,11 +141,12 @@ const Framework = ({
   immersive,
   beta,
   returnTo,
+  actions,
 }: FrameworkProps) => {
-  const { classes, theme, cx } = frameworkStyles();
+  const { classes } = frameworkStyles();
   const [opened, { toggle }] = useDisclosure(false);
-  const [userMenuOpened, setUserMenuOpened] = useState(false);
-  const [currencyMenuOpened, setCurrencyMenuOpened] = useState(false);
+  const [userMenuOpened, _setUserMenuOpened] = useState(false);
+  const [currencyMenuOpened, _setCurrencyMenuOpened] = useState(false);
   const router = useRouter();
   const mobile = useMediaQuery("950");
   const config = useConfig();
@@ -252,12 +263,8 @@ const Framework = ({
                 <NotificationFlyout
                   notificationData={user && user.notifications}
                 />
-                <CurrencyMenu
-                  currencyMenuOpened={currencyMenuOpened}
-                />
-                <UserMenu
-                  userMenuOpened={userMenuOpened}
-                />
+                <CurrencyMenu currencyMenuOpened={currencyMenuOpened} />
+                <UserMenu userMenuOpened={userMenuOpened} />
               </Group>
             )}
           </Group>
@@ -392,12 +399,8 @@ const Framework = ({
 
             {user && (
               <Group>
-                <CurrencyMenu
-                  currencyMenuOpened={currencyMenuOpened}
-                />
-                <UserMenu
-                  userMenuOpened={userMenuOpened}
-                />
+                <CurrencyMenu currencyMenuOpened={currencyMenuOpened} />
+                <UserMenu userMenuOpened={userMenuOpened} />
                 <NotificationFlyout
                   notificationData={user && user.notifications}
                 />
@@ -444,35 +447,70 @@ const Framework = ({
               p={32}
             >
               <Container>
-                <Title mb={8}>
-                  {modernTitle}
-                  {beta && (
-                    <Badge
-                      sx={{
-                        verticalAlign: "middle",
-                      }}
-                      ml={12}
-                    >
-                      Beta
-                    </Badge>
-                  )}
-                </Title>
-                <Text color="dimmed">{modernSubtitle}</Text>
-                {returnTo && (
-                  <Link href={returnTo.href} passHref>
-                    <Anchor
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 8,
-                      }}
-                      mt={16}
-                    >
-                      <HiArrowLeft />
-                      {returnTo.label}
-                    </Anchor>
-                  </Link>
-                )}
+                <Group position="apart">
+                  <div>
+                    <Title mb={8}>
+                      {modernTitle}
+                      {beta && (
+                        <Badge
+                          sx={{
+                            verticalAlign: "middle",
+                          }}
+                          ml={12}
+                        >
+                          Beta
+                        </Badge>
+                      )}
+                    </Title>
+                    <Text color="dimmed">{modernSubtitle}</Text>
+                    {returnTo && (
+                      <Link href={returnTo.href} passHref>
+                        <Anchor
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 8,
+                          }}
+                          mt={16}
+                        >
+                          <HiArrowLeft />
+                          {returnTo.label}
+                        </Anchor>
+                      </Link>
+                    )}
+                  </div>
+                  <div className={mobile ? "flex gap-2" : ""}>
+                    {actions && (
+                      <div>
+                        {actions.map(([label, onClick], index) => (
+                          <Anchor
+                            key={index}
+                            onClick={onClick}
+                            sx={(theme) => ({
+                              color:
+                                theme.colorScheme === "dark" ? "#fff" : "#000",
+                              "&:after": {
+                                content: "''",
+                                display: "block",
+                                width: "100%",
+                                height: "2px",
+                                backgroundColor:
+                                  theme.colorScheme === "dark"
+                                    ? "#fff"
+                                    : "#000" + "80",
+                                transform: "scaleX(0)",
+                                transition: "transform 0.3s ease-in-out",
+                              },
+                              fontWeight: 500,
+                            })}
+                          >
+                            {label}
+                          </Anchor>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </Group>
               </Container>
             </Box>
           )}
