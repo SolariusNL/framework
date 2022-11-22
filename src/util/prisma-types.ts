@@ -249,32 +249,9 @@ const reportType = Prisma.validator<Prisma.UserReportArgs>()({
   },
 });
 
-export const messageSelect: Prisma.MessageSelect = {
-  id: true,
-  title: true,
-  message: true,
-  createdAt: true,
-  sender: nonCurrentUserSelect,
-  senderId: true,
-  recipient: nonCurrentUserSelect,
-  recipientId: true,
-  system: true,
-  important: true,
-  archived: true,
-  read: true,
-};
-
-const message = Prisma.validator<Prisma.MessageArgs>()({
-  include: {
-    sender: nonCurrentUserSelect,
-    recipient: nonCurrentUserSelect,
-  },
-});
-
 export type Report = Prisma.UserReportGetPayload<typeof reportType>;
 export type User = Prisma.UserGetPayload<typeof user>;
 export type Game = Prisma.GameGetPayload<typeof game>;
 export type NonUser = Prisma.UserGetPayload<typeof nonuser>;
 export type NucleusKey = Prisma.NucleusKeyGetPayload<typeof nucleusKey>;
 export type Snippet = Prisma.CodeSnippetGetPayload<typeof snippet>;
-export type Message = Prisma.MessageGetPayload<typeof message>;

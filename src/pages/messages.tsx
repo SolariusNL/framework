@@ -1,136 +1,64 @@
-import { Loader, Tabs, Title } from "@mantine/core";
-import { getCookie } from "cookies-next";
+import { Tabs, Title } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
-import React from "react";
-import { HiFolder, HiMail, HiPaperAirplane } from "react-icons/hi";
+import { HiFolder, HiMail, HiPaperAirplane, HiTrash } from "react-icons/hi";
 import Framework from "../components/Framework";
-import Inbox from "../components/Messages/Inbox";
-import NewMessage from "../components/Messages/NewMessage";
 import ModernEmptyState from "../components/ModernEmptyState";
-import TabNav from "../components/TabNav";
 import authorizedRoute from "../util/authorizedRoute";
-import { Message, User } from "../util/prisma-types";
-import ReactNoSSR from "react-no-ssr";
+import { User } from "../util/prisma-types";
 
 interface MessagesProps {
   user: User;
 }
 
 const Messages: NextPage<MessagesProps> = ({ user }) => {
-  const [newMessageOpened, setNewMessageOpened] = React.useState(false);
-  const [sent, setSent] = React.useState<Message[]>();
-  const [received, setReceived] = React.useState<Message[]>();
-  const [archived, setArchived] = React.useState<Message[]>();
-  const [loading, setLoading] = React.useState(true);
-
-  const getMessages = async () => {
-    await fetch("/api/messages/my", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: String(getCookie(".frameworksession")),
-      },
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        function newest(a: Message, b: Message) {
-          const aA = new Date(a.createdAt);
-          const bB = new Date(b.createdAt);
-          return bB.getTime() - aA.getTime();
-        }
-
-        setSent(res.sent.sort(newest));
-        setReceived(
-          res.received.filter((msg: Message) => !msg.archived).sort(newest)
-        );
-        setArchived(res.archived.sort(newest));
-      })
-      .finally(() => setLoading(false));
-  };
-
-  React.useEffect(() => {
-    getMessages();
-  }, []);
-
   return (
-    <>
-      <NewMessage opened={newMessageOpened} setOpened={setNewMessageOpened} />
-      <Framework
-        user={user}
-        activeTab="messages"
-        modernTitle="Messages"
-        modernSubtitle="Send and receive messages with your friends"
-        beta
-        actions={[["New message", () => setNewMessageOpened(true)]]}
-      >
-        <TabNav defaultValue="inbox" orientation="vertical">
-          <TabNav.List mr={32}>
-            <TabNav.Tab icon={<HiMail />} value="inbox">
-              Inbox
-            </TabNav.Tab>
-            <TabNav.Tab icon={<HiPaperAirplane />} value="sent">
-              Sent
-            </TabNav.Tab>
-            <TabNav.Tab icon={<HiFolder />} value="archive">
-              Archive
-            </TabNav.Tab>
-          </TabNav.List>
+    <Framework
+      user={user}
+      activeTab="messages"
+      modernTitle="Messages"
+      modernSubtitle="Send and receive messages with your friends"
+    >
+      <Tabs variant="pills" defaultValue="inbox" orientation="vertical">
+        <Tabs.List mr={32}>
+          <Tabs.Tab icon={<HiMail />} value="inbox">
+            Inbox
+          </Tabs.Tab>
+          <Tabs.Tab icon={<HiPaperAirplane />} value="sent">
+            Sent
+          </Tabs.Tab>
+          <Tabs.Tab icon={<HiFolder />} value="archive">
+            Archive
+          </Tabs.Tab>
+          <Tabs.Tab icon={<HiTrash />} value="trash">
+            Trash
+          </Tabs.Tab>
+        </Tabs.List>
 
-          <ReactNoSSR>
-            <Tabs.Panel value="inbox">
-              <Title order={3} mb={24}>
-                Inbox
-              </Title>
+        <Tabs.Panel value="inbox">
+          <Title order={3}>Inbox</Title>
 
-              {received && received.length > 0 ? (
-                <Inbox messages={received} />
-              ) : loading ? (
-                <Loader />
-              ) : (
-                <ModernEmptyState
-                  title="No messages"
-                  body="You have no messages."
-                />
-              )}
-            </Tabs.Panel>
+          <ModernEmptyState title="No messages" body="You have no messages." />
+        </Tabs.Panel>
 
-            <Tabs.Panel value="sent">
-              <Title order={3} mb={24}>
-                Sent
-              </Title>
+        <Tabs.Panel value="sent">
+          <Title order={3}>Sent</Title>
 
-              {sent && sent.length > 0 ? (
-                <Inbox messages={sent} />
-              ) : loading ? (
-                <Loader />
-              ) : (
-                <ModernEmptyState
-                  title="No messages"
-                  body="You haven't sent any messages."
-                />
-              )}
-            </Tabs.Panel>
+          <ModernEmptyState title="No messages" body="You have no messages." />
+        </Tabs.Panel>
 
-            <Tabs.Panel value="archive">
-              <Title order={3} mb={24}>
-                Archive
-              </Title>
+        <Tabs.Panel value="archive">
+          <Title order={3}>Archive</Title>
 
-              {archived && archived.length > 0 ? (
-                <Inbox messages={archived} />
-              ) : loading ? (
-                <Loader />
-              ) : (
-                <ModernEmptyState
-                  title="No messages"
-                  body="You have no archived messages."
-                />
-              )}
-            </Tabs.Panel>
-          </ReactNoSSR>
-        </TabNav>
-      </Framework>
-    </>
+          <ModernEmptyState title="No messages" body="You have no messages." />
+        </Tabs.Panel>
+
+        <Tabs.Panel value="trash">
+          <Title order={3}>Trash</Title>
+
+          <ModernEmptyState title="No messages" body="You have no messages." />
+        </Tabs.Panel>
+      </Tabs>
+    </Framework>
   );
 };
 

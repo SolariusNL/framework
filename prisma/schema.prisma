@@ -217,12 +217,8 @@ model Message {
   recipient   User     @relation("messageRecipient", references: [id], fields: [recipientId])
   recipientId Int
   message     String
-  title       String
   createdAt   DateTime @default(now())
   system      Boolean  @default(false)
-  important   Boolean  @default(false)
-  archived    Boolean  @default(false)
-  read        Boolean  @default(false)
 }
 
 enum GameGenre {
