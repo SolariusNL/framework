@@ -5,6 +5,7 @@ const ShadedCard = (
     children: React.ReactNode;
     title?: string;
     titleWithBorder?: boolean;
+    onClick?: () => void;
   }
 ) => {
   return (
