@@ -1,9 +1,15 @@
 import { Autocomplete, Kbd } from "@mantine/core";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useRef } from "react";
 import { HiSearchCircle } from "react-icons/hi";
 
-const Search = ({ ref }: { ref: React.RefObject<HTMLInputElement> }) => {
+const Search = ({
+  opened,
+  setOpened,
+}: {
+  opened?: boolean;
+  setOpened?: (opened: boolean) => void;
+}) => {
   const [search, setSearch] = React.useState("");
   const router = useRouter();
   const searchOptions = [
@@ -17,6 +23,7 @@ const Search = ({ ref }: { ref: React.RefObject<HTMLInputElement> }) => {
         })
       : [],
   ].flat();
+  const ref = useRef<HTMLInputElement>(null);
 
   return (
     <Autocomplete
@@ -28,9 +35,9 @@ const Search = ({ ref }: { ref: React.RefObject<HTMLInputElement> }) => {
       rightSectionWidth={90}
       rightSection={
         <div style={{ display: "flex", alignItems: "center" }}>
-          <Kbd>Ctrl</Kbd>
+          <Kbd>Mod</Kbd>
           <span style={{ margin: "0 5px" }}>+</span>
-          <Kbd>K</Kbd>
+          <Kbd>E</Kbd>
         </div>
       }
       value={search}

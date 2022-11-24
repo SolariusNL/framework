@@ -457,6 +457,13 @@
     quill-mention "^3.0.8"
     react-quill "2.0.0-beta.4"
 
+"@mantine/spotlight@^5.8.3":
+  version "5.8.3"
+  resolved "https://registry.yarnpkg.com/@mantine/spotlight/-/spotlight-5.8.3.tgz#075c335a408404f074eadc75f537363038eae075"
+  integrity sha512-BUCduptsjMZRJWhYV9tTDacWDK0qBF5yi9zLOSkH98XKCl4HwR0XUIdqok/MTw197g9AJCvEfxYijqp4Mgh5FA==
+  dependencies:
+    "@mantine/utils" "5.8.3"
+
 "@mantine/ssr@5.0.2":
   version "5.0.2"
   resolved "https://registry.yarnpkg.com/@mantine/ssr/-/ssr-5.0.2.tgz#fd4458c3421352ab5fdcf17510d8272791b1446b"
@@ -497,6 +504,11 @@
   version "5.6.3"
   resolved "https://registry.yarnpkg.com/@mantine/utils/-/utils-5.6.3.tgz#2634b91a5b033010e29657648dce31c9c6709567"
   integrity sha512-GrDvXJG7inJaQHjsfg8pOYFE/vNpHMKScQM0M4hKlDoVjXsQUPxw8Lx4A7jhmVf2eNJUqvOQ9A1jbO7W7bedcA==
+
+"@mantine/utils@5.8.3":
+  version "5.8.3"
+  resolved "https://registry.yarnpkg.com/@mantine/utils/-/utils-5.8.3.tgz#2cc4b5eb9fcd0465e1e29f444b0e3f2413fc564f"
+  integrity sha512-MprJbMh/z3TbC8yPF2PQftitRwl58w7hvhp7O9fT+9jrvJHKM8V7r15iHMwBw2jgX6zmlksstO7QfhENc0vMHQ==
 
 "@mapbox/node-pre-gyp@^1.0.0":
   version "1.0.9"

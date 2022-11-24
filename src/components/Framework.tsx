@@ -17,22 +17,28 @@ import {
   Text,
   ThemeIcon,
   Title,
+  useMantineColorScheme,
 } from "@mantine/core";
 import { useDisclosure, useLocalStorage } from "@mantine/hooks";
+import { SpotlightProvider } from "@mantine/spotlight";
 import isElectron from "is-electron";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import {
   HiArrowLeft,
+  HiCode,
   HiCog,
   HiGift,
   HiHome,
   HiLightBulb,
   HiMail,
   HiSearch,
+  HiShieldCheck,
   HiShoppingBag,
   HiSpeakerphone,
+  HiSun,
+  HiTicket,
   HiUser,
   HiViewGrid,
 } from "react-icons/hi";
@@ -195,6 +201,100 @@ const Framework = ({
       color: "grape",
     },
   ];
+  const { toggleColorScheme } = useMantineColorScheme();
+  let [spotlight, setSpotlight] = useState([
+    {
+      title: "Home",
+      icon: <HiHome />,
+      description: "Your experience starts here.",
+      onTrigger: () => router.push("/"),
+    },
+    {
+      title: "Games",
+      icon: <HiViewGrid />,
+      description: "Find games to play on Framework.",
+      onTrigger: () => router.push("/games"),
+    },
+    {
+      title: "Catalog",
+      icon: <HiShoppingBag />,
+      description:
+        "Find new items for your avatar, or purchase other digital goods.",
+      onTrigger: () => router.push("/catalog"),
+    },
+    {
+      title: "Invent",
+      icon: <HiLightBulb />,
+      description: "Where dreams are made, create your first game here.",
+      onTrigger: () => router.push("/invent"),
+    },
+    {
+      title: "Messages",
+      icon: <HiMail />,
+      description: "Chat with your friends, or collaborate with others.",
+      onTrigger: () => router.push("/messages"),
+    },
+    {
+      title: "Avatar",
+      icon: <HiUser />,
+      description: "Customize your avatar.",
+      onTrigger: () => router.push("/avatar"),
+    },
+    {
+      title: "Settings",
+      icon: <HiCog />,
+      description: "Change your account settings.",
+      onTrigger: () => router.push("/settings"),
+    },
+    {
+      title: "Profile",
+      icon: <HiUser />,
+      description: "View your profile.",
+      onTrigger: () => router.push(`/users/${user.id}`),
+    },
+    {
+      title: "Daily prize",
+      icon: <HiGift />,
+      description: "Claim your daily prize.",
+      onTrigger: () => router.push("/prizes"),
+    },
+    {
+      title: "Redeem gift code",
+      icon: <HiGift />,
+      description: "Redeem a gift code.",
+      onTrigger: () => router.push("/redeem"),
+    },
+    {
+      title: "Tickets",
+      icon: <HiTicket />,
+      description: "View your ticket dashboard.",
+      onTrigger: () => router.push("/tickets"),
+    },
+    {
+      title: "Ticket history",
+      icon: <HiTicket />,
+      description: "View your ticket transaction history.",
+      onTrigger: () => router.push("/tickets/transactions"),
+    },
+    {
+      title: "Purchase tickets",
+      icon: <HiTicket />,
+      description: "Purchase tickets.",
+      onTrigger: () => router.push("/tickets/buy"),
+    },
+    {
+      title: "Change theme",
+      icon: <HiSun />,
+      description: "Change the UI color scheme.",
+      onTrigger: () => toggleColorScheme(),
+    },
+    {
+      title: "Browse snippets",
+      icon: <HiCode />,
+      description: "Browse code snippets from the community.",
+      onTrigger: () => router.push("/snippets"),
+    },
+  ]);
 
   const [warningSeen, setEmailWarningSeen] = useLocalStorage({
     key: "email-warning-seen",
@@ -206,6 +306,19 @@ const Framework = ({
   React.useEffect(() => {
     setIsSSR(false);
   }, []);
+  React.useEffect(() => {
+    if (user.role === "ADMIN") {
+      setSpotlight([
+        ...spotlight,
+        {
+          title: "Admin Dashboard",
+          icon: <HiShieldCheck />,
+          description: "Manage your Framework instance.",
+          onTrigger: () => router.push("/admin"),
+        },
+      ]);
+    }
+  }, [user]);
 
   const items = tabs.map((tab) => (
     <TabNav.Tab
@@ -220,13 +333,18 @@ const Framework = ({
     </TabNav.Tab>
   ));
 
-  const searchRef = useRef<HTMLInputElement>(null);
   const [searchPopoverOpen, setSearchPopoverOpen] = useState(false);
-
   const { flags } = useFlags();
 
   return (
-    <>
+    <SpotlightProvider
+      actions={spotlight}
+      searchIcon={<HiSearch size={18} />}
+      searchPlaceholder="Search..."
+      shortcut="mod + space"
+      nothingFoundMessage="Nothing found..."
+      disabled={user === null}
+    >
       <div
         className={classes.header}
         style={{
@@ -334,7 +452,10 @@ const Framework = ({
                 </Popover.Target>
 
                 <Popover.Dropdown>
-                  <Search ref={searchRef} />
+                  <Search
+                    opened={searchPopoverOpen}
+                    setOpened={setSearchPopoverOpen}
+                  />
                 </Popover.Dropdown>
               </Popover>
             </Group>
@@ -404,7 +525,7 @@ const Framework = ({
                 <NotificationFlyout
                   notificationData={user && user.notifications}
                 />
-                <Search ref={searchRef} />
+                <Search />
               </Group>
             )}
           </Container>
@@ -545,7 +666,7 @@ const Framework = ({
       )}
 
       {!immersive && <Footer />}
-    </>
+    </SpotlightProvider>
   );
 };
 
