@@ -307,7 +307,7 @@ const Framework = ({
     setIsSSR(false);
   }, []);
   React.useEffect(() => {
-    if (user.role === "ADMIN") {
+    if (user && user.role && user.role === "ADMIN") {
       setSpotlight([
         ...spotlight,
         {
