@@ -194,7 +194,7 @@ const Message: React.FC<MessageProps> = ({ message: msg }) => {
                   </Text>
                 </Card.Section>
                 <Card.Section p="md" withBorder>
-                  <div className="flex justify-between items-center">
+                  <div className="flex justify-between items-center gap-4">
                     <div className="flex items-center gap-2">
                       <Tooltip
                         label={

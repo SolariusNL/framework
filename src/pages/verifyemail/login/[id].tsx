@@ -3,22 +3,22 @@ import {
   Avatar,
   Button,
   Container,
-  Paper,
   Text,
   TextInput,
   Title,
 } from "@mantine/core";
 import { EmailLoginRequest } from "@prisma/client";
+import { setCookie } from "cookies-next";
+import { motion } from "framer-motion";
 import { GetServerSidePropsContext, NextPage } from "next";
+import { useRouter } from "next/router";
+import { useState } from "react";
+import { HiCheckCircle, HiXCircle } from "react-icons/hi";
+import ShadedCard from "../../../components/ShadedCard";
 import Stateful from "../../../components/Stateful";
+import getMediaUrl from "../../../util/getMedia";
 import prisma from "../../../util/prisma";
 import { nonCurrentUserSelect, NonUser } from "../../../util/prisma-types";
-import { motion } from "framer-motion";
-import { HiCheckCircle } from "react-icons/hi";
-import { useState } from "react";
-import { setCookie } from "cookies-next";
-import { useRouter } from "next/router";
-import getMediaUrl from "../../../util/getMedia";
 
 interface EmailLoginProps {
   emailId: string;
@@ -37,7 +37,7 @@ const EmailLogin: NextPage<EmailLoginProps> = ({ emailId, request }) => {
 
   return (
     <Container size={460} my={30}>
-      <Paper
+      <ShadedCard
         withBorder
         shadow="md"
         p={30}
@@ -80,57 +80,57 @@ const EmailLogin: NextPage<EmailLoginProps> = ({ emailId, request }) => {
                 placeholder="123456"
                 width="100%"
                 maxLength={6}
+                className="w-full mb-4"
               />
               {error && (
-                <Alert title="Failed to verify" className="mb-4 mt-4">
+                <Alert
+                  title="Failed to verify"
+                  color="red"
+                  className="w-full mb-4"
+                  icon={<HiXCircle />}
+                >
                   {error || "An unknown error occurred"}
                 </Alert>
               )}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: code && code.length === 6 ? 1 : 0 }}
-                transition={{ duration: 0.2 }}
-                className="mt-4"
-              >
-                <Button
-                  fullWidth
-                  leftIcon={<HiCheckCircle />}
-                  loading={loading}
-                  onClick={async () => {
-                    setLoading(true);
+              <Button
+                fullWidth
+                leftIcon={<HiCheckCircle />}
+                loading={loading}
+                onClick={async () => {
+                  setLoading(true);
 
-                    await fetch(`/api/auth/email/${emailId}/${code}`, {
-                      method: "POST",
-                      headers: {
-                        "Content-Type": "application/json",
-                      },
+                  await fetch(`/api/auth/email/${emailId}/${code}`, {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                  })
+                    .then((res) => res.json())
+                    .then((res) => {
+                      if (res.success === true) {
+                        setCookie(".frameworksession", res.token, {
+                          maxAge: 60 * 60 * 24 * 7,
+                        });
+                        router.push("/");
+                      } else {
+                        setError(res.message || "An unknown error occurred");
+                      }
                     })
-                      .then((res) => res.json())
-                      .then((res) => {
-                        if (res.success) {
-                          setCookie(".frameworksession", res.token, {
-                            maxAge: 60 * 60 * 24 * 7,
-                          });
-                          router.push("/");
-                        } else {
-                          setError(res.error);
-                        }
-                      })
-                      .catch(() => {
-                        setError("An unknown error occurred");
-                      })
-                      .finally(() => {
-                        setLoading(false);
-                      });
-                  }}
-                >
-                  Verify
-                </Button>
-              </motion.div>
+                    .catch(() => {
+                      setError("An unknown error occurred");
+                    })
+                    .finally(() => {
+                      setLoading(false);
+                    });
+                }}
+                disabled={code.toString().length !== 6}
+              >
+                Verify
+              </Button>
             </>
           )}
         </Stateful>
-      </Paper>
+      </ShadedCard>
     </Container>
   );
 };
