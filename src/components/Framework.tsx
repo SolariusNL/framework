@@ -19,7 +19,7 @@ import {
   Title,
   useMantineColorScheme,
 } from "@mantine/core";
-import { useDisclosure, useLocalStorage } from "@mantine/hooks";
+import { randomId, useDisclosure, useLocalStorage } from "@mantine/hooks";
 import { SpotlightProvider } from "@mantine/spotlight";
 import isElectron from "is-electron";
 import Link from "next/link";
@@ -550,9 +550,31 @@ const Framework = ({
                 <ThemeIcon color="yellow" size={28} mr={16}>
                   <HiSpeakerphone />
                 </ThemeIcon>
-                <Text weight={500} color="white">
-                  {String(flags.bannerMessage)}
-                </Text>
+                <div>
+                  <Text weight={500} color="white">
+                    {String(flags.bannerMessage)}
+                  </Text>
+                  {String(flags.bannerMessage).includes("https://") && (
+                    <div className="mt-2 flex gap-2">
+                      {(
+                        String(flags.bannerMessage).match(
+                          /https?:\/\/[^\s]+/g
+                        ) as string[]
+                      ).map((url: string) => (
+                        <Anchor
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          weight={500}
+                          className="text-white"
+                          key={url}
+                        >
+                          {url}
+                        </Anchor>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </Container>
             </Box>
           )}
