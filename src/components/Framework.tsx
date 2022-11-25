@@ -552,7 +552,10 @@ const Framework = ({
                 </ThemeIcon>
                 <div>
                   <Text weight={500} color="white">
-                    {String(flags.bannerMessage)}
+                    {String(flags.bannerMessage).replace(
+                      /(https?:\/\/[^\s]+)/g,
+                      ""
+                    )}
                   </Text>
                   {String(flags.bannerMessage).includes("https://") && (
                     <div className="mt-2 flex gap-2">
