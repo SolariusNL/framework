@@ -62,7 +62,7 @@ const EmailLogin: NextPage<EmailLoginProps> = ({ emailId, request }) => {
         <Text color="dimmed" align="center" mb={32}>
           Please check your email for a 6-digit code, then enter it below.
         </Text>
-        <Stateful initialState="">
+        <Stateful>
           {(code: string, setCode: (code: string) => void) => (
             <>
               <TextInput
@@ -123,7 +123,9 @@ const EmailLogin: NextPage<EmailLoginProps> = ({ emailId, request }) => {
                       setLoading(false);
                     });
                 }}
-                disabled={code.toString().length !== 6}
+                disabled={
+                  code && code.toString().length !== 6 ? true : loading
+                }
               >
                 Verify
               </Button>
