@@ -62,7 +62,7 @@ const EmailLogin: NextPage<EmailLoginProps> = ({ emailId, request }) => {
         <Text color="dimmed" align="center" mb={32}>
           Please check your email for a 6-digit code, then enter it below.
         </Text>
-        <Stateful>
+        <Stateful initialState="">
           {(code: string, setCode: (code: string) => void) => (
             <>
               <TextInput
