@@ -572,7 +572,7 @@ const Framework = ({
                           className="text-white"
                           key={url}
                         >
-                          {url}
+                          {mobile ? "Go to link" : url}
                         </Anchor>
                       ))}
                     </div>
