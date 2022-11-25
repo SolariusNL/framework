@@ -61,12 +61,6 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
   const { flags } = useFlags();
 
   useEffect(() => {
-    if (flags?.maintenanceEnabled == true) {
-      if (router.pathname !== "/maintenance") {
-        router.push("/maintenance");
-      }
-    }
-
     if (router.query.status == "success") {
       showNotification({
         title: "Success",
@@ -76,6 +70,14 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
       });
     }
   }, []);
+
+  useEffect(() => {
+    if (flags?.maintenanceEnabled == true) {
+      if (router.pathname !== "/maintenance") {
+        router.push("/maintenance");
+      }
+    }
+  }, [flags?.maintenanceEnabled]);
 
   return (
     <>

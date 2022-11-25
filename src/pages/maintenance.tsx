@@ -1,5 +1,5 @@
 import { useFlags } from "@happykit/flags/client";
-import { Container, createStyles, Text, Title } from "@mantine/core";
+import { Anchor, Container, createStyles, Text, Title } from "@mantine/core";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
@@ -46,12 +46,10 @@ const Maintenance: NextPage = () => {
         inconvenience.
       </Text>
       <Text color="dimmed" size="sm" align="center">
-        We typically go down for maintenance every 2 weeks on Tuesday at 3:00 AM
-        Central Daylight Time (CDT) and remain offline for 1-3 hours. During
-        this time, we will be performing routine maintenance and upgrades to our
-        servers, this may include migrating to a new version, upgrading our
-        hardware/software, or performing other maintenance tasks that require
-        the site to be offline.
+        View updates at our{" "}
+        <Anchor href="https://status.soodam.rocks" target="_blank">
+          status page
+        </Anchor>
       </Text>
     </Container>
   );
