@@ -1,12 +1,9 @@
-import { ActionIcon, Checkbox, Menu, ScrollArea } from "@mantine/core";
-import { ReceiveNotification } from "@prisma/client";
-import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { useRouter } from "next/router";
-import { useState } from "react";
 import {
   HiBookmark,
   HiChartBar,
+  HiChat,
   HiCog,
   HiDesktopComputer,
   HiKey,
@@ -20,6 +17,7 @@ import Instance from "../../components/Admin/Pages/Instance";
 import Invites from "../../components/Admin/Pages/Invites";
 import Reports from "../../components/Admin/Pages/Reports";
 import Users from "../../components/Admin/Pages/Users";
+import Settings from "../../components/Admin/Settings";
 import Framework from "../../components/Framework";
 import TabNav from "../../components/TabNav";
 import authorizedRoute from "../../util/authorizedRoute";
@@ -84,6 +82,20 @@ const pages: {
     component: <></>,
     description: "Manage games on your instance",
   },
+  comments: {
+    label: "Comments",
+    icon: <HiChat />,
+    route: "/admin/comments",
+    component: <></>,
+    description: "Review comments made by users",
+  },
+  settings: {
+    label: "Settings",
+    icon: <HiCog />,
+    route: "/admin/settings",
+    component: <Settings />,
+    description: "Manage your personal admin settings",
+  },
 };
 
 interface AdminPageProps {
@@ -95,9 +107,6 @@ const AdminPage: NextPage<AdminPageProps> = ({ user, pageStr }) => {
   const page = pages[pages[pageStr] ? pageStr : "dashboard"];
   const router = useRouter();
   const mobile = useMediaQuery("768");
-  const [reportNotifications, setReportNotifications] = useState(
-    user.notificationPreferences.includes(ReceiveNotification.ADMIN_REPORTS)
-  );
 
   return (
     <Framework
@@ -106,73 +115,19 @@ const AdminPage: NextPage<AdminPageProps> = ({ user, pageStr }) => {
       modernTitle={page.label}
       modernSubtitle={page.description}
     >
-      <div className="items-center mb-16 flex md:flex-row flex-col justify-between w-full">
-        <TabNav
-          value={pageStr}
-          onTabChange={(t) => router.push(String(t))}
-          orientation={mobile ? "vertical" : "horizontal"}
-          mb={0}
-          className="w-full"
-        >
-          <ScrollArea
-            offsetScrollbars
-            sx={{
-              width: mobile ? "100%" : "auto",
-            }}
-          >
-            <div className="flex flex-1 flex-col">
-              <TabNav.List>
-                {Object.keys(pages).map((p) => (
-                  <TabNav.Tab key={p} value={p} icon={pages[p].icon}>
-                    {pages[p].label}
-                  </TabNav.Tab>
-                ))}
-              </TabNav.List>
-            </div>
-          </ScrollArea>
-        </TabNav>
-
-        <Menu width={250} closeOnItemClick={false}>
-          <Menu.Target>
-            <ActionIcon variant="default">
-              <HiCog />
-            </ActionIcon>
-          </Menu.Target>
-          <Menu.Dropdown>
-            <Menu.Item
-              rightSection={<Checkbox checked={reportNotifications} ml={8} />}
-              onClick={() => {
-                setReportNotifications(!reportNotifications);
-                fetch("/api/users/@me/update", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: String(getCookie(".frameworksession")),
-                  },
-                  body: JSON.stringify({
-                    notificationPreferences: [
-                      ...user.notificationPreferences.filter(
-                        (n) => n !== ReceiveNotification.ADMIN_REPORTS
-                      ),
-                      ...(reportNotifications
-                        ? []
-                        : [ReceiveNotification.ADMIN_REPORTS]),
-                    ],
-                  }),
-                })
-                  .then((r) => r.json())
-                  .then((r) => {
-                    if (r.error) {
-                      alert(r.error);
-                    }
-                  });
-              }}
-            >
-              Receive notifications for new reports
-            </Menu.Item>
-          </Menu.Dropdown>
-        </Menu>
-      </div>
+      <TabNav
+        value={pageStr}
+        onTabChange={(t) => router.push(String(t))}
+        mb={32}
+      >
+        <TabNav.List sx={{ flexWrap: "wrap" }}>
+          {Object.keys(pages).map((p) => (
+            <TabNav.Tab key={p} value={p} icon={pages[p].icon}>
+              {pages[p].label}
+            </TabNav.Tab>
+          ))}
+        </TabNav.List>
+      </TabNav>
       {page.component}
     </Framework>
   );

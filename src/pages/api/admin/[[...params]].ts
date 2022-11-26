@@ -10,8 +10,8 @@ import {
 import { readFile } from "fs/promises";
 import { Account, AdminAuthorized } from "../../../util/api/authorized";
 import prisma from "../../../util/prisma";
-import { nonCurrentUserSelect, userSelect } from "../../../util/prisma-types";
 import type { User } from "../../../util/prisma-types";
+import { nonCurrentUserSelect, userSelect } from "../../../util/prisma-types";
 import { RateLimitMiddleware } from "../../../util/rateLimit";
 
 class AdminRouter {
@@ -182,9 +182,9 @@ class AdminRouter {
     };
   }
 
-  @Get("/users")
+  @Get("/users/:page")
   @AdminAuthorized()
-  public async getUsers() {
+  public async getUsers(@Param("page") page: number) {
     const users = await prisma.user.findMany({
       select: {
         ...userSelect,
@@ -198,10 +198,22 @@ class AdminRouter {
           },
         },
       },
-      take: 100,
+      take: 8,
+      skip: Number(page) * 8,
+      orderBy: {
+        createdAt: "desc",
+      },
     });
 
     return users;
+  }
+
+  @Get("/userpages")
+  @AdminAuthorized()
+  public async getUserPages() {
+    const users = await prisma.user.count();
+
+    return Math.ceil(users / 8);
   }
 
   @Post("/service/discord/connect/new")
