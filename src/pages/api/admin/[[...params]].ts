@@ -424,7 +424,7 @@ class AdminRouter {
     if (category === "ban") {
       await prisma.user.update({
         where: {
-          id: Number(admin.id),
+          id: Number(uid),
         },
         data: {
           banned: true,
@@ -458,7 +458,7 @@ class AdminRouter {
         data: {
           user: {
             connect: {
-              id: Number(uid),
+              id: Number(admin.id),
             },
           },
           activity: `Warned user #${user.id} for ${body.reason}`,
