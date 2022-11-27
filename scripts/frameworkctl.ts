@@ -330,6 +330,7 @@ async function cli() {
     "--query": [String, "Runs a query. E.g. --query database"],
     "--help": [Boolean, "Shows this help message"],
     "--set-pwd": [Boolean, "Sets the password for the admin user"],
+    "--generate-invite": [Boolean, "Generates an invite code"],
   };
 
   let opts: { name: string; value: any }[] = [];
@@ -450,6 +451,27 @@ async function cli() {
     }
 
     logger().info("Password updated");
+  }
+
+  if (contains("--generate-invite")) {
+    const prisma = new PrismaClient();
+
+    const invite = await prisma.invite.create({
+      data: {
+        code: Array.from({ length: 4 })
+          .map(() => {
+            return Array.from({ length: 4 })
+              .map(() => {
+                return Math.floor(Math.random() * 10);
+              })
+              .join("");
+          })
+          .join("-"),
+      },
+    });
+
+    logger().info("Invite code generated: " + invite.code);
+    prisma.$disconnect();
   }
 
   if (wasArgful) {
