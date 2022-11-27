@@ -391,7 +391,8 @@ class AdminRouter {
   public async punishUser(
     @Param("uid") uid: string,
     @Param("category") category: "ban" | "warning",
-    @Body() body: { reason: string }
+    @Body() body: { reason: string },
+    @Account() admin: User
   ) {
     if (body.reason.length < 3 || body.reason.length > 1024) {
       return {
@@ -423,7 +424,7 @@ class AdminRouter {
     if (category === "ban") {
       await prisma.user.update({
         where: {
-          id: Number(uid),
+          id: Number(admin.id),
         },
         data: {
           banned: true,
@@ -435,7 +436,7 @@ class AdminRouter {
         data: {
           user: {
             connect: {
-              id: Number(uid),
+              id: Number(admin.id),
             },
           },
           activity: `Banned user #${user.id} for ${body.reason}`,
