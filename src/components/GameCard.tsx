@@ -22,6 +22,7 @@ import {
 } from "react-icons/hi";
 import getMediaUrl from "../util/getMedia";
 import { Game } from "../util/prisma-types";
+import { getGenreText } from "../util/universe/genre";
 import { getRatingColor } from "../util/universe/ratings";
 import PlaceholderGameResource from "./PlaceholderGameResource";
 import ReportUser from "./ReportUser";
@@ -112,7 +113,7 @@ const GameCard = ({ game }: GameCardProps) => {
           </Group>
         </Card.Section>
 
-        <Badge mb="md">{game.genre}</Badge>
+        <Badge mb="md">{getGenreText(game.genre)}</Badge>
 
         <Text weight={700} mb="xl" size="lg">
           {game.name}

@@ -9,6 +9,7 @@ import {
 import { HiServer, HiUsers, HiViewGrid, HiViewList } from "react-icons/hi";
 import sanitize from "sanitize-html";
 import { Game } from "../../util/prisma-types";
+import { getGenreText } from "../../util/universe/genre";
 import ViewGameTab from "./ViewGameTab";
 
 interface InfoTabProps {
@@ -44,22 +45,22 @@ const InfoTab = ({ game }: InfoTabProps) => {
         {[
           {
             icon: <HiViewList />,
-            item: "genre",
+            item: getGenreText(game.genre),
             label: "Genre",
           },
           {
             icon: <HiUsers />,
-            item: "maxPlayersPerSession",
+            item: game.maxPlayersPerSession,
             label: "Max Players",
           },
           {
             icon: <HiServer />,
-            item: "playing",
+            item: game.playing,
             label: "Playing",
           },
           {
             icon: <HiViewGrid />,
-            item: "visits",
+            item: game.visits,
             label: "Visits",
           },
         ].map((x, i) => (
@@ -69,10 +70,10 @@ const InfoTab = ({ game }: InfoTabProps) => {
               <Text weight={550} mb={6}>
                 {x.label}
               </Text>
-              {x.item == "genre" ? (
-                <Badge color="blue">{game.genre}</Badge>
+              {x.label == "Genre" ? (
+                <Badge color="blue">{getGenreText(game.genre)}</Badge>
               ) : (
-                <Text>{String(game[x.item as keyof Game])}</Text>
+                <Text>{x.item}</Text>
               )}
             </Stack>
           </Grid.Col>
