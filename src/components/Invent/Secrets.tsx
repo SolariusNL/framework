@@ -8,9 +8,10 @@ import {
   TextInput,
   Tooltip,
 } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import { getCookie } from "cookies-next";
 import { useState } from "react";
-import { HiPlus, HiTrash } from "react-icons/hi";
+import { HiCheckCircle, HiPlus, HiTrash } from "react-icons/hi";
 import { User } from "../../util/prisma-types";
 import Copy from "../Copy";
 import InventTab from "./InventTab";
@@ -50,6 +51,11 @@ const Secrets = ({ user }: SecretsProps) => {
       ]);
 
       setCreateModalOpen(false);
+      showNotification({
+        title: "Success",
+        message: "Secret successfully created.",
+        icon: <HiCheckCircle />,
+      });
     });
   };
 

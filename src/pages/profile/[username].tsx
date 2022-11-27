@@ -19,6 +19,7 @@ import {
   Title,
   Tooltip,
 } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { NextSeo } from "next-seo";
 import { useRouter } from "next/router";
@@ -296,14 +297,33 @@ const Profile: NextPage<ProfileProps> = ({ user, profile }) => {
                 <Button.Group>
                   <Button
                     leftIcon={<HiUser />}
-                    onClick={() => {
-                      fetch(`/api/users/${viewing.id}/follow`, {
+                    onClick={async () => {
+                      setViewing((viewing) => ({
+                        ...viewing,
+                        followers: viewing.followers
+                          .map((f) => f.id)
+                          .includes(user.id)
+                          ? viewing.followers.filter((f) => f.id != user.id)
+                          : [...viewing.followers, user],
+                      }));
+
+                      showNotification({
+                        title: "Followed",
+                        message: `Successfully ${
+                          viewing.followers.map((f) => f.id).includes(user.id)
+                            ? "unfollowed"
+                            : "followed"
+                        } ${viewing.username}.`,
+                        icon: <HiCheck />,
+                      });
+
+                      await fetch(`/api/users/${viewing.id}/follow`, {
                         method: "POST",
                         headers: {
                           "Content-Type": "application/json",
                           Authorization: String(getCookie(".frameworksession")),
                         },
-                      }).then(() => router.reload());
+                      });
                     }}
                   >
                     {viewing.followers.some(

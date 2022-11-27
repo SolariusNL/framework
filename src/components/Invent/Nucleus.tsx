@@ -7,9 +7,10 @@ import {
   Title,
   Tooltip,
 } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import { NucleusKey } from "@prisma/client";
 import React from "react";
-import { HiXCircle } from "react-icons/hi";
+import { HiCheckCircle, HiXCircle } from "react-icons/hi";
 import { getCookie } from "../../util/cookies";
 import { User } from "../../util/prisma-types";
 import InventTab from "./InventTab";
@@ -39,6 +40,12 @@ const Nucleus = ({ user }: NucleusProps) => {
           setError(res.message || "An error occurred.");
           setKeys(user.nucleusKeys);
         }
+
+        showNotification({
+          title: "Success",
+          message: "Key successfully deleted.",
+          icon: <HiCheckCircle />,
+        });
       })
       .catch((err) => {
         setError(err.message || "An error occurred.");

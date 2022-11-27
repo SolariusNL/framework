@@ -1,4 +1,5 @@
 import { Button, Menu } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/router";
 import { HiOutlineShoppingBag, HiReceiptTax } from "react-icons/hi";
@@ -21,14 +22,11 @@ const Donate = ({ user }: DonateProps) => {
         Authorization: String(getCookie(".frameworksession")),
       },
     }).then(() =>
-      router
-        .replace({
-          pathname: `/profile/${user.username}`,
-          query: {
-            status: "success",
-          },
-        })
-        .then(() => router.reload())
+      showNotification({
+        title: "Donation Successful",
+        message: `You have donated T$${amt} to ${user.username}`,
+        icon: <HiReceiptTax />,
+      })
     );
   };
 

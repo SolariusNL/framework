@@ -1,4 +1,5 @@
 import { Alert, Badge, Button, Group, Tabs, Title } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import React from "react";
 import { HiCheckCircle, HiSave, HiXCircle } from "react-icons/hi";
 import useMediaQuery from "../../util/useMediaQuery";
@@ -41,9 +42,13 @@ const SettingsTab = ({
       pt={mobile ? "lg" : undefined}
     >
       <Group>
-        <Title order={3} mb={24} sx={{
-          alignItems: "center"
-        }}>
+        <Title
+          order={3}
+          mb={24}
+          sx={{
+            alignItems: "center",
+          }}
+        >
           {tabTitle}{" "}
           {unsaved && (
             <Badge
@@ -102,6 +107,11 @@ const SettingsTab = ({
               onClick={() => {
                 if (saveButtonAction) {
                   saveButtonAction(setLoading, setError);
+                  showNotification({
+                    title: "Settings saved",
+                    message: "Your settings have been saved.",
+                    icon: <HiCheckCircle />,
+                  });
                 }
               }}
               loading={loading}

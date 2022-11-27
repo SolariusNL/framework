@@ -9,10 +9,11 @@ import {
   Title,
   Tooltip,
 } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
-import { HiPencil, HiPlus, HiViewGrid } from "react-icons/hi";
+import { HiCheckCircle, HiPencil, HiPlus, HiViewGrid } from "react-icons/hi";
 import { getCookie } from "../../util/cookies";
 import { User } from "../../util/prisma-types";
 import InventTab from "./InventTab";
@@ -45,6 +46,11 @@ const Snippets = ({ user }: SnippetsProps) => {
       .then((res) => {
         if (res.success) {
           router.push(`/snippets/${res.id}/edit`);
+          showNotification({
+            title: "Success",
+            message: "Snippet successfully created.",
+            icon: <HiCheckCircle />,
+          });
         }
       })
       .catch((err) => {

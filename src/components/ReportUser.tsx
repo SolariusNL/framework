@@ -8,6 +8,7 @@ import {
   Text,
   Textarea,
 } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import Link from "next/link";
 import React from "react";
 import { HiCheckCircle, HiXCircle } from "react-icons/hi";
@@ -68,15 +69,17 @@ const ReportUser = ({ user, opened, setOpened }: ReportUserProps) => {
       .then((res) => {
         if (res.success) {
           setSuccess(true);
-
-          setTimeout(() => {
-            setOpened(false);
-            setReason("Other");
-            setDescription("");
-            setChecked(false);
-            setSuccess(false);
-            setError("");
-          }, 2500);
+          showNotification({
+            title: "Report Successful",
+            message: `You have reported ${user.username}`,
+            icon: <HiCheckCircle />,
+          });
+          setOpened(false);
+          setReason("Other");
+          setDescription("");
+          setChecked(false);
+          setSuccess(false);
+          setError("");
         } else {
           setError(res.message || "Something went wrong");
         }

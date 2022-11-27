@@ -10,10 +10,12 @@ import {
   Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { showNotification } from "@mantine/notifications";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
 import {
   HiBell,
+  HiCheckCircle,
   HiKey,
   HiServer,
   HiUser,
@@ -183,6 +185,11 @@ const Dashboard = () => {
                               );
                             } else {
                               setOpened(false);
+                              showNotification({
+                                title: "Success",
+                                message: "Notification sent",
+                                icon: <HiCheckCircle />,
+                              });
                             }
                           })
                     )}
@@ -253,6 +260,11 @@ const Dashboard = () => {
                               );
                             } else {
                               setOpened(false);
+                              showNotification({
+                                title: "Success",
+                                message: "Notification sent",
+                                icon: <HiCheckCircle />,
+                              });
                             }
                           })
                     )}

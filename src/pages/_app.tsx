@@ -8,16 +8,19 @@ import {
   Dialog,
   Group,
   MantineProvider,
+  MantineTheme,
   Modal,
   Text,
 } from "@mantine/core";
 import { useLocalStorage } from "@mantine/hooks";
 import { ModalsProvider } from "@mantine/modals";
 import {
+  hideNotification,
   NotificationsProvider,
   showNotification,
 } from "@mantine/notifications";
 import { getCookie, setCookie } from "cookies-next";
+import { register } from "fetch-intercept";
 import { GetServerSidePropsContext } from "next";
 import { DefaultSeo } from "next-seo";
 import type { AppProps } from "next/app";
@@ -26,7 +29,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import NextNProgress from "nextjs-progressbar";
 import { useEffect, useState } from "react";
-import { HiCheckCircle } from "react-icons/hi";
+import { HiCheckCircle, HiXCircle } from "react-icons/hi";
 import "../../flags.config";
 import { FrameworkUserProvider } from "../contexts/FrameworkUser";
 import { UserInformationWrapper } from "../contexts/UserInformationDialog";
@@ -78,6 +81,45 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
       }
     }
   }, [flags?.maintenanceEnabled]);
+
+  register({
+    requestError: (error) => {
+      showNotification({
+        title: "Error",
+        message:
+          "An error occurred while processing your request: " + error ||
+          "Unknown error",
+        icon: <HiXCircle />,
+        color: "red",
+        id: "request-error",
+      });
+
+      return Promise.reject(error);
+    },
+    request: (url, config) => {
+      return [url, config];
+    },
+    response: (res) => {
+      if (res?.status >= 400 || res?.status < 200) {
+        throw res;
+      }
+
+      return res;
+    },
+    responseError: (error) => {
+      showNotification({
+        title: "Error",
+        message:
+          "An error occurred while processing your request: " + error ||
+          "Unknown error",
+        icon: <HiXCircle />,
+        color: "red",
+        id: "request-error",
+      });
+
+      return Promise.reject(error);
+    },
+  });
 
   return (
     <>
@@ -153,6 +195,16 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
                 styles: () => ({
                   root: {
                     zIndex: 1000,
+                  },
+                }),
+              },
+              Notification: {
+                styles: (theme: MantineTheme) => ({
+                  root: {
+                    backgroundColor:
+                      theme.colorScheme === "dark"
+                        ? theme.colors.dark[8]
+                        : theme.colors.gray[0],
                   },
                 }),
               },

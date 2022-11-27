@@ -92,7 +92,7 @@ const Home: NextPage<HomeProps> = ({ user }) => {
         <Stack spacing={16}>
           {widgets.map((widget) => (
             <div className="flex items-center justify-between" key={widget.id}>
-              <div>
+              <div onClick={() => fetch("/gert")}>
                 <Text weight={500}>{widget.title}</Text>
                 <Text size="sm" color="dimmed">
                   {widget.description}

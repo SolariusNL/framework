@@ -1,25 +1,20 @@
 import {
   Alert,
-  Anchor,
   Button,
   Container,
   createStyles,
-  Group,
-  Paper,
   Text,
-  TextInput,
   Title,
 } from "@mantine/core";
-import { GiftCode } from "@prisma/client";
+import { useViewportSize } from "@mantine/hooks";
+import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
+import Link from "next/link";
+import React from "react";
 import Celebration from "react-confetti";
 import Framework from "../components/Framework";
 import authorizedRoute from "../util/authorizedRoute";
 import { User } from "../util/prisma-types";
-import React from "react";
-import { useViewportSize } from "@mantine/hooks";
-import Link from "next/link";
-import { getCookie } from "cookies-next";
 
 export const useStyles = createStyles((theme) => ({
   title: {

@@ -9,8 +9,9 @@ import {
   Textarea,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { showNotification } from "@mantine/notifications";
 import { getCookie } from "cookies-next";
-import { HiShieldCheck } from "react-icons/hi";
+import { HiCheckCircle, HiShieldCheck } from "react-icons/hi";
 import getMediaUrl from "../../util/getMedia";
 import { NonUser } from "../../util/prisma-types";
 
@@ -47,6 +48,11 @@ const Punishment: React.FC<PunishmentProps> = ({
       .then((res) => {
         if (res.success) {
           if (onCompleted) onCompleted();
+          showNotification({
+            title: "Success",
+            message: "Punishment successfully issued.",
+            icon: <HiCheckCircle />,
+          });
         } else {
           alert("An error occurred while punishing the user.");
         }

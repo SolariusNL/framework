@@ -1,7 +1,9 @@
 import { Button, Modal, Text, Textarea } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import { UserAdminNotes } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useState } from "react";
+import { HiCheckCircle } from "react-icons/hi";
 import { NonUser } from "../../util/prisma-types";
 
 interface NoteProps {
@@ -58,6 +60,11 @@ const Note: React.FC<NoteProps> = ({
                 setOpened(false);
                 if (onNoteCreated) onNoteCreated(res.note);
                 setNote("");
+                showNotification({
+                  title: "Note created",
+                  message: "The note was created successfully.",
+                  icon: <HiCheckCircle />,
+                });
               }
             });
         }}
