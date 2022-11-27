@@ -1,4 +1,3 @@
-import { ScrollArea, Tabs } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -16,6 +15,7 @@ import {
   HiTicket,
   HiViewGrid,
 } from "react-icons/hi";
+import ReactNoSSR from "react-no-ssr";
 import Framework from "../components/Framework";
 import Advertisements from "../components/Invent/Advertisements";
 import Connections from "../components/Invent/Connections";
@@ -28,6 +28,7 @@ import Secrets from "../components/Invent/Secrets";
 import Shirts from "../components/Invent/Shirts";
 import Snippets from "../components/Invent/Snippets";
 import Sounds from "../components/Invent/Sounds";
+import TabNav from "../components/TabNav";
 import authorizedRoute from "../util/authorizedRoute";
 import { User } from "../util/prisma-types";
 import useMediaQuery from "../util/useMediaQuery";
@@ -55,86 +56,82 @@ const Invent: NextPage<InventProps> = ({ user }) => {
       modernTitle="Invent"
       modernSubtitle="Manage your games, plugins, and more"
     >
-      <Tabs
+      <TabNav
         variant="pills"
         orientation={mobile ? "horizontal" : "vertical"}
         value={tab}
         onTabChange={(value) => setTab(value as string)}
       >
-        <ScrollArea offsetScrollbars>
-          <Tabs.List>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                flex: 1,
-              }}
-            >
-              <Tabs.Tab value="games" icon={<HiViewGrid />}>
-                Games
-              </Tabs.Tab>
+        <TabNav.List className="flex-wrap gap-1">
+          <TabNav.Tab value="games" icon={<HiViewGrid />}>
+            Games
+          </TabNav.Tab>
 
-              <Link href="/checklists">
-                <Tabs.Tab value="checklists" icon={<HiClipboardCheck />}>
-                  Checklists
-                </Tabs.Tab>
-              </Link>
+          <Link href="/checklists" className="h-fit w-fit">
+            <TabNav.Tab value="checklists" icon={<HiClipboardCheck />}>
+              Checklists
+            </TabNav.Tab>
+          </Link>
 
-              <Tabs.Tab value="sounds" icon={<HiMusicNote />}>
-                Sounds
-              </Tabs.Tab>
+          <TabNav.Tab value="sounds" icon={<HiMusicNote />}>
+            Sounds
+          </TabNav.Tab>
 
-              <Tabs.Tab value="gamepasses" icon={<HiTicket />}>
-                Game Passes
-              </Tabs.Tab>
+          <TabNav.Tab value="gamepasses" icon={<HiTicket />}>
+            Game Passes
+          </TabNav.Tab>
 
-              <Tabs.Tab value="shirts" icon={<HiShoppingCart />}>
-                Shirts
-              </Tabs.Tab>
+          <TabNav.Tab value="shirts" icon={<HiShoppingCart />}>
+            Shirts
+          </TabNav.Tab>
 
-              <Tabs.Tab value="advertisements" icon={<HiFilm />}>
-                Advertisements
-              </Tabs.Tab>
+          <TabNav.Tab value="advertisements" icon={<HiFilm />}>
+            Advertisements
+          </TabNav.Tab>
 
-              <Tabs.Tab value="updates" icon={<HiCloud />}>
-                Game update logs
-              </Tabs.Tab>
+          <TabNav.Tab value="updates" icon={<HiCloud />}>
+            Game update logs
+          </TabNav.Tab>
 
-              <Tabs.Tab value="developer" icon={<HiIdentification />}>
-                Developer Profile
-              </Tabs.Tab>
+          <TabNav.Tab value="developer" icon={<HiIdentification />}>
+            Developer Profile
+          </TabNav.Tab>
 
-              <Tabs.Tab value="connections" icon={<HiServer />}>
-                Connections
-              </Tabs.Tab>
+          <TabNav.Tab value="connections" icon={<HiServer />}>
+            Connections
+          </TabNav.Tab>
 
-              <Tabs.Tab value="nucleus" icon={<HiKey />}>
-                Nucleus
-              </Tabs.Tab>
+          <TabNav.Tab value="nucleus" icon={<HiKey />}>
+            Nucleus
+          </TabNav.Tab>
 
-              <Tabs.Tab value="snippets" icon={<HiScissors />}>
-                Code Snippets
-              </Tabs.Tab>
+          <TabNav.Tab value="snippets" icon={<HiScissors />}>
+            Code Snippets
+          </TabNav.Tab>
 
-              <Tabs.Tab value="secrets" icon={<HiLockClosed />}>
-                Secrets
-              </Tabs.Tab>
-            </div>
-          </Tabs.List>
-        </ScrollArea>
+          <TabNav.Tab value="secrets" icon={<HiLockClosed />}>
+            Secrets
+          </TabNav.Tab>
+        </TabNav.List>
 
-        <Games user={user} />
-        <Sounds user={user} />
-        <GamePasses user={user} />
-        <Shirts user={user} />
-        <Advertisements user={user} />
-        <GameUpdates user={user} />
-        <DeveloperProfile user={user} />
-        <Connections user={user} />
-        <Nucleus user={user} />
-        <Snippets user={user} />
-        <Secrets user={user} />
-      </Tabs>
+        {[
+          Games,
+          Sounds,
+          GamePasses,
+          Shirts,
+          Advertisements,
+          GameUpdates,
+          DeveloperProfile,
+          Connections,
+          Nucleus,
+          Snippets,
+          Secrets,
+        ].map((Component, index) => (
+          <ReactNoSSR key={index}>
+            <Component user={user} />
+          </ReactNoSSR>
+        ))}
+      </TabNav>
     </Framework>
   );
 };

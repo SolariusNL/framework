@@ -32,6 +32,11 @@ const user = Prisma.validator<Prisma.UserArgs>()({
         author: nonCurrentUserSelect,
         likedBy: nonCurrentUserSelect,
         dislikedBy: nonCurrentUserSelect,
+        connection: {
+          select: {
+            id: true,
+          },
+        },
       },
     },
     nucleusKeys: true,
@@ -93,6 +98,11 @@ export const userSelect: Prisma.UserSelect = {
       author: nonCurrentUserSelect,
       likedBy: nonCurrentUserSelect,
       dislikedBy: nonCurrentUserSelect,
+      connection: {
+        select: {
+          id: true,
+        },
+      },
     },
   },
   role: true,
