@@ -31,7 +31,7 @@ const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
               {role === "ADMIN" && <Badge>Staff</Badge>}
             </Group>
           </Group>
-          <Text size="xs" color="dimmed">
+          <Text size="xs" color="dimmed" lineClamp={1}>
             {bio}
           </Text>
         </div>

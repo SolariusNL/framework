@@ -2,6 +2,7 @@ import { Avatar, Badge, Pagination, Table, Text } from "@mantine/core";
 import { AdminActivityLog } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
+import getMediaUrl from "../../../util/getMedia";
 import ModernEmptyState from "../../ModernEmptyState";
 
 const Activity: React.FC = () => {
@@ -75,7 +76,7 @@ const Activity: React.FC = () => {
                   <div className="flex gap-2 items-center">
                     <Avatar
                       size={24}
-                      src={activity.user.avatarUri}
+                      src={getMediaUrl(activity.user.avatarUri)}
                       radius="xl"
                     />
                     <Text weight={550} color="dimmed">

@@ -79,7 +79,12 @@ const UserView = ({ user }: UserViewProps) => {
       </Group>
 
       <Tabs defaultValue="info" variant="pills">
-        <Tabs.List mb="md">
+        <Tabs.List
+          mb="md"
+          style={{
+            flexWrap: "wrap",
+          }}
+        >
           <Tabs.Tab value="info">Info</Tabs.Tab>
           <Tabs.Tab value="sessions">Sessions</Tabs.Tab>
           <Tabs.Tab value="punishment">Punishment</Tabs.Tab>
@@ -92,6 +97,11 @@ const UserView = ({ user }: UserViewProps) => {
             <tbody>
               {[
                 ["Username", user.username],
+                ["Alias", user.alias],
+                [
+                  "Previous Usernames",
+                  user.previousUsernames.join(", ") || "None",
+                ],
                 ["ID", user.id],
                 ["Email", user.email],
                 ["Role", <Badge key={randomKey()}>{user.role}</Badge>],
@@ -103,6 +113,7 @@ const UserView = ({ user }: UserViewProps) => {
                 ["Tickets", user.tickets],
                 ["Linked Discord", user.discordAccount?.discordId],
                 ["Games", user.games.map((g) => g.id).join(", ")],
+                ["Links", user.profileLinks.map((l) => l.url).join(", ")],
                 [
                   "Followers",
                   <div
