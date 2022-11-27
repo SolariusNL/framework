@@ -101,6 +101,7 @@ model User {
   notes                      UserAdminNotes[]      @relation("adminNotes")
   authoredNotes              UserAdminNotes[]      @relation("adminNotesAuthor")
   hiddenHomeWidgets          String[]
+  adminActivityLogs          AdminActivityLog[]    @relation("adminActivityLog")
 }
 
 model ConnectedAccount {
@@ -517,4 +518,13 @@ model UserAdminNotes {
   authorId  Int
   createdAt DateTime @default(now())
   content   String
+}
+
+model AdminActivityLog {
+  id         String   @id @default(uuid())
+  user       User     @relation("adminActivityLog", fields: [userId], references: [id])
+  userId     Int
+  activity   String
+  importance Int
+  createdAt  DateTime @default(now())
 }

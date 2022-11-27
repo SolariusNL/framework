@@ -6,11 +6,13 @@ import {
   HiChat,
   HiCog,
   HiDesktopComputer,
+  HiDocument,
   HiKey,
   HiServer,
   HiUsers,
   HiViewGrid,
 } from "react-icons/hi";
+import Activity from "../../components/Admin/Pages/Activity";
 import BannedIPs from "../../components/Admin/Pages/BannedIPs";
 import Dashboard from "../../components/Admin/Pages/Dashboard";
 import Instance from "../../components/Admin/Pages/Instance";
@@ -21,6 +23,7 @@ import Settings from "../../components/Admin/Settings";
 import Framework from "../../components/Framework";
 import TabNav from "../../components/TabNav";
 import authorizedRoute from "../../util/authorizedRoute";
+import prisma from "../../util/prisma";
 import { User } from "../../util/prisma-types";
 import useMediaQuery from "../../util/useMediaQuery";
 
@@ -89,6 +92,13 @@ const pages: {
     component: <></>,
     description: "Review comments made by users",
   },
+  activity: {
+    label: "Activity",
+    icon: <HiDocument />,
+    route: "/admin/activity",
+    component: <Activity />,
+    description: "Review admin activity logs",
+  },
   settings: {
     label: "Settings",
     icon: <HiCog />,
@@ -106,7 +116,6 @@ interface AdminPageProps {
 const AdminPage: NextPage<AdminPageProps> = ({ user, pageStr }) => {
   const page = pages[pages[pageStr] ? pageStr : "dashboard"];
   const router = useRouter();
-  const mobile = useMediaQuery("768");
 
   return (
     <Framework
@@ -150,6 +159,18 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       },
     };
   }
+
+  await prisma.adminActivityLog.create({
+    data: {
+      user: {
+        connect: {
+          id: Number(user.props.user?.id),
+        },
+      },
+      importance: 1,
+      activity: `Viewed the ${pages[pageStr].label} page`,
+    },
+  });
 
   return {
     props: {

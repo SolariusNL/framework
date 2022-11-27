@@ -430,6 +430,18 @@ class AdminRouter {
           banReason: body.reason,
         },
       });
+
+      await prisma.adminActivityLog.create({
+        data: {
+          user: {
+            connect: {
+              id: Number(uid),
+            },
+          },
+          activity: `Banned user #${user.id} for ${body.reason}`,
+          importance: 5,
+        },
+      });
     } else {
       await prisma.user.update({
         where: {
@@ -438,6 +450,18 @@ class AdminRouter {
         data: {
           warningViewed: false,
           warning: body.reason,
+        },
+      });
+
+      await prisma.adminActivityLog.create({
+        data: {
+          user: {
+            connect: {
+              id: Number(uid),
+            },
+          },
+          activity: `Warned user #${user.id} for ${body.reason}`,
+          importance: 4,
         },
       });
     }
@@ -502,6 +526,55 @@ class AdminRouter {
     return {
       success: true,
       note: note,
+    };
+  }
+
+  @Get("/activity/:page")
+  @AdminAuthorized()
+  public async getActivity(
+    @Param("page") page: number,
+    @Query("importance") importance: number
+  ) {
+    const activity = await prisma.adminActivityLog.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+      skip: (page - 1) * 50,
+      take: 50,
+      include: {
+        user: {
+          select: {
+            id: true,
+            username: true,
+            avatarUri: true,
+          },
+        },
+      },
+      ...(importance !== undefined
+        ? {
+            where: {
+              importance: {
+                gte: Number(importance),
+              },
+            },
+          }
+        : {}),
+    });
+
+    return {
+      success: true,
+      activity,
+    };
+  }
+
+  @Get("/activitypages")
+  @AdminAuthorized()
+  public async getActivityPages() {
+    const count = await prisma.adminActivityLog.count();
+
+    return {
+      success: true,
+      pages: Math.ceil(count / 50),
     };
   }
 }
