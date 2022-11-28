@@ -1,21 +1,7 @@
-import {
-  Button,
-  Divider,
-  Grid,
-  Group,
-  Modal,
-  Text,
-  Textarea,
-  TextInput,
-  Title,
-} from "@mantine/core";
-import { useForm } from "@mantine/form";
-import { showNotification } from "@mantine/notifications";
+import { Divider, Grid, Title } from "@mantine/core";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
 import {
-  HiBell,
-  HiCheckCircle,
   HiKey,
   HiServer,
   HiUser,
@@ -27,8 +13,6 @@ import { Report } from "../../../util/prisma-types";
 import useMediaQuery from "../../../util/useMediaQuery";
 import ModernEmptyState from "../../ModernEmptyState";
 import ReportCard from "../../ReportCard";
-import Stateful from "../../Stateful";
-import UserSelect from "../../UserSelect";
 import ResourceCard from "../ResourceCard";
 import StatsGrid from "../StatsGrid";
 
@@ -78,47 +62,6 @@ const Dashboard = () => {
     getStats();
   }, []);
 
-  const bulkNotificationForm = useForm<{
-    title: string;
-    message: string;
-  }>({
-    initialValues: {
-      title: "",
-      message: "",
-    },
-    validate: {
-      title: (value) => {
-        if (!value) return "Title is required";
-      },
-      message: (value) => {
-        if (!value) return "Message is required";
-      },
-    },
-  });
-
-  const singleNotificationForm = useForm<{
-    title: string;
-    message: string;
-    userid: number;
-  }>({
-    initialValues: {
-      title: "",
-      message: "",
-      userid: 0,
-    },
-    validate: {
-      title: (value) => {
-        if (!value) return "Title is required";
-      },
-      message: (value) => {
-        if (!value) return "Message is required";
-      },
-      userid: (value) => {
-        if (!value) return "User ID is required";
-      },
-    },
-  });
-
   return (
     <>
       <StatsGrid>
@@ -141,165 +84,6 @@ const Dashboard = () => {
           icon={<HiViewGrid />}
         />
       </StatsGrid>
-
-      <Divider mt={36} mb={36} />
-
-      <Group spacing={12}>
-        <Button.Group>
-          <Stateful>
-            {(opened, setOpened) => (
-              <>
-                <Button leftIcon={<HiBell />} onClick={() => setOpened(true)}>
-                  Send bulk notification
-                </Button>
-
-                <Modal
-                  title="Send bulk notification"
-                  opened={opened}
-                  onClose={() => setOpened(false)}
-                >
-                  <Text mb={16}>
-                    Send a notification to all users. This is useful for
-                    announcing new features or updates.
-                  </Text>
-
-                  <form
-                    onSubmit={bulkNotificationForm.onSubmit(
-                      async (values) =>
-                        await fetch("/api/admin/notifications/send/all", {
-                          method: "POST",
-                          headers: {
-                            Authorization: String(
-                              getCookie(".frameworksession")
-                            ),
-                            "Content-Type": "application/json",
-                          },
-                          body: JSON.stringify(values),
-                        })
-                          .then((res) => res.json())
-                          .then((res) => {
-                            if (res.error) {
-                              bulkNotificationForm.setFieldError(
-                                "message",
-                                res.error
-                              );
-                            } else {
-                              setOpened(false);
-                              showNotification({
-                                title: "Success",
-                                message: "Notification sent",
-                                icon: <HiCheckCircle />,
-                              });
-                            }
-                          })
-                    )}
-                  >
-                    <TextInput
-                      label="Title"
-                      description="Title of the notification"
-                      mb={7}
-                      {...bulkNotificationForm.getInputProps("title")}
-                    />
-                    <Textarea
-                      label="Message"
-                      description="Message of the notification"
-                      mb={16}
-                      {...bulkNotificationForm.getInputProps("message")}
-                    />
-                    <Button type="submit" fullWidth>
-                      Send notifications
-                    </Button>
-                  </form>
-                </Modal>
-              </>
-            )}
-          </Stateful>
-          <Stateful>
-            {(opened, setOpened) => (
-              <>
-                <Button leftIcon={<HiBell />} onClick={() => setOpened(true)}>
-                  Send notification
-                </Button>
-
-                <Modal
-                  title="Send single notification"
-                  opened={opened}
-                  onClose={() => setOpened(false)}
-                >
-                  <Text mb={16}>
-                    Send a notification to a single user. This is useful for
-                    notifying a user about a report or a ban, or for sending
-                    them a message.
-                  </Text>
-
-                  <form
-                    onSubmit={singleNotificationForm.onSubmit(
-                      async (values) =>
-                        await fetch(
-                          `/api/admin/notifications/send/${values.userid}`,
-                          {
-                            method: "POST",
-                            headers: {
-                              Authorization: String(
-                                getCookie(".frameworksession")
-                              ),
-                              "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify({
-                              title: values.title,
-                              message: values.message,
-                            }),
-                          }
-                        )
-                          .then((res) => res.json())
-                          .then((res) => {
-                            if (res.error) {
-                              singleNotificationForm.setFieldError(
-                                "message",
-                                res.error
-                              );
-                            } else {
-                              setOpened(false);
-                              showNotification({
-                                title: "Success",
-                                message: "Notification sent",
-                                icon: <HiCheckCircle />,
-                              });
-                            }
-                          })
-                    )}
-                  >
-                    <UserSelect
-                      onUserSelect={(user) => {
-                        singleNotificationForm.setFieldValue("userid", user.id);
-                      }}
-                      label="User"
-                      description="User to send the notification to"
-                      mb={7}
-                      {...singleNotificationForm.getInputProps("userid")}
-                    />
-                    <TextInput
-                      label="Title"
-                      description="Title of the notification"
-                      mb={7}
-                      {...singleNotificationForm.getInputProps("title")}
-                    />
-                    <Textarea
-                      label="Message"
-                      description="Message of the notification"
-                      mb={16}
-                      {...singleNotificationForm.getInputProps("message")}
-                    />
-                    <Button type="submit" fullWidth>
-                      Send notifications
-                    </Button>
-                  </form>
-                </Modal>
-              </>
-            )}
-          </Stateful>
-        </Button.Group>
-      </Group>
 
       <Divider mt={36} mb={36} />
 

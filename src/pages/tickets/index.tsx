@@ -24,6 +24,7 @@ import { useState } from "react";
 import { Line } from "react-chartjs-2";
 import { HiChartBar, HiCurrencyDollar, HiViewList } from "react-icons/hi";
 import Framework from "../../components/Framework";
+import ShadedCard from "../../components/ShadedCard";
 import TabNav from "../../components/TabNav";
 import TransactionsWidget from "../../components/Widgets/Transactions";
 import authorizedRoute from "../../util/authorizedRoute";
@@ -67,7 +68,7 @@ const Tickets: NextPage<TicketsProps> = ({ user }) => {
             width: mobile ? "100%" : "30%",
           }}
         >
-          <Card withBorder shadow="md">
+          <ShadedCard withBorder shadow="md">
             <Card.Section withBorder inheritPadding py="xs" mb={16}>
               <Text weight={500} size="sm" color="dimmed">
                 Your Ticket Balance
@@ -79,14 +80,14 @@ const Tickets: NextPage<TicketsProps> = ({ user }) => {
                   borderRadius: theme.radius.md,
                   color:
                     theme.colorScheme === "dark"
-                      ? theme.colors.teal[2]
-                      : theme.colors.teal[5],
+                      ? theme.colors.green[4]
+                      : theme.colors.green[5],
 
                   "&:hover": {
                     backgroundColor:
                       theme.colorScheme === "dark"
-                        ? theme.colors.dark[8]
-                        : theme.colors.gray[0],
+                        ? theme.colors.dark[7]
+                        : theme.colors.gray[3],
                   },
                   padding: "12px",
                   display: "flex",
@@ -113,7 +114,7 @@ const Tickets: NextPage<TicketsProps> = ({ user }) => {
                 Buy Tickets
               </Button>
             </Link>
-          </Card>
+          </ShadedCard>
         </div>
 
         <div
@@ -136,15 +137,17 @@ const Tickets: NextPage<TicketsProps> = ({ user }) => {
               </TabNav.Tab>
             </TabNav.List>
             <Tabs.Panel value="general">
-              <TransactionsWidget
-                onTransactionsLoaded={setTransactions}
-                user={user}
-              />
+              <ShadedCard shadow="sm" withBorder>
+                <TransactionsWidget
+                  onTransactionsLoaded={setTransactions}
+                  user={user}
+                />
+              </ShadedCard>
             </Tabs.Panel>
             <Tabs.Panel value="statistics">
               <div>
                 <div className="mb-6">
-                  <Card shadow="sm" withBorder>
+                  <ShadedCard shadow="sm" withBorder>
                     <Line
                       data={{
                         labels: [
@@ -204,10 +207,10 @@ const Tickets: NextPage<TicketsProps> = ({ user }) => {
                         },
                       }}
                     />
-                  </Card>
+                  </ShadedCard>
                 </div>
                 <div>
-                  <Card shadow="sm" withBorder>
+                  <ShadedCard shadow="sm" withBorder>
                     <Line
                       data={{
                         labels: [
@@ -273,7 +276,7 @@ const Tickets: NextPage<TicketsProps> = ({ user }) => {
                         },
                       }}
                     />
-                  </Card>
+                  </ShadedCard>
                 </div>
               </div>
             </Tabs.Panel>

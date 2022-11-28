@@ -1,5 +1,6 @@
 import { createStyles, Paper, Text, ThemeIcon } from "@mantine/core";
 import Link from "next/link";
+import ShadedCard from "../ShadedCard";
 
 const useStyles = createStyles((theme) => ({
   card: {
@@ -27,6 +28,8 @@ const useStyles = createStyles((theme) => ({
         theme.colors.pink[6],
         theme.colors.orange[6]
       ),
+      borderTopLeftRadius: theme.radius.md,
+      borderBottomLeftRadius: theme.radius.md,
     },
   },
 }));
@@ -47,22 +50,24 @@ const ResourceCard = ({
   const { classes } = useStyles();
   return (
     <Link href={link}>
-      <Paper withBorder radius="md" className={classes.card}>
-        <ThemeIcon
-          size="xl"
-          radius="md"
-          variant="gradient"
-          gradient={{ deg: 0, from: "pink", to: "orange" }}
-        >
-          {icon}
-        </ThemeIcon>
-        <Text size="xl" weight={500} mt="md">
-          {title}
-        </Text>
-        <Text size="sm" mt="sm" color="dimmed">
-          {description}
-        </Text>
-      </Paper>
+      <ShadedCard withBorder className={classes.card}>
+        <div className="ml-4">
+          <ThemeIcon
+            size="xl"
+            radius="md"
+            variant="gradient"
+            gradient={{ deg: 0, from: "pink", to: "orange" }}
+          >
+            {icon}
+          </ThemeIcon>
+          <Text size="xl" weight={500} mt="md">
+            {title}
+          </Text>
+          <Text size="sm" mt="sm" color="dimmed">
+            {description}
+          </Text>
+        </div>
+      </ShadedCard>
     </Link>
   );
 };

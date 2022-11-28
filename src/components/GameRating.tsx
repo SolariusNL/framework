@@ -19,10 +19,9 @@ const GameRating = ({ game }: GameRatingProps) => {
       shadow="md"
       p="lg"
       radius="md"
-      withBorder
       sx={{
         backgroundColor:
-          theme.colorScheme === "dark" ? theme.colors.dark[8] : "#FFF",
+          theme.colorScheme === "dark" ? theme.colors.dark[9] : "#FFF",
       }}
     >
       <div className="text-center">

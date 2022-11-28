@@ -1,5 +1,6 @@
 import { Group, Paper, SimpleGrid, Skeleton, Text } from "@mantine/core";
 import { IconArrowDownRight, IconArrowUpRight } from "@tabler/icons";
+import ShadedCard from "../ShadedCard";
 
 interface StatsGridProps {
   children: React.ReactNode;
@@ -39,7 +40,7 @@ StatsGrid.Item = ({
   diffHint = "Compared to previous month",
 }: StatGridItemProps) => {
   return (
-    <Paper withBorder p="md" radius="md" key={title}>
+    <ShadedCard withBorder p="md" radius="md" key={title}>
       <Group position="apart">
         <Text
           size="xs"
@@ -90,7 +91,7 @@ StatsGrid.Item = ({
           {diffHint}
         </Text>
       )}
-    </Paper>
+    </ShadedCard>
   );
 };
 
