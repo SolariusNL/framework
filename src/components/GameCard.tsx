@@ -2,27 +2,20 @@ import {
   AspectRatio,
   Avatar,
   Badge,
-  Button,
   Card,
   createStyles,
-  Group,
   Image,
   MantineColor,
   Text,
+  Title,
 } from "@mantine/core";
 import { randomId } from "@mantine/hooks";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { useState } from "react";
-import {
-  HiArrowRight,
-  HiFlag,
-  HiThumbDown,
-  HiThumbUp,
-  HiUserGroup,
-} from "react-icons/hi";
+import { HiThumbUp, HiUsers } from "react-icons/hi";
 import getMediaUrl from "../util/getMedia";
 import { Game } from "../util/prisma-types";
-import { getGenreText } from "../util/universe/genre";
 import { getRatingColor } from "../util/universe/ratings";
 import PlaceholderGameResource from "./PlaceholderGameResource";
 import ReportUser from "./ReportUser";
@@ -54,6 +47,7 @@ const useStyles = createStyles((theme) => ({
 const GameCard = ({ game }: GameCardProps) => {
   const { classes, theme } = useStyles();
   const [reportOpen, setReportOpen] = useState(false);
+  const [hovering, setHovering] = useState(false);
 
   return (
     <>
@@ -62,100 +56,80 @@ const GameCard = ({ game }: GameCardProps) => {
         opened={reportOpen}
         setOpened={setReportOpen}
       />
-      <Card
-        shadow="sm"
-        withBorder
-        p="lg"
-        radius="md"
-        sx={(theme) => ({
-          backgroundColor:
-            theme.colorScheme === "dark" ? theme.colors.dark[9] : "#FFF",
-          overflow: "visible",
-        })}
+      <Link
+        href={`/game/${game.id}`}
+        onMouseEnter={() => setHovering(true)}
+        onMouseLeave={() => setHovering(false)}
       >
-        <Card.Section mb="sm" p="md">
-          <Group grow className="align-top items-start">
-            {game.iconUri ? (
-              <Image
-                src={getMediaUrl(game.iconUri)}
-                alt={game.name}
-                radius={theme.radius.md}
-                withPlaceholder
-              />
-            ) : (
-              <AspectRatio ratio={1}>
-                <PlaceholderGameResource game={game} />
-              </AspectRatio>
-            )}
-            <div>
-              <div className="flex gap-2 items-center justify-center mb-4">
-                <UserContext user={game.author}>
-                  <Avatar
-                    src={getMediaUrl(game.author.avatarUri)}
-                    alt={game.author.username}
-                    className="rounded-full"
-                    size="sm"
-                  />
-                </UserContext>
-                <Text weight={600} size="sm" color="dimmed">
-                  {game.author.username}
-                </Text>
-              </div>
-              <div className="justify-center flex items-center">
+        <motion.div whileHover={{ scale: 1.02 }}>
+          <Card
+            radius="md"
+            style={{
+              backgroundColor: "transparent",
+              cursor: "pointer",
+              overflow: "visible",
+            }}
+            p={0}
+          >
+            <Card.Section mb="md">
+              {game.iconUri ? (
+                <Image
+                  src={getMediaUrl(game.iconUri)}
+                  alt={game.name}
+                  radius={theme.radius.md}
+                  withPlaceholder
+                />
+              ) : (
+                <AspectRatio ratio={1}>
+                  <PlaceholderGameResource game={game} />
+                </AspectRatio>
+              )}
+            </Card.Section>
+            <div className="flex justify-between mb-4">
+              <Title order={4}>{game.name}</Title>
+              <UserContext user={game.author}>
+                <Avatar
+                  src={getMediaUrl(game.author.avatarUri)}
+                  size={20}
+                  radius="xl"
+                />
+              </UserContext>
+            </div>
+            <div className="flex justify-around w-full">
+              <div>
                 <Badge
-                  size="lg"
                   color={game.rating ? getRatingColor(game.rating) : "red"}
                 >
                   {game.rating ? game.rating.type : "RP"}
                 </Badge>
               </div>
+              <div className="flex flex-col gap-2 text-right">
+                {[
+                  [
+                    HiThumbUp,
+                    `${(
+                      (game.likedBy.length /
+                        (game.likedBy.length + game.dislikedBy.length)) *
+                        100 || 100
+                    ).toFixed(0)}%`,
+                  ],
+                  [HiUsers, `${game.playing}`],
+                ].map(([Icon, value]) => (
+                  <div
+                    className="flex items-center justify-end"
+                    key={randomId()}
+                  >
+                    <Icon size={16} color="#868e96" />
+                    <Text size="sm" color="dimmed" ml={5}>
+                      {String(value)}
+                    </Text>
+                  </div>
+                ))}
+              </div>
             </div>
-          </Group>
-        </Card.Section>
-
-        <Badge mb="md">{getGenreText(game.genre)}</Badge>
-
-        <Text weight={700} mb="xl" size="lg">
-          {game.name}
-        </Text>
-
-        <Card.Section
-          className={
-            classes.footer + " flex justify-between items-center gap-2"
-          }
-        >
-          <Link href={`/game/${game.id}`} passHref>
-            <Button leftIcon={<HiArrowRight />} fullWidth>
-              View
-            </Button>
-          </Link>
-          <Button
-            color="red"
-            className="py-0 px-3"
-            onClick={() => setReportOpen(true)}
-          >
-            <HiFlag />
-          </Button>
-        </Card.Section>
-
-        <Card.Section
-          className={classes.footer + " flex justify-around"}
-          withBorder
-        >
-          {[
-            { icon: HiThumbUp, value: game.likedBy.length },
-            { icon: HiThumbDown, value: game.dislikedBy.length },
-            { icon: HiUserGroup, value: game.visits },
-          ].map((item) => (
-            <div className="flex items-center gap-2" key={randomId()}>
-              <item.icon color={theme.colors.gray[6]} />
-              <Text size="sm" weight={600} color="dimmed">
-                {item.value}
-              </Text>
-            </div>
-          ))}
-        </Card.Section>
-      </Card>
+          </Card>
+        </motion.div>
+      </Link>
     </>
   );
 };

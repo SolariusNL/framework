@@ -1,9 +1,10 @@
 import {
-  Button, Group,
+  Button,
+  Group,
   Modal,
   MultiSelect,
   Stack,
-  TextInput
+  TextInput,
 } from "@mantine/core";
 import { GameGenre } from "@prisma/client";
 import { GetServerSidePropsContext, NextPage } from "next";
@@ -188,7 +189,7 @@ const Games: NextPage<GamesProps> = ({ user, initialGames }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-6 gap-8">
         <div className="md:col-span-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-8">
             {games.length > 0 &&
               games.map((game) => <GameCard game={game} key={game.id} />)}
             {games.length == 0 && (
@@ -203,7 +204,7 @@ const Games: NextPage<GamesProps> = ({ user, initialGames }) => {
           </div>
         </div>
         {!mobile && (
-          <ShadedCard title="Filter" className="md:col-span-2 h-fit">
+          <ShadedCard title="Filter" className="md:col-span-2 h-fit" withBorder>
             {filterUi}
           </ShadedCard>
         )}
