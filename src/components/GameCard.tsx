@@ -73,12 +73,14 @@ const GameCard = ({ game }: GameCardProps) => {
           >
             <Card.Section mb="md">
               {game.iconUri ? (
-                <Image
-                  src={getMediaUrl(game.iconUri)}
-                  alt={game.name}
-                  radius={theme.radius.md}
-                  withPlaceholder
-                />
+                <AspectRatio ratio={1}>
+                  <Image
+                    src={getMediaUrl(game.iconUri)}
+                    alt={game.name}
+                    radius={theme.radius.md}
+                    withPlaceholder
+                  />
+                </AspectRatio>
               ) : (
                 <AspectRatio ratio={1}>
                   <PlaceholderGameResource game={game} />
