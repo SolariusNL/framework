@@ -3,11 +3,11 @@ import {
   Avatar,
   Badge,
   Card,
-  createStyles,
   Image,
   MantineColor,
   Text,
   Title,
+  useMantineTheme,
 } from "@mantine/core";
 import { randomId } from "@mantine/hooks";
 import { motion } from "framer-motion";
@@ -37,17 +37,9 @@ export const gradientPairs: Array<[MantineColor, MantineColor]> = [
   ["purple", "violet"],
 ];
 
-const useStyles = createStyles((theme) => ({
-  footer: {
-    padding: `${theme.spacing.xs}px ${theme.spacing.lg}px`,
-    marginTop: theme.spacing.md,
-  },
-}));
-
 const GameCard = ({ game }: GameCardProps) => {
-  const { classes, theme } = useStyles();
+  const theme = useMantineTheme();
   const [reportOpen, setReportOpen] = useState(false);
-  const [hovering, setHovering] = useState(false);
 
   return (
     <>
@@ -56,11 +48,7 @@ const GameCard = ({ game }: GameCardProps) => {
         opened={reportOpen}
         setOpened={setReportOpen}
       />
-      <Link
-        href={`/game/${game.id}`}
-        onMouseEnter={() => setHovering(true)}
-        onMouseLeave={() => setHovering(false)}
-      >
+      <Link href={`/game/${game.id}`}>
         <motion.div whileHover={{ scale: 1.02 }}>
           <Card
             radius="md"
