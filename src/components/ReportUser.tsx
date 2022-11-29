@@ -23,6 +23,7 @@ interface ReportUserProps {
 
 export type ReportCategory =
   | "Racist, sexist or otherwise offensive content"
+  | "Hacking or cheating in game"
   | "Spam or misleading content"
   | "Inappropriate avatar or profile picture"
   | "Inappropriate username"
@@ -32,6 +33,7 @@ export type ReportCategory =
 
 export const category = {
   "Racist, sexist or otherwise offensive content": "racist",
+  "Hacking or cheating in game": "hacking",
   "Spam or misleading content": "spam",
   "Inappropriate avatar or profile picture": "avatar",
   "Inappropriate username": "username",
