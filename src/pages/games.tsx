@@ -1,21 +1,22 @@
 import {
   Button,
   Group,
-  Modal,
   MultiSelect,
+  Skeleton,
   Stack,
   TextInput,
 } from "@mantine/core";
+import { openModal } from "@mantine/modals";
 import { GameGenre } from "@prisma/client";
 import { GetServerSidePropsContext, NextPage } from "next";
 import React, { useEffect } from "react";
 import { HiFilter, HiSearch } from "react-icons/hi";
+import InfiniteScroll from "react-infinite-scroller";
 import AscDescFilter from "../components/Filter/AscDescFilter";
 import Framework from "../components/Framework";
 import GameCard from "../components/GameCard";
 import ModernEmptyState from "../components/ModernEmptyState";
 import ShadedCard from "../components/ShadedCard";
-import Stateful from "../components/Stateful";
 import authorizedRoute from "../util/authorizedRoute";
 import { getCookie } from "../util/cookies";
 import prisma from "../util/prisma";
@@ -44,7 +45,9 @@ const Games: NextPage<GamesProps> = ({ user, initialGames }) => {
   });
   const [games, setGames] = React.useState<Game[]>(initialGames);
   const [loading, setLoading] = React.useState(false);
+  const [page, setPage] = React.useState(1);
   const mobile = useMediaQuery("768");
+  const [canLoadMore, setCanLoadMore] = React.useState(true);
 
   const updateGames = async () => {
     setLoading(true);
@@ -56,7 +59,7 @@ const Games: NextPage<GamesProps> = ({ user, initialGames }) => {
       }
     }
 
-    await fetch(`/api/games/1?${params.toString()}`, {
+    await fetch(`/api/games/${page}?${params.toString()}`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `${getCookie(".frameworksession")}`,
@@ -75,6 +78,26 @@ const Games: NextPage<GamesProps> = ({ user, initialGames }) => {
   useEffect(() => {
     updateGames();
   }, [filter]);
+
+  const searchGames = async (query: string) => {
+    await fetch(`/api/games/search?q=${query}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `${getCookie(".frameworksession")}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.games) {
+          setGames(res.games);
+        } else {
+          setGames([]);
+        }
+      })
+      .catch((err) => {
+        alert(err + "\nPlease report this to Soodam.re");
+      });
+  };
 
   const filterUi = (
     <Stack spacing={12}>
@@ -134,26 +157,6 @@ const Games: NextPage<GamesProps> = ({ user, initialGames }) => {
     </Stack>
   );
 
-  const searchGames = async (query: string) => {
-    await fetch(`/api/games/search?q=${query}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `${getCookie(".frameworksession")}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.games) {
-          setGames(res.games);
-        } else {
-          setGames([]);
-        }
-      })
-      .catch((err) => {
-        alert(err + "\nPlease report this to Soodam.re");
-      });
-  };
-
   return (
     <Framework
       user={user}
@@ -161,52 +164,83 @@ const Games: NextPage<GamesProps> = ({ user, initialGames }) => {
       modernTitle="Games"
       modernSubtitle="Browse the expansive library of games on Framework."
     >
-      <Group className="items-center" mb={32}>
+      <Group className="items-center" position="apart" mb={32}>
         <TextInput
           icon={<HiSearch />}
           placeholder="Search for games"
           onChange={(e) => searchGames(e.currentTarget.value)}
         />
         {mobile && (
-          <Stateful>
-            {(open, setOpen) => (
-              <>
-                <Button leftIcon={<HiFilter />} onClick={() => setOpen(true)}>
-                  Filter
-                </Button>
-                <Modal
-                  title="Filter"
-                  opened={open}
-                  onClose={() => setOpen(false)}
-                >
-                  {filterUi}
-                </Modal>
-              </>
-            )}
-          </Stateful>
+          <Button
+            variant="default"
+            onClick={() =>
+              openModal({
+                title: "Filter games",
+                children: filterUi,
+              })
+            }
+            leftIcon={<HiFilter />}
+          >
+            Filter
+          </Button>
         )}
       </Group>
 
-      <div className="grid grid-cols-1 md:grid-cols-6 gap-8">
-        <div className="md:col-span-4">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-8">
-            {games.length > 0 &&
-              games.map((game) => <GameCard game={game} key={game.id} />)}
-            {games.length == 0 && (
-              <div className="col-span-2">
-                <ModernEmptyState
-                  title="No games found"
-                  body="Try switching up your filter."
-                  shaded
-                />
+      <div className="grid grid-cols-1 gap-4 gap-y-8 md:grid-cols-3">
+        <div className="col-span-2">
+          <ShadedCard>
+            <InfiniteScroll
+              loader={
+                <div className="col-span-4" key={0}>
+                  <Skeleton height={200} />
+                </div>
+              }
+              pageStart={1}
+              loadMore={(p) => {
+                fetch(`/api/games/${p}`, {
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `${getCookie(".frameworksession")}`,
+                  },
+                })
+                  .then((res) => res.json())
+                  .then((res) => {
+                    if (res.length === 0) {
+                      setCanLoadMore(false);
+                    } else {
+                      setGames([...games, ...res]);
+                    }
+
+                    if (res === null) {
+                      setCanLoadMore(false);
+                    }
+                  })
+                  .catch((err) => {
+                    alert(err + "\nPlease report this to Soodam.re");
+                  });
+              }}
+              hasMore={canLoadMore}
+            >
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-8">
+                {games.length > 0 &&
+                  games.map((game) => <GameCard game={game} key={game.id} />)}
+                {games.length == 0 && (
+                  <div className="col-span-3 lg:col-span-4">
+                    <ModernEmptyState
+                      title="No games found"
+                      body="Try switching up your filter."
+                      shaded
+                    />
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+            </InfiniteScroll>
+          </ShadedCard>
         </div>
         {!mobile && (
-          <ShadedCard title="Filter" className="md:col-span-2 h-fit" withBorder>
-            {filterUi}
-          </ShadedCard>
+          <div className="col-span-1">
+            <ShadedCard>{filterUi}</ShadedCard>
+          </div>
         )}
       </div>
     </Framework>
@@ -225,6 +259,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       { visits: "desc" },
     ],
     select: gameSelect,
+    take: 25,
   });
 
   if (auth.redirect) {

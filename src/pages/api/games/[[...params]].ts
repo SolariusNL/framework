@@ -576,10 +576,9 @@ class GameRouter {
   @Get("/:page")
   @Authorized()
   async getGames(
-    @Query("likes") likes: "asc" | "desc",
-    @Query("dislikes") dislikes: "asc" | "desc",
-    @Query("visits") visits: "asc" | "desc",
-    @Query("genres") genres: GameGenre[] | null,
+    @Query("likes") likes: "asc" | "desc" = "desc",
+    @Query("visits") visits: "asc" | "desc" = "desc",
+    @Query("genres") genres: GameGenre[] | null = null,
     @Param("page") page: number
   ) {
     const results = await prisma.game.findMany({
@@ -597,19 +596,15 @@ class GameRouter {
           },
         },
         {
-          dislikedBy: {
-            _count: dislikes,
-          },
-        },
-        {
           visits: visits,
         },
       ],
-      take: 10,
       select: gameSelect,
+      take: Number(25),
+      skip: 25 * (Number(page) - 1),
     });
 
-    return results;
+    return results || [];
   }
 
   @Post("/:id/update")
