@@ -146,6 +146,7 @@ const UserView = ({ user }: UserViewProps) => {
                 ["Last seen", user.lastSeen],
                 ["Busy", user.busy],
                 ["Verified", user.emailVerified],
+                ["2FA", user.emailRequiredLogin],
               ]
                 .map((i) => {
                   if (typeof i[1] === "boolean") {

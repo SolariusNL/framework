@@ -150,7 +150,7 @@ const Users = () => {
                       leftIcon={<HiBell />}
                       onClick={() => setOpened(true)}
                     >
-                      Send bulk notification
+                      Bulk notification
                     </Button>
 
                     <Modal
