@@ -131,10 +131,12 @@ const FundsTab = ({ game }: FundsTabProps) => {
               </ShadedCard>
             ))
           ) : (
-            <ModernEmptyState
-              title="No funds"
-              body="The developer hasn't set up any funds yet."
-            />
+            <div className="col-span-2">
+              <ModernEmptyState
+                title="No funds"
+                body="The developer hasn't set up any funds yet."
+              />
+            </div>
           )}
         </div>
       </ViewGameTab>

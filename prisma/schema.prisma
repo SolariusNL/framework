@@ -102,6 +102,7 @@ model User {
   authoredNotes              UserAdminNotes[]      @relation("adminNotesAuthor")
   hiddenHomeWidgets          String[]
   adminActivityLogs          AdminActivityLog[]    @relation("adminActivityLog")
+  ownedGamepasses            Gamepass[]            @relation("userGamepasses")
 }
 
 model ConnectedAccount {
@@ -265,6 +266,7 @@ model Game {
   funds                GameFund[]      @relation("gameFunds")
   rating               Rating?         @relation("gameRating")
   datastores           GameDatastore[] @relation("gameDatastore")
+  gamepasses           Gamepass[]      @relation("gamepasses")
 }
 
 model GameComment {
@@ -527,4 +529,15 @@ model AdminActivityLog {
   activity   String
   importance Int
   createdAt  DateTime @default(now())
+}
+
+model Gamepass {
+  id          String   @id @default(uuid())
+  game        Game     @relation("gamepasses", fields: [gameId], references: [id])
+  gameId      Int
+  name        String
+  description String
+  price       Int
+  createdAt   DateTime @default(now())
+  owners      User[]   @relation("userGamepasses")
 }

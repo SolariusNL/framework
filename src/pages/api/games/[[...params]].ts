@@ -11,7 +11,9 @@ import {
   Param,
   Post,
   Query,
+  ValidationPipe,
 } from "@storyofams/next-api-decorators";
+import * as Validate from "class-validator";
 import sanitizeHtml from "sanitize-html";
 import { scoreDescriptions } from "../../../components/EditGame/AgeRating";
 import Authorized, { Account } from "../../../util/api/authorized";
@@ -53,6 +55,32 @@ interface UpdateRatingBody {
     score: RatingCategoryScore;
     description: string;
   }>;
+}
+
+class CreateGamepassDTO {
+  @Validate.IsString()
+  @Validate.Length(1, 64, {
+    message: "Gamepass name must be be less than 64 characters",
+  })
+  name: string;
+
+  @Validate.IsString()
+  @Validate.Length(1, 300, {
+    message: "Gamepass description must be less than 300 characters",
+  })
+  description: string;
+
+  @Validate.IsNumber()
+  @Validate.Length(0, 1000000, {
+    message: "Gamepass price must be between 0 and 1000000",
+  })
+  price: number;
+
+  constructor(name: string, description: string, price: number) {
+    this.name = name;
+    this.description = description;
+    this.price = price;
+  }
 }
 
 class GameRouter {
@@ -909,7 +937,6 @@ class GameRouter {
       };
     }
 
-    // can only be 3 scores
     if (scores.length !== 3) {
       return {
         success: false,
@@ -917,7 +944,6 @@ class GameRouter {
       };
     }
 
-    // check scores
     for (const score of scores) {
       if (!Object.values(RatingCategory).includes(score.category)) {
         return {
@@ -976,6 +1002,189 @@ class GameRouter {
         success: true,
       };
     }
+  }
+
+  @Post("/:id/gamepass/new")
+  @Authorized()
+  async newGamePass(
+    @Account() user: User,
+    @Param("id") id: number,
+    @Body(ValidationPipe) body: CreateGamepassDTO
+  ) {
+    const game = await prisma.game.findFirst({
+      where: {
+        id: Number(id),
+        authorId: user.id,
+      },
+    });
+
+    if (!game) {
+      return {
+        success: false,
+        error: "Game not found",
+      };
+    }
+
+    if (game.authorId !== user.id) {
+      return {
+        success: false,
+        error: "You don't own this game",
+      };
+    }
+
+    const gamepass = await prisma.gamepass.create({
+      data: {
+        name: body.name,
+        price: body.price,
+        description: body.description,
+        game: {
+          connect: {
+            id: Number(id),
+          },
+        },
+      },
+    });
+
+    return {
+      success: true,
+      gamepass,
+    };
+  }
+
+  @Post("/:id/gamepass/:gamepassId/delete")
+  @Authorized()
+  async deleteGamePass(
+    @Account() user: User,
+    @Param("id") id: number,
+    @Param("gamepassId") gamepassId: string
+  ) {
+    const game = await prisma.game.findFirst({
+      where: {
+        id: Number(id),
+        authorId: user.id,
+      },
+    });
+
+    if (!game) {
+      return {
+        success: false,
+        error: "Game not found",
+      };
+    }
+
+    if (game.authorId !== user.id) {
+      return {
+        success: false,
+        error: "You don't own this game",
+      };
+    }
+
+    const gamepass = await prisma.gamepass.findFirst({
+      where: {
+        id: String(gamepassId),
+        gameId: Number(id),
+      },
+    });
+
+    if (!gamepass) {
+      return {
+        success: false,
+        error: "Gamepass not found",
+      };
+    }
+
+    await prisma.gamepass.delete({
+      where: {
+        id: String(gamepassId),
+      },
+    });
+
+    return {
+      success: true,
+    };
+  }
+
+  @Post("/:id/gamepass/:gamepassId/purchase")
+  @Authorized()
+  async purchaseGamePass(
+    @Account() user: User,
+    @Param("id") id: number,
+    @Param("gamepassId") gamepassId: string
+  ) {
+    const game = await prisma.game.findFirst({
+      where: {
+        id: Number(id),
+      },
+      include: {
+        author: true,
+      },
+    });
+
+    if (!game) {
+      return {
+        success: false,
+        error: "Game not found",
+      };
+    }
+
+    const gamepass = await prisma.gamepass.findFirst({
+      where: {
+        id: String(gamepassId),
+        gameId: Number(id),
+      },
+    });
+
+    if (!gamepass) {
+      return {
+        success: false,
+        error: "Gamepass not found",
+      };
+    }
+
+    if (user.tickets < gamepass.price) {
+      return {
+        success: false,
+        error: "Not enough tickets",
+      };
+    }
+
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        tickets: {
+          decrement: gamepass.price,
+        },
+        ownedGamepasses: {
+          connect: {
+            id: String(gamepassId),
+          },
+        },
+      },
+    });
+
+    await prisma.user.update({
+      where: {
+        id: game.author.id,
+      },
+      data: {
+        tickets: {
+          increment: gamepass.price,
+        },
+      },
+    });
+
+    await logTransaction(
+      `${game.author.username}`,
+      gamepass.price,
+      `Purchase of gamepass ${gamepass.name} on game ID ${game.id}`,
+      user.id
+    );
+
+    return {
+      success: true,
+    };
   }
 }
 

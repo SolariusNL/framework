@@ -17,6 +17,7 @@ import {
   Tooltip,
   UnstyledButton,
 } from "@mantine/core";
+import { Gamepass } from "@prisma/client";
 import isElectron from "is-electron";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { NextSeo } from "next-seo";
@@ -31,6 +32,7 @@ import {
   HiLockClosed,
   HiPlay,
   HiServer,
+  HiShoppingBag,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import Framework from "../../../components/Framework";
@@ -44,6 +46,7 @@ import UserContext from "../../../components/UserContext";
 import ConnectionTab from "../../../components/ViewGame/Connection";
 import FundsTab from "../../../components/ViewGame/Funds";
 import InfoTab from "../../../components/ViewGame/Info";
+import Store from "../../../components/ViewGame/Store";
 import UpdateLogTab from "../../../components/ViewGame/UpdateLog";
 import Votes from "../../../components/ViewGame/Votes";
 import authorizedRoute from "../../../util/authorizedRoute";
@@ -53,8 +56,12 @@ import prisma from "../../../util/prisma";
 import { Game, gameSelect, User } from "../../../util/prisma-types";
 import useMediaQuery from "../../../util/useMediaQuery";
 
+type GameWithGamepass = Game & {
+  gamepasses: Gamepass[];
+};
+
 interface GameViewProps {
-  gameData: Game;
+  gameData: GameWithGamepass;
   user: User;
 }
 
@@ -128,7 +135,11 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                 game.gallery.length > 0
                   ? game.gallery.map((image, i) => (
                       <AspectRatio ratio={16 / 9} key={i}>
-                        <Image src={getMediaUrl(image)} key={i} alt={game.name} />
+                        <Image
+                          src={getMediaUrl(image)}
+                          key={i}
+                          alt={game.name}
+                        />
                       </AspectRatio>
                     ))
                   : Array(3)
@@ -171,13 +182,17 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                       Funds
                     </Tabs.Tab>
 
+                    <Tabs.Tab icon={<HiShoppingBag />} value="store">
+                      Store
+                    </Tabs.Tab>
+
                     <Tabs.Tab icon={<HiFolder />} value="updatelog">
                       Update Log
                     </Tabs.Tab>
                   </div>
                 </Tabs.List>
 
-                {[InfoTab, ConnectionTab, FundsTab, UpdateLogTab].map(
+                {[InfoTab, ConnectionTab, FundsTab, Store, UpdateLogTab].map(
                   (Tab, i) => (
                     <ReactNoSSR
                       key={i}
@@ -196,7 +211,7 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                         ) : undefined
                       }
                     >
-                      <Tab game={game} key={i} />
+                      <Tab game={game as any} />
                     </ReactNoSSR>
                   )
                 )}
@@ -299,7 +314,10 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
             </Button>
 
             <ReactNoSSR>
-              <Votes game={game} setGame={setGame} />
+              <Votes
+                game={game}
+                setGame={setGame as React.Dispatch<React.SetStateAction<Game>>}
+              />
             </ReactNoSSR>
 
             <ReactNoSSR onSSR={<Skeleton height={350} />}>
@@ -380,7 +398,16 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { id } = context.query;
   const game = await prisma.game.findFirst({
     where: { id: Number(id) },
-    select: gameSelect,
+    select: {
+      ...gameSelect,
+      gamepasses: {
+        include: {
+          owners: {
+            select: { id: true },
+          },
+        },
+      },
+    },
   });
 
   return {

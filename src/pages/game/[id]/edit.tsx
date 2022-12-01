@@ -1,23 +1,25 @@
 import { GetServerSidePropsContext, NextPage } from "next";
+import { useEffect, useState } from "react";
 import {
   HiCurrencyDollar,
   HiDatabase,
   HiExclamationCircle,
   HiServer,
+  HiShoppingBag,
   HiViewList,
 } from "react-icons/hi";
+import ReactNoSSR from "react-no-ssr";
 import AgeRating from "../../../components/EditGame/AgeRating";
+import Datastores from "../../../components/EditGame/Datastores";
 import Details from "../../../components/EditGame/Details";
 import Funding from "../../../components/EditGame/Funding";
 import Servers from "../../../components/EditGame/Servers";
+import Store from "../../../components/EditGame/Store";
 import Framework from "../../../components/Framework";
 import TabNav from "../../../components/TabNav";
 import authorizedRoute from "../../../util/authorizedRoute";
 import prisma from "../../../util/prisma";
 import { Game, gameSelect, User } from "../../../util/prisma-types";
-import ReactNoSSR from "react-no-ssr";
-import { useEffect, useState } from "react";
-import Datastores from "../../../components/EditGame/Datastores";
 
 export type GameWithDatastore = Game & {
   datastores: {
@@ -50,7 +52,7 @@ const EditGame: NextPage<EditGameProps> = ({ game, user }) => {
       modernSubtitle="Configure your games details and other settings."
     >
       <TabNav value={tab ?? "details"} onTabChange={(t) => setTab(String(t))}>
-        <TabNav.List>
+        <TabNav.List className="flex flex-wrap">
           <TabNav.Tab value="details" icon={<HiViewList />}>
             Details
           </TabNav.Tab>
@@ -66,12 +68,15 @@ const EditGame: NextPage<EditGameProps> = ({ game, user }) => {
           <TabNav.Tab value="datastores" icon={<HiDatabase />}>
             Datastores
           </TabNav.Tab>
+          <TabNav.Tab value="store" icon={<HiShoppingBag />}>
+            Store
+          </TabNav.Tab>
         </TabNav.List>
 
-        {[Details, Funding, Servers, AgeRating, Datastores].map(
+        {[Details, Funding, Servers, AgeRating, Datastores, Store].map(
           (Component, index) => (
             <ReactNoSSR key={index}>
-              <Component game={game} />
+              <Component game={game as any} />
             </ReactNoSSR>
           )
         )}
@@ -100,6 +105,13 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
               name: true,
               desc: true,
               createdAt: true,
+            },
+          },
+          gamepasses: {
+            include: {
+              owners: {
+                select: { id: true },
+              },
             },
           },
         },

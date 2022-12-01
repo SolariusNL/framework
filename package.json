@@ -54,6 +54,7 @@
     "@types/three": "^0.143.0",
     "bcrypt": "^5.0.1",
     "chart.js": "^4.0.1",
+    "class-validator": "^0.13.2",
     "clsx": "^1.2.1",
     "concurrently": "^7.3.0",
     "cookies-next": "^2.1.1",
