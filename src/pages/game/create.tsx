@@ -1,12 +1,9 @@
 import {
   Button,
   Checkbox,
-  Grid,
-  Group,
-  NumberInput,
+  Grid, NumberInput,
   Select,
-  TextInput,
-  Title,
+  TextInput
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { GameGenre } from "@prisma/client";
@@ -103,9 +100,13 @@ const CreateGame: NextPage<CreateGameProps> = ({ user }) => {
   const mobile = useMediaQuery("768");
 
   return (
-    <Framework user={user} activeTab="invent" key="frameworkshell">
-      <Title mb={24}>Create a game</Title>
-      <form onSubmit={form.onSubmit((values) => onSubmit(values))}>
+    <Framework
+      user={user}
+      activeTab="invent"
+      modernTitle="Create a game"
+      modernSubtitle="Create a game and build your dream on Framework"
+    >
+      <form onSubmit={form.onSubmit(async (values) => onSubmit(values))}>
         <Grid columns={mobile ? 1 : 3} key="meta">
           <Grid.Col span={1} key="name_area">
             <TextInput
@@ -152,7 +153,8 @@ const CreateGame: NextPage<CreateGameProps> = ({ user }) => {
             <RichText
               styles={() => ({
                 root: {
-                  height: "auto",
+                  height: 240,
+                  overflow: "auto",
                 },
               })}
               label="Description"
@@ -164,6 +166,7 @@ const CreateGame: NextPage<CreateGameProps> = ({ user }) => {
                 ["h1", "h2", "h3", "h4"],
                 ["blockquote"],
                 ["code", "codeBlock"],
+                ["orderedList", "unorderedList"],
               ]}
               {...form.getInputProps("description")}
             />

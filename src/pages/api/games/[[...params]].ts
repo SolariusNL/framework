@@ -1047,7 +1047,10 @@ class GameRouter {
 
     return {
       success: true,
-      gamepass,
+      gamepass: {
+        ...gamepass,
+        owners: [],
+      }
     };
   }
 
@@ -1185,6 +1188,37 @@ class GameRouter {
     return {
       success: true,
     };
+  }
+
+  @Get("/gamepasses/get")
+  @Authorized()
+  async getGamePasses(@Account() user: User) {
+    const gamepasses = await prisma.gamepass.findMany({
+      where: {
+        game: {
+          authorId: user.id,
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        description: true,
+        game: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        owners: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+
+    return gamepasses;
   }
 }
 
