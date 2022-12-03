@@ -2,6 +2,7 @@ import { NotificationType, ReceiveNotification } from "@prisma/client";
 import {
   Body,
   createHandler,
+  Delete,
   Get,
   Param,
   Post,
@@ -717,6 +718,60 @@ class UserRouter {
     });
 
     return users;
+  }
+
+  @Delete("/@me/delete")
+  @Authorized()
+  public async deleteUser(
+    @Account() user: User,
+    @Body() data: { password: string }
+  ) {
+    if (!(await isSamePass(data.password, user.password))) {
+      return {
+        error: "Invalid password",
+        status: 400,
+        success: false,
+      };
+    }
+
+    [
+      prisma.game,
+      prisma.session,
+      prisma.profileLink,
+      prisma.message,
+      prisma.checklist,
+      prisma.avatar,
+      prisma.gameComment,
+      prisma.codeSnippet,
+      prisma.emailVerification,
+      prisma.nucleusAuthTicket,
+      prisma.userReport,
+      prisma.transaction,
+      prisma.notification,
+      prisma.premiumSubscription,
+      prisma.secret,
+      prisma.emailLoginRequest,
+      prisma.statusPosts,
+      prisma.userAdminNotes,
+      prisma.adminActivityLog,
+    ].forEach(async (model) => {
+      await (model.deleteMany as any)({
+        where: {
+          userId: user.id,
+        },
+      });
+    });
+
+    await prisma.user.delete({
+      where: {
+        id: user.id,
+      },
+    });
+
+    return {
+      success: true,
+      message: "User deleted successfully.",
+    };
   }
 }
 
