@@ -1,8 +1,11 @@
 <div align="center">
   <h1>Framework App</h1>
-</div>
+  
+[![Main workflow](https://github.com/Tsodinq/framework/actions/workflows/main.yml/badge.svg)](https://github.com/Tsodinq/framework/actions/workflows/main.yml)
 
-Framework is a online platform that empowers imagination and innovation. This repository is the home to the Framework web application.
+  Framework is an online platform that empowers imagination and innovation. This repository is the home to the Framework web application.
+  
+</div>
 
 ## Tech Stack
 
@@ -14,6 +17,16 @@ Framework is built on the following technologies:
     - [Mantine](https://mantine.dev) - A modern, flexible, and extensible framework for building websites and apps
 - [Postgres](https://www.postgresql.org) - A powerful, open source object-relational database system
   - [Prisma](https://www.prisma.io) - A open source, distributed database layer for modern applications
+
+## Components
+
+Framework has a pretty large, distributed codebase consisting of what we call 'components'. Check them out, and freely research the workings of our platform.
+
+- [framework-flags](https://github.com/Tsodinq/framework-flags) - **ℹ️ Under Development** Our own feature flag implementation, soon to replace HappyKit
+- [framework-persistent-file-storage](https://github.com/Tsodinq/framework-persistent-file-storage) - Serve images from static Next.js directories
+- [framework-discord](https://github.com/Tsodinq/framework-discord) - Source code of Framework's Discord bot
+- [framework-desktop](https://github.com/Tsodinq/framework-desktop) - Framework desktop client
+- [framework-wiki](https://github.com/Tsodinq/framework-wiki) - Framework wiki, contains guides, tutorials, API documentation, and lots more
 
 ## Directory Structure
 
