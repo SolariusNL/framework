@@ -131,7 +131,7 @@ export async function getAccountFromSession(
           id: session.userId,
         },
         select: {
-          ...exclude(userSelect, "games"),
+          ...exclude(userSelect),
           password: true,
         },
       })
