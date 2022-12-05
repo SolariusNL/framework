@@ -5,7 +5,6 @@ export const nonCurrentUserSelect = {
     id: true,
     username: true,
     avatarUri: true,
-    avatar: true,
     country: true,
     bio: true,
     busy: true,
@@ -30,8 +29,16 @@ const user = Prisma.validator<Prisma.UserArgs>()({
       include: {
         updates: true,
         author: nonCurrentUserSelect,
-        likedBy: nonCurrentUserSelect,
-        dislikedBy: nonCurrentUserSelect,
+        likedBy: {
+          select: {
+            id: true,
+          },
+        },
+        dislikedBy: {
+          select: {
+            id: true,
+          },
+        },
         connection: {
           select: {
             id: true,
@@ -49,8 +56,6 @@ const user = Prisma.validator<Prisma.UserArgs>()({
       },
     },
     emailVerificationInstances: true,
-    receivedMessages: true,
-    sentMessages: true,
     following: nonCurrentUserSelect,
     followers: nonCurrentUserSelect,
     notifications: true,
@@ -121,10 +126,7 @@ export const userSelect: Prisma.UserSelect = {
   busy: true,
   banned: true,
   banReason: true,
-  emailVerificationInstances: true,
   emailVerified: true,
-  receivedMessages: true,
-  sentMessages: true,
   following: nonCurrentUserSelect,
   followers: nonCurrentUserSelect,
   notifications: true,
@@ -161,8 +163,8 @@ export const gameSelect: Prisma.GameSelect = {
   updatedAt: true,
   iconUri: true,
   visits: true,
-  likedBy: nonCurrentUserSelect,
-  dislikedBy: nonCurrentUserSelect,
+  likedBy: { select: { id: true } },
+  dislikedBy: { select: { id: true } },
   connection: true,
   comments: {
     select: {

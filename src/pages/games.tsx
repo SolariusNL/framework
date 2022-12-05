@@ -19,6 +19,7 @@ import ModernEmptyState from "../components/ModernEmptyState";
 import ShadedCard from "../components/ShadedCard";
 import authorizedRoute from "../util/authorizedRoute";
 import { getCookie } from "../util/cookies";
+import { exclude } from "../util/exclude";
 import prisma from "../util/prisma";
 import { Game, gameSelect, User } from "../util/prisma-types";
 import { genreMap } from "../util/universe/genre";
@@ -258,7 +259,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       },
       { visits: "desc" },
     ],
-    select: gameSelect,
+    select: exclude(gameSelect, "comments"),
     take: 25,
   });
 
