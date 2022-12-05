@@ -1,6 +1,7 @@
 import { Group, Tabs, Text, Title } from "@mantine/core";
 import useMediaQuery from "../../util/useMediaQuery";
 import ModernEmptyState from "../ModernEmptyState";
+import ShadedCard from "../ShadedCard";
 
 interface InventTabProps {
   tabValue: string;
@@ -26,24 +27,26 @@ const InventTab = ({
       pl={!mobile ? "lg" : undefined}
       pt={mobile ? "lg" : undefined}
     >
-      <Title order={3} mb={6}>
-        {tabTitle}
-      </Title>
-      {tabSubtitle && (
-        <Text color="dimmed" mb={16}>
-          {tabSubtitle}
-        </Text>
-      )}
+      <ShadedCard>
+        <Title order={3} mb={6}>
+          {tabTitle}
+        </Title>
+        {tabSubtitle && (
+          <Text color="dimmed" mb={16}>
+            {tabSubtitle}
+          </Text>
+        )}
 
-      {actions && <Group mb={20}>{actions}</Group>}
+        {actions && <Group mb={20}>{actions}</Group>}
 
-      {children}
-      {unavailable && (
-        <ModernEmptyState
-          title="Feature unavailable"
-          body="This feature is not yet available."
-        />
-      )}
+        {children}
+        {unavailable && (
+          <ModernEmptyState
+            title="Feature unavailable"
+            body="This feature is not yet available."
+          />
+        )}
+      </ShadedCard>
     </Tabs.Panel>
   );
 };
