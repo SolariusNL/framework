@@ -7,9 +7,12 @@ interface AdvertisementsProps {
 
 const Advertisements = ({ user }: AdvertisementsProps) => {
   return (
-    <InventTab tabValue="advertisements" tabTitle="Advertisements" unavailable>
-    
-    </InventTab>
+    <InventTab
+      tabValue="advertisements"
+      tabTitle="Advertisements"
+      unavailable
+      tabSubtitle="Advertisements are a way to promote your games and bring in more players."
+    ></InventTab>
   );
 };
 

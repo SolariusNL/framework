@@ -1,4 +1,4 @@
-import { Group, Tabs, Title } from "@mantine/core";
+import { Group, Tabs, Text, Title } from "@mantine/core";
 import useMediaQuery from "../../util/useMediaQuery";
 import ModernEmptyState from "../ModernEmptyState";
 
@@ -6,8 +6,9 @@ interface InventTabProps {
   tabValue: string;
   tabTitle: string;
   actions?: React.ReactNode;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   unavailable?: boolean;
+  tabSubtitle?: string;
 }
 
 const InventTab = ({
@@ -16,6 +17,7 @@ const InventTab = ({
   actions,
   children,
   unavailable,
+  tabSubtitle,
 }: InventTabProps) => {
   const mobile = useMediaQuery("768");
   return (
@@ -24,9 +26,14 @@ const InventTab = ({
       pl={!mobile ? "lg" : undefined}
       pt={mobile ? "lg" : undefined}
     >
-      <Title order={3} mb={10}>
+      <Title order={3} mb={6}>
         {tabTitle}
       </Title>
+      {tabSubtitle && (
+        <Text color="dimmed" mb={16}>
+          {tabSubtitle}
+        </Text>
+      )}
 
       {actions && <Group mb={20}>{actions}</Group>}
 

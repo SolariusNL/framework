@@ -7,9 +7,12 @@ interface DeveloperProfileProps {
 
 const DeveloperProfile = ({ user }: DeveloperProfileProps) => {
   return (
-    <InventTab tabValue="developer" tabTitle="Developer Profile" unavailable>
-    
-    </InventTab>
+    <InventTab
+      tabValue="developer"
+      tabTitle="Developer Profile"
+      unavailable
+      tabSubtitle="Looking for work? Showcase your skills and experience on your developer profile."
+    ></InventTab>
   );
 };
 

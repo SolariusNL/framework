@@ -113,6 +113,7 @@ const Snippets = ({ user }: SnippetsProps) => {
             </Group>
           </>
         }
+        tabSubtitle="Share small code snippets with the community and help others learn programming concepts."
       >
         <Title order={4} mb="lg">
           Your snippets

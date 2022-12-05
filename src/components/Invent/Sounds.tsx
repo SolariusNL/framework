@@ -7,9 +7,12 @@ interface SoundsProps {
 
 const Sounds = ({ user }: SoundsProps) => {
   return (
-    <InventTab tabValue="sounds" tabTitle="Sounds" unavailable>
-    
-    </InventTab>
+    <InventTab
+      tabValue="sounds"
+      tabTitle="Sounds"
+      unavailable
+      tabSubtitle="Sell sounds that other users can purchase for use in their games."
+    ></InventTab>
   );
 };
 

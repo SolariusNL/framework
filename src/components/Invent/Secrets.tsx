@@ -113,13 +113,8 @@ const Secrets = ({ user }: SecretsProps) => {
             </Button>
           </>
         }
+        tabSubtitle="Store secrets on Framework that can be accessed by your apps."
       >
-        <Text mb={16}>
-          Secrets are hidden properties than can be referenced by public content
-          (such as release actions) to safely use private info such as API
-          credentials.
-        </Text>
-
         <Table striped>
           <thead>
             <tr>

@@ -10,15 +10,15 @@ interface ConnectionsProps {
 const Connections = ({ user }: ConnectionsProps) => {
   return (
     <>
-      <InventTab tabValue="connections" tabTitle="Connections">
-        <Text mb={16}>
-          Connections are self-hosted servers that can be used as an alternative
+      <InventTab
+        tabValue="connections"
+        tabTitle="Connections"
+        tabSubtitle="Connections are self-hosted servers that can be used as an alternative
           to dedicated servers. They allow for more flexibility, customization,
           and control, but requires a bit more technical knowledge to set up and
-          maintain. If you&apos;re not sure what you&apos;re doing, it&apos;s
-          recommended to use a dedicated server instead.
-        </Text>
-
+          maintain. If you're not sure what you're doing, it's
+          recommended to use a dedicated server instead."
+      >
         <Title order={4} mb={6}>
           Your Connections
         </Title>

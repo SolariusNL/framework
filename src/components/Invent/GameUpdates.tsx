@@ -7,9 +7,12 @@ interface GameUpdatesProps {
 
 const GameUpdates = ({ user }: GameUpdatesProps) => {
   return (
-    <InventTab tabValue="updates" tabTitle="Game Updates" unavailable>
-    
-    </InventTab>
+    <InventTab
+      tabValue="updates"
+      tabTitle="Game Updates"
+      unavailable
+      tabSubtitle="Game updates are a way to keep your players up to date with the latest changes to your games."
+    ></InventTab>
   );
 };
 

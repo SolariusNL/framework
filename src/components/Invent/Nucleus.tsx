@@ -55,7 +55,11 @@ const Nucleus = ({ user }: NucleusProps) => {
 
   return (
     <>
-      <InventTab tabValue="nucleus" tabTitle="Nucleus">
+      <InventTab
+        tabValue="nucleus"
+        tabTitle="Nucleus"
+        tabSubtitle="Nucleus is a self-hosted server for your games. Manage your Nucleus API keys here."
+      >
         <Title order={4} mb={10}>
           Your Nucleus keys
         </Title>

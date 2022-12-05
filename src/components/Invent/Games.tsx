@@ -53,6 +53,7 @@ const Games = ({ user }: GamesProps) => {
     <InventTab
       tabValue="games"
       tabTitle="Games"
+      tabSubtitle="Manage your games on Framework"
       actions={
         <>
           <Button
