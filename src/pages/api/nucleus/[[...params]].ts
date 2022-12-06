@@ -89,6 +89,25 @@ class NucleusRouter {
       },
     });
 
+    const playing = await prisma.user.findMany({
+      where: {
+        playing: {
+          id: match.connection.gameId,
+        },
+      },
+    });
+
+    await prisma.game.update({
+      where: {
+        id: match.connection.gameId,
+      },
+      data: {
+        playingUsers: {
+          disconnect: playing.map((p) => ({ id: p.id })),
+        },
+      },
+    });
+
     return {
       success: true,
       message: "Disconnected",
@@ -214,6 +233,11 @@ class NucleusRouter {
         visits: {
           increment: 1,
         },
+        playingUsers: {
+          connect: {
+            id: res.user.id,
+          },
+        },
       },
     });
 
@@ -256,6 +280,11 @@ class NucleusRouter {
       data: {
         playing: {
           decrement: 1,
+        },
+        playingUsers: {
+          disconnect: {
+            id: match.userId,
+          },
         },
       },
     });
@@ -317,6 +346,34 @@ class NucleusRouter {
     return {
       success: true,
       message: "Connection deleted",
+    };
+  }
+
+  @NucleusAuthorized()
+  @Post("/webhook/verify/:sig")
+  public async verifyWebhook(@Param("sig") sig: string) {
+    const match = await prisma.cosmicWebhookSignature.findFirst({
+      where: {
+        secret: String(sig),
+      },
+    });
+
+    if (!match || match.createdAt < new Date(Date.now() - 1000 * 60 * 5)) {
+      return {
+        success: false,
+        message: "Invalid signature",
+      };
+    }
+
+    await prisma.cosmicWebhookSignature.delete({
+      where: {
+        id: match.id,
+      },
+    });
+
+    return {
+      success: true,
+      message: "Signature verified",
     };
   }
 }

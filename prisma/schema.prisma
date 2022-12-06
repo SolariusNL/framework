@@ -103,6 +103,8 @@ model User {
   hiddenHomeWidgets          String[]
   adminActivityLogs          AdminActivityLog[]    @relation("adminActivityLog")
   ownedGamepasses            Gamepass[]            @relation("userGamepasses")
+  playing                    Game?                 @relation("userPlaying", fields: [gameId], references: [id])
+  gameId                     Int?
 }
 
 model ConnectedAccount {
@@ -263,6 +265,7 @@ model Game {
   connection           Connection[]    @relation("gameConnection")
   comments             GameComment[]   @relation("gameComments")
   playing              Int             @default(0)
+  playingUsers         User[]          @relation("userPlaying")
   funds                GameFund[]      @relation("gameFunds")
   rating               Rating?         @relation("gameRating")
   datastores           GameDatastore[] @relation("gameDatastore")
@@ -540,4 +543,10 @@ model Gamepass {
   price       Int
   createdAt   DateTime @default(now())
   owners      User[]   @relation("userGamepasses")
+}
+
+model CosmicWebhookSignature {
+  id        String   @id @default(uuid())
+  secret    String   @default(uuid())
+  createdAt DateTime @default(now())
 }

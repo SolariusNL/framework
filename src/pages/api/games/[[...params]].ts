@@ -17,6 +17,7 @@ import * as Validate from "class-validator";
 import sanitizeHtml from "sanitize-html";
 import { scoreDescriptions } from "../../../components/EditGame/AgeRating";
 import Authorized, { Account } from "../../../util/api/authorized";
+import logger from "../../../util/logger";
 import prisma from "../../../util/prisma";
 import {
   gameSelect,
@@ -25,6 +26,7 @@ import {
 } from "../../../util/prisma-types";
 import { RateLimitMiddleware } from "../../../util/rateLimit";
 import { logTransaction } from "../../../util/transactionHistory";
+import fetch from "node-fetch";
 
 interface GameCreateBody {
   gameName: string;
@@ -1149,6 +1151,43 @@ class GameRouter {
         success: false,
         error: "Not enough tickets",
       };
+    }
+
+    if (user.playing && user.playing.id === game.id) {
+      const connections = await prisma.connection.findMany({
+        where: {
+          online: true,
+          game: {
+            id: game.id,
+          },
+        },
+      });
+
+      for (const connection of connections) {
+        try {
+          const sig = await prisma.cosmicWebhookSignature.create({
+            data: {},
+          });
+          await fetch(
+            `http://${connection.ip}:${connection.port}/api/webhook/gamepassPurchaseSuccess`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "nucleus-signature": sig.secret,
+              },
+              body: JSON.stringify({
+                gamepassId: gamepass.id,
+                userId: user.id,
+              }),
+            }
+          );
+        } catch (e) {
+          logger().warn(
+            `Failed to send webhook to ${connection.ip}:${connection.port} for gamepass purchase success`
+          );
+        }
+      }
     }
 
     await prisma.user.update({

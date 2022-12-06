@@ -20,6 +20,12 @@ export const nonCurrentUserSelect = {
     statusPosts: {
       take: 5,
     },
+    playing: {
+      select: {
+        id: true,
+        name: true,
+      },
+    },
   },
 };
 
@@ -63,6 +69,12 @@ const user = Prisma.validator<Prisma.UserArgs>()({
     premiumSubscription: true,
     statusPosts: true,
     profileLinks: true,
+    playing: {
+      select: {
+        id: true,
+        name: true,
+      },
+    },
   },
 });
 
@@ -85,6 +97,12 @@ const nonuser = Prisma.validator<Prisma.UserArgs>()({
     alias: true,
     previousUsernames: true,
     statusPosts: true,
+    playing: {
+      select: {
+        id: true,
+        name: true,
+      },
+    },
   },
 });
 
@@ -148,6 +166,12 @@ export const userSelect: Prisma.UserSelect = {
   },
   profileLinks: true,
   hiddenHomeWidgets: true,
+  playing: {
+    select: {
+      id: true,
+      name: true,
+    },
+  },
 };
 
 export const gameSelect: Prisma.GameSelect = {
