@@ -162,9 +162,7 @@ const ReportUser = ({ user, opened, setOpened }: ReportUserProps) => {
       )}
 
       <Button
-        disabled={
-          !checked || reason === "Other" || description.length < 10 || success
-        }
+        disabled={!checked || description.length < 10 || success}
         loading={loading}
         onClick={handleReport}
       >
