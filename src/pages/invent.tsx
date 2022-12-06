@@ -30,7 +30,8 @@ import Snippets from "../components/Invent/Snippets";
 import Sounds from "../components/Invent/Sounds";
 import TabNav from "../components/TabNav";
 import authorizedRoute from "../util/authorizedRoute";
-import { User } from "../util/prisma-types";
+import prisma from "../util/prisma";
+import { gameSelect, User } from "../util/prisma-types";
 import useMediaQuery from "../util/useMediaQuery";
 
 interface InventProps {
@@ -137,7 +138,26 @@ const Invent: NextPage<InventProps> = ({ user }) => {
 };
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return await authorizedRoute(context, true, false);
+  const auth = await authorizedRoute(context, true, false);
+  if (auth.redirect) return auth;
+
+  const games = await prisma.game.findMany({
+    where: {
+      authorId: auth.props?.user?.id,
+    },
+    select: gameSelect,
+  });
+
+  return {
+    props: {
+      user: JSON.parse(
+        JSON.stringify({
+          ...auth.props.user,
+          games,
+        })
+      ),
+    },
+  };
 }
 
 export default Invent;
