@@ -138,15 +138,15 @@ const Snippets: NextPage<SnippetsProps> = ({ user, snippets }) => {
         hasMore={canLoadMore}
         loader={<Loader size="sm" />}
       >
-        <Grid columns={3}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {snippetsState.length === 0 && (
-            <Grid.Col span={3}>
+            <div className="col-span-3">
               <ModernEmptyState
                 title="No snippets found"
                 body="Try searching for something else."
                 shaded
               />
-            </Grid.Col>
+            </div>
           )}
           {snippetsState.map((snippet) => (
             <Stateful key={snippet.id}>
@@ -162,7 +162,7 @@ const Snippets: NextPage<SnippetsProps> = ({ user, snippets }) => {
                       {snippet.code}
                     </Prism>
                   </Modal>
-                  <Grid.Col span={1}>
+                  <div className="col-span-1">
                     <Card
                       withBorder
                       shadow="md"
@@ -216,12 +216,12 @@ const Snippets: NextPage<SnippetsProps> = ({ user, snippets }) => {
                         </Button>
                       </Button.Group>
                     </Card>
-                  </Grid.Col>
+                  </div>
                 </>
               )}
             </Stateful>
           ))}
-        </Grid>
+        </div>
       </InfiniteScroll>
     </Framework>
   );

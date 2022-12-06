@@ -1,11 +1,13 @@
 import { useFlags } from "@happykit/flags/client";
 import {
   Anchor,
+  AnchorProps,
   Button,
   ButtonStylesParams,
   ColorScheme,
   ColorSchemeProvider,
   Dialog,
+  Divider,
   Group,
   MantineProvider,
   MantineTheme,
@@ -36,6 +38,7 @@ import { UserInformationWrapper } from "../contexts/UserInformationDialog";
 import "../styles/framework.css";
 import "../styles/tw.css";
 import logout from "../util/api/logout";
+import { MDXProvider } from "@mdx-js/react";
 
 const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
   const { Component, pageProps } = props;
@@ -213,125 +216,146 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
         >
           <ModalsProvider>
             <UserInformationWrapper>
-              <NotificationsProvider position="top-center" zIndex={1000}>
-                <FrameworkUserProvider
-                  value={pageProps && pageProps.user && pageProps.user}
-                >
-                  <NextNProgress />
-                  <Component {...pageProps} key={router.asPath} />
-                  <Modal
-                    withCloseButton={false}
-                    opened={
-                      pageProps != undefined &&
-                      pageProps.user &&
-                      pageProps.user.warning &&
-                      !pageProps.user.warningViewed
-                    }
-                    onClose={() => null}
+              <MDXProvider
+                components={{
+                  a: (props) => (
+                    <Link href={String(props.href)}>
+                      <Anchor {...props as AnchorProps} />
+                    </Link>
+                  ),
+                  hr: () => <Divider />,
+                }}
+              >
+                <NotificationsProvider position="top-center" zIndex={1000}>
+                  <FrameworkUserProvider
+                    value={pageProps && pageProps.user && pageProps.user}
                   >
-                    <Text mb={16}>
-                      You have received a warning from the staff team:{" "}
-                      <strong>
-                        {(pageProps != undefined &&
-                          pageProps.user &&
-                          pageProps.user.warning) ||
-                          "No warning reason provided"}
-                      </strong>
-                    </Text>
-
-                    <Text mb={24}>
-                      If you continue to violate our Community Guidelines, you
-                      may be permanently banned from Framework. Please, go
-                      through our policies again and make sure you understand
-                      them. We would hate to see you go!
-                    </Text>
-
-                    <Button
-                      fullWidth
-                      onClick={() => {
-                        fetch("/api/users/@me/warning/acknowledge", {
-                          method: "POST",
-                          headers: {
-                            "Content-Type": "application/json",
-                            Authorization: String(
-                              getCookie(".frameworksession")
-                            ),
-                          },
-                        }).then(() => router.reload());
-                      }}
+                    <NextNProgress />
+                    <Component {...pageProps} key={router.asPath} />
+                    <Modal
+                      withCloseButton={false}
+                      opened={
+                        pageProps != undefined &&
+                        pageProps.user &&
+                        pageProps.user.warning &&
+                        !pageProps.user.warningViewed
+                      }
+                      onClose={() => null}
                     >
-                      Acknowledge
-                    </Button>
-                  </Modal>
-                  <Modal
-                    withCloseButton={false}
-                    opened={
-                      pageProps != undefined &&
-                      pageProps.user &&
-                      pageProps.user.banned
-                    }
-                    onClose={() => null}
-                  >
-                    <Text mb={16}>
-                      You have been permanently banned from Framework for
-                      violations of our Terms of Service and/or our Community
-                      Guidelines. You are not allowed to use Framework or create
-                      any additional accounts. This action is irreversible.
-                    </Text>
+                      <Text mb={16}>
+                        You have received a warning from the staff team:{" "}
+                        <strong>
+                          {(pageProps != undefined &&
+                            pageProps.user &&
+                            pageProps.user.warning) ||
+                            "No warning reason provided"}
+                        </strong>
+                      </Text>
 
-                    <Text mb={24}>
-                      Ban reason:{" "}
-                      <strong>
-                        {pageProps != undefined &&
-                          pageProps.user &&
-                          pageProps.user.banReason}
-                      </strong>
-                    </Text>
+                      <Text mb={24}>
+                        If you continue to violate our Community Guidelines, you
+                        may be permanently banned from Framework. Please, go
+                        through our policies again and make sure you understand
+                        them. We would hate to see you go!
+                      </Text>
 
-                    <Button
-                      fullWidth
-                      onClick={async () =>
-                        await logout().then(() => router.reload())
+                      <Button
+                        fullWidth
+                        onClick={() => {
+                          fetch("/api/users/@me/warning/acknowledge", {
+                            method: "POST",
+                            headers: {
+                              "Content-Type": "application/json",
+                              Authorization: String(
+                                getCookie(".frameworksession")
+                              ),
+                            },
+                          }).then(() => router.reload());
+                        }}
+                      >
+                        Acknowledge
+                      </Button>
+                    </Modal>
+                    <Modal
+                      withCloseButton={false}
+                      opened={
+                        pageProps != undefined &&
+                        pageProps.user &&
+                        pageProps.user.banned
+                      }
+                      onClose={() => null}
+                    >
+                      <Text mb={16}>
+                        You have been permanently banned from Framework for
+                        violations of our Terms of Service and/or our Community
+                        Guidelines. You are not allowed to use Framework or
+                        create any additional accounts. This action is
+                        irreversible.
+                      </Text>
+
+                      <Text mb={24}>
+                        Ban reason:{" "}
+                        <strong>
+                          {pageProps != undefined &&
+                            pageProps.user &&
+                            pageProps.user.banReason}
+                        </strong>
+                      </Text>
+
+                      <Button
+                        fullWidth
+                        onClick={async () =>
+                          await logout().then(() => router.reload())
+                        }
+                      >
+                        Logout
+                      </Button>
+                    </Modal>
+
+                    <Dialog
+                      opened={
+                        !cookieConsent.accepted && !cookieConsent.rejected
                       }
                     >
-                      Logout
-                    </Button>
-                  </Modal>
+                      <Text size="sm" mb={12}>
+                        Framework and other Soodam.re services use cookies to
+                        help us provide you the best experience. By continuing
+                        to use our services, you agree to our use of cookies.
+                        Read our{" "}
+                        <Link href="/privacy">
+                          <Anchor>Privacy Policy</Anchor>
+                        </Link>{" "}
+                        for more information regarding your privacy and how we
+                        use cookies.
+                      </Text>
 
-                  <Dialog
-                    opened={!cookieConsent.accepted && !cookieConsent.rejected}
-                  >
-                    <Text size="sm" mb={12}>
-                      Framework and other Soodam.re services use cookies to help
-                      us provide you the best experience. By continuing to use
-                      our services, you agree to our use of cookies. Read our{" "}
-                      <Anchor>
-                        <Link href="/privacy">Privacy Policy</Link>
-                      </Anchor>{" "}
-                      for more information regarding your privacy and how we use
-                      cookies.
-                    </Text>
+                      <Group grow>
+                        <Button
+                          onClick={() =>
+                            setCookieConsent({
+                              accepted: true,
+                              rejected: false,
+                            })
+                          }
+                        >
+                          I agree
+                        </Button>
 
-                    <Group grow>
-                      <Button
-                        onClick={() =>
-                          setCookieConsent({ accepted: true, rejected: false })
-                        }
-                      >
-                        I agree
-                      </Button>
-
-                      <Button
-                        onClick={() =>
-                          setCookieConsent({ accepted: false, rejected: true })
-                        }
-                      >
-                        I do not agree
-                      </Button>
-                    </Group>
-                  </Dialog>
-                </FrameworkUserProvider>
-              </NotificationsProvider>
+                        <Button
+                          onClick={() =>
+                            setCookieConsent({
+                              accepted: false,
+                              rejected: true,
+                            })
+                          }
+                        >
+                          I do not agree
+                        </Button>
+                      </Group>
+                    </Dialog>
+                  </FrameworkUserProvider>
+                </NotificationsProvider>
+              </MDXProvider>
             </UserInformationWrapper>
           </ModalsProvider>
         </MantineProvider>

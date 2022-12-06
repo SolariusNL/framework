@@ -111,13 +111,6 @@ const Games: NextPage<GamesProps> = ({ user, initialGames }) => {
           description: "Sort by number of likes",
         },
         {
-          label: "Dislikes",
-          onChange: (value: "desc" | "asc") =>
-            setFilter({ ...filter, dislikes: value }),
-          value: filter.dislikes,
-          description: "Sort by number of dislikes",
-        },
-        {
           label: "Visits",
           onChange: (value: "desc" | "asc") =>
             setFilter({ ...filter, visits: value }),
@@ -149,11 +142,18 @@ const Games: NextPage<GamesProps> = ({ user, initialGames }) => {
       />
       <Button
         variant="subtle"
-        onClick={updateGames}
+        onClick={() =>
+          setFilter({
+            likes: "desc",
+            dislikes: "asc",
+            visits: "desc",
+            genres: null,
+          })
+        }
         leftIcon={<HiFilter />}
         loading={loading}
       >
-        Apply Filter
+        Clear filter
       </Button>
     </Stack>
   );
