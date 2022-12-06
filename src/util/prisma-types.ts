@@ -6,6 +6,7 @@ export const nonCurrentUserSelect = {
     username: true,
     avatarUri: true,
     country: true,
+    avatar: true,
     bio: true,
     busy: true,
     premium: true,
