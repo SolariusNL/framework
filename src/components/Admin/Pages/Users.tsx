@@ -149,6 +149,7 @@ const Users = () => {
                     <Button
                       leftIcon={<HiBell />}
                       onClick={() => setOpened(true)}
+                      fullWidth
                     >
                       Bulk notification
                     </Button>
@@ -220,6 +221,7 @@ const Users = () => {
                     <Button
                       leftIcon={<HiBell />}
                       onClick={() => setOpened(true)}
+                      fullWidth
                     >
                       Send notification
                     </Button>

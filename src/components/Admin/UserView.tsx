@@ -90,6 +90,9 @@ const UserView = ({ user }: UserViewProps) => {
           <Tabs.Tab value="punishment">Punishment</Tabs.Tab>
           <Tabs.Tab value="notifications">Notifications</Tabs.Tab>
           <Tabs.Tab value="secrets">Secrets</Tabs.Tab>
+          <Tabs.Tab value="history">
+            Punishment History
+          </Tabs.Tab>
         </Tabs.List>
 
         <Tabs.Panel value="info">
@@ -285,6 +288,10 @@ const UserView = ({ user }: UserViewProps) => {
               ))}
             </tbody>
           </Table>
+        </Tabs.Panel>
+
+        <Tabs.Panel value="history">
+            
         </Tabs.Panel>
       </Tabs>
     </>

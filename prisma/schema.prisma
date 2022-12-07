@@ -105,6 +105,8 @@ model User {
   ownedGamepasses            Gamepass[]            @relation("userGamepasses")
   playing                    Game?                 @relation("userPlaying", fields: [gameId], references: [id])
   gameId                     Int?
+  punishmentHistory          PunishmentLog[]       @relation("punishmentLog")
+  issuedPunishments          PunishmentLog[]       @relation("punishmentLogAuthor")
 }
 
 model ConnectedAccount {
@@ -549,4 +551,20 @@ model CosmicWebhookSignature {
   id        String   @id @default(uuid())
   secret    String   @default(uuid())
   createdAt DateTime @default(now())
+}
+
+model PunishmentLog {
+  id           String         @id @default(uuid())
+  user         User           @relation("punishmentLog", fields: [userId], references: [id])
+  userId       Int
+  punishedBy   User           @relation("punishmentLogAuthor", fields: [punishedById], references: [id])
+  punishedById Int
+  reason       String
+  createdAt    DateTime       @default(now())
+  type         PunishmentType
+}
+
+enum PunishmentType {
+  BAN
+  WARNING
 }
