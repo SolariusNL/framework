@@ -15,6 +15,7 @@ import { showNotification } from "@mantine/notifications";
 import {
   DiscordConnectCode,
   Notification,
+  PunishmentLog,
   Session,
   UserAdminNotes,
 } from "@prisma/client";
@@ -38,6 +39,11 @@ export type AdminViewUser = User & {
       author: NonUser;
       user: NonUser;
     }[];
+  punishmentHistory: Array<
+    PunishmentLog & {
+      punishedBy: NonUser;
+    }
+  >;
 };
 
 const Users = () => {
@@ -149,6 +155,7 @@ const Users = () => {
                     <Button
                       leftIcon={<HiBell />}
                       onClick={() => setOpened(true)}
+                      fullWidth
                     >
                       Bulk notification
                     </Button>
@@ -220,6 +227,7 @@ const Users = () => {
                     <Button
                       leftIcon={<HiBell />}
                       onClick={() => setOpened(true)}
+                      fullWidth
                     >
                       Send notification
                     </Button>

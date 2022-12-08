@@ -90,6 +90,7 @@ const UserView = ({ user }: UserViewProps) => {
           <Tabs.Tab value="punishment">Punishment</Tabs.Tab>
           <Tabs.Tab value="notifications">Notifications</Tabs.Tab>
           <Tabs.Tab value="secrets">Secrets</Tabs.Tab>
+          <Tabs.Tab value="history">Punishment History</Tabs.Tab>
         </Tabs.List>
 
         <Tabs.Panel value="info">
@@ -283,6 +284,57 @@ const UserView = ({ user }: UserViewProps) => {
                   </td>
                 </tr>
               ))}
+            </tbody>
+          </Table>
+        </Tabs.Panel>
+
+        <Tabs.Panel value="history">
+          <Table striped>
+            <thead>
+              <tr>
+                <th>Punished By</th>
+                <th>Type</th>
+                <th>Reason</th>
+                <th>Date issued</th>
+              </tr>
+            </thead>
+            <tbody>
+              {user.punishmentHistory
+                .sort(
+                  (a, b) =>
+                    new Date(b.createdAt).getTime() -
+                    new Date(a.createdAt).getTime()
+                )
+                .map((h) => (
+                  <tr key={h.id}>
+                    <td>
+                      <div className="flex items-center">
+                        <Avatar
+                          size={24}
+                          src={h.punishedBy.avatarUri}
+                          radius="xl"
+                        />
+                        <Text weight={500}>{h.punishedBy.username}</Text>
+                      </div>
+                    </td>
+                    <td>
+                      <Badge>{h.type}</Badge>
+                    </td>
+                    <td>{h.reason}</td>
+                    <td>{new Date(h.createdAt).toLocaleString()}</td>
+                  </tr>
+                ))}
+
+              {user.punishmentHistory.length === 0 && (
+                <tr>
+                  <td colSpan={4}>
+                    <ModernEmptyState
+                      title="No punishment history"
+                      body="This user has never received a punishment!"
+                    />
+                  </td>
+                </tr>
+              )}
             </tbody>
           </Table>
         </Tabs.Panel>
