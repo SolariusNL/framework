@@ -93,20 +93,23 @@ class AuthRouter {
         account.email,
         "Login Authorization",
         `
-          <h1>Verify login for ${account.username}</h1>
-          <p style="margin-bottom: 25px;">
+        <div style="width: 500px; margin: 0 auto; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); border-radius: 12px; padding: 16px;">
+          <h1 style="color: #333;">Verify login for ${account.username}</h1>
+          <p style="margin-bottom: 25px; color: #666;">
             Someone is trying to login to your account from a ${getOperatingSystemString(
               os
             )} device with IP ${ip}. If this wasn't you, you can change your password to prevent this from happening again. Your code is:
           </p>
-          <h3 style="margin-bottom: 25px;">${emailAuth.code}</h3>
+          <h3 style="margin-bottom: 25px; color: #333;">${emailAuth.code}</h3>
           <a href="${
             process.env.NODE_ENV === "production"
               ? "https://framework.soodam.rocks/verifyemail/login"
               : "http://localhost:3000/verifyemail/login"
           }/${
           emailAuth.id
-        }" style="padding: 10px 15px; background-color: #000; color: #fff; text-decoration: none; border-radius: 5px; margin-bottom: 12px;">Verify Login</a>
+        }" style="color: #0066cc; display: inline-block; text-decoration: none; background-color: #0066cc; color: #fff; padding: 12px 18px; border-radius: 16px; text-align: center;">Verify Login</a>
+        </div>
+        <p style="margin-top: 25px; text-align: center; color: #999;">Copyright © 2022 Framework. All rights reserved.</p>
         `
       );
 
