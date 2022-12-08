@@ -13,6 +13,14 @@ enum Device {
   Other = "Other",
 }
 
+const operatingSystemRegex = {
+  windows: /Windows/i,
+  macos: /Macintosh/i,
+  linux: /Linux/i,
+  android: /Android/i,
+  ios: /iPhone|iPad|iPod/i,
+};
+
 function getOperatingSystemDevice(os: OperatingSystem): Device {
   if (
     os === OperatingSystem.Windows ||
@@ -30,15 +38,7 @@ function getOperatingSystemDevice(os: OperatingSystem): Device {
 }
 
 function getOperatingSystem(userAgent: string): OperatingSystem {
-  const regex = {
-    windows: /Windows/i,
-    macos: /Macintosh/i,
-    linux: /Linux/i,
-    android: /Android/i,
-    ios: /iPhone|iPad|iPod/i,
-  };
-
-  for (const [key, value] of Object.entries(regex)) {
+  for (const [key, value] of Object.entries(operatingSystemRegex)) {
     if (value.test(userAgent)) {
       const os =
         Object.keys(OperatingSystem).find((os) => os.toLowerCase() === key) ||
