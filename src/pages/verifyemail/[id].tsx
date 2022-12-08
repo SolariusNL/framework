@@ -81,7 +81,16 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   sendMail(
     String(auth.props.user?.email),
     "Email verified",
-    "<p>Your email has been verified! Enjoy Framework, and contact us if you have any questions.</p>"
+    /* html */ `
+    <body style="font-family: 'Roboto', sans-serif; background-color: #fafafa; margin: 0;">
+      <div id="container" style="max-width: 600px; margin: 0 auto; padding: 30px; background-color: #fff; border: 1px solid #ccc; border-radius: 5px; box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);">
+        <h1 style="font-size: 22px; font-weight: 700; color: #333; margin-bottom: 20px;">Welcome to Framework!</h1>
+        <p style="font-size: 16px; line-height: 1.5; margin-bottom: 20px;">Thank you for joining Framework, the best platform for creativity and imagination. We're excited to have you on board and can't wait to see what you can build.</p>
+        <p style="font-size: 16px; line-height: 1.5; margin-bottom: 20px;">If you have any questions or need help getting started, please don't hesitate to contact us at <a href="mailto:support@soodam.rocks" style="color: #00b7ff; text-decoration: none;">support@soodam.rocks</a>.</p>
+        <p style="font-size: 16px; line-height: 1.5; margin-bottom: 20px;">Best regards,<br>The Framework Team</p>
+      </div>
+    </body>
+    `
   );
 
   return {

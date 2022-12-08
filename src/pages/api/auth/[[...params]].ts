@@ -105,11 +105,18 @@ class AuthRouter {
             process.env.NODE_ENV === "production"
               ? "https://framework.soodam.rocks/verifyemail/login"
               : "http://localhost:3000/verifyemail/login"
-          }/${
-          emailAuth.id
-        }" style="color: #0066cc; display: inline-block; text-decoration: none; background-color: #0066cc; color: #fff; padding: 12px 18px; border-radius: 16px; text-align: center;">Verify Login</a>
+          }/${emailAuth.id}" style="
+              color: #0066cc;
+              display: inline-block;
+              text-decoration: none;
+              padding: 8px 10px;
+              border-radius: 12px;
+              text-align: center;
+          ">
+          Verify Login
+        </a>
         </div>
-        <p style="margin-top: 25px; text-align: center; color: #999;">Copyright © 2022 Framework. All rights reserved.</p>
+        <p style="margin-top: 25px; text-align: center; color: #999;">Copyright © 2022 Soodam.re B.V. All rights reserved.</p>
         `
       );
 
