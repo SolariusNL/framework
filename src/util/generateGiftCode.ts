@@ -5,16 +5,10 @@ function generateGiftCode() {
     code += chars[Math.floor(Math.random() * chars.length)];
   }
 
-  code =
-    code.slice(0, 4) +
-    "-" +
-    code.slice(4, 8) +
-    "-" +
-    code.slice(8, 12) +
-    "-" +
-    code.slice(12, 16) +
-    "-" +
-    code.slice(16, 20);
+  code = `${code.slice(0, 4)}-${code.slice(4, 8)}-${code.slice(
+    8,
+    12
+  )}-${code.slice(12, 16)}-${code.slice(16, 20)}`;
   return code;
 }
 
