@@ -1,4 +1,4 @@
-import { NotificationType } from "@prisma/client";
+import { NotificationType, PunishmentType } from "@prisma/client";
 import {
   Body,
   createHandler,
@@ -195,6 +195,11 @@ class AdminRouter {
           include: {
             author: nonCurrentUserSelect,
             user: nonCurrentUserSelect,
+          },
+        },
+        punishmentHistory: {
+          include: {
+            punishedBy: nonCurrentUserSelect,
           },
         },
       },
@@ -463,6 +468,23 @@ class AdminRouter {
           },
           activity: `Warned user #${user.id} for ${body.reason}`,
           importance: 4,
+        },
+      });
+
+      await prisma.punishmentLog.create({
+        data: {
+          user: {
+            connect: {
+              id: Number(uid),
+            },
+          },
+          punishedBy: {
+            connect: {
+              id: Number(admin.id),
+            },
+          },
+          type: category.toUpperCase() as PunishmentType,
+          reason: body.reason,
         },
       });
     }
