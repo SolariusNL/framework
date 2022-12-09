@@ -173,6 +173,7 @@ export const userSelect: Prisma.UserSelect = {
       name: true,
     },
   },
+  privacyPreferences: true,
 };
 
 export const gameSelect: Prisma.GameSelect = {

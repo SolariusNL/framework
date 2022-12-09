@@ -1,8 +1,13 @@
-import { Text, Title } from "@mantine/core";
-import { HiArrowsExpand, HiEye, HiShare } from "react-icons/hi";
+import { Alert, Divider, Stack, Switch, Text, Title } from "@mantine/core";
+import { PrivacyPreferences } from "@prisma/client";
+import { useState } from "react";
+import { HiArrowsExpand, HiCheckCircle, HiEye, HiShare } from "react-icons/hi";
 import { User } from "../../util/prisma-types";
-import useMediaQuery from "../../util/useMediaQuery";
+import Descriptive from "../Descriptive";
+import { updateAccount } from "./AccountTab";
+import Grouped from "./Grouped";
 import SettingsTab from "./SettingsTab";
+import SideBySide from "./SideBySide";
 
 interface PrivacyTabProps {
   user: User;
@@ -14,43 +19,80 @@ const PrivacyTab = ({ user }: PrivacyTabProps) => {
       icon: HiShare,
       title: "Control",
       subtitle: "over user data access",
-      body: "Data explicitly and willingly uploaded by a user should be under the ultimate control of the user. Users should be able to decide whom to grant direct access to their data and with which permissions and licenses such access should be granted.",
     },
     {
       icon: HiEye,
       title: "Knowledge",
       subtitle: "of how the data is stored",
-      body: "When the data is uploaded to a specific service provider, users should be informed about where that specific service provider stores the data, how long, in which jurisdiction the specific service provider operates, and which laws apply.",
     },
     {
       icon: HiArrowsExpand,
       title: "Freedom",
       subtitle: "to choose a platform",
-      body: "Users should always be able to extract their data from the service at any time without experiencing any vendor lock-in. Open standards for formats and protocols are necessary to guarantee this.",
     },
   ];
-
-  const mobile = useMediaQuery("768");
+  const privacyDescriptions: {
+    [category: string]: {
+      [P in keyof typeof PrivacyPreferences]?: {
+        title: string;
+        description: string;
+        label: string;
+      };
+    };
+  } = {
+    ANALYTICS: {
+      RECORD_SEARCH: {
+        title: "Search history",
+        description:
+          "We'll use your search history to improve search results on Framework",
+        label: "Allow usage of search history",
+      },
+      USAGE_ANALYTICS: {
+        title: "Usage analytics",
+        description:
+          "We'll use your usage data to improve Framework and find what users like",
+        label: "Allow usage of usage data",
+      },
+      RECEIVE_NEWSLETTER: {
+        title: "Newsletter",
+        description: "We'll send you a newsletter with updates on Framework",
+        label: "Allow newsletter",
+      },
+    },
+  };
+  const [updated, setUpdated] = useState<PrivacyPreferences[]>(
+    user.privacyPreferences
+  );
+  const [success, setSuccess] = useState(false);
 
   return (
-    <SettingsTab tabValue="privacy" tabTitle="Privacy">
+    <SettingsTab
+      tabValue="privacy"
+      tabTitle="Privacy"
+      saveButtonAction={(setLoading, setError) => {
+        updateAccount(
+          setLoading,
+          setError,
+          {
+            privacyPreferences: updated,
+          },
+          setSuccess
+        );
+      }}
+      saveButtonLabel="Save"
+    >
       <Title order={4} mb={16}>
         User Data Manifesto 2.0
       </Title>
-      <Text mb={16}>
+      <Text mb={32}>
         The following principles are the foundation of the Framework platform
         and its services. They are the guiding principles that we use when
         making decisions regarding the privacy of our users and their data.
       </Text>
-      <div
-        style={{
-          display: mobile ? "block" : "flex",
-          gap: 16,
-        }}
-      >
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
         {privacyFundamentals.map((fundamental) => (
           <div
-            key={fundamental.body}
+            key={fundamental.title}
             style={{
               textAlign: "center",
             }}
@@ -62,10 +104,68 @@ const PrivacyTab = ({ user }: PrivacyTabProps) => {
             <Text mb={16} size="sm" color="dimmed">
               {fundamental.subtitle}
             </Text>
-            <Text>{fundamental.body}</Text>
           </div>
         ))}
       </div>
+      <Divider mt={32} mb={32} />
+      <Stack mb={32}>
+        {Object.keys(privacyDescriptions).map((category) => {
+          return (
+            <Grouped
+              title={category.charAt(0) + category.slice(1).toLowerCase()}
+              key={category}
+            >
+              {Object.keys(privacyDescriptions[category]).map((key) => {
+                const p = privacyDescriptions[category][
+                  key as keyof typeof PrivacyPreferences
+                ] as { title: string; description: string; label: string };
+
+                return (
+                  <SideBySide
+                    title={p.title}
+                    description={p.description}
+                    key={key}
+                    shaded
+                    noUpperBorder
+                    right={
+                      <Descriptive title={p.title} description={p.description}>
+                        <Switch
+                          defaultChecked={
+                            user.privacyPreferences.find(
+                              (n) => n == (key as PrivacyPreferences)
+                            ) != null
+                          }
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setUpdated([
+                                ...updated,
+                                key as PrivacyPreferences,
+                              ]);
+                            } else {
+                              setUpdated(
+                                updated.filter(
+                                  (n) => n != (key as PrivacyPreferences)
+                                )
+                              );
+                            }
+                          }}
+                          label={p.label}
+                        />
+                      </Descriptive>
+                    }
+                  />
+                );
+              })}
+            </Grouped>
+          );
+        })}
+      </Stack>
+
+      {success && (
+        <Alert title="Success" icon={<HiCheckCircle />} color="green">
+          Saved preferences successfully.
+        </Alert>
+      )}
     </SettingsTab>
   );
 };

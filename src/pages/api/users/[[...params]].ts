@@ -1,4 +1,8 @@
-import { NotificationType, ReceiveNotification } from "@prisma/client";
+import {
+  NotificationType,
+  PrivacyPreferences,
+  ReceiveNotification,
+} from "@prisma/client";
 import {
   Body,
   createHandler,
@@ -508,6 +512,17 @@ class UserRouter {
           return true;
         },
         error: "Invalid notification preferences",
+      },
+      {
+        name: "privacyPreferences",
+        verify: async (value: any) => {
+          if (!Array.isArray(value)) return false;
+          for (const v of value) {
+            if (!Object.keys(PrivacyPreferences).includes(v)) return false;
+          }
+
+          return true;
+        },
       },
       {
         name: "timeZone",

@@ -22,6 +22,12 @@ enum ReceiveNotification {
   ADMIN_REPORTS
 }
 
+enum PrivacyPreferences {
+  RECORD_SEARCH
+  USAGE_ANALYTICS
+  RECEIVE_NEWSLETTER
+}
+
 enum PremiumSubscriptionType {
   PREMIUM_ONE_MONTH
   PREMIUM_SIX_MONTHS
@@ -107,6 +113,7 @@ model User {
   gameId                     Int?
   punishmentHistory          PunishmentLog[]       @relation("punishmentLog")
   issuedPunishments          PunishmentLog[]       @relation("punishmentLogAuthor")
+  privacyPreferences         PrivacyPreferences[]
 }
 
 model ConnectedAccount {
