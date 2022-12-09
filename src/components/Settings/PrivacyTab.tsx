@@ -128,7 +128,6 @@ const PrivacyTab = ({ user }: PrivacyTabProps) => {
                     shaded
                     noUpperBorder
                     right={
-                      <Descriptive title={p.title} description={p.description}>
                         <Switch
                           defaultChecked={
                             user.privacyPreferences.find(
@@ -151,7 +150,6 @@ const PrivacyTab = ({ user }: PrivacyTabProps) => {
                           }}
                           label={p.label}
                         />
-                      </Descriptive>
                     }
                   />
                 );
