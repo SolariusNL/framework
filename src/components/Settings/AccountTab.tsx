@@ -24,6 +24,8 @@ import {
   HiOfficeBuilding,
   HiPencil,
   HiQuestionMarkCircle,
+  HiShieldCheck,
+  HiSparkles,
   HiTrash,
   HiUser,
 } from "react-icons/hi";
@@ -191,19 +193,32 @@ const AccountTab = ({ user }: AccountTabProps) => {
                   size={"xl"}
                 />
                 <Stack spacing={3}>
-                  <Text weight={500}>{user.username}</Text>
+                  <div className="flex items-center">
+                    <Text weight={500}>{user.username}</Text>
+                    <div className="flex gap-1 ml-2">
+                      {user.role === "ADMIN" && (
+                        <Tooltip label="Staff">
+                          <div>
+                            <HiShieldCheck />
+                          </div>
+                        </Tooltip>
+                      )}
+                      {user.premium && (
+                        <Tooltip label="Premium">
+                          <div>
+                            <HiSparkles />
+                          </div>
+                        </Tooltip>
+                      )}
+                    </div>
+                  </div>
                   <Group spacing={3}>
                     <Copy value={user.id} />
                     <Text color="dimmed">
                       ID: <strong>{user.id}</strong>
                     </Text>
                     <Tooltip label="This ID is used to uniquely identify you on the platform. You cannot change it.">
-                      <ThemeIcon
-                        variant="outline"
-                        size="sm"
-                        color="gray"
-                        ml={6}
-                      >
+                      <ThemeIcon variant="light" size="sm" ml={6}>
                         <HiQuestionMarkCircle size={12} />
                       </ThemeIcon>
                     </Tooltip>
