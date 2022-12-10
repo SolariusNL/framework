@@ -788,6 +788,200 @@ class UserRouter {
       message: "User deleted successfully.",
     };
   }
+
+  @Get("/@me/friends/:page")
+  @Authorized()
+  public async getFriends(@Account() user: User, @Param("page") page: string) {
+    const friends = await prisma.user.findMany({
+      where: {
+        following: {
+          some: {
+            id: user.id,
+          },
+        },
+        followers: {
+          some: {
+            id: user.id,
+          },
+        },
+      },
+      take: 5,
+      skip: 5 * (Number(page) - 1),
+      ...nonCurrentUserSelect,
+    });
+
+    return {
+      success: true,
+      message: "Friends retrieved successfully.",
+      friends,
+    };
+  }
+
+  @Get("/@me/pages/friends")
+  @Authorized()
+  public async getFriendsPages(@Account() user: User) {
+    const friends = await prisma.user.count({
+      where: {
+        following: {
+          some: {
+            id: user.id,
+          },
+        },
+        followers: {
+          some: {
+            id: user.id,
+          },
+        },
+      },
+    });
+
+    return {
+      success: true,
+      message: "Friends retrieved successfully.",
+      pages: Math.ceil(friends / 5),
+    };
+  }
+
+  @Get("/:uid/following/:page")
+  @Authorized()
+  public async getFollowing(
+    @Account() user: User,
+    @Param("uid") uid: string,
+    @Param("page") page: string
+  ) {
+    const following = await prisma.user.findMany({
+      where: {
+        followers: {
+          some: {
+            id: Number(uid),
+          },
+        },
+      },
+      take: 10,
+      skip: 10 * (Number(page) - 1),
+      ...nonCurrentUserSelect,
+    });
+
+    return {
+      success: true,
+      message: "Following retrieved successfully.",
+      following,
+    };
+  }
+
+  @Get("/:uid/followers/:page")
+  @Authorized()
+  public async getFollowers(
+    @Account() user: User,
+    @Param("uid") uid: string,
+    @Param("page") page: string
+  ) {
+    const followers = await prisma.user.findMany({
+      where: {
+        following: {
+          some: {
+            id: Number(uid),
+          },
+        },
+      },
+      take: 10,
+      skip: 10 * (Number(page) - 1),
+      ...nonCurrentUserSelect,
+    });
+
+    return {
+      success: true,
+      message: "Followers retrieved successfully.",
+      followers,
+    };
+  }
+
+  @Get("/@me/statusposts")
+  @Authorized()
+  public async getFriendsStatusPosts(@Account() user: User) {
+    const friends = await prisma.user.findMany({
+      where: {
+        following: {
+          some: {
+            id: user.id,
+          },
+        },
+        followers: {
+          some: {
+            id: user.id,
+          },
+        },
+      },
+      ...nonCurrentUserSelect,
+    });
+
+    const statusPosts = await prisma.statusPosts.findMany({
+      where: {
+        userId: {
+          in: friends.map((f) => f.id),
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        user: nonCurrentUserSelect,
+      },
+      take: 5,
+    });
+
+    return {
+      success: true,
+      message: "Friends status posts retrieved successfully.",
+      statusPosts,
+    };
+  }
+
+  @Get("/:uid/pages/following")
+  @Authorized()
+  public async getFollowingPages(
+    @Account() user: User,
+    @Param("uid") uid: string
+  ) {
+    const following = await prisma.user.count({
+      where: {
+        followers: {
+          some: {
+            id: Number(uid),
+          },
+        },
+      },
+    });
+
+    return {
+      success: true,
+      message: "Following pages retrieved successfully.",
+      pages: Math.ceil(following / 10),
+    };
+  }
+
+  @Get("/:uid/pages/followers")
+  @Authorized()
+  public async getFollowersPages(
+    @Account() user: User,
+    @Param("uid") uid: string
+  ) {
+    const followers = await prisma.user.count({
+      where: {
+        following: {
+          some: {
+            id: Number(uid),
+          },
+        },
+      },
+    });
+
+    return {
+      success: true,
+      message: "Followers pages retrieved successfully.",
+      pages: Math.ceil(followers / 10),
+    };
+  }
 }
 
 export default createHandler(UserRouter);

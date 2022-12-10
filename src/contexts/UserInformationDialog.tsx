@@ -2,6 +2,7 @@ import {
   Avatar,
   Group,
   Modal,
+  Pagination,
   Paper,
   SegmentedControl,
   Text,
@@ -13,11 +14,18 @@ import {
   Dispatch,
   SetStateAction,
   useContext,
+  useEffect,
   useState,
 } from "react";
 import ModernEmptyState from "../components/ModernEmptyState";
 import getMediaUrl from "../util/getMedia";
 import { NonUser, User } from "../util/prisma-types";
+import {
+  getFollowers,
+  getFollowersPages,
+  getFollowing,
+  getFollowingPages,
+} from "../util/universe/friends";
 
 const UserInformationDialogContext =
   createContext<UserInformationDialogContextType>({
@@ -93,10 +101,38 @@ const UserInformationWrapper = ({
 }) => {
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState<NonUser | User | null>(null);
-
   const [selectedTab, setSelectedTab] = useState<"following" | "followers">(
     "following"
   );
+  const [followers, setFollowers] = useState<NonUser[]>([]);
+  const [following, setFollowing] = useState<NonUser[]>([]);
+  const [followersPage, setFollowersPage] = useState(1);
+  const [followingPage, setFollowingPage] = useState(1);
+  const [followersPages, setFollowersPages] = useState(1);
+  const [followingPages, setFollowingPages] = useState(1);
+
+  useEffect(() => {
+    if (user) {
+      getFollowersPages(user?.id!).then((pages) => {
+        setFollowersPages(pages);
+      });
+      getFollowingPages(user?.id!).then((pages) => {
+        setFollowingPages(pages);
+      });
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      getFollowers(user?.id!).then((followers) => {
+        setFollowers(followers);
+      });
+
+      getFollowing(user?.id!).then((following) => {
+        setFollowing(following);
+      });
+    }
+  }, [user, followersPage, followingPage]);
 
   return (
     <UserInformationDialogContext.Provider
@@ -131,13 +167,14 @@ const UserInformationWrapper = ({
             p={12}
             radius="md"
           >
-            {user?.following.length === 0 ? (
+            {user?._count.following === 0 ? (
               <ModernEmptyState
                 title={`${user?.username} is not following anyone`}
                 body="They will be listed here once they start following people."
               />
             ) : (
-              user?.following.map((u) => (
+              following &&
+              following.map((u) => (
                 <UserItem
                   user={u as NonUser}
                   key={u.id}
@@ -160,13 +197,14 @@ const UserInformationWrapper = ({
               p={12}
               radius="md"
             >
-              {user?.followers.length === 0 ? (
+              {user?._count.followers === 0 ? (
                 <ModernEmptyState
                   title={`${user?.username} has no followers`}
                   body="They will be listed here once they start getting followers."
                 />
               ) : (
-                user?.followers.map((u) => (
+                followers &&
+                followers.map((u) => (
                   <UserItem
                     user={u as NonUser}
                     key={u.id}
@@ -176,6 +214,21 @@ const UserInformationWrapper = ({
               )}
             </Paper>
           ))}
+
+        <div className="w-full flex justify-center mt-4">
+          <Pagination
+            total={
+              selectedTab === "followers" ? followersPages : followingPages
+            }
+            page={selectedTab === "followers" ? followersPage : followingPage}
+            onChange={(page) =>
+              selectedTab === "followers"
+                ? setFollowersPage(page)
+                : setFollowingPage(page)
+            }
+            radius="xl"
+          />
+        </div>
       </Modal>
       {children}
     </UserInformationDialogContext.Provider>

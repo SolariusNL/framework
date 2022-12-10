@@ -58,7 +58,11 @@ const UserContext = ({ user, children, customHref }: UserContextProps) => {
               }
               mb={16}
             >
-              <Avatar src={getMediaUrl(user.avatarUri)} alt={user.username} radius="xl" />
+              <Avatar
+                src={getMediaUrl(user.avatarUri)}
+                alt={user.username}
+                radius="xl"
+              />
             </Indicator>
 
             <Stack spacing={5} align="center" mb={16}>
@@ -79,10 +83,10 @@ const UserContext = ({ user, children, customHref }: UserContextProps) => {
 
             <Group spacing="xl" mb={16}>
               <Text size="sm">
-                <b>{user.following.length}</b> Following
+                <b>{user._count.following}</b> Following
               </Text>
               <Text size="sm">
-                <b>{user.followers.length}</b> Followers
+                <b>{user._count.followers}</b> Followers
               </Text>
             </Group>
           </Center>

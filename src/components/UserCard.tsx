@@ -39,7 +39,12 @@ const UserCard = ({ user, minimal }: UserCardProps) => {
           }
           position="bottom-end"
         >
-          <Avatar src={getMediaUrl(user.avatarUri)} size={120} radius={120} mx="auto" />
+          <Avatar
+            src={getMediaUrl(user.avatarUri)}
+            size={120}
+            radius={120}
+            mx="auto"
+          />
         </Indicator>
       </Group>
       <Text align="center" size="lg" weight={500} mt="md">
@@ -55,7 +60,7 @@ const UserCard = ({ user, minimal }: UserCardProps) => {
       {!minimal && (
         <>
           <Text align="center" color="dimmed" size="sm">
-            {user.followers.length} followers • {user.following.length}{" "}
+            {user._count.followers} followers • {user._count.following}{" "}
             following
           </Text>
           <Text align="center" color="dimmed" size="sm" lineClamp={1}>

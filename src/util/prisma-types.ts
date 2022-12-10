@@ -11,8 +11,6 @@ export const nonCurrentUserSelect = {
     busy: true,
     premium: true,
     banned: true,
-    followers: { select: { id: true } },
-    following: { select: { id: true } },
     lastSeen: true,
     timeZone: true,
     role: true,
@@ -25,6 +23,12 @@ export const nonCurrentUserSelect = {
       select: {
         id: true,
         name: true,
+      },
+    },
+    _count: {
+      select: {
+        followers: true,
+        following: true,
       },
     },
   },
@@ -63,8 +67,6 @@ const user = Prisma.validator<Prisma.UserArgs>()({
       },
     },
     emailVerificationInstances: true,
-    following: nonCurrentUserSelect,
-    followers: nonCurrentUserSelect,
     notifications: true,
     secrets: true,
     premiumSubscription: true,
@@ -74,6 +76,12 @@ const user = Prisma.validator<Prisma.UserArgs>()({
       select: {
         id: true,
         name: true,
+      },
+    },
+    _count: {
+      select: {
+        followers: true,
+        following: true,
       },
     },
   },
@@ -90,8 +98,6 @@ const nonuser = Prisma.validator<Prisma.UserArgs>()({
     busy: true,
     premium: true,
     banned: true,
-    followers: { select: { id: true } },
-    following: { select: { id: true } },
     lastSeen: true,
     timeZone: true,
     role: true,
@@ -102,6 +108,12 @@ const nonuser = Prisma.validator<Prisma.UserArgs>()({
       select: {
         id: true,
         name: true,
+      },
+    },
+    _count: {
+      select: {
+        followers: true,
+        following: true,
       },
     },
   },
@@ -146,8 +158,6 @@ export const userSelect: Prisma.UserSelect = {
   banned: true,
   banReason: true,
   emailVerified: true,
-  following: nonCurrentUserSelect,
-  followers: nonCurrentUserSelect,
   notifications: true,
   notificationPreferences: true,
   lastRandomPrize: true,
@@ -174,6 +184,12 @@ export const userSelect: Prisma.UserSelect = {
     },
   },
   privacyPreferences: true,
+  _count: {
+    select: {
+      followers: true,
+      following: true,
+    },
+  },
 };
 
 export const gameSelect: Prisma.GameSelect = {

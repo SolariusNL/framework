@@ -1,35 +1,57 @@
-import { getCookie } from "../cookies";
+import { getCookie } from "cookies-next";
+import { NonUser } from "../prisma-types";
 
-async function sendFriendRequest(
-  to: number,
-  setLoading: (newValue: boolean) => void,
-  setError: (newValue: string | null) => void,
-): Promise<void> {
-  setLoading(true);
-  setError(null);
-  await fetch(`/api/users/${to}/friend`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `${getCookie(".frameworksession")}`,
-    },
-  })
-    .then((res) => res.json())
-    .then((res) => {
-      if (res.success) {
-        setLoading(false);
-      } else {
-        setError(res.message || "Unknown error");
-      }
-    })
-    .catch((err) => {
-      setError(err.message || "Unknown error");
-    })
-    .finally(() => {
-      setLoading(false);
-    });
+const apiUrl = "/api/users";
+const headers = {
+  "Content-Type": "application/json",
+  Authorization: String(getCookie(".frameworksession")),
+};
+
+async function fetchData(url: string): Promise<any> {
+  const response = await fetch(url, { headers });
+  const data = await response.json();
+  if (data.success) {
+    return data;
+  } else {
+    throw new Error("Failed to fetch data");
+  }
+}
+
+async function getMyFriends(page: number = 1): Promise<NonUser[]> {
+  const data = await fetchData(`${apiUrl}/@me/friends/${page}`);
+  return data.friends;
+}
+
+async function getFollowing(uid: number, page: number = 1): Promise<NonUser[]> {
+  const data = await fetchData(`${apiUrl}/${uid}/following/${page}`);
+  return data.following;
+}
+
+async function getFollowers(uid: number, page: number = 1): Promise<NonUser[]> {
+  const data = await fetchData(`${apiUrl}/${uid}/followers/${page}`);
+  return data.followers;
+}
+
+async function getFriendsPages(): Promise<number> {
+  const data = await fetchData(`${apiUrl}/@me/pages/friends`);
+  return data.pages;
+}
+
+async function getFollowingPages(uid: number): Promise<number> {
+  const data = await fetchData(`${apiUrl}/${uid}/pages/following`);
+  return data.pages;
+}
+
+async function getFollowersPages(uid: number): Promise<number> {
+  const data = await fetchData(`${apiUrl}/${uid}/pages/followers`);
+  return data.pages;
 }
 
 export {
-  sendFriendRequest,
+  getMyFriends,
+  getFollowing,
+  getFollowers,
+  getFriendsPages,
+  getFollowingPages,
+  getFollowersPages,
 };

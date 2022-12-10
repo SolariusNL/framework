@@ -59,21 +59,23 @@ import { getCookie } from "../../util/cookies";
 import { exclude } from "../../util/exclude";
 import getMediaUrl from "../../util/getMedia";
 import prisma from "../../util/prisma";
-import { nonCurrentUserSelect, User } from "../../util/prisma-types";
+import { User } from "../../util/prisma-types";
 import useMediaQuery from "../../util/useMediaQuery";
 
 interface ProfileProps {
   user: User;
   profile: User;
+  following: boolean;
 }
 
-const Profile: NextPage<ProfileProps> = ({ user, profile }) => {
+const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
   const mobile = useMediaQuery("768");
   const [reportOpened, setReportOpened] = React.useState(false);
   const router = useRouter();
   const { setOpen, setUser, setDefaultTab } = useUserInformationDialog();
   const [viewing, setViewing] = React.useState(profile);
   const [viewingTime, setViewingTime] = React.useState<string>();
+  const [isFollowing, setIsFollowing] = React.useState(following);
 
   React.useEffect(() => {
     if (typeof window !== "undefined") {
@@ -270,7 +272,7 @@ const Profile: NextPage<ProfileProps> = ({ user, profile }) => {
                     setOpen(true);
                   }}
                 >
-                  {viewing.followers.length} followers
+                  {viewing._count.followers} followers
                 </Anchor>
                 <Text color="dimmed" pl={8} pr={8}>
                   ·
@@ -282,7 +284,7 @@ const Profile: NextPage<ProfileProps> = ({ user, profile }) => {
                     setOpen(true);
                   }}
                 >
-                  {viewing.following.length} following
+                  {viewing._count.following} following
                 </Anchor>
               </Group>
             </div>
@@ -298,21 +300,20 @@ const Profile: NextPage<ProfileProps> = ({ user, profile }) => {
                   <Button
                     leftIcon={<HiUser />}
                     onClick={async () => {
+                      setIsFollowing(!isFollowing);
                       setViewing((viewing) => ({
                         ...viewing,
-                        followers: viewing.followers
-                          .map((f) => f.id)
-                          .includes(user.id)
-                          ? viewing.followers.filter((f) => f.id != user.id)
-                          : [...viewing.followers, user],
+                        _count: {
+                          ...viewing._count,
+                          followers:
+                            viewing._count.followers + (isFollowing ? -1 : 1),
+                        },
                       }));
 
                       showNotification({
                         title: "Followed",
                         message: `Successfully ${
-                          viewing.followers.map((f) => f.id).includes(user.id)
-                            ? "unfollowed"
-                            : "followed"
+                          isFollowing ? "unfollowed" : "followed"
                         } ${viewing.username}.`,
                         icon: <HiCheck />,
                       });
@@ -326,11 +327,7 @@ const Profile: NextPage<ProfileProps> = ({ user, profile }) => {
                       });
                     }}
                   >
-                    {viewing.followers.some(
-                      (follower) => follower.id == user.id
-                    )
-                      ? "Unfollow"
-                      : "Follow"}
+                    {isFollowing ? "Unfollow" : "Follow"}
                   </Button>
                   <ReactNoSSR>
                     <Donate user={viewing} />
@@ -612,13 +609,17 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       bio: true,
       busy: true,
       country: true,
-      followers: { select: { id: true, username: true, avatarUri: true } },
-      following: { select: { id: true, username: true, avatarUri: true } },
       timeZone: true,
       lastSeen: true,
       alias: true,
       previousUsernames: true,
       profileLinks: true,
+      _count: {
+        select: {
+          followers: true,
+          following: true,
+        },
+      },
     },
   });
 
@@ -631,12 +632,24 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     };
   }
 
+  const following = await prisma.user.findFirst({
+    where: {
+      id: auth.props.user?.id,
+      following: {
+        some: {
+          id: viewing.id,
+        },
+      },
+    },
+  });
+
   return {
     props: {
       user: JSON.parse(JSON.stringify(auth.props?.user)),
       profile: JSON.parse(
         JSON.stringify(exclude(viewing, "email", "inviteCode", "tickets"))
       ),
+      following: !!following,
     },
   };
 }

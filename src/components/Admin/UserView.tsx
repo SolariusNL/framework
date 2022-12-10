@@ -126,7 +126,7 @@ const UserView = ({ user }: UserViewProps) => {
                     key={randomKey()}
                     className="cursor-pointer text-blue-500 underline"
                   >
-                    {user.followers.length}
+                    {user._count.followers}
                   </div>,
                 ],
                 [
@@ -140,7 +140,7 @@ const UserView = ({ user }: UserViewProps) => {
                       setDefaultTab("following");
                     }}
                   >
-                    {user.following.length}
+                    {user._count.following}
                   </div>,
                 ],
                 ["Country", user.country],
