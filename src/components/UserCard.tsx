@@ -26,7 +26,7 @@ const UserCard = ({ user, minimal }: UserCardProps) => {
       p="lg"
       sx={(theme) => ({
         backgroundColor:
-          theme.colorScheme === "dark" ? theme.colors.dark[8] : theme.white,
+          theme.colorScheme === "dark" ? theme.colors.dark[9] : theme.white,
       })}
       key={user.id}
     >
@@ -47,15 +47,17 @@ const UserCard = ({ user, minimal }: UserCardProps) => {
           />
         </Indicator>
       </Group>
-      <Text align="center" size="lg" weight={500} mt="md">
-        {user.username}{" "}
-        {user.banned && (
-          <Tooltip label="User is banned from Framework">
-            <ThemeIcon color="red" variant="light" radius={999} size={24}>
-              <HiXCircle />
-            </ThemeIcon>
-          </Tooltip>
-        )}
+      <Text
+        align="center"
+        size="lg"
+        weight={500}
+        mt="md"
+        sx={{
+          textDecoration: user.banned ? "line-through" : "none",
+          color: user.banned ? "gray" : "inherit",
+        }}
+      >
+        {user.username}
       </Text>
       {!minimal && (
         <>

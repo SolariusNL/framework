@@ -1,4 +1,3 @@
-import { Grid, Title } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
 import Framework from "../components/Framework";
 import GameCard from "../components/GameCard";
@@ -10,6 +9,7 @@ import {
   Game,
   gameSelect,
   nonCurrentUserSelect,
+  NonUser,
   User,
 } from "../util/prisma-types";
 
@@ -17,7 +17,7 @@ interface SearchProps {
   user: User;
   dataType: "games" | "users" | "catalog" | "sounds";
   searchTerm: string;
-  searchResults: Game[] | User[] | any[];
+  searchResults: Game[] | NonUser[] | any[];
 }
 
 const Search: NextPage<SearchProps> = ({
@@ -27,31 +27,37 @@ const Search: NextPage<SearchProps> = ({
   searchResults,
 }) => {
   return (
-    <Framework user={user} activeTab="none">
-      <Title mb={24}>
-        {dataType === "games" ? "Games" : "Users"} matching &quot;{searchTerm}
-        &quot;
-      </Title>
-
+    <Framework
+      user={user}
+      activeTab="none"
+      modernTitle={`${
+        dataType === "games" ? "Games" : "Users"
+      } matching "${searchTerm}"`}
+      modernSubtitle="Search results for your query"
+    >
       {searchResults.length === 0 ? (
         <ModernEmptyState title="No results" body="Try another search term." />
       ) : (
-        <Grid>
-          {(dataType === "games" &&
-            // @ts-ignore
-            searchResults.map((game: Game) => (
-              <Grid.Col xs={6} md={4} sm={6} lg={4} key={game.id}>
-                <GameCard game={game} />
-              </Grid.Col>
-            ))) ||
-            (dataType === "users" &&
-              // @ts-ignore
-              searchResults.map((user: User) => (
-                <Grid.Col xs={4.5} md={4.5} sm={4.5} lg={3.5} key={user.id}>
+        <>
+          {dataType === "users" && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {(searchResults as NonUser[]).map((user: NonUser) => (
+                <div key={user.id}>
                   <UserCard user={user} />
-                </Grid.Col>
-              )))}
-        </Grid>
+                </div>
+              ))}
+            </div>
+          )}
+          {dataType === "games" && (
+            <div className="grid grid-cols-2 gap-4 gap-y-8 md:grid-cols-5 sm:grid-cols-3">
+              {(searchResults as Game[]).map((game: Game) => (
+                <div key={game.id}>
+                  <GameCard game={game} />
+                </div>
+              ))}
+            </div>
+          )}
+        </>
       )}
     </Framework>
   );
