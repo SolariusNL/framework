@@ -3,6 +3,7 @@ import {
   Badge,
   Divider,
   Indicator,
+  Loader,
   Pagination,
   Stack,
   Text,
@@ -20,14 +21,17 @@ const FriendsWidget: React.FC = () => {
   const [friends, setFriends] = useState<NonUser[]>();
   const [friendsTab, setFriendsTab] = useState(1);
   const [friendsPages, setFriendsPages] = useState(1);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     getMyFriends(friendsTab).then((friends) => {
       setFriends(friends);
     });
     getFriendsPages().then((pages) => {
       setFriendsPages(pages);
     });
+    setLoading(false);
   }, [friendsTab]);
 
   return (
@@ -46,13 +50,17 @@ const FriendsWidget: React.FC = () => {
       <div>
         <Stack spacing={12}>
           {friends &&
+            !loading &&
             friends.map((friend, i) => (
               <>
                 <Link href={`/profile/${friend.username}`} key={friend.id}>
-                  <div className="cursor-pointer flex justify-between">
+                  <div className="cursor-pointer flex justify-between items-center">
                     <div className="flex items-center gap-2">
                       <Indicator
-                        disabled={new Date(friend.lastSeen) < new Date(new Date().getTime() - 5 * 60 * 1000)}
+                        disabled={
+                          new Date(friend.lastSeen) <
+                          new Date(new Date().getTime() - 5 * 60 * 1000)
+                        }
                         color="green"
                         inline
                       >
@@ -81,12 +89,17 @@ const FriendsWidget: React.FC = () => {
             ))}
         </Stack>
 
-        {friends && friends.length === 0 && (
+        {friends && friends.length === 0 && !loading && (
           <div className="col-span-2">
             <ModernEmptyState
               title="No friends yet"
               body="Find some friends to connect with on Framework."
             />
+          </div>
+        )}
+        {loading && (
+          <div className="col-span-2 flex justify-center">
+            <Loader />
           </div>
         )}
       </div>

@@ -918,7 +918,7 @@ class UserRouter {
     const statusPosts = await prisma.statusPosts.findMany({
       where: {
         userId: {
-          in: friends.map((f) => f.id),
+          in: friends.map((f) => f.id).concat(user.id),
         },
       },
       orderBy: {
