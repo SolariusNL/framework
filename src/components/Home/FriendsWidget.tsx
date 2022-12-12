@@ -34,11 +34,13 @@ const FriendsWidget: React.FC = () => {
     <ShadedCard withBorder>
       <div className="flex justify-center mb-4">
         <Badge variant="dot" color="green">
-          {friends && friends?.filter(
-            (friend) =>
-              new Date(friend.lastSeen) >=
-              new Date(new Date().getTime() - 5 * 60 * 1000)
-          )} online
+          {friends &&
+            friends?.filter(
+              (friend) =>
+                new Date(friend.lastSeen) >=
+                new Date(new Date().getTime() - 5 * 60 * 1000)
+            ).length}
+          online
         </Badge>
       </div>
       <div>
