@@ -18,13 +18,6 @@ import ShadedCard from "../ShadedCard";
 
 const FriendsWidget: React.FC = () => {
   const [friends, setFriends] = useState<NonUser[]>();
-  const [onlineFriends, setOnlineFriends] = useState(
-    friends?.filter(
-      (friend) =>
-        new Date(friend.lastSeen) >=
-        new Date(new Date().getTime() - 5 * 60 * 1000)
-    )
-  );
   const [friendsTab, setFriendsTab] = useState(1);
   const [friendsPages, setFriendsPages] = useState(1);
 
@@ -41,7 +34,11 @@ const FriendsWidget: React.FC = () => {
     <ShadedCard withBorder>
       <div className="flex justify-center mb-4">
         <Badge variant="dot" color="green">
-          {onlineFriends && onlineFriends.length} online
+          {friends && friends?.filter(
+            (friend) =>
+              new Date(friend.lastSeen) >=
+              new Date(new Date().getTime() - 5 * 60 * 1000)
+          )} online
         </Badge>
       </div>
       <div>
