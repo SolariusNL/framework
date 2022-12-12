@@ -52,7 +52,7 @@ const FriendsWidget: React.FC = () => {
                   <div className="cursor-pointer flex justify-between">
                     <div className="flex items-center gap-2">
                       <Indicator
-                        disabled={!onlineFriends?.includes(friend)}
+                        disabled={new Date(friend.lastSeen) < new Date(new Date().getTime() - 5 * 60 * 1000)}
                         color="green"
                         inline
                       >
