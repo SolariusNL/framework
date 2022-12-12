@@ -40,7 +40,7 @@ const FriendsWidget: React.FC = () => {
                 new Date(friend.lastSeen) >=
                 new Date(new Date().getTime() - 5 * 60 * 1000)
             ).length}
-          online
+          {" online"}
         </Badge>
       </div>
       <div>
