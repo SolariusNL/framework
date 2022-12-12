@@ -32,7 +32,7 @@ const CurrencyMenu = ({
             <HiCurrencyDollar color={theme.colors.green[3]} />
             <Text
               color={theme.colors.green[4]}
-              weight={500}
+              weight={600}
               size="sm"
               sx={{ lineHeight: 1 }}
             >

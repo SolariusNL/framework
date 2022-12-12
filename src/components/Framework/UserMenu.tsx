@@ -1,6 +1,23 @@
-import { Avatar, Group, Menu, Text, UnstyledButton, useMantineColorScheme } from "@mantine/core";
+import {
+  Avatar,
+  Group,
+  Menu,
+  Text,
+  UnstyledButton,
+  useMantineColorScheme,
+} from "@mantine/core";
 import { useRouter } from "next/router";
-import { HiChevronDown, HiCog, HiGift, HiLibrary, HiLogout, HiMoon, HiSun, HiTicket, HiUser } from "react-icons/hi";
+import {
+  HiChevronDown,
+  HiCog,
+  HiGift,
+  HiLibrary,
+  HiLogout,
+  HiMoon,
+  HiSun,
+  HiTicket,
+  HiUser,
+} from "react-icons/hi";
 import { useFrameworkUser } from "../../contexts/FrameworkUser";
 import logout from "../../util/api/logout";
 import getMediaUrl from "../../util/getMedia";
@@ -31,7 +48,7 @@ const UserMenu = ({ userMenuOpened }: { userMenuOpened: boolean }) => {
               radius="xl"
               size={20}
             />
-            <Text weight={500} size="sm" sx={{ lineHeight: 1 }} mr={3}>
+            <Text weight={600} size="sm" sx={{ lineHeight: 1 }} mr={3}>
               {user.username}
             </Text>
             <HiChevronDown size={12} stroke="1.5" />
@@ -51,7 +68,7 @@ const UserMenu = ({ userMenuOpened }: { userMenuOpened: boolean }) => {
               icon={<HiLibrary />}
               onClick={() => router.push("/admin/dashboard")}
             >
-              Admin Dashboard
+              Admin dashboard
             </Menu.Item>
             <Menu.Divider />
           </>

@@ -1,7 +1,6 @@
 import { useFlags } from "@happykit/flags/client";
 import {
   ActionIcon,
-  Alert,
   Anchor,
   Badge,
   Box,
@@ -19,7 +18,7 @@ import {
   Title,
   useMantineColorScheme,
 } from "@mantine/core";
-import { randomId, useDisclosure, useLocalStorage } from "@mantine/hooks";
+import { useDisclosure, useLocalStorage } from "@mantine/hooks";
 import { SpotlightProvider } from "@mantine/spotlight";
 import isElectron from "is-electron";
 import Link from "next/link";
@@ -671,17 +670,6 @@ const Framework = ({
           >
             {user && !user.emailVerified && !warningSeen && !isSSR && (
               <EmailReminder setWarningSeen={setEmailWarningSeen} />
-            )}
-            {config?.features?.additional?.ukraine?.enabled && (
-              <Alert mb={16} icon={<HiGift size={36} />}>
-                {config.features.additional.ukraine.supportText}{" "}
-                <Anchor
-                  href={config.features.additional.ukraine.supportUrl}
-                  target="_blank"
-                >
-                  Help Provide Humanitarian Aid to Ukraine
-                </Anchor>
-              </Alert>
             )}
             {children}
           </Container>
