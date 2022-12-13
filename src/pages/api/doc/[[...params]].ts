@@ -1,6 +1,15 @@
 import { createHandler, Get } from "@storyofams/next-api-decorators";
 import { readFile } from "fs/promises";
+import fetch from "node-fetch";
 import { RateLimitMiddleware } from "../../../util/rateLimit";
+
+interface BetterUptimeResponse {
+  data: Array<{
+    attributes: {
+      status: string;
+    };
+  }>;
+}
 
 class DocRouter {
   @Get("/license")
@@ -23,6 +32,7 @@ class DocRouter {
   async getStatus() {
     const enabled = process.env.NEXT_PUBLIC_BETTER_UPTIME_ENABLED === "true";
     const key = process.env.BETTER_UPTIME_KEY;
+    let status = "disabled";
 
     if (!enabled || !key) {
       return {
@@ -30,29 +40,28 @@ class DocRouter {
       };
     }
 
-    return await fetch("https://betteruptime.com/api/v2/monitors", {
+    await fetch("https://betteruptime.com/api/v2/monitors", {
       headers: {
         Authorization: `Bearer ${key}`,
       },
     })
       .then((res) => res.json())
       .then((res) => {
-        const status = res.data.every(
+        const { data } = res as BetterUptimeResponse;
+
+        const retrieved = data.every(
           (site: { attributes: { status: string } }) =>
             site.attributes.status === "up"
         )
           ? "up"
           : "problems";
 
-        return {
-          status,
-        };
-      })
-      .catch((err) => {
-        return {
-          status: "disabled",
-        };
+        status = retrieved;
       });
+
+    return {
+      status,
+    };
   }
 }
 
