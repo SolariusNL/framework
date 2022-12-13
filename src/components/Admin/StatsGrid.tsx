@@ -76,7 +76,7 @@ StatsGrid.Item = ({
               alignItems: "center",
             }}
           >
-            <span>{diff}%</span>
+            <span>{(diff > 0 ? "+" : "") + Math.round(diff * 100) / 100}%</span>
             {diff > 0 ? (
               <IconArrowUpRight size={16} stroke={1.5} />
             ) : (
