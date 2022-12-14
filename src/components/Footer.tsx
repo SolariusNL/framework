@@ -64,10 +64,7 @@ const useStyles = createStyles((theme) => ({
     [theme.fn.smallerThan("sm")]: {
       display: "none",
     },
-
-    "& > *": {
-      marginRight: 32,
-    },
+    textAlign: "right",
   },
 
   wrapper: {
@@ -164,7 +161,12 @@ const Footer = () => {
       <Container className={classes.inner}>
         <div className={classes.logo}>
           <SoodamLogo height={64} width={64} />
-          <Text size="xs" color="dimmed" className={classes.description}>
+          <Text
+            size="xs"
+            color="dimmed"
+            mb={12}
+            className={classes.description}
+          >
             {config?.footer?.description ||
               "Passionate about open source and a better future for the web."}
           </Text>
