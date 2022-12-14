@@ -227,6 +227,7 @@ export const gameSelect: Prisma.GameSelect = {
       scores: true,
     },
   },
+  copyrightMetadata: true,
 };
 
 export const snippetSelect: Prisma.CodeSnippetSelect = {
@@ -269,6 +270,7 @@ const game = Prisma.validator<Prisma.GameArgs>()({
         scores: true,
       },
     },
+    copyrightMetadata: true,
   },
 });
 

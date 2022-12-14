@@ -1,5 +1,6 @@
 import {
   Badge,
+  Card,
   Grid,
   Stack,
   Text,
@@ -10,6 +11,7 @@ import { HiServer, HiUsers, HiViewGrid, HiViewList } from "react-icons/hi";
 import sanitize from "sanitize-html";
 import { Game } from "../../util/prisma-types";
 import { getGenreText } from "../../util/universe/genre";
+import ShadedCard from "../ShadedCard";
 import ViewGameTab from "./ViewGameTab";
 
 interface InfoTabProps {
@@ -79,6 +81,30 @@ const InfoTab = ({ game }: InfoTabProps) => {
           </Grid.Col>
         ))}
       </Grid>
+
+      {game.copyrightMetadata.length > 0 && (
+        <>
+          <Title order={5} mb={6} mt={26}>
+            Copyright
+          </Title>
+          <Text color="dimmed" size="sm" mb={10}>
+            These notices are provided by the authors of the game. They have not
+            been verified for accuracy. If you believe that any of the
+            information below is incorrect or misleading, please contact us, and
+            we will investigate the matter.
+          </Text>
+          <ShadedCard withBorder mt={26}>
+            {game.copyrightMetadata.map((x, i) => (
+              <Card.Section key={i} withBorder p={12}>
+                <Text weight={500} color="dimmed" size="sm">
+                  {x.title}
+                </Text>
+                <Text>{x.description}</Text>
+              </Card.Section>
+            ))}
+          </ShadedCard>
+        </>
+      )}
     </ViewGameTab>
   );
 };

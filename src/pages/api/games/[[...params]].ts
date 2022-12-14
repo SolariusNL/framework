@@ -2,7 +2,7 @@ import {
   GameGenre,
   RatingCategory,
   RatingCategoryScore,
-  RatingType,
+  RatingType
 } from "@prisma/client";
 import {
   Body,
@@ -11,9 +11,10 @@ import {
   Param,
   Post,
   Query,
-  ValidationPipe,
+  ValidationPipe
 } from "@storyofams/next-api-decorators";
 import * as Validate from "class-validator";
+import fetch from "node-fetch";
 import sanitizeHtml from "sanitize-html";
 import { scoreDescriptions } from "../../../components/EditGame/AgeRating";
 import Authorized, { Account } from "../../../util/api/authorized";
@@ -22,11 +23,10 @@ import prisma from "../../../util/prisma";
 import {
   gameSelect,
   nonCurrentUserSelect,
-  type User,
+  type User
 } from "../../../util/prisma-types";
 import { RateLimitMiddleware } from "../../../util/rateLimit";
 import { logTransaction } from "../../../util/transactionHistory";
-import fetch from "node-fetch";
 
 interface GameCreateBody {
   gameName: string;
@@ -694,6 +694,24 @@ class GameRouter {
           return value >= 1 && value <= 100;
         },
       },
+      {
+        property: "copyrightMetadata",
+        regex: undefined,
+        error: "Invalid copyright metadata",
+        validation: (value: any) => {
+          return (
+            value.length <= 5 &&
+            value.every(
+              (metadata: any) =>
+                metadata.title.length >= 3 &&
+                metadata.title.length <= 40 &&
+                metadata.description.length >= 3 &&
+                metadata.description.length <= 120
+            )
+          );
+        },
+        relation: true,
+      },
     ];
 
     const errors = [];
@@ -718,15 +736,36 @@ class GameRouter {
       };
     }
 
+    if (body.copyrightMetadata) {
+      await prisma.gameCopyrightMetadata.deleteMany({
+        where: {
+          gameId: Number(id),
+        },
+      });
+    }
+
     await prisma.game.update({
       where: {
         id: Number(id),
       },
-      data: updatable
-        .map((field) => ({
-          [field]: body[field],
-        }))
-        .reduce((a, b) => ({ ...a, ...b })),
+      data: {
+        ...updatable
+          .filter((field) => body[field])
+          .reduce((acc: any, field) => {
+            acc[field] = body[field];
+            return acc;
+          }, {}),
+        ...(body.copyrightMetadata
+          ? {
+              copyrightMetadata: {
+                create: body.copyrightMetadata.map((metadata: any) => ({
+                  title: metadata.title,
+                  description: metadata.description,
+                })),
+              },
+            }
+          : {}),
+      },
     });
 
     return {
