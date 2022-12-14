@@ -82,16 +82,18 @@ const Votes = ({ game, setGame }: VotesProps) => {
           marginBottom: 32,
         }}
       >
-        <ActionIcon
-          radius="xl"
-          mr={6}
-          variant={liked ? "light" : "subtle"}
-          color="teal"
-          disabled={disliked}
-          onClick={like}
-        >
-          <HiThumbUp size={14} />
-        </ActionIcon>
+        <Tooltip label="Like">
+          <ActionIcon
+            radius="xl"
+            mr={6}
+            variant={liked ? "light" : "subtle"}
+            color="teal"
+            disabled={disliked}
+            onClick={like}
+          >
+            <HiThumbUp size={14} />
+          </ActionIcon>
+        </Tooltip>
         <Tooltip
           label={`${game.likedBy.length} likes, ${game.dislikedBy.length} dislikes`}
         >
@@ -113,16 +115,18 @@ const Votes = ({ game, setGame }: VotesProps) => {
             }}
           />
         </Tooltip>
-        <ActionIcon
-          radius="xl"
-          ml={6}
-          variant={disliked ? "light" : "subtle"}
-          color="red"
-          disabled={liked}
-          onClick={dislike}
-        >
-          <HiThumbDown size={14} />
-        </ActionIcon>
+        <Tooltip label="Dislike">
+          <ActionIcon
+            radius="xl"
+            ml={6}
+            variant={disliked ? "light" : "subtle"}
+            color="red"
+            disabled={liked}
+            onClick={dislike}
+          >
+            <HiThumbDown size={14} />
+          </ActionIcon>
+        </Tooltip>
       </div>
     </>
   );

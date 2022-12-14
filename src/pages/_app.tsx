@@ -178,7 +178,7 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
                           ? `inset 0 1.2px 0 0 ${
                               theme.colors[
                                 params.color || theme.primaryColor
-                              ][9]
+                              ][5]
                             }`
                           : "inset 0 1.2px 0 0 hsla(0,0%,100%,.2);",
                     }),
@@ -220,7 +220,7 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
                 components={{
                   a: (props) => (
                     <Link href={String(props.href)}>
-                      <Anchor {...props as AnchorProps} />
+                      <Anchor {...(props as AnchorProps)} />
                     </Link>
                   ),
                   hr: () => <Divider />,
