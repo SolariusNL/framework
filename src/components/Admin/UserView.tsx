@@ -19,6 +19,9 @@ import ModernEmptyState from "../ModernEmptyState";
 import NoteTable, { NoteUser } from "./NoteTable";
 import { AdminViewUser } from "./Pages/Users";
 import Punishment from "./Punishment";
+import AdjustTickets from "./UserActions/AdjustTickets";
+import LogoutSessions from "./UserActions/LogoutSessions";
+import ResetUsername from "./UserActions/ResetUsername";
 
 interface UserViewProps {
   user: AdminViewUser;
@@ -91,6 +94,7 @@ const UserView = ({ user }: UserViewProps) => {
           <Tabs.Tab value="notifications">Notifications</Tabs.Tab>
           <Tabs.Tab value="secrets">Secrets</Tabs.Tab>
           <Tabs.Tab value="history">Punishment History</Tabs.Tab>
+          <Tabs.Tab value="actions">Actions</Tabs.Tab>
         </Tabs.List>
 
         <Tabs.Panel value="info">
@@ -337,6 +341,14 @@ const UserView = ({ user }: UserViewProps) => {
               )}
             </tbody>
           </Table>
+        </Tabs.Panel>
+
+        <Tabs.Panel value="actions">
+          <Group spacing={5}>
+            <AdjustTickets user={user} />
+            <ResetUsername user={user} />
+            <LogoutSessions user={user} />
+          </Group>
         </Tabs.Panel>
       </Tabs>
     </>

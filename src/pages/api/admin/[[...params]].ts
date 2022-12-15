@@ -7,7 +7,8 @@ import {
   Post,
   Query,
 } from "@storyofams/next-api-decorators";
-import { readFile } from "fs/promises";
+import { promises as fs } from "fs";
+import { AdminAction } from "../../../util/adminAction";
 import { Account, AdminAuthorized } from "../../../util/api/authorized";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
@@ -171,7 +172,7 @@ class AdminRouter {
   @AdminAuthorized()
   public async getInstance() {
     const packageFile = JSON.parse(
-      await readFile(
+      await fs.readFile(
         new URL("../../../../package.json", import.meta.url),
         "utf-8"
       )
@@ -598,6 +599,125 @@ class AdminRouter {
     return {
       success: true,
       pages: Math.ceil(count / 50),
+    };
+  }
+
+  @Post("/action/:uid/:action")
+  @AdminAuthorized()
+  @RateLimitMiddleware(15)()
+  public async performAction(
+    @Account() account: User,
+    @Param("uid") uid: string,
+    @Param("action") action: AdminAction,
+    @Body() body: any
+  ) {
+    async function createActionLog(msg: string, importance: number) {
+      await prisma.adminActivityLog.create({
+        data: {
+          user: {
+            connect: {
+              id: Number(account.id),
+            },
+          },
+          activity: msg,
+          importance,
+        },
+      });
+    }
+
+    const user = await prisma.user.findFirst({
+      where: {
+        id: Number(uid),
+      },
+    });
+
+    if (!user) {
+      return {
+        success: false,
+        error: "User not found",
+      };
+    }
+
+    const actions = [
+      {
+        name: AdminAction.ADJUST_TICKETS,
+        action: async () => {
+          if (body.amount < 0) {
+            return {
+              success: false,
+              error: "Amount must be greater than 0",
+            };
+          }
+
+          await prisma.user.update({
+            where: {
+              id: Number(uid),
+            },
+            data: {
+              tickets: {
+                set: Number(body.amount),
+              },
+            },
+          });
+
+          await createActionLog(
+            `Adjusted ${user.username}'s tickets to ${body.amount}`,
+            3
+          );
+        },
+      },
+      {
+        name: AdminAction.RESET_USERNAME,
+        action: async () => {
+          const username = `FrameworkUser${Math.floor(
+            Math.random() * 10000
+          ).toString()}`;
+
+          await prisma.user.update({
+            where: {
+              id: Number(uid),
+            },
+            data: {
+              username,
+            },
+          });
+
+          await createActionLog(
+            `Reset ${user.username}'s username to ${username}`,
+            3
+          );
+        },
+      },
+      {
+        name: AdminAction.LOGOUT_SESSIONS,
+        action: async () => {
+          await prisma.session.deleteMany({
+            where: {
+              userId: Number(uid),
+            },
+          });
+
+          await createActionLog(
+            `Logged out all sessions for ${user.username}`,
+            2
+          );
+        },
+      },
+    ];
+
+    const foundAction = actions.find((a) => a.name === (action as AdminAction));
+
+    if (!foundAction) {
+      return {
+        success: false,
+        error: "Invalid action",
+      };
+    }
+
+    await foundAction.action();
+
+    return {
+      success: true,
     };
   }
 }
