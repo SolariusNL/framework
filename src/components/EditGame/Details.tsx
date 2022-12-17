@@ -19,7 +19,7 @@ import { GameCopyrightMetadata, GameGenre } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import React, { useEffect } from "react";
 import { BsMarkdown } from "react-icons/bs";
-import { HiCheckCircle, HiCloud } from "react-icons/hi";
+import { HiCheckCircle, HiCloud, HiPlus } from "react-icons/hi";
 import getFileFromImg from "../../util/getFileFromImg";
 import getMediaUrl from "../../util/getMedia";
 import { Game } from "../../util/prisma-types";
@@ -126,22 +126,23 @@ const Details = ({ game }: DetailsProps) => {
       pointer: "copyrightMetadata",
       title: "Copyright metadata",
       hint: (
-        <Stack spacing={8}>
-          <Text color="dimmed" size="sm">
+        <div>
+          <Text color="dimmed" size="sm" mb={8}>
             Click on a notice to edit it.
           </Text>
           <Button
-            onClick={() => createCopyRightMetadata()}
+            onClick={async () => await createCopyRightMetadata()}
             disabled={copyrightMetadata.length >= 5}
+            leftIcon={<HiPlus />}
           >
             Create
           </Button>
-        </Stack>
+        </div>
       ),
     },
   ];
 
-  const createCopyRightMetadata = () => {
+  const createCopyRightMetadata = async () => {
     setCopyrightMetadata([
       ...copyrightMetadata,
       {
@@ -455,7 +456,9 @@ const Details = ({ game }: DetailsProps) => {
                               />
                               <Button
                                 variant="default"
-                                onClick={createCopyRightMetadata}
+                                onClick={async () =>
+                                  await createCopyRightMetadata()
+                                }
                               >
                                 Create
                               </Button>

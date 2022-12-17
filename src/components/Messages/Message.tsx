@@ -30,15 +30,23 @@ import UserContext from "../UserContext";
 
 interface MessageProps {
   message: Message;
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
 }
 
-const Message: React.FC<MessageProps> = ({ message: msg }) => {
+const Message: React.FC<MessageProps> = ({ message, setMessages }) => {
   const [reportOpen, setReportOpen] = React.useState(false);
-  const [message, setMessage] = React.useState(msg);
   const user = useFrameworkUser()!;
 
   const read = async () => {
-    setMessage({ ...message, read: !message.read });
+    setMessages((messages) =>
+      messages.map((msg) => {
+        if (msg.id === message.id) {
+          return { ...msg, read: !msg.read };
+        }
+        return msg;
+      })
+    );
+
     await fetch(`/api/messages/msg/${message.id}/read`, {
       method: "POST",
       headers: {
@@ -49,7 +57,15 @@ const Message: React.FC<MessageProps> = ({ message: msg }) => {
   };
 
   const archive = async () => {
-    setMessage({ ...message, archived: !message.archived });
+    setMessages((messages) =>
+      messages.map((msg) => {
+        if (msg.id === message.id) {
+          return { ...msg, archived: !msg.archived };
+        }
+        return msg;
+      })
+    );
+
     await fetch(`/api/messages/msg/${message.id}/archive`, {
       method: "POST",
       headers: {

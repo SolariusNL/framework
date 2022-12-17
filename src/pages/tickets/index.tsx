@@ -78,11 +78,6 @@ const Tickets: NextPage<TicketsProps> = ({ user }) => {
               <UnstyledButton
                 sx={(theme) => ({
                   borderRadius: theme.radius.md,
-                  color:
-                    theme.colorScheme === "dark"
-                      ? theme.colors.green[4]
-                      : theme.colors.green[5],
-
                   "&:hover": {
                     backgroundColor:
                       theme.colorScheme === "dark"
