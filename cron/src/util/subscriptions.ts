@@ -68,13 +68,13 @@ async function grantPremiumMonthlyReward(user: User) {
   ) {
     switch (level) {
       case PremiumSubscriptionType.PREMIUM_ONE_MONTH:
-        await grantTickets(1200);
+        //await grantTickets(1200);
         break;
       case PremiumSubscriptionType.PREMIUM_ONE_YEAR:
-        await grantTickets(14400);
+        //await grantTickets(14400);
         break;
       case PremiumSubscriptionType.PREMIUM_SIX_MONTHS:
-        await grantTickets(7200);
+        //await grantTickets(7200);
         break;
     }
   }
