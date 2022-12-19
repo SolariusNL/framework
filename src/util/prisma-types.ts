@@ -190,6 +190,8 @@ export const userSelect: Prisma.UserSelect = {
       following: true,
     },
   },
+  emailResetRequired: true,
+  passwordResetRequired: true,
 };
 
 export const gameSelect: Prisma.GameSelect = {
