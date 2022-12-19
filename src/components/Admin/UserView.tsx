@@ -24,6 +24,7 @@ import LogoutSessions from "./UserActions/LogoutSessions";
 import ResetEmail from "./UserActions/ResetEmail";
 import ResetUsername from "./UserActions/ResetUsername";
 import ReactNoSSR from "react-no-ssr";
+import ResetPassword from "./UserActions/ResetPassword";
 
 interface UserViewProps {
   user: AdminViewUser;
@@ -349,13 +350,17 @@ const UserView = ({ user }: UserViewProps) => {
 
         <Tabs.Panel value="actions">
           <Group spacing={5}>
-            {[AdjustTickets, ResetUsername, LogoutSessions, ResetEmail].map(
-              (Action, i) => (
-                <ReactNoSSR key={i}>
-                  <Action user={user} />
-                </ReactNoSSR>
-              )
-            )}
+            {[
+              AdjustTickets,
+              ResetUsername,
+              LogoutSessions,
+              ResetEmail,
+              ResetPassword,
+            ].map((Action, i) => (
+              <ReactNoSSR key={i}>
+                <Action user={user} />
+              </ReactNoSSR>
+            ))}
           </Group>
         </Tabs.Panel>
       </Tabs>

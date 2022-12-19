@@ -19,10 +19,10 @@ import {
 import { useLocalStorage } from "@mantine/hooks";
 import { ModalsProvider } from "@mantine/modals";
 import {
-  hideNotification,
   NotificationsProvider,
   showNotification,
 } from "@mantine/notifications";
+import { MDXProvider } from "@mdx-js/react";
 import { getCookie, setCookie } from "cookies-next";
 import { register } from "fetch-intercept";
 import { GetServerSidePropsContext } from "next";
@@ -35,14 +35,12 @@ import NextNProgress from "nextjs-progressbar";
 import { useEffect, useState } from "react";
 import { HiCheckCircle, HiXCircle } from "react-icons/hi";
 import "../../flags.config";
+import Stateful from "../components/Stateful";
 import { FrameworkUserProvider } from "../contexts/FrameworkUser";
 import { UserInformationWrapper } from "../contexts/UserInformationDialog";
 import "../styles/framework.css";
 import "../styles/tw.css";
 import logout from "../util/api/logout";
-import { MDXProvider } from "@mdx-js/react";
-import { User } from "../util/prisma-types";
-import Stateful from "../components/Stateful";
 
 const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
   const { Component, pageProps } = props;
@@ -387,10 +385,11 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
                               leftIcon={<HiCheckCircle />}
                               disabled={
                                 !email ||
-                                !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+                                !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
+                                email === pageProps.user.email
                               }
                               onClick={async () => {
-                                await fetch("/api/@me/changeemail", {
+                                await fetch("/api/users/@me/changeemail", {
                                   method: "POST",
                                   headers: {
                                     "Content-Type": "application/json",
@@ -432,17 +431,16 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
                               label="Password"
                               description="Your new password"
                               value={password}
-                              onChange={(e) => setPassword(e.currentTarget.value)}
+                              onChange={(e) =>
+                                setPassword(e.currentTarget.value)
+                              }
                             />
                             <Button
                               mt={14}
                               leftIcon={<HiCheckCircle />}
-                              disabled={
-                                !password ||
-                                password.length < 8
-                              }
+                              disabled={!password || password.length < 8}
                               onClick={async () => {
-                                await fetch("/api/@me/changeemail", {
+                                await fetch("/api/users/@me/changepassword", {
                                   method: "POST",
                                   headers: {
                                     "Content-Type": "application/json",
@@ -451,12 +449,12 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
                                     ),
                                   },
                                   body: JSON.stringify({
-                                    newEmail: email,
+                                    newPassword: password,
                                   }),
                                 }).finally(() => router.reload());
                               }}
                             >
-                              Reset email
+                              Reset password
                             </Button>
                           </>
                         )}

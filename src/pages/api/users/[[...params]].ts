@@ -80,21 +80,31 @@ class UserRouter {
     const { oldPassword, newPassword } = data;
     const newPasswordHash = await hashPass(newPassword);
 
-    if (!oldPassword || !newPassword) {
+    if (!newPassword) {
       return {
         status: 400,
-        message: "Missing oldPassword or newPassword",
+        message: "Missing newPassword",
       };
     }
 
-    if (oldPassword === newPasswordHash) {
+    if (!user.passwordResetRequired && !oldPassword) {
+      return {
+        status: 400,
+        message: "Missing oldPassword, because passwordResetRequired is false",
+      };
+    }
+
+    if (oldPassword === newPasswordHash && !user.passwordResetRequired) {
       return {
         status: 400,
         message: "New password is the same as the current password",
       };
     }
 
-    if (!(await isSamePass(oldPassword, user.password))) {
+    if (
+      !user.passwordResetRequired &&
+      !(await isSamePass(oldPassword, user.password))
+    ) {
       return {
         status: 400,
         message: "Old password is not correct",
