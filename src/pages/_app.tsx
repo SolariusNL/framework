@@ -90,8 +90,8 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
       showNotification({
         title: "Error",
         message:
-          "An error occurred while processing your request: " + error ||
-          "Unknown error",
+          "An error occurred while processing your request: " +
+            JSON.stringify(error) || "Unknown error",
         icon: <HiXCircle />,
         color: "red",
         id: "request-error",
@@ -113,8 +113,8 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
       showNotification({
         title: "Error",
         message:
-          "An error occurred while processing your request: " + error ||
-          "Unknown error",
+          "An error occurred while processing your request: " +
+            JSON.stringify(error) || "Unknown error",
         icon: <HiXCircle />,
         color: "red",
         id: "request-error",

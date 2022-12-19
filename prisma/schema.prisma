@@ -114,6 +114,8 @@ model User {
   punishmentHistory          PunishmentLog[]       @relation("punishmentLog")
   issuedPunishments          PunishmentLog[]       @relation("punishmentLogAuthor")
   privacyPreferences         PrivacyPreferences[]
+  passwordResetRequired      Boolean               @default(false)
+  emailResetRequired         Boolean               @default(false)
 }
 
 model ConnectedAccount {

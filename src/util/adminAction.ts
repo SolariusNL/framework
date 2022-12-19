@@ -6,6 +6,8 @@ export enum AdminAction {
   ADJUST_TICKETS = "adjust-tickets",
   RESET_USERNAME = "reset-username",
   LOGOUT_SESSIONS = "logout-sessions",
+  RESET_EMAIL = "reset-email",
+  RESET_PASSWORD = "reset-password",
 }
 
 async function performAdminAction(action: AdminAction, data: any, uid: number) {

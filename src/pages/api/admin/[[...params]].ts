@@ -703,6 +703,36 @@ class AdminRouter {
           );
         },
       },
+      {
+        name: AdminAction.RESET_EMAIL,
+        action: async () => {
+          await prisma.user.update({
+            where: {
+              id: Number(uid),
+            },
+            data: {
+              emailResetRequired: true,
+            },
+          });
+
+          await createActionLog(`Reset ${user.username}'s email address`, 3);
+        },
+      },
+      {
+        name: AdminAction.RESET_PASSWORD,
+        action: async () => {
+          await prisma.user.update({
+            where: {
+              id: Number(uid),
+            },
+            data: {
+              passwordResetRequired: true,
+            },
+          });
+
+          await createActionLog(`Reset ${user.username}'s password`, 3);
+        },
+      },
     ];
 
     const foundAction = actions.find((a) => a.name === (action as AdminAction));
