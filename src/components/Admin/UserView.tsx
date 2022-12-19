@@ -121,6 +121,8 @@ const UserView = ({ user }: UserViewProps) => {
                 ["Linked Discord", user.discordAccount?.discordId],
                 ["Games", user.games.map((g) => g.id).join(", ")],
                 ["Links", user.profileLinks.map((l) => l.url).join(", ")],
+                ["Email Reset", user.emailResetRequired],
+                ["Password Reset", user.passwordResetRequired],
                 [
                   "Followers",
                   <div

@@ -12,7 +12,9 @@ import {
   MantineProvider,
   MantineTheme,
   Modal,
+  PasswordInput,
   Text,
+  TextInput,
 } from "@mantine/core";
 import { useLocalStorage } from "@mantine/hooks";
 import { ModalsProvider } from "@mantine/modals";
@@ -39,6 +41,8 @@ import "../styles/framework.css";
 import "../styles/tw.css";
 import logout from "../util/api/logout";
 import { MDXProvider } from "@mdx-js/react";
+import { User } from "../util/prisma-types";
+import Stateful from "../components/Stateful";
 
 const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
   const { Component, pageProps } = props;
@@ -353,6 +357,111 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
                         </Button>
                       </Group>
                     </Dialog>
+
+                    <Modal
+                      title="Reset email"
+                      opened={
+                        pageProps != undefined &&
+                        pageProps.user &&
+                        pageProps.user.emailResetRequired
+                      }
+                      onClose={() => null}
+                      withCloseButton={false}
+                    >
+                      <Text mb={16}>
+                        You are required to reset your email address. Please
+                        enter a new email address below.
+                      </Text>
+                      <Stateful>
+                        {(email, setEmail) => (
+                          <>
+                            <TextInput
+                              type="email"
+                              label="Email"
+                              description="Your new email address"
+                              value={email}
+                              onChange={(e) => setEmail(e.currentTarget.value)}
+                            />
+                            <Button
+                              mt={14}
+                              leftIcon={<HiCheckCircle />}
+                              disabled={
+                                !email ||
+                                !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+                              }
+                              onClick={async () => {
+                                await fetch("/api/@me/changeemail", {
+                                  method: "POST",
+                                  headers: {
+                                    "Content-Type": "application/json",
+                                    Authorization: String(
+                                      getCookie(".frameworksession")
+                                    ),
+                                  },
+                                  body: JSON.stringify({
+                                    newEmail: email,
+                                  }),
+                                }).finally(() => router.reload());
+                              }}
+                            >
+                              Reset email
+                            </Button>
+                          </>
+                        )}
+                      </Stateful>
+                    </Modal>
+
+                    <Modal
+                      title="Reset password"
+                      opened={
+                        pageProps != undefined &&
+                        pageProps.user &&
+                        pageProps.user.passwordResetRequired
+                      }
+                      onClose={() => null}
+                      withCloseButton={false}
+                    >
+                      <Text mb={16}>
+                        You are required to reset your password. Please enter a
+                        new password below.
+                      </Text>
+                      <Stateful>
+                        {(password, setPassword) => (
+                          <>
+                            <PasswordInput
+                              label="Password"
+                              description="Your new password"
+                              value={password}
+                              onChange={(e) => setPassword(e.currentTarget.value)}
+                            />
+                            <Button
+                              mt={14}
+                              leftIcon={<HiCheckCircle />}
+                              disabled={
+                                !password ||
+                                password.length < 8
+                              }
+                              onClick={async () => {
+                                await fetch("/api/@me/changeemail", {
+                                  method: "POST",
+                                  headers: {
+                                    "Content-Type": "application/json",
+                                    Authorization: String(
+                                      getCookie(".frameworksession")
+                                    ),
+                                  },
+                                  body: JSON.stringify({
+                                    newEmail: email,
+                                  }),
+                                }).finally(() => router.reload());
+                              }}
+                            >
+                              Reset email
+                            </Button>
+                          </>
+                        )}
+                      </Stateful>
+                    </Modal>
                   </FrameworkUserProvider>
                 </NotificationsProvider>
               </MDXProvider>

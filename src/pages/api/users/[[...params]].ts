@@ -103,7 +103,10 @@ class UserRouter {
 
     await prisma.user.update({
       where: { id: user.id },
-      data: { password: await hashPass(newPassword) },
+      data: {
+        password: await hashPass(newPassword),
+        passwordResetRequired: false,
+      },
     });
 
     await prisma.session.deleteMany({
@@ -152,7 +155,11 @@ class UserRouter {
 
     await prisma.user.update({
       where: { id: user.id },
-      data: { email: newEmail, emailVerified: false },
+      data: {
+        email: newEmail,
+        emailVerified: false,
+        emailResetRequired: false,
+      },
     });
 
     if (process.env.MAIL_ENABLED === "true") {
