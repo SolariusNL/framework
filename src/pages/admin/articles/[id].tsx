@@ -114,29 +114,22 @@ const ArticleView: NextPage<ArticleViewProps> = ({ user, article }) => {
       </TypographyStylesProvider>
       <Divider mt={32} mb={32} />
       <div className="flex justify-between">
-        <div className="flex items-center gap-4">
-          <div className="flex gap-0.5">
-            {article.viewers.map((viewer) => (
-              <Tooltip key={viewer.id} label={viewer.username}>
-                <Avatar
-                  size={24}
-                  src={getMediaUrl(viewer.avatarUri)}
-                  radius="xl"
-                  key={viewer.id}
-                />
-              </Tooltip>
-            ))}
-          </div>
-          <div className="flex gap-2">
-            {article.tags.map((tag) => (
-              <Badge key={tag}>{tag}</Badge>
-            ))}
-          </div>
+        <div className="flex gap-0.5">
+          {article.viewers.map((viewer) => (
+            <Tooltip key={viewer.id} label={viewer.username}>
+              <Avatar
+                size={24}
+                src={getMediaUrl(viewer.avatarUri)}
+                radius="xl"
+                key={viewer.id}
+              />
+            </Tooltip>
+          ))}
         </div>
-        <div>
-          <Text color="dimmed" weight={500}>
-            {new Date(article.createdAt).toLocaleDateString()}
-          </Text>
+        <div className="flex gap-2">
+          {article.tags.map((tag) => (
+            <Badge key={tag}>{tag}</Badge>
+          ))}
         </div>
       </div>
     </Framework>

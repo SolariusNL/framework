@@ -814,24 +814,7 @@ class AdminRouter {
       },
     });
 
-    const tagMap = new Map<string, number>();
-
-    tags.forEach((t) => {
-      t.tags.forEach((tag) => {
-        if (tagMap.has(tag)) {
-          tagMap.set(tag, tagMap.get(tag)! + 1);
-        } else {
-          tagMap.set(tag, 1);
-        }
-      });
-    });
-
-    const tagArray = Array.from(tagMap.entries()).map(([tag, count]) => ({
-      tag,
-      count,
-    }));
-
-    return tagArray;
+    return tags.flatMap((t) => t.tags);
   }
 
   @Post("/articles/update/:id")
