@@ -7,12 +7,14 @@ import {
   HiCog,
   HiDesktopComputer,
   HiDocument,
+  HiFolder,
   HiKey,
   HiServer,
   HiUsers,
   HiViewGrid,
 } from "react-icons/hi";
 import Activity from "../../components/Admin/Pages/Activity";
+import Articles from "../../components/Admin/Pages/Articles";
 import BannedIPs from "../../components/Admin/Pages/BannedIPs";
 import Dashboard from "../../components/Admin/Pages/Dashboard";
 import Instance from "../../components/Admin/Pages/Instance";
@@ -84,6 +86,13 @@ const pages: {
     route: "/admin/games",
     component: <></>,
     description: "Manage games on your instance",
+  },
+  articles: {
+    label: "Articles",
+    icon: <HiFolder />,
+    route: "/admin/articles",
+    component: <Articles />,
+    description: "See news regarding administration policies",
   },
   comments: {
     label: "Comments",

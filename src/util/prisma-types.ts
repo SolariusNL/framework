@@ -192,6 +192,22 @@ export const userSelect: Prisma.UserSelect = {
   },
   emailResetRequired: true,
   passwordResetRequired: true,
+  adminPermissions: true,
+};
+
+const article = Prisma.validator<Prisma.AdminArticleArgs>()({
+  include: {
+    author: nonCurrentUserSelect,
+  },
+});
+
+export const articleSelect: Prisma.AdminArticleSelect = {
+  id: true,
+  title: true,
+  content: true,
+  createdAt: true,
+  updatedAt: true,
+  author: nonCurrentUserSelect,
 };
 
 export const gameSelect: Prisma.GameSelect = {
@@ -336,3 +352,4 @@ export type NonUser = Prisma.UserGetPayload<typeof nonuser>;
 export type NucleusKey = Prisma.NucleusKeyGetPayload<typeof nucleusKey>;
 export type Snippet = Prisma.CodeSnippetGetPayload<typeof snippet>;
 export type Message = Prisma.MessageGetPayload<typeof message>;
+export type Article = Prisma.AdminArticleGetPayload<typeof article>;

@@ -116,6 +116,8 @@ model User {
   privacyPreferences         PrivacyPreferences[]
   passwordResetRequired      Boolean               @default(false)
   emailResetRequired         Boolean               @default(false)
+  adminPermissions           AdminPermission[]
+  authoredAdminArticles      AdminArticle[]        @relation("adminArticles")
 }
 
 model ConnectedAccount {
@@ -124,6 +126,12 @@ model ConnectedAccount {
   accountId String
   user      User   @relation("connectedAccounts", fields: [userId], references: [id])
   userId    Int
+}
+
+enum AdminPermission {
+  WRITE_ARTICLE
+  PUNISH_USERS
+  RUN_ACTIONS
 }
 
 model DiscordConnectCode {
@@ -586,4 +594,15 @@ model GameCopyrightMetadata {
   title       String
   description String
   createdAt   DateTime @default(now())
+}
+
+model AdminArticle {
+  id        String   @id @default(uuid())
+  author    User     @relation("adminArticles", fields: [authorId], references: [id])
+  authorId  Int
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  tags      String[]
 }

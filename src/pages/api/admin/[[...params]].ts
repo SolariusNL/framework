@@ -12,7 +12,11 @@ import { AdminAction } from "../../../util/adminAction";
 import { Account, AdminAuthorized } from "../../../util/api/authorized";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
-import { nonCurrentUserSelect, userSelect } from "../../../util/prisma-types";
+import {
+  nonCurrentUserSelect,
+  userSelect,
+  articleSelect,
+} from "../../../util/prisma-types";
 import { RateLimitMiddleware } from "../../../util/rateLimit";
 
 class AdminRouter {
@@ -749,6 +753,42 @@ class AdminRouter {
     return {
       success: true,
     };
+  }
+
+  @Get("/articles/get")
+  @AdminAuthorized()
+  public async getArticles() {
+    const articles = await prisma.adminArticle.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+      select: articleSelect,
+    });
+
+    return articles;
+  }
+
+  @Post("/articles/create")
+  @AdminAuthorized()
+  public async createArticle(
+    @Body() body: { title: string; content: string },
+    @Account() account: User
+  ) {
+    const article = await prisma.adminArticle.create({
+      data: {
+        title: body.title,
+        content: body.content,
+        createdAt: new Date(),
+        author: {
+          connect: {
+            id: Number(account.id),
+          },
+        },
+      },
+      select: articleSelect,
+    });
+
+    return article;
   }
 }
 
