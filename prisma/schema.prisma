@@ -118,6 +118,7 @@ model User {
   emailResetRequired         Boolean               @default(false)
   adminPermissions           AdminPermission[]
   authoredAdminArticles      AdminArticle[]        @relation("adminArticles")
+  viewedAdminArticles        AdminArticle[]        @relation("adminArticlesViewed")
 }
 
 model ConnectedAccount {
@@ -605,4 +606,5 @@ model AdminArticle {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
   tags      String[]
+  viewers   User[]   @relation("adminArticlesViewed")
 }

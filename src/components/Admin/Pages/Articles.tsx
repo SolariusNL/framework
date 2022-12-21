@@ -1,8 +1,9 @@
 import {
-  Avatar,
+  Badge,
   Button,
   Group,
   Modal,
+  MultiSelect,
   Skeleton,
   Stack,
   Text,
@@ -14,7 +15,6 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { HiPlusCircle } from "react-icons/hi";
 import { useFrameworkUser } from "../../../contexts/FrameworkUser";
-import getMediaUrl from "../../../util/getMedia";
 import { Article } from "../../../util/prisma-types";
 import RichText from "../../RichText";
 import ShadedButton from "../../ShadedButton";
@@ -24,9 +24,11 @@ const Articles: React.FC = () => {
   const user = useFrameworkUser()!;
   const [articles, setArticles] = useState<Article[]>();
   const [loading, setLoading] = useState(false);
+  const [existingTags, setExistingTags] = useState<string[]>([]);
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [tags, setTags] = useState<string[]>([]);
 
   const fetchArticles = async () => {
     setLoading(true);
@@ -40,6 +42,16 @@ const Articles: React.FC = () => {
     setLoading(false);
   };
 
+  const fetchTags = async () => {
+    const tags = await fetch("/api/admin/articles/tags", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: String(getCookie(".frameworksession")),
+      },
+    }).then((res) => res.json());
+    setExistingTags(tags);
+  };
+
   const createArticle = async () => {
     await fetch("/api/admin/articles/create", {
       method: "POST",
@@ -50,6 +62,7 @@ const Articles: React.FC = () => {
       body: JSON.stringify({
         title,
         content,
+        tags,
       }),
     }).then((res) => res.json());
 
@@ -60,6 +73,7 @@ const Articles: React.FC = () => {
 
   useEffect(() => {
     fetchArticles();
+    fetchTags();
   }, []);
 
   return (
@@ -87,9 +101,21 @@ const Articles: React.FC = () => {
                   value={title}
                   onChange={(e) => setTitle(e.currentTarget.value)}
                 />
-
                 <RichText mt={16} value={content} onChange={setContent} />
-
+                <MultiSelect
+                  label="Tags"
+                  placeholder="Create tags for this article"
+                  searchable
+                  creatable
+                  getCreateLabel={(query) => `+ Create tag '${query}'`}
+                  data={existingTags || []}
+                  mt={16}
+                  description="Tags are used for search and filtering"
+                  onChange={(value) => {
+                    setTags(value);
+                    setExistingTags([...existingTags, ...value]);
+                  }}
+                />
                 <Button
                   mt={16}
                   onClick={() => {
@@ -118,13 +144,8 @@ const Articles: React.FC = () => {
         <Stack spacing={8}>
           {articles.map((article) => (
             <Link href={`/admin/articles/${article.id}`} key={article.id}>
-              <ShadedButton style={{ width: "100%" }}>
-                <div className="flex items-center gap-6">
-                  <Avatar
-                    radius="xl"
-                    src={getMediaUrl(article.author.avatarUri)}
-                    size={24}
-                  />
+              <ShadedButton className="flex flex-col gap-2">
+                <div className="flex items-center">
                   <Stack spacing={3}>
                     <Group>
                       <Text weight={500}>{article.title}</Text>
@@ -139,6 +160,11 @@ const Articles: React.FC = () => {
                         .replace(/(\r\n|\n|\r)/gm, " ")}
                     </Text>
                   </Stack>
+                </div>
+                <div className="flex items-center gap-2">
+                  {article.tags.map((tag) => (
+                    <Badge key={tag}>{tag}</Badge>
+                  ))}
                 </div>
               </ShadedButton>
             </Link>

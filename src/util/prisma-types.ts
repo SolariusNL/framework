@@ -198,6 +198,13 @@ export const userSelect: Prisma.UserSelect = {
 const article = Prisma.validator<Prisma.AdminArticleArgs>()({
   include: {
     author: nonCurrentUserSelect,
+    viewers: {
+      select: {
+        id: true,
+        avatarUri: true,
+        username: true,
+      },
+    },
   },
 });
 
@@ -208,6 +215,14 @@ export const articleSelect: Prisma.AdminArticleSelect = {
   createdAt: true,
   updatedAt: true,
   author: nonCurrentUserSelect,
+  tags: true,
+  viewers: {
+    select: {
+      id: true,
+      avatarUri: true,
+      username: true,
+    },
+  },
 };
 
 export const gameSelect: Prisma.GameSelect = {

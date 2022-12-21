@@ -1,4 +1,8 @@
-import { NotificationType, PunishmentType } from "@prisma/client";
+import {
+  AdminPermission,
+  NotificationType,
+  PunishmentType,
+} from "@prisma/client";
 import {
   Body,
   createHandler,
@@ -771,9 +775,16 @@ class AdminRouter {
   @Post("/articles/create")
   @AdminAuthorized()
   public async createArticle(
-    @Body() body: { title: string; content: string },
+    @Body() body: { title: string; content: string; tags: string[] },
     @Account() account: User
   ) {
+    if (!account.adminPermissions.includes(AdminPermission.WRITE_ARTICLE)) {
+      return {
+        success: false,
+        error: "You do not have permission to do this",
+      };
+    }
+
     const article = await prisma.adminArticle.create({
       data: {
         title: body.title,
@@ -783,6 +794,69 @@ class AdminRouter {
           connect: {
             id: Number(account.id),
           },
+        },
+        tags: {
+          set: body.tags,
+        },
+      },
+      select: articleSelect,
+    });
+
+    return article;
+  }
+
+  @Get("/articles/tags")
+  @AdminAuthorized()
+  public async getTags() {
+    const tags = await prisma.adminArticle.findMany({
+      select: {
+        tags: true,
+      },
+    });
+
+    const tagMap = new Map<string, number>();
+
+    tags.forEach((t) => {
+      t.tags.forEach((tag) => {
+        if (tagMap.has(tag)) {
+          tagMap.set(tag, tagMap.get(tag)! + 1);
+        } else {
+          tagMap.set(tag, 1);
+        }
+      });
+    });
+
+    const tagArray = Array.from(tagMap.entries()).map(([tag, count]) => ({
+      tag,
+      count,
+    }));
+
+    return tagArray;
+  }
+
+  @Post("/articles/update/:id")
+  @AdminAuthorized()
+  public async updateArticle(
+    @Param("id") id: string,
+    @Body() body: { title: string; content: string; tags: string[] },
+    @Account() account: User
+  ) {
+    if (!account.adminPermissions.includes(AdminPermission.WRITE_ARTICLE)) {
+      return {
+        success: false,
+        error: "You do not have permission to do this",
+      };
+    }
+
+    const article = await prisma.adminArticle.update({
+      where: {
+        id: String(id),
+      },
+      data: {
+        title: body.title,
+        content: body.content,
+        tags: {
+          set: body.tags,
         },
       },
       select: articleSelect,
