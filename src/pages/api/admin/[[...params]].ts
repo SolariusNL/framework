@@ -814,7 +814,10 @@ class AdminRouter {
       },
     });
 
-    return tags.flatMap((t) => t.tags);
+    const tagArray = tags
+      .flatMap((t) => t.tags)
+      .filter((v, i, a) => a.indexOf(v) === i);
+    return tagArray;
   }
 
   @Post("/articles/update/:id")
