@@ -222,6 +222,39 @@ class AdminRouter {
     return users;
   }
 
+  @Post("/users/:id/permissions/update")
+  @AdminAuthorized()
+  public async updatePermissions(
+    @Param("id") id: string,
+    @Body() permissions: AdminPermission[]
+  ) {
+    const user = await prisma.user.findFirst({
+      where: {
+        id: Number(id),
+      },
+    });
+
+    if (!user) {
+      return {
+        success: false,
+        error: "User not found",
+      };
+    }
+
+    await prisma.user.update({
+      where: {
+        id: Number(id),
+      },
+      data: {
+        adminPermissions: permissions,
+      },
+    });
+
+    return {
+      success: true,
+    };
+  }
+
   @Get("/userpages")
   @AdminAuthorized()
   public async getUserPages() {

@@ -133,6 +133,7 @@ enum AdminPermission {
   WRITE_ARTICLE
   PUNISH_USERS
   RUN_ACTIONS
+  EDIT_PERMISSIONS
 }
 
 model DiscordConnectCode {

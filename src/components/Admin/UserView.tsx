@@ -3,6 +3,7 @@ import {
   Badge,
   Button,
   Card,
+  Checkbox,
   Group,
   Stack,
   Table,
@@ -25,6 +26,11 @@ import ResetEmail from "./UserActions/ResetEmail";
 import ResetUsername from "./UserActions/ResetUsername";
 import ReactNoSSR from "react-no-ssr";
 import ResetPassword from "./UserActions/ResetPassword";
+import { AdminPermission } from "@prisma/client";
+import { useFrameworkUser } from "../../contexts/FrameworkUser";
+import { getCookie } from "cookies-next";
+import { showNotification } from "@mantine/notifications";
+import { HiCheckCircle } from "react-icons/hi";
 
 interface UserViewProps {
   user: AdminViewUser;
@@ -37,6 +43,14 @@ const UserView = ({ user }: UserViewProps) => {
 
   const { setOpen, setUser, setDefaultTab } = useUserInformationDialog();
   const [punishOpened, setPunishOpened] = React.useState(false);
+  const currentUser = useFrameworkUser()!;
+  const [permissions, setPermissions] = React.useState<AdminPermission[]>([]);
+
+  React.useEffect(() => {
+    if (user.adminPermissions) {
+      setPermissions(user.adminPermissions);
+    }
+  }, [user.adminPermissions]);
 
   return (
     <>
@@ -73,6 +87,9 @@ const UserView = ({ user }: UserViewProps) => {
           onClick={() => {
             setPunishOpened(true);
           }}
+          disabled={
+            !currentUser.adminPermissions.includes(AdminPermission.PUNISH_USERS)
+          }
         >
           Punish
         </Button>
@@ -98,6 +115,7 @@ const UserView = ({ user }: UserViewProps) => {
           <Tabs.Tab value="secrets">Secrets</Tabs.Tab>
           <Tabs.Tab value="history">Punishment History</Tabs.Tab>
           <Tabs.Tab value="actions">Actions</Tabs.Tab>
+          <Tabs.Tab value="permissions">Permissions</Tabs.Tab>
         </Tabs.List>
 
         <Tabs.Panel value="info">
@@ -349,19 +367,105 @@ const UserView = ({ user }: UserViewProps) => {
         </Tabs.Panel>
 
         <Tabs.Panel value="actions">
-          <Group spacing={5}>
-            {[
-              AdjustTickets,
-              ResetUsername,
-              LogoutSessions,
-              ResetEmail,
-              ResetPassword,
-            ].map((Action, i) => (
-              <ReactNoSSR key={i}>
-                <Action user={user} />
-              </ReactNoSSR>
-            ))}
-          </Group>
+          {currentUser.adminPermissions.includes(
+            AdminPermission.RUN_ACTIONS
+          ) ? (
+            <Group spacing={5}>
+              {[
+                AdjustTickets,
+                ResetUsername,
+                LogoutSessions,
+                ResetEmail,
+                ResetPassword,
+              ].map((Action, i) => (
+                <ReactNoSSR key={i}>
+                  <Action user={user} />
+                </ReactNoSSR>
+              ))}
+            </Group>
+          ) : (
+            <ModernEmptyState
+              title="No actions available"
+              body="You do not have permission to run actions."
+            />
+          )}
+        </Tabs.Panel>
+
+        <Tabs.Panel value="permissions">
+          {user.role === "ADMIN" ? (
+            <>
+              <Stack spacing={8} mb={16}>
+                {Object.values(AdminPermission).map((permission) => (
+                  <Checkbox
+                    key={permission}
+                    checked={permissions.includes(permission)}
+                    disabled={
+                      !currentUser.adminPermissions.includes(
+                        AdminPermission.EDIT_PERMISSIONS
+                      ) || user.id === currentUser.id
+                    }
+                    label={
+                      ("Can " +
+                        [
+                          [AdminPermission.WRITE_ARTICLE, "write articles"],
+                          [AdminPermission.PUNISH_USERS, "punish users"],
+                          [AdminPermission.RUN_ACTIONS, "run actions"],
+                          [
+                            AdminPermission.EDIT_PERMISSIONS,
+                            "edit permissions",
+                          ],
+                        ].find((i) => i[0] === permission)![1]) as string
+                    }
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setPermissions([...permissions, permission]);
+                      } else {
+                        setPermissions(
+                          permissions.filter((p) => p !== permission)
+                        );
+                      }
+                    }}
+                  />
+                ))}
+              </Stack>
+
+              <Button
+                onClick={() => {
+                  fetch(`/api/admin/users/${user.id}/permissions/update`, {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: String(getCookie(".frameworksession")),
+                    },
+                    body: JSON.stringify(permissions),
+                  })
+                    .then((res) => res.json())
+                    .then(() => {
+                      showNotification({
+                        title: "Permissions updated",
+                        message:
+                          "The permissions for this user have been updated.",
+                        icon: <HiCheckCircle />,
+                      });
+                    });
+                }}
+                disabled={
+                  user.id === currentUser.id ||
+                  !currentUser.adminPermissions.includes(
+                    AdminPermission.EDIT_PERMISSIONS
+                  ) ||
+                  permissions === user.adminPermissions
+                }
+              >
+                Save changes
+              </Button>
+            </>
+          ) : (
+            <ModernEmptyState
+              title="No permissions"
+              body="This user has no permissions, since they are not an admin."
+            />
+          )}
         </Tabs.Panel>
       </Tabs>
     </>
