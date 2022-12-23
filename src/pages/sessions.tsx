@@ -1,10 +1,10 @@
 import {
   Badge,
   Button,
-  Group,
-  ScrollArea,
+  Card,
   Skeleton,
   Table,
+  Text,
   Tooltip,
 } from "@mantine/core";
 import { Session } from "@prisma/client";
@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import { HiDesktopComputer, HiDeviceMobile, HiLogout } from "react-icons/hi";
 import Copy from "../components/Copy";
 import Framework from "../components/Framework";
+import ShadedCard from "../components/ShadedCard";
 import logout from "../util/api/logout";
 import authorizedRoute from "../util/authorizedRoute";
 import { User } from "../util/prisma-types";
@@ -66,7 +67,7 @@ const Sessions: NextPage<SessionsProps> = ({ user }) => {
       <Button
         leftIcon={<HiLogout />}
         color="red"
-        mb={16}
+        mb={32}
         onClick={async () => {
           sessions.forEach(async (session) => {
             await logout(session.token, true);
@@ -79,90 +80,97 @@ const Sessions: NextPage<SessionsProps> = ({ user }) => {
         Log out of all devices
       </Button>
 
-      <ScrollArea>
-        <Table striped>
-          <thead>
-            <tr>
-              <th>Status</th>
-              <th>IP Address</th>
-              <th>Device</th>
-              <th>Token</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {sessions.length > 0 ? (
-              sessions.map((session) => (
-                <tr key={session.id}>
-                  <td>
-                    {getCookie(".frameworksession") == session.token ? (
-                      <Badge>Current Session</Badge>
-                    ) : (
-                      <Badge color="orange">Other Session</Badge>
-                    )}
-                  </td>
-                  <td>{session.ip}</td>
-                  <td>
-                    <Badge>
-                      {getOperatingSystemDevice(
-                        getOperatingSystemEnumFromString(session.os)
-                      ) === Device.Desktop ? (
-                        <HiDesktopComputer />
+      <div className="grid grid-cols-3 gap-4 md:grid-cols-2">
+        {loading
+          ? Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} height={200} radius="md" />
+            ))
+          : sessions.map((session) => (
+              <ShadedCard shadow="sm" key={session.id} p={0} withBorder>
+                <Card.Section withBorder p={12}>
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <Badge>
+                        {getOperatingSystemDevice(
+                          getOperatingSystemEnumFromString(session.os)
+                        ) === Device.Desktop ? (
+                          <HiDesktopComputer />
+                        ) : (
+                          <HiDeviceMobile />
+                        )}
+                        {getOperatingSystemString(
+                          getOperatingSystemEnumFromString(session.os)
+                        )}
+                      </Badge>
+                    </div>
+                    <div>
+                      {getCookie(".frameworksession") == session.token ? (
+                        <Badge color="teal">Current Session</Badge>
                       ) : (
-                        <HiDeviceMobile />
+                        <Badge color="orange">Other Session</Badge>
                       )}
-                      {getOperatingSystemString(
-                        getOperatingSystemEnumFromString(session.os)
-                      )}
-                    </Badge>
-                  </td>
-                  <td>
-                    <Group>
-                      <Copy value={session.token} />
-                      {session.token.slice(0, 10)}...
-                    </Group>
-                  </td>
-                  <td>
-                    <Tooltip
-                      label={
-                        getCookie(".frameworksession") == session.token
-                          ? "You cannot log out of your current session"
-                          : "Log out of this device, and delete this session"
+                    </div>
+                  </div>
+                </Card.Section>
+                <Table>
+                  <tbody>
+                    <tr>
+                      <td>IP Address</td>
+                      <td>
+                        <div className="flex items-center gap-2">
+                          <Copy value={session.ip} />
+                          <Text weight={700}>{session.ip}</Text>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>User Agent</td>
+                      <td>
+                        <div className="flex items-center gap-2">
+                          <Copy value={session.ua} />
+                          <Text lineClamp={1} className="font-mono font-bold">
+                            {session.ua}
+                          </Text>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Token</td>
+                      <td>
+                        <div className="flex items-center gap-2">
+                          <Copy value={session.token} />
+                          <Text lineClamp={1} className="font-mono font-bold">
+                            {session.token.substring(0, 10)}...
+                          </Text>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </Table>
+                <div className="p-6">
+                  <Tooltip
+                    label={
+                      getCookie(".frameworksession") == session.token
+                        ? "You cannot log out of your current session"
+                        : "Log out of this device, and delete this session"
+                    }
+                  >
+                    <Button
+                      color="red"
+                      onClick={async () =>
+                        await logout(session.token, true).then(() => {
+                          fetchSessions();
+                        })
                       }
+                      disabled={getCookie(".frameworksession") == session.token}
                     >
-                      <Button
-                        color="red"
-                        size="xs"
-                        onClick={async () =>
-                          await logout(session.token, true).then(() => {
-                            fetchSessions();
-                          })
-                        }
-                        disabled={
-                          getCookie(".frameworksession") == session.token
-                        }
-                      >
-                        Log out
-                      </Button>
-                    </Tooltip>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                {Array(5)
-                  .fill(0)
-                  .map((_, i) => (
-                    <td key={i}>
-                      <Skeleton height={24} />
-                    </td>
-                  ))}
-              </tr>
-            )}
-          </tbody>
-        </Table>
-      </ScrollArea>
+                      Log out
+                    </Button>
+                  </Tooltip>
+                </div>
+              </ShadedCard>
+            ))}
+      </div>
     </Framework>
   );
 };
