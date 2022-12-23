@@ -82,8 +82,14 @@ class MessageRouter {
   public async getMyMessages(@Account() user: User) {
     const messages = await prisma.message.findMany({
       where: {
-        senderId: user.id,
-        recipientId: user.id,
+        OR: [
+          {
+            senderId: user.id,
+          },
+          {
+            recipientId: user.id,
+          },
+        ],
       },
       select: messageSelect,
     });

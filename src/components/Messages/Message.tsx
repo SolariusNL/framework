@@ -12,13 +12,7 @@ import {
 import { getCookie } from "cookies-next";
 import { motion } from "framer-motion";
 import React from "react";
-import {
-  HiArchive,
-  HiDesktopComputer,
-  HiEye,
-  HiFlag,
-  HiStar,
-} from "react-icons/hi";
+import { HiDesktopComputer, HiEye, HiFlag, HiStar } from "react-icons/hi";
 import { useFrameworkUser } from "../../contexts/FrameworkUser";
 import getMediaUrl from "../../util/getMedia";
 import { Message } from "../../util/prisma-types";
@@ -56,25 +50,6 @@ const Message: React.FC<MessageProps> = ({ message, setMessages }) => {
     });
   };
 
-  const archive = async () => {
-    setMessages((messages) =>
-      messages.map((msg) => {
-        if (msg.id === message.id) {
-          return { ...msg, archived: !msg.archived };
-        }
-        return msg;
-      })
-    );
-
-    await fetch(`/api/messages/msg/${message.id}/archive`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: String(getCookie(".frameworksession")),
-      },
-    });
-  };
-
   return (
     <>
       <ReportUser
@@ -97,75 +72,69 @@ const Message: React.FC<MessageProps> = ({ message, setMessages }) => {
                 <Text>{message.message}</Text>
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Text color="dimmed" weight={500} mb={6}>
-                    Important
-                  </Text>
-                  <Badge
-                    color={message.important ? "red" : "gray"}
-                    variant="dot"
-                  >
-                    {message.important ? "Yes" : "No"}
-                  </Badge>
-                </div>
-                <div>
-                  <Text color="dimmed" weight={500} mb={6}>
-                    System
-                  </Text>
-                  <Badge
-                    color={message.system ? "orange" : "gray"}
-                    variant="dot"
-                  >
-                    {message.system ? "Yes" : "No"}
-                  </Badge>
-                </div>
-                <div>
-                  <Text color="dimmed" weight={500} mb={6}>
-                    Author
-                  </Text>
-                  <div className="flex items-center gap-4">
-                    <UserContext user={message.sender}>
-                      <Avatar
-                        src={getMediaUrl(message.sender.avatarUri)}
-                        radius={999}
-                      />
-                    </UserContext>
-                    <Text>{message.sender.username}</Text>
+                {[
+                  [
+                    "Important",
+                    <Badge
+                      color={message.important ? "red" : "gray"}
+                      variant="dot"
+                      key="important"
+                    >
+                      {message.important ? "Yes" : "No"}
+                    </Badge>,
+                  ],
+                  [
+                    "System",
+                    <Badge
+                      color={message.system ? "orange" : "gray"}
+                      variant="dot"
+                      key="system"
+                    >
+                      {message.system ? "Yes" : "No"}
+                    </Badge>,
+                  ],
+                  [
+                    "Author",
+                    <div className="flex items-center gap-4" key="author">
+                      <UserContext user={message.sender}>
+                        <Avatar
+                          src={getMediaUrl(message.sender.avatarUri)}
+                          radius={999}
+                        />
+                      </UserContext>
+                      <Text>{message.sender.username}</Text>
+                    </div>,
+                  ],
+                  [
+                    "Recipient",
+                    <div className="flex items-center gap-4" key="recipient">
+                      <UserContext user={message.recipient}>
+                        <Avatar
+                          src={getMediaUrl(message.recipient.avatarUri)}
+                          radius={999}
+                        />
+                      </UserContext>
+                      <Text>{message.recipient.username}</Text>
+                    </div>,
+                  ],
+                ].map(([title, content]) => (
+                  <div key={String(title)}>
+                    <Text color="dimmed" weight={500} mb={6}>
+                      {title}
+                    </Text>
+                    {content}
                   </div>
-                </div>
-                <div>
-                  <Text color="dimmed" weight={500} mb={6}>
-                    Recipient
-                  </Text>
-                  <div className="flex items-center gap-4">
-                    <UserContext user={message.recipient}>
-                      <Avatar
-                        src={getMediaUrl(message.recipient.avatarUri)}
-                        radius={999}
-                      />
-                    </UserContext>
-                    <Text>{message.recipient.username}</Text>
-                  </div>
-                </div>
+                ))}
               </div>
               <Divider mt={32} mb={32} label="Actions" labelPosition="center" />
               <div className="flex justify-between items-center">
-                <Button.Group>
-                  <Button
-                    leftIcon={<HiEye />}
-                    onClick={read}
-                    disabled={message.recipientId !== user.id}
-                  >
-                    Mark as {message.read ? "Unread" : "Read"}
-                  </Button>
-                  <Button
-                    leftIcon={<HiArchive />}
-                    onClick={archive}
-                    disabled={message.recipientId !== user.id}
-                  >
-                    {message.archived ? "Unarchive" : "Archive"}
-                  </Button>
-                </Button.Group>
+                <Button
+                  leftIcon={<HiEye />}
+                  onClick={read}
+                  disabled={message.recipientId !== user.id}
+                >
+                  Mark as {message.read ? "Unread" : "Read"}
+                </Button>
                 <Button
                   color="red"
                   leftIcon={<HiFlag />}
@@ -178,7 +147,7 @@ const Message: React.FC<MessageProps> = ({ message, setMessages }) => {
                 </Button>
               </div>
             </Modal>
-            <motion.div whileHover={{ scale: 1.05 }}>
+            <motion.div whileHover={{ scale: 1.02 }}>
               <ShadedCard
                 withBorder
                 shadow="sm"
@@ -197,7 +166,7 @@ const Message: React.FC<MessageProps> = ({ message, setMessages }) => {
                       <Text color="dimmed">{message.sender.username}</Text>
                     </div>
                     <div>
-                      <Badge>{message.read ? "Read" : "Not Read"}</Badge>
+                      <Badge>{message.read ? "Read" : "Unread"}</Badge>
                     </div>
                   </div>
                 </Card.Section>

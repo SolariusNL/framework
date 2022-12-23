@@ -78,7 +78,7 @@ const NewMessage: React.FC<NewMessageProps> = ({ opened, setOpened }) => {
           });
 
           setLoading(false);
-          router.reload();
+          //router.reload();
         })}
       >
         <Stack spacing={8} mb={12}>

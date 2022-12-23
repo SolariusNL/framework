@@ -56,16 +56,13 @@ const Messages: NextPage<MessagesProps> = ({ user }) => {
         beta
         actions={[["New message", () => setNewMessageOpened(true)]]}
       >
-        <TabNav defaultValue="inbox" orientation="vertical">
-          <TabNav.List mr={32}>
+        <TabNav defaultValue="inbox">
+          <TabNav.List mb={24}>
             <TabNav.Tab icon={<HiMail />} value="inbox">
               Inbox
             </TabNav.Tab>
             <TabNav.Tab icon={<HiPaperAirplane />} value="sent">
               Sent
-            </TabNav.Tab>
-            <TabNav.Tab icon={<HiFolder />} value="archive">
-              Archive
             </TabNav.Tab>
           </TabNav.List>
 
@@ -115,30 +112,6 @@ const Messages: NextPage<MessagesProps> = ({ user }) => {
                 <ModernEmptyState
                   title="No messages"
                   body="You haven't sent any messages."
-                />
-              )}
-            </Tabs.Panel>
-
-            <Tabs.Panel value="archive">
-              <Title order={3} mb={24}>
-                Archive
-              </Title>
-
-              {messages?.filter((m) => m.archived).length! > 0 ? (
-                <Inbox
-                  messages={messages?.filter((m) => m.archived)!}
-                  setMessages={
-                    setMessages as React.Dispatch<
-                      React.SetStateAction<Message[]>
-                    >
-                  }
-                />
-              ) : loading ? (
-                <Loader />
-              ) : (
-                <ModernEmptyState
-                  title="No messages"
-                  body="You have no archived messages."
                 />
               )}
             </Tabs.Panel>
