@@ -1,14 +1,13 @@
 import { Box, Divider, Loader, ScrollArea, Stack, Text } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
-import Link from "next/link";
 import {
   HiBeaker,
   HiBell,
+  HiDesktopComputer,
   HiEye,
   HiGift,
   HiInformationCircle,
   HiKey,
-  HiPhone,
   HiPhotograph,
   HiTrash,
   HiUser,
@@ -23,6 +22,7 @@ import DeleteAccountTab from "../components/Settings/DeleteAccountTab";
 import NotificationsTab from "../components/Settings/NotificationsTab";
 import PrivacyTab from "../components/Settings/PrivacyTab";
 import SecurityTab from "../components/Settings/SecurityTab";
+import SessionsTab from "../components/Settings/SessionsTab";
 import SubscriptionTab from "../components/Settings/SubscriptionTab";
 import TabNav from "../components/TabNav";
 import authorizedRoute from "../util/authorizedRoute";
@@ -104,11 +104,9 @@ const Settings: NextPage<SettingsProps> = ({ user }) => {
                     Notifications
                   </TabNav.Tab>
 
-                  <Link href="/sessions">
-                    <TabNav.Tab value="sessions" icon={<HiPhone />}>
-                      Sessions
-                    </TabNav.Tab>
-                  </Link>
+                  <TabNav.Tab value="sessions" icon={<HiDesktopComputer />}>
+                    Sessions
+                  </TabNav.Tab>
                 </SettingsGroup>
 
                 <Divider />
@@ -152,6 +150,7 @@ const Settings: NextPage<SettingsProps> = ({ user }) => {
           DeleteAccountTab,
           AppearanceTab,
           BetaTab,
+          SessionsTab,
         ].map((Component, index) => (
           <ReactNoSSR
             key={index}
