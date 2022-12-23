@@ -799,7 +799,10 @@ class AdminRouter {
       orderBy: {
         createdAt: "desc",
       },
-      select: articleSelect,
+      select: {
+        ...articleSelect,
+        viewers: false,
+      },
     });
 
     return articles;

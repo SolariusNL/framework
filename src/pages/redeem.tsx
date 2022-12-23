@@ -1,9 +1,9 @@
 import {
+  Accordion,
   Button,
-  Container,
   createStyles,
   Group,
-  Paper,
+  Stack,
   Text,
   TextInput,
   Title,
@@ -13,10 +13,12 @@ import { GiftCodeGrant } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
 import React from "react";
+import Celebration from "react-confetti";
 import Framework from "../components/Framework";
+import ShadedCard from "../components/ShadedCard";
 import authorizedRoute from "../util/authorizedRoute";
 import { User } from "../util/prisma-types";
-import Celebration from "react-confetti";
+import useMediaQuery from "../util/useMediaQuery";
 
 export const useStylesredeemCard = createStyles((theme) => ({
   title: {
@@ -80,6 +82,7 @@ const Redeem: NextPage<RedeemProps> = ({ user }) => {
   const [error, setError] = React.useState<string | null>(null);
   const { width, height } = useViewportSize();
   const [isClient, setClient] = React.useState(false);
+  const mobile = useMediaQuery("768");
 
   React.useEffect(() => {
     setClient(true);
@@ -116,42 +119,89 @@ const Redeem: NextPage<RedeemProps> = ({ user }) => {
   };
 
   return (
-    <Framework user={user} activeTab="none">
-      <Container size={460} my={30}>
-        {redeemed ? (
-          <>
-            <Title className={classes.title} align="center">
-              {grantInformation[reward!].message}
-            </Title>
-            <Text color="dimmed" size="sm" align="center">
-              Your reward should be present in your account in less than 5
-              minutes.
-            </Text>
-            {isClient && <Celebration width={width} height={height} />}
-          </>
-        ) : (
-          <>
-            <Title className={classes.title} align="center">
-              Redeem gift codes
-            </Title>
-            <Text color="dimmed" size="sm" align="center">
-              Enter your gift code below to redeem your gift! Each code may only
-              be redeemed once, and will be invalidated after use.
-            </Text>
+    <Framework
+      user={user}
+      activeTab="none"
+      modernTitle="Redeem gift code"
+      modernSubtitle="Redeem a gift code to get free to retrieve your reward!"
+    >
+      <Group
+        grow={!mobile}
+        sx={{
+          alignItems: "flex-start",
+        }}
+      >
+        <Group>
+          <Stack spacing={12}>
+            <div>
+              <Text color="dimmed" weight={500} mb={8}>
+                Redeem Code
+              </Text>
+              <Title order={3} mb={24}>
+                Redeem a gift code
+              </Title>
+            </div>
 
-            <Paper withBorder shadow="md" p={30} radius="md" mt="xl">
-              <TextInput
-                label="Code"
-                placeholder="0000-0000-0000-0000-0000"
-                required
-                value={enteredCode}
-                onChange={(e) => {
-                  setEnteredCode(e.target.value);
-                  setError(null);
-                }}
-                {...(error ? { error: error || "Invalid code" } : {})}
-              />
-              <Group position="apart" mt="lg" className={classes.controls}>
+            <Accordion defaultValue="info">
+              <Accordion.Item value="info">
+                <Accordion.Control>About gift codes</Accordion.Control>
+                <Accordion.Panel>
+                  Gift codes are digital codes that can be redeemed for rewards
+                  such as tickets or Framework Premium on Framework. Gift codes
+                  can be obtained from giveaways, events, or promotions. If you
+                  have a code to redeem, you came to the right place!
+                </Accordion.Panel>
+              </Accordion.Item>
+              <Accordion.Item value="legal">
+                <Accordion.Control>Legal</Accordion.Control>
+                <Accordion.Panel>
+                  Gift codes are not transferable and cannot be resold. Gift
+                  codes are not redeemable for cash. Off-platform giveaways (on
+                  platforms not associated with Soodam.re or Framework) are not
+                  endorsed by us and are conducted at the sole discretion of the
+                  giveaway organizer. We are not responsible for any issues that
+                  may arise from the giveaway organizer.
+                </Accordion.Panel>
+              </Accordion.Item>
+            </Accordion>
+          </Stack>
+        </Group>
+        <Group>
+          <ShadedCard
+            sx={(theme) => ({
+              width: "100%",
+              backgroundColor:
+                theme.colorScheme === "dark"
+                  ? theme.colors.dark[9]
+                  : theme.colors.gray[0],
+            })}
+          >
+            {redeemed ? (
+              <>
+                <Title className={classes.title} align="center">
+                  {grantInformation[reward!].message}
+                </Title>
+                <Text color="dimmed" size="sm" align="center">
+                  Your reward should be present in your account in less than 5
+                  minutes.
+                </Text>
+                {isClient && <Celebration width={width} height={height} />}
+              </>
+            ) : (
+              <>
+                <TextInput
+                  label="Code"
+                  placeholder="0000-0000-0000-0000-0000"
+                  required
+                  mb={16}
+                  description="Enter the code you want to redeem"
+                  value={enteredCode}
+                  onChange={(e) => {
+                    setEnteredCode(e.target.value);
+                    setError(null);
+                  }}
+                  {...(error ? { error: error || "Invalid code" } : {})}
+                />
                 <Button
                   className={classes.control}
                   fullWidth
@@ -159,11 +209,11 @@ const Redeem: NextPage<RedeemProps> = ({ user }) => {
                 >
                   Redeem
                 </Button>
-              </Group>
-            </Paper>
-          </>
-        )}
-      </Container>
+              </>
+            )}
+          </ShadedCard>
+        </Group>
+      </Group>
     </Framework>
   );
 };
