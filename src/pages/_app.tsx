@@ -25,6 +25,7 @@ import {
 import { MDXProvider } from "@mdx-js/react";
 import { getCookie, setCookie } from "cookies-next";
 import { register } from "fetch-intercept";
+import isElectron from "is-electron";
 import { GetServerSidePropsContext } from "next";
 import { DefaultSeo } from "next-seo";
 import type { AppProps } from "next/app";
@@ -35,12 +36,14 @@ import NextNProgress from "nextjs-progressbar";
 import { useEffect, useState } from "react";
 import { HiCheckCircle, HiXCircle } from "react-icons/hi";
 import "../../flags.config";
+import ElectronTitlebar from "../components/ElectronTitlebar";
 import Stateful from "../components/Stateful";
 import { FrameworkUserProvider } from "../contexts/FrameworkUser";
 import { UserInformationWrapper } from "../contexts/UserInformationDialog";
 import "../styles/framework.css";
 import "../styles/tw.css";
 import logout from "../util/api/logout";
+import ReactNoSSR from "react-no-ssr";
 
 const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
   const { Component, pageProps } = props;
@@ -233,6 +236,7 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
                     value={pageProps && pageProps.user && pageProps.user}
                   >
                     <NextNProgress />
+                    <ReactNoSSR>{isElectron() && <ElectronTitlebar />}</ReactNoSSR>
                     <Component {...pageProps} key={router.asPath} />
                     <Modal
                       withCloseButton={false}

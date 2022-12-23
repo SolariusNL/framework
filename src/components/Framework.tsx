@@ -5,7 +5,6 @@ import {
   Badge,
   Box,
   Burger,
-  Button,
   Container,
   createStyles,
   Drawer,
@@ -15,13 +14,11 @@ import {
   Stack,
   Tabs,
   Text,
-  TextInput,
   ThemeIcon,
   Title,
-  useMantineColorScheme,
+  useMantineColorScheme
 } from "@mantine/core";
 import { useDisclosure, useLocalStorage } from "@mantine/hooks";
-import { openModal } from "@mantine/modals";
 import { SpotlightProvider } from "@mantine/spotlight";
 import isElectron from "is-electron";
 import Link from "next/link";
@@ -42,7 +39,7 @@ import {
   HiSun,
   HiTicket,
   HiUser,
-  HiViewGrid,
+  HiViewGrid
 } from "react-icons/hi";
 import { getIpcRenderer } from "../util/electron";
 import { User } from "../util/prisma-types";
@@ -55,7 +52,6 @@ import NotificationFlyout from "./Framework/NotificationFlyout";
 import Search from "./Framework/Search";
 import UserMenu from "./Framework/UserMenu";
 import FrameworkLogo from "./FrameworkLogo";
-import Stateful from "./Stateful";
 import TabNav from "./TabNav";
 
 interface FrameworkProps {

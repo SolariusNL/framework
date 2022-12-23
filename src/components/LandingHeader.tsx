@@ -14,7 +14,7 @@ import {
   SimpleGrid,
   Text,
   ThemeIcon,
-  UnstyledButton,
+  UnstyledButton
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import Link from "next/link";
@@ -29,7 +29,7 @@ import {
   HiLibrary,
   HiOfficeBuilding,
   HiUserGroup,
-  HiUsers,
+  HiUsers
 } from "react-icons/hi";
 import FrameworkLogo from "./FrameworkLogo";
 
@@ -268,72 +268,74 @@ const LandingHeader = () => {
   ));
 
   return (
-    <Box className="sticky top-0 z-50">
-      <Header height={60} px="md">
-        <Group position="apart" sx={{ height: "100%" }}>
-          <FrameworkLogo />
+    <>
+      <Box className="sticky top-0 z-50">
+        <Header height={60} px="md">
+          <Group position="apart" sx={{ height: "100%" }}>
+            <FrameworkLogo />
 
-          <Group
-            sx={{ height: "100%" }}
-            spacing={0}
-            className={classes.hiddenMobile}
-          >
-            {tabItems}
+            <Group
+              sx={{ height: "100%" }}
+              spacing={0}
+              className={classes.hiddenMobile}
+            >
+              {tabItems}
+            </Group>
+
+            <Link passHref href="/login">
+              <Group className={classes.hiddenMobile}>
+                <Button variant="default">Log in</Button>
+                <Button>Sign up</Button>
+              </Group>
+            </Link>
+
+            <Burger
+              opened={drawerOpened}
+              onClick={toggleDrawer}
+              className={classes.hiddenDesktop}
+            />
           </Group>
+        </Header>
 
-          <Link passHref href="/login">
-            <Group className={classes.hiddenMobile}>
-              <Button variant="default">Log in</Button>
-              <Button>Sign up</Button>
-            </Group>
-          </Link>
-
-          <Burger
-            opened={drawerOpened}
-            onClick={toggleDrawer}
-            className={classes.hiddenDesktop}
-          />
-        </Group>
-      </Header>
-
-      <Drawer
-        opened={drawerOpened}
-        onClose={closeDrawer}
-        size="100%"
-        padding="md"
-        title="Framework"
-        className={classes.hiddenDesktop}
-        zIndex={1000000}
-      >
-        <ScrollArea sx={{ height: "calc(100vh - 60px)" }} mx="-md">
-          <Divider my="sm" />
-          {tabItems.map((item) => (
-            <div key={item.key}>
-              <UnstyledButton className={classes.link} onClick={toggleLinks}>
-                {item}
-              </UnstyledButton>
-              <Collapse in={linksOpened}>
-                {/**
-                 * this is really scuffed but it works
-                 */}
-                {item.props.children[1].props.children[2].props.children.map(
-                  (child: React.ReactElement) => (
-                    <div key={child.key}>{child}</div>
-                  )
-                )}
-              </Collapse>
-            </div>
-          ))}
-          <Divider my="sm" />
-          <Link passHref href="/login">
-            <Group position="center" pb="xl" px="md" grow>
-              <Button variant="default">Log in</Button>
-              <Button>Sign up</Button>
-            </Group>
-          </Link>
-        </ScrollArea>
-      </Drawer>
-    </Box>
+        <Drawer
+          opened={drawerOpened}
+          onClose={closeDrawer}
+          size="100%"
+          padding="md"
+          title="Framework"
+          className={classes.hiddenDesktop}
+          zIndex={1000000}
+        >
+          <ScrollArea sx={{ height: "calc(100vh - 60px)" }} mx="-md">
+            <Divider my="sm" />
+            {tabItems.map((item) => (
+              <div key={item.key}>
+                <UnstyledButton className={classes.link} onClick={toggleLinks}>
+                  {item}
+                </UnstyledButton>
+                <Collapse in={linksOpened}>
+                  {/**
+                   * this is really scuffed but it works
+                   */}
+                  {item.props.children[1].props.children[2].props.children.map(
+                    (child: React.ReactElement) => (
+                      <div key={child.key}>{child}</div>
+                    )
+                  )}
+                </Collapse>
+              </div>
+            ))}
+            <Divider my="sm" />
+            <Link passHref href="/login">
+              <Group position="center" pb="xl" px="md" grow>
+                <Button variant="default">Log in</Button>
+                <Button>Sign up</Button>
+              </Group>
+            </Link>
+          </ScrollArea>
+        </Drawer>
+      </Box>
+    </>
   );
 };
 
