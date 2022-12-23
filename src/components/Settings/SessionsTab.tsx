@@ -97,7 +97,7 @@ const SessionsTab: React.FC<SessionsTabProps> = ({ user }) => {
               key={session.id}
               className="flex items-center justify-between"
             >
-              <div className="flex items-center gap-4">
+              <div className="flex flex-col md:flex-row">
                 <Badge
                   sx={{
                     width: 48,
@@ -115,7 +115,10 @@ const SessionsTab: React.FC<SessionsTabProps> = ({ user }) => {
                     <HiDeviceMobile size={20} />
                   )}
                 </Badge>
-                <div>
+                <div
+                  // if not mobile, ml-4, if mobile mt-4
+                  className="flex flex-col md:ml-4 mt-4 md:mt-0"
+                >
                   <div className="flex items-center gap-2">
                     <Text size="lg" weight={600}>
                       {getOperatingSystemString(
