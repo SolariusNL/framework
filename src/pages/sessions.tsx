@@ -119,7 +119,7 @@ const Sessions: NextPage<SessionsProps> = ({ user }) => {
                       <td>
                         <div className="flex items-center gap-2">
                           <Copy value={session.ip} />
-                          <Text weight={700}>{session.ip}</Text>
+                          <Text weight={700} lineClamp={1}>{session.ip}</Text>
                         </div>
                       </td>
                     </tr>
@@ -129,7 +129,7 @@ const Sessions: NextPage<SessionsProps> = ({ user }) => {
                         <div className="flex items-center gap-2">
                           <Copy value={session.ua} />
                           <Text lineClamp={1} className="font-mono font-bold">
-                            {session.ua}
+                            {session.ua.substring(0, 10)}...
                           </Text>
                         </div>
                       </td>
