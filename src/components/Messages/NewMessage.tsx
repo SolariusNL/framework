@@ -5,12 +5,13 @@ import {
   Switch,
   Text,
   Textarea,
-  TextInput,
+  TextInput
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { showNotification } from "@mantine/notifications";
 import { getCookie } from "cookies-next";
-import { useRouter } from "next/router";
 import React from "react";
+import { HiCheckCircle } from "react-icons/hi";
 import Descriptive from "../Descriptive";
 import UserSelect from "../UserSelect";
 
@@ -49,7 +50,6 @@ const NewMessage: React.FC<NewMessageProps> = ({ opened, setOpened }) => {
     },
   });
   const [loading, setLoading] = React.useState(false);
-  const router = useRouter();
 
   return (
     <Modal
@@ -78,7 +78,12 @@ const NewMessage: React.FC<NewMessageProps> = ({ opened, setOpened }) => {
           });
 
           setLoading(false);
-          //router.reload();
+          showNotification({
+            title: "Message sent",
+            message: "Your message has been sent successfully",
+            icon: <HiCheckCircle />,
+          });
+          setOpened(false);
         })}
       >
         <Stack spacing={8} mb={12}>
