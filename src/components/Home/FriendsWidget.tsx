@@ -85,7 +85,6 @@ const FriendsWidget: React.FC = () => {
                     <HiArrowRight />
                   </ShadedButton>
                 </Link>
-                {i !== friends.length - 1 && <Divider className="opacity-50" />}
               </>
             ))}
         </Stack>
