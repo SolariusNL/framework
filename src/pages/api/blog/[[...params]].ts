@@ -35,7 +35,7 @@ class BlogRouter {
       take: 3,
     });
 
-    if (featuredArticles.length === 3) {
+    if (featuredArticles.length === 3 && body.featured) {
       await prisma.blogPost.update({
         where: {
           id: featuredArticles[2].id,
