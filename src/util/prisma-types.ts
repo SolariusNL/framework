@@ -193,6 +193,8 @@ export const userSelect: Prisma.UserSelect = {
   emailResetRequired: true,
   passwordResetRequired: true,
   adminPermissions: true,
+  otpVerified: true,
+  otpEnabled: true,
 };
 
 const article = Prisma.validator<Prisma.AdminArticleArgs>()({

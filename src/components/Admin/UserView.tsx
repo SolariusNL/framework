@@ -137,6 +137,7 @@ const UserView = ({ user }: UserViewProps) => {
                 ["Premium", user.premium],
                 ["Banned", user.banned],
                 ["Tickets", user.tickets],
+                ["TOTP Enabled", user.otpEnabled],
                 ["Linked Discord", user.discordAccount?.discordId],
                 ["Games", user.games.map((g) => g.id).join(", ")],
                 ["Links", user.profileLinks.map((l) => l.url).join(", ")],

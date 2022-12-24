@@ -119,6 +119,12 @@ model User {
   adminPermissions           AdminPermission[]
   authoredAdminArticles      AdminArticle[]        @relation("adminArticles")
   viewedAdminArticles        AdminArticle[]        @relation("adminArticlesViewed")
+  otpEnabled                 Boolean               @default(false)
+  otpVerified                Boolean               @default(false)
+  otpAscii                   String?
+  otpHex                     String?
+  otpBase32                  String?
+  otpAuthUrl                 String?
 }
 
 model ConnectedAccount {

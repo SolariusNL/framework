@@ -8,12 +8,15 @@ import {
 } from "@storyofams/next-api-decorators";
 import type { NextApiRequest } from "next";
 import { getClientIp } from "request-ip";
+import Authorized, { Account } from "../../../util/api/authorized";
 import { hashPass, isSamePass } from "../../../util/hash/password";
 import { sendMail } from "../../../util/mail";
 import createNotification from "../../../util/notifications";
 import prisma from "../../../util/prisma";
+import type { User } from "../../../util/prisma-types";
 import { RateLimitMiddleware } from "../../../util/rateLimit";
 import { verificationEmail } from "../../../util/templates/verification-email";
+import { disableOTP, generateOTP, verifyOTP } from "../../../util/twofa";
 import { getOperatingSystem, getOperatingSystemString } from "../../../util/ua";
 
 interface LoginBody {
@@ -63,7 +66,7 @@ class AuthRouter {
       };
     }
 
-    if (account.emailRequiredLogin) {
+    if (account.emailRequiredLogin && !account.otpEnabled) {
       const emailAuth = await prisma.emailLoginRequest.create({
         data: {
           user: {
@@ -124,6 +127,14 @@ class AuthRouter {
         success: true,
         requiresEmail: true,
         emailId: emailAuth.id,
+      };
+    }
+
+    if (account.otpEnabled) {
+      return {
+        success: true,
+        otp: true,
+        uid: account.id,
       };
     }
 
@@ -367,6 +378,100 @@ class AuthRouter {
       success: true,
       token: session.token,
     };
+  }
+
+  @Post("/@me/twofa/disable")
+  @Authorized()
+  public async disableTwofa(@Account() user: User) {
+    await disableOTP(user.id);
+  }
+
+  @Post("/@me/twofa/request")
+  @Authorized()
+  public async requestTwofa(@Account() user: User) {
+    try {
+      const { base32, otpauth_url } = await generateOTP(user.id);
+      return {
+        base32,
+        otpauth_url,
+      };
+    } catch (e) {
+      console.log(e);
+      return {
+        status: 500,
+        message: "Failed to generate OTP",
+        success: false,
+      };
+    }
+  }
+
+  @Post("/@me/twofa/verify")
+  public async verifyTwofa(
+    @Body()
+    { code, uid, intent }: { code: string; uid: number; intent: string },
+    @Req() request: NextApiRequest
+  ) {
+    const exists = await prisma.user.findUnique({
+      where: {
+        id: Number(uid),
+      },
+    });
+
+    if (!exists) {
+      return {
+        status: 400,
+        message: "Invalid user",
+        success: false,
+      };
+    }
+
+    try {
+      const verified = await verifyOTP(uid, String(code));
+      if (!verified) {
+        return {
+          status: 400,
+          message: "Invalid code",
+          success: false,
+        };
+      }
+      let session;
+      if (intent === "login") {
+        session = await prisma.session.create({
+          data: {
+            user: {
+              connect: {
+                id: Number(uid),
+              },
+            },
+            token: Array(12)
+              .fill(0)
+              .map(() => Math.random().toString(36).substring(2))
+              .join(""),
+            ip: String(getClientIp(request)),
+            ua: String(request.headers["user-agent"] || "Unknown"),
+            os: OperatingSystem[
+              getOperatingSystem(
+                String(request.headers["user-agent"]) || ""
+              ) as keyof typeof OperatingSystem
+            ],
+          },
+          include: {
+            user: true,
+          },
+        });
+      }
+      return {
+        success: true,
+        ...(intent === "login" && { token: session?.token }),
+      };
+    } catch (e) {
+      console.log(e);
+      return {
+        status: 500,
+        message: "Failed to verify OTP",
+        success: false,
+      };
+    }
   }
 }
 

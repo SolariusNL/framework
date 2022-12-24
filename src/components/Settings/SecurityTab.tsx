@@ -9,10 +9,15 @@ import {
   Text,
   TextInput,
 } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
+import Image from "next/image";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { toDataURL } from "qrcode";
+import { useEffect, useState } from "react";
 import {
   HiCheck,
+  HiCheckCircle,
+  HiDeviceMobile,
   HiExclamation,
   HiKey,
   HiLockClosed,
@@ -47,6 +52,12 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
   const router = useRouter();
   const [unsavedChanges, setUnsavedChanges] = useState(false);
   const [success, setSuccess] = useState<boolean>(false);
+  const [twofaPromptOpen, setTwofaPromptOpen] = useState(false);
+  const [qrUrl, setQrUrl] = useState("");
+  const [otpauthUrl, setOtpauthUrl] = useState("");
+  const [base32, setBase32] = useState("");
+  const [twoFactorCode, setTwoFactorCode] = useState("");
+  const [invalid, setInvalid] = useState(false);
 
   const sendEmailVerification = async () => {
     await fetch("/api/users/@me/verifyemail", {
@@ -107,6 +118,85 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
       });
   };
 
+  const disableTwoFactor = async () => {
+    await fetch("/api/auth/@me/twofa/disable", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: String(getCookie(".frameworksession")),
+      },
+    }).then(() => {
+      showNotification({
+        title: "Two-factor authentication disabled",
+        message: "You can re-enable it at any time.",
+        icon: <HiCheckCircle />,
+      });
+    });
+  };
+
+  const verifyTwoFactor = async () => {
+    await fetch("/api/auth/@me/twofa/verify", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        code: twoFactorCode,
+        uid: user.id,
+      }),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.success) {
+          setTwofaPromptOpen(false);
+          showNotification({
+            title: "Two-factor authentication enabled",
+            message:
+              "Thanks for adding an extra layer of security! You can disable it at any time.",
+            icon: <HiCheckCircle />,
+          });
+        } else {
+          showNotification({
+            title: "Invalid code",
+            message: "Please try again.",
+            icon: <HiExclamation />,
+          });
+          setInvalid(true);
+          setTimeout(() => setInvalid(false), 5000);
+        }
+      });
+  };
+
+  useEffect(() => {
+    if (twofaPromptOpen) {
+      fetch("/api/auth/@me/twofa/request", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: String(getCookie(".frameworksession")),
+        },
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          setOtpauthUrl(res.otpauth_url);
+          setBase32(res.base32);
+        })
+        .catch((err) => {
+          showNotification({
+            title: "Error",
+            message: err.message || "Failed to generate OTP credentials",
+            icon: <HiExclamation />,
+          });
+        });
+    }
+  }, [twofaPromptOpen]);
+
+  useEffect(() => {
+    if (otpauthUrl) {
+      toDataURL(otpauthUrl).then((url) => setQrUrl(url));
+    }
+  }, [otpauthUrl]);
+
   return (
     <>
       <Modal
@@ -152,6 +242,56 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
           onChange={(e) => setNewEmail(e.target.value)}
         />
         <Button onClick={changeEmail}>Confirm</Button>
+      </Modal>
+
+      <Modal
+        title="Enable Two-factor Authentication"
+        opened={twofaPromptOpen}
+        onClose={() => setTwofaPromptOpen(false)}
+      >
+        <Text mb={16}>
+          Install an authenticator app on your phone, such as Google
+          Authenticator (iOS) or Authy (iOS, Android). Then, scan the QR code
+          below.
+        </Text>
+        <div className="flex gap-4 mb-6 flex-col md:flex-row">
+          <div className="flex-1">
+            <Image
+              src={qrUrl}
+              width={256}
+              height={256}
+              className="rounded-md"
+            />
+            <Text size="sm" color="dimmed" mt={8}>
+              If you cannot scan the QR code, enter the code below manually.
+            </Text>
+          </div>
+          <div className="flex-1">
+            <TextInput
+              label="Verification Code"
+              description="Enter the code from your authenticator app"
+              mb={12}
+              onChange={(e) => setTwoFactorCode(e.target.value)}
+              placeholder="000000"
+              error={invalid ? "Invalid code" : undefined}
+            />
+            <Button fullWidth onClick={async () => await verifyTwoFactor()}>
+              Verify TOTP
+            </Button>
+          </div>
+        </div>
+
+        <div className="flex flex-row gap-1">
+          <Text size="sm" color="dimmed">
+            Key: <span className="font-mono font-semibold">{base32}</span>
+          </Text>
+          <Text size="sm" color="dimmed">
+            Account:{" "}
+            <span className="font-mono font-semibold">
+              {user.username}@Framework
+            </span>
+          </Text>
+        </div>
       </Modal>
 
       <SettingsTab
@@ -279,6 +419,30 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
                   </Alert>
                 )
               }
+            />
+            <SideBySide
+              title="TOTP Verification"
+              description="Require two-factor authentication before logging into your account, from an authenticator app."
+              right={
+                <Descriptive
+                  title="Enable two-factor authentication"
+                  description="Require a code from your authenticator app before logging into your account."
+                >
+                  <Switch
+                    defaultChecked={user.otpEnabled}
+                    onChange={async (e) => {
+                      if (e.target.checked) {
+                        setTwofaPromptOpen(true);
+                      } else {
+                        disableTwoFactor();
+                      }
+                    }}
+                  />
+                </Descriptive>
+              }
+              icon={<HiDeviceMobile />}
+              shaded
+              noUpperBorder
             />
           </Grouped>
         </Stack>
