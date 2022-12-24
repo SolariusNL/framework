@@ -34,11 +34,29 @@ const Launching = ({ opened, setOpened }: LaunchingProps) => {
       color: "grape",
     },
     {
-      os: "Linux 64-bit",
-      hint: "Linux kernel 4.15 or newer",
+      os: "Linux",
+      hint: ".AppImage (x86_64)",
       icon: <FaLinux />,
       color: "pink",
     },
+    {
+      os: "Linux",
+      hint: ".deb (x86_64)",
+      icon: <FaLinux />,
+      color: "pink",
+    },
+    {
+      os: "Linux",
+      hint: ".rpm (x86_64)",
+      icon: <FaLinux />,
+      color: "pink",
+    },
+    {
+      os: "Linux",
+      hint: ".snap (x86_64)",
+      icon: <FaLinux />,
+      color: "pink",
+    }
   ];
 
   return (
