@@ -3,12 +3,10 @@ import {
   Avatar,
   Button,
   createStyles,
-  Menu,
-  Paper,
-  Stack,
+  Menu, Stack,
   Text,
   Textarea,
-  Tooltip,
+  Tooltip
 } from "@mantine/core";
 import { getCookie } from "cookies-next";
 import { useState } from "react";
@@ -21,14 +19,14 @@ import {
   HiGift,
   HiPencil,
   HiShieldCheck,
-  HiTrash,
+  HiTrash
 } from "react-icons/hi";
 import { useFrameworkUser } from "../contexts/FrameworkUser";
 import getMediaUrl from "../util/getMedia";
 import { NonUser } from "../util/prisma-types";
 import { getRelativeTime } from "../util/relativeTime";
 import ReportUser from "./ReportUser";
-import Stateful from "./Stateful";
+import ShadedCard from "./ShadedCard";
 import UserContext from "./UserContext";
 
 const useStyles = createStyles((theme) => ({
@@ -76,7 +74,7 @@ const Comment = ({
   return (
     <>
       <ReportUser user={user} opened={opened} setOpened={setOpened} />
-      <Paper className={classes.comment}>
+      <ShadedCard className={classes.comment}>
         <div
           style={{
             display: "flex",
@@ -128,7 +126,7 @@ const Comment = ({
                 </div>
               </div>
               <div>
-                <Menu>
+                <Menu width={200}>
                   <Menu.Target>
                     <ActionIcon>
                       <HiDotsVertical />
@@ -249,7 +247,7 @@ const Comment = ({
             )}
           </div>
         </div>
-      </Paper>
+      </ShadedCard>
     </>
   );
 };

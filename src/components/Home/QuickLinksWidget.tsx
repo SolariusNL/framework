@@ -8,14 +8,15 @@ import {
   HiUserGroup,
 } from "react-icons/hi";
 import { useFrameworkUser } from "../../contexts/FrameworkUser";
+import ShadedButton from "../ShadedButton";
 import ShadedCard from "../ShadedCard";
 
 const QuickLinksWidget: React.FC = () => {
   const user = useFrameworkUser()!;
 
   return (
-    <ShadedCard withBorder>
-      <div className="grid grid-cols-2 gap-8">
+    <ShadedCard withBorder p={8}>
+      <div className="grid grid-cols-2 gap-4">
         {[
           {
             title: "Browse games",
@@ -48,20 +49,22 @@ const QuickLinksWidget: React.FC = () => {
           },
         ].map(({ title, description, icon, color, link }) => (
           <Link href={link} key={title}>
-            <div className="flex flex-col gap-4 cursor-pointer">
-              <div className="flex justify-between items-center">
-                <ThemeIcon variant="light" color={color} size={38}>
-                  {icon}
-                </ThemeIcon>
-                <HiArrowRight />
+            <ShadedButton>
+              <div className="flex flex-col gap-4 cursor-pointer">
+                <div className="flex justify-between items-center">
+                  <ThemeIcon variant="light" color={color} size={38}>
+                    {icon}
+                  </ThemeIcon>
+                  <HiArrowRight />
+                </div>
+                <div>
+                  <Title order={5} mb={6}>
+                    {title}
+                  </Title>
+                  <Text color="dimmed">{description}</Text>
+                </div>
               </div>
-              <div>
-                <Title order={5} mb={6}>
-                  {title}
-                </Title>
-                <Text color="dimmed">{description}</Text>
-              </div>
-            </div>
+            </ShadedButton>
           </Link>
         ))}
       </div>

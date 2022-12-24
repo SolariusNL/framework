@@ -15,7 +15,6 @@ import {
   Text,
   Title,
   Tooltip,
-  UnstyledButton,
 } from "@mantine/core";
 import { Gamepass } from "@prisma/client";
 import isElectron from "is-electron";
@@ -41,6 +40,7 @@ import GameRating from "../../../components/GameRating";
 import ThumbnailCarousel from "../../../components/ImageCarousel";
 import Launching from "../../../components/Launching";
 import PlaceholderGameResource from "../../../components/PlaceholderGameResource";
+import ShadedButton from "../../../components/ShadedButton";
 import ShadedCard from "../../../components/ShadedCard";
 import UserContext from "../../../components/UserContext";
 import ConnectionTab from "../../../components/ViewGame/Connection";
@@ -321,64 +321,48 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
             </ReactNoSSR>
 
             <ReactNoSSR onSSR={<Skeleton height={350} />}>
-              <Title order={4} mb={16}>
-                More like this
-              </Title>
+              <ShadedCard mb={32}>
+                <Title order={4} mb={16}>
+                  More like this
+                </Title>
 
-              <Stack spacing={12} mb={32}>
-                {similarGames != null &&
-                  similarGames.map((game: Game, i) => (
-                    <Link href={`/game/${game.id}`} key={i}>
-                      <UnstyledButton
-                        sx={(theme) => ({
-                          padding: theme.spacing.xs,
-                          borderRadius: theme.radius.md,
-                          color:
-                            theme.colorScheme === "dark"
-                              ? theme.colors.dark[0]
-                              : theme.black,
-
-                          "&:hover": {
-                            backgroundColor:
-                              theme.colorScheme === "dark"
-                                ? theme.colors.dark[6]
-                                : theme.colors.gray[0],
-                          },
-
-                          width: "100%",
-                        })}
-                      >
-                        <Group spacing={12}>
-                          <Image
-                            src={getMediaUrl(game.iconUri)}
-                            alt={game.name}
-                            width={50}
-                            height={50}
-                            radius={8}
-                            withPlaceholder
-                          />
-                          <Stack spacing={4}>
-                            <Text weight={700}>{game.name}</Text>
-                            <Group spacing={6}>
-                              <UserContext user={game.author}>
-                                <Image
-                                  src={getMediaUrl(game.author.avatarUri)}
-                                  width={20}
-                                  height={20}
-                                  radius="xl"
-                                  withPlaceholder
-                                />
-                              </UserContext>
-                              <Text color="dimmed">
-                                @{game.author.username}
-                              </Text>
-                            </Group>
-                          </Stack>
-                        </Group>
-                      </UnstyledButton>
-                    </Link>
-                  ))}
-              </Stack>
+                <Stack spacing={12}>
+                  {similarGames != null &&
+                    similarGames.map((game: Game, i) => (
+                      <Link href={`/game/${game.id}`} key={i}>
+                        <ShadedButton>
+                          <Group spacing={12}>
+                            <Image
+                              src={getMediaUrl(game.iconUri)}
+                              alt={game.name}
+                              width={50}
+                              height={50}
+                              radius={8}
+                              withPlaceholder
+                            />
+                            <Stack spacing={4}>
+                              <Text weight={700}>{game.name}</Text>
+                              <Group spacing={6}>
+                                <UserContext user={game.author}>
+                                  <Image
+                                    src={getMediaUrl(game.author.avatarUri)}
+                                    width={20}
+                                    height={20}
+                                    radius="xl"
+                                    withPlaceholder
+                                  />
+                                </UserContext>
+                                <Text color="dimmed">
+                                  @{game.author.username}
+                                </Text>
+                              </Group>
+                            </Stack>
+                          </Group>
+                        </ShadedButton>
+                      </Link>
+                    ))}
+                </Stack>
+              </ShadedCard>
 
               {game.rating && <GameRating game={game} />}
             </ReactNoSSR>

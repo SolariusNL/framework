@@ -15,6 +15,7 @@ import getMediaUrl from "../../util/getMedia";
 import { NonUser } from "../../util/prisma-types";
 import { getFriendsPages, getMyFriends } from "../../util/universe/friends";
 import ModernEmptyState from "../ModernEmptyState";
+import ShadedButton from "../ShadedButton";
 import ShadedCard from "../ShadedCard";
 
 const FriendsWidget: React.FC = () => {
@@ -54,7 +55,7 @@ const FriendsWidget: React.FC = () => {
             friends.map((friend, i) => (
               <>
                 <Link href={`/profile/${friend.username}`} key={friend.id}>
-                  <div className="cursor-pointer flex justify-between items-center">
+                  <ShadedButton className="cursor-pointer flex justify-between items-center">
                     <div className="flex items-center gap-2">
                       <Indicator
                         disabled={
@@ -82,7 +83,7 @@ const FriendsWidget: React.FC = () => {
                       )}
                     </div>
                     <HiArrowRight />
-                  </div>
+                  </ShadedButton>
                 </Link>
                 {i !== friends.length - 1 && <Divider className="opacity-50" />}
               </>
