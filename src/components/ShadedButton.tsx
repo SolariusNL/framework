@@ -16,6 +16,7 @@ const ShadedButton: React.FC<ButtonProps> = (props) => {
         },
         width: "100%",
         display: "flex",
+        transition: "background-color 0.05s ease",
       })}
       {...props}
     />

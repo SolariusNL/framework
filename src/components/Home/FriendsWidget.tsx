@@ -49,7 +49,7 @@ const FriendsWidget: React.FC = () => {
         </Badge>
       </div>
       <div>
-        <Stack spacing={12}>
+        <Stack spacing={0}>
           {friends &&
             !loading &&
             friends.map((friend, i) => (
