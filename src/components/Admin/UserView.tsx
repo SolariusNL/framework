@@ -415,6 +415,10 @@ const UserView = ({ user }: UserViewProps) => {
                             AdminPermission.EDIT_PERMISSIONS,
                             "edit permissions",
                           ],
+                          [
+                            AdminPermission.WRITE_BLOG_POST,
+                            "write blog posts",
+                          ]
                         ].find((i) => i[0] === permission)![1]) as string
                     }
                     onChange={(e) => {

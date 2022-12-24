@@ -210,6 +210,12 @@ const article = Prisma.validator<Prisma.AdminArticleArgs>()({
   },
 });
 
+const blogpost = Prisma.validator<Prisma.BlogPostArgs>()({
+  include: {
+    author: nonCurrentUserSelect,
+  },
+});
+
 export const articleSelect: Prisma.AdminArticleSelect = {
   id: true,
   title: true,
@@ -225,6 +231,20 @@ export const articleSelect: Prisma.AdminArticleSelect = {
       username: true,
     },
   },
+};
+
+export const blogPostSelect: Prisma.BlogPostSelect = {
+  id: true,
+  title: true,
+  subtitle: true,
+  content: true,
+  createdAt: true,
+  updatedAt: true,
+  tags: true,
+  featured: true,
+  author: nonCurrentUserSelect,
+  views: true,
+  slug: true,
 };
 
 export const gameSelect: Prisma.GameSelect = {
@@ -370,3 +390,4 @@ export type NucleusKey = Prisma.NucleusKeyGetPayload<typeof nucleusKey>;
 export type Snippet = Prisma.CodeSnippetGetPayload<typeof snippet>;
 export type Message = Prisma.MessageGetPayload<typeof message>;
 export type Article = Prisma.AdminArticleGetPayload<typeof article>;
+export type BlogPost = Prisma.BlogPostGetPayload<typeof blogpost>;

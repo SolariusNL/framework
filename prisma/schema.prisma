@@ -125,6 +125,7 @@ model User {
   otpHex                     String?
   otpBase32                  String?
   otpAuthUrl                 String?
+  authoredBlogPosts          BlogPost[]            @relation("blogPosts")
 }
 
 model ConnectedAccount {
@@ -140,6 +141,7 @@ enum AdminPermission {
   PUNISH_USERS
   RUN_ACTIONS
   EDIT_PERMISSIONS
+  WRITE_BLOG_POST
 }
 
 model DiscordConnectCode {
@@ -614,4 +616,19 @@ model AdminArticle {
   updatedAt DateTime @default(now())
   tags      String[]
   viewers   User[]   @relation("adminArticlesViewed")
+}
+
+model BlogPost {
+  id        String   @id @default(uuid())
+  author    User     @relation("blogPosts", fields: [authorId], references: [id])
+  authorId  Int
+  title     String
+  subtitle  String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  tags      String[]
+  views     Int      @default(0)
+  featured  Boolean  @default(false)
+  slug      String   @unique @default(uuid())
 }
