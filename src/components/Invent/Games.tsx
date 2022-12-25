@@ -16,6 +16,8 @@ import {
   useMantineColorScheme,
   useMantineTheme,
 } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
+import { getCookie } from "cookies-next";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import {
@@ -347,11 +349,33 @@ const Games = ({ user }: GamesProps) => {
                           onClick={() =>
                             router.push(`/game/${game.id}/connection/add`)
                           }
+                          disabled={game.connection.length > 0}
                         >
                           Add Connection
                         </Menu.Item>
                         <Menu.Divider />
-                        <Menu.Item color="red" icon={<HiXCircle />}>
+                        <Menu.Item
+                          color="red"
+                          icon={<HiXCircle />}
+                          onClick={async () => {
+                            await fetch(`/api/nucleus/shutdown/${game.id}`, {
+                              method: "POST",
+                              headers: {
+                                "Content-Type": "application/json",
+                                Authorization: String(
+                                  getCookie(".frameworksession")
+                                ),
+                              },
+                            }).then(() => {
+                              showNotification({
+                                title: "Success",
+                                message:
+                                  "All Cosmic servers have been shut down.",
+                                icon: <HiCheckCircle />,
+                              });
+                            });
+                          }}
+                        >
                           Shutdown all connections
                         </Menu.Item>
                         <Menu.Item color="red" icon={<HiTrash />}>

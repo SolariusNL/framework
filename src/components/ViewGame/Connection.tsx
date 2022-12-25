@@ -14,7 +14,7 @@ const ConnectionTab = ({ game }: ConnectionTabProps) => {
   const router = useRouter();
 
   return (
-    <ViewGameTab value="connection" title="Connection">
+    <ViewGameTab value="connection" title="Servers">
       <Table highlightOnHover mb={10}>
         <thead>
           <tr>
@@ -61,6 +61,7 @@ const ConnectionTab = ({ game }: ConnectionTabProps) => {
             size="xs"
             leftIcon={<HiPlus />}
             onClick={() => router.push(`/game/${game.id}/connection/add`)}
+            disabled={game.connection.length > 0}
           >
             Add server
           </Button>

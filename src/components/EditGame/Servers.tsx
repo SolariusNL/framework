@@ -14,7 +14,12 @@ const Servers = ({ game }: ServersProps) => {
   return (
     <EditGameTab value="servers">
       <Link passHref href={`/game/${game.id}/connection/add`}>
-        <Button leftIcon={<HiPlus />} mb={16} variant="default">
+        <Button
+          leftIcon={<HiPlus />}
+          mb={16}
+          variant="default"
+          disabled={game.connection.length > 0}
+        >
           Add a new server
         </Button>
       </Link>

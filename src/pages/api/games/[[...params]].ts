@@ -2,7 +2,7 @@ import {
   GameGenre,
   RatingCategory,
   RatingCategoryScore,
-  RatingType
+  RatingType,
 } from "@prisma/client";
 import {
   Body,
@@ -11,7 +11,7 @@ import {
   Param,
   Post,
   Query,
-  ValidationPipe
+  ValidationPipe,
 } from "@storyofams/next-api-decorators";
 import * as Validate from "class-validator";
 import fetch from "node-fetch";
@@ -23,7 +23,7 @@ import prisma from "../../../util/prisma";
 import {
   gameSelect,
   nonCurrentUserSelect,
-  type User
+  type User,
 } from "../../../util/prisma-types";
 import { RateLimitMiddleware } from "../../../util/rateLimit";
 import { logTransaction } from "../../../util/transactionHistory";
@@ -358,6 +358,9 @@ class GameRouter {
       where: {
         id: Number(id),
       },
+      include: {
+        connection: true,
+      },
     });
 
     if (!game) {
@@ -369,6 +372,12 @@ class GameRouter {
     if (game.authorId != user.id) {
       return {
         error: "You are not the author of this game",
+      };
+    }
+
+    if (game.connection.length > 0) {
+      return {
+        error: "You already have a connection for this game",
       };
     }
 

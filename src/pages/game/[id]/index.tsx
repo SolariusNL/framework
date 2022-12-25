@@ -175,7 +175,7 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                     </Tabs.Tab>
 
                     <Tabs.Tab icon={<HiServer />} value="connection">
-                      Connections
+                      Servers
                     </Tabs.Tab>
 
                     <Tabs.Tab icon={<HiCurrencyDollar />} value="funds">

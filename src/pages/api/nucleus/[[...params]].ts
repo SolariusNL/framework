@@ -10,10 +10,12 @@ import Authorized, {
   Nucleus,
   NucleusAuthorized,
 } from "../../../util/api/authorized";
+import logger from "../../../util/logger";
 import prisma from "../../../util/prisma";
 import type { NucleusKey, User } from "../../../util/prisma-types";
 import { nonCurrentUserSelect } from "../../../util/prisma-types";
 import { RateLimitMiddleware } from "../../../util/rateLimit";
+import fetch from "node-fetch";
 
 class NucleusRouter {
   @Post("/auth")
@@ -105,6 +107,7 @@ class NucleusRouter {
         playingUsers: {
           disconnect: playing.map((p) => ({ id: p.id })),
         },
+        playing: 0,
       },
     });
 
@@ -374,6 +377,55 @@ class NucleusRouter {
     return {
       success: true,
       message: "Signature verified",
+    };
+  }
+
+  @Post("/shutdown/:gameid")
+  @Authorized()
+  public async shutdown(
+    @Param("gameid") gameid: number,
+    @Account() user: User
+  ) {
+    const game = await prisma.game.findFirst({
+      where: {
+        id: Number(gameid),
+        authorId: user.id,
+      },
+    });
+
+    if (!game) {
+      return {
+        success: false,
+        message: "Invalid game or you do not have permission to shut it down",
+      };
+    }
+
+    const connections = await prisma.connection.findMany({
+      where: {
+        gameId: game.id,
+      },
+    });
+
+    connections.forEach(async (conn) => {
+      const webhookAuth = await prisma.cosmicWebhookSignature.create({
+        data: {},
+      });
+
+      fetch(`http://${conn.ip}:${conn.port}/api/webhook/shutdown`, {
+        headers: {
+          "nucleus-signature": webhookAuth.secret,
+        },
+        method: "POST",
+      }).catch((e) => {
+        logger().warn(
+          `Failed to shut down connection ${conn.id} for game ${game.id}`
+        );
+      });
+    });
+
+    return {
+      success: true,
+      message: "Game shut down",
     };
   }
 }
