@@ -90,44 +90,44 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
     }
   }, [flags?.maintenanceEnabled]);
 
-  register({
-    requestError: (error) => {
-      showNotification({
-        title: "Error",
-        message:
-          "An error occurred while processing your request: " +
-            JSON.stringify(error) || "Unknown error",
-        icon: <HiXCircle />,
-        color: "red",
-        id: "request-error",
-      });
+  // register({
+  //   requestError: (error) => {
+  //     showNotification({
+  //       title: "Error",
+  //       message:
+  //         "An error occurred while processing your request: " +
+  //           JSON.stringify(error) || "Unknown error",
+  //       icon: <HiXCircle />,
+  //       color: "red",
+  //       id: "request-error",
+  //     });
 
-      return Promise.reject(error);
-    },
-    request: (url, config) => {
-      return [url, config];
-    },
-    response: (res) => {
-      if (res?.status >= 400 || res?.status < 200) {
-        throw res;
-      }
+  //     return Promise.reject(error);
+  //   },
+  //   request: (url, config) => {
+  //     return [url, config];
+  //   },
+  //   response: (res) => {
+  //     if (res?.status >= 400 || res?.status < 200) {
+  //       throw res;
+  //     }
 
-      return res;
-    },
-    responseError: (error) => {
-      showNotification({
-        title: "Error",
-        message:
-          "An error occurred while processing your request: " +
-            JSON.stringify(error) || "Unknown error",
-        icon: <HiXCircle />,
-        color: "red",
-        id: "request-error",
-      });
+  //     return res;
+  //   },
+  //   responseError: (error) => {
+  //     showNotification({
+  //       title: "Error",
+  //       message:
+  //         "An error occurred while processing your request: " +
+  //           JSON.stringify(error) || "Unknown error",
+  //       icon: <HiXCircle />,
+  //       color: "red",
+  //       id: "request-error",
+  //     });
 
-      return Promise.reject(error);
-    },
-  });
+  //     return Promise.reject(error);
+  //   },
+  // });
 
   return (
     <>
