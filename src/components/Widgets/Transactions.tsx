@@ -1,10 +1,10 @@
-import { Pagination, ScrollArea, Skeleton, Table } from "@mantine/core";
+import { Badge, Pagination, Stack, Text } from "@mantine/core";
 import { Transaction } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
+import { HiArrowRight, HiShoppingCart } from "react-icons/hi";
 import { User } from "../../util/prisma-types";
-import Copy from "../Copy";
-import ModernEmptyState from "../ModernEmptyState";
+import ShadedCard from "../ShadedCard";
 
 interface TransactionWidgetProps {
   user: User;
@@ -41,78 +41,58 @@ const TransactionsWidget = ({
 
   return (
     <>
-      <ScrollArea>
-        <Table striped mb={20}>
-          <thead>
-            <tr>
-              <th>Transaction ID</th>
-              <th>To</th>
-              <th>Amount</th>
-              <th>Description</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {transactions !== null &&
-              transactions
-                .slice((page - 1) * 8, page * 8)
-                .map((transaction) => (
-                  <tr key={transaction.id}>
-                    <td>
-                      <div className="flex items-center">
-                        <Copy value={transaction.id} />
-                        {transaction.id.slice(0, 8)}...
-                      </div>
-                    </td>
-                    <td>{transaction.to}</td>
-                    <td>{transaction.tickets}</td>
-                    <td>{transaction.description}</td>
-                    <td>
-                      {new Date(transaction.createdAt).toLocaleDateString()}
-                    </td>
-                  </tr>
-                ))}
-
-            {transactions !== null && transactions.length === 0 && (
-              <tr>
-                <td colSpan={5}>
-                  <ModernEmptyState
-                    title="No transactions found"
-                    body="You have no transactions to display."
-                  />
-                </td>
-              </tr>
-            )}
-
-            {loading &&
-              [...Array(8)].map((_, i) => (
-                <tr key={i}>
-                  <td>
-                    <Skeleton width={100} height={18} />
-                  </td>
-                  <td>
-                    <Skeleton width={100} height={18} />
-                  </td>
-                  <td>
-                    <Skeleton width={40} height={18} />
-                  </td>
-                  <td>
-                    <Skeleton width={120} height={18} />
-                  </td>
-                  <td>
-                    <Skeleton width={100} height={18} />
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </Table>
-      </ScrollArea>
-
+      <Stack mb={16}>
+        {transactions !== null &&
+          transactions.slice((page - 1) * 8, page * 8).map((t) => (
+            <ShadedCard
+              key={t.id}
+              className="flex items-center justify-between"
+            >
+              <div className="flex flex-col md:flex-row">
+                <Badge
+                  sx={{
+                    width: 48,
+                    height: 48,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                  color="green"
+                >
+                  <HiShoppingCart size={20} />
+                </Badge>
+                <div className="flex flex-col md:ml-4 mt-4 md:mt-0">
+                  <div className="flex flex-row gap-2 items-center">
+                    <HiArrowRight color="#868E96" />
+                    <Text size="lg" weight={600}>
+                      {t.to}
+                    </Text>
+                  </div>
+                  <Text size="sm" color="dimmed">
+                    {t.description}
+                  </Text>
+                </div>
+              </div>
+              <div className="text-right">
+                <Text size="lg" weight={600} color="#FF6B6B">
+                  -T${t.tickets}
+                </Text>
+                <Text color="dimmed">
+                  {new Date(t.createdAt).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </Text>
+              </div>
+            </ShadedCard>
+          ))}
+      </Stack>
       <Pagination
         total={Math.ceil((transactions?.length ?? 0) / 8)}
         page={page}
         onChange={setPage}
+        radius="xl"
       />
     </>
   );
