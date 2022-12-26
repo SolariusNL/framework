@@ -126,6 +126,7 @@ model User {
   otpBase32                  String?
   otpAuthUrl                 String?
   authoredBlogPosts          BlogPost[]            @relation("blogPosts")
+  authoredSupportTickets     SupportTicket[]       @relation("supportTickets")
 }
 
 model ConnectedAccount {
@@ -631,4 +632,23 @@ model BlogPost {
   views     Int      @default(0)
   featured  Boolean  @default(false)
   slug      String   @unique @default(uuid())
+}
+
+model SupportTicket {
+  id           String              @id @default(uuid())
+  author       User                @relation("supportTickets", fields: [authorId], references: [id])
+  authorId     Int
+  title        String
+  content      String
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @default(now())
+  category     String
+  status       SupportTicketStatus
+  contactEmail String
+  contactName  String?
+}
+
+enum SupportTicketStatus {
+  OPEN
+  CLOSED
 }

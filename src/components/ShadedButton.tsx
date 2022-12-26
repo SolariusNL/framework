@@ -1,6 +1,10 @@
 import { ButtonProps, UnstyledButton } from "@mantine/core";
 
-const ShadedButton: React.FC<ButtonProps> = (props) => {
+const ShadedButton: React.FC<
+  ButtonProps & {
+    onClick?: () => void;
+  }
+> = (props) => {
   return (
     <UnstyledButton
       sx={(theme) => ({

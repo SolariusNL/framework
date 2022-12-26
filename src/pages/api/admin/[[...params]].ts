@@ -14,6 +14,7 @@ import {
 import { promises as fs } from "fs";
 import { AdminAction } from "../../../util/adminAction";
 import { Account, AdminAuthorized } from "../../../util/api/authorized";
+import { sendMail } from "../../../util/mail";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
 import {
@@ -885,6 +886,51 @@ class AdminRouter {
     });
 
     return article;
+  }
+
+  @Get("/tickets")
+  @AdminAuthorized()
+  public async getTickets() {
+    const tickets = await prisma.supportTicket.findMany({
+      where: {
+        status: "OPEN",
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        author: nonCurrentUserSelect,
+      },
+    });
+
+    return tickets;
+  }
+
+  @Post("/tickets/close/:id")
+  @AdminAuthorized()
+  public async closeTicket(@Param("id") id: string) {
+    const t = await prisma.supportTicket.update({
+      where: {
+        id: String(id),
+      },
+      data: {
+        status: "CLOSED",
+      },
+    });
+
+    sendMail(
+      t.contactEmail,
+      "Support Ticket Closed",
+      `
+      <h1>Support Ticket Closed</h1>
+      <p>Your support ticket has been closed. If you have any further questions, please contact us again.</p>
+      <small>This is an automated message regarding your support ticket (title: ${t.title}).</small>
+      `
+    );
+
+    return {
+      success: true,
+    };
   }
 }
 

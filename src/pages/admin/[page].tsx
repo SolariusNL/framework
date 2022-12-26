@@ -10,6 +10,7 @@ import {
   HiFolder,
   HiKey,
   HiServer,
+  HiTicket,
   HiUsers,
   HiViewGrid,
 } from "react-icons/hi";
@@ -20,6 +21,7 @@ import Dashboard from "../../components/Admin/Pages/Dashboard";
 import Instance from "../../components/Admin/Pages/Instance";
 import Invites from "../../components/Admin/Pages/Invites";
 import Reports from "../../components/Admin/Pages/Reports";
+import Tickets from "../../components/Admin/Pages/Tickets";
 import Users from "../../components/Admin/Pages/Users";
 import Settings from "../../components/Admin/Settings";
 import Framework from "../../components/Framework";
@@ -100,6 +102,13 @@ const pages: {
     route: "/admin/comments",
     component: <></>,
     description: "Review comments made by users",
+  },
+  tickets: {
+    label: "Tickets",
+    icon: <HiTicket />,
+    route: "/admin/tickets",
+    component: <Tickets />,
+    description: "Review support tickets",
   },
   activity: {
     label: "Activity",
