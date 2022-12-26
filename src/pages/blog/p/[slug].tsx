@@ -26,16 +26,15 @@ const BlogPost: NextPage<BlogPostProps> = ({ post, user }) => {
     >
       <div className="flex flex-col md:flex-row">
         <div className="flex flex-col w-full md:w-1/6">
-          <div 
-          // stack on desktop, row on mobile
-            className="flex flex-row md:flex-col justify-between gap-4 mb-6"
-          >
+          <div className="flex flex-row md:flex-col justify-between gap-4 mb-6">
             {[
               {
                 icon: HiClock,
                 label: "Created",
                 value: (
-                  <Text size="sm">{new Date(post.createdAt).toLocaleDateString()}</Text>
+                  <Text size="sm">
+                    {new Date(post.createdAt).toLocaleDateString()}
+                  </Text>
                 ),
               },
               {
@@ -87,8 +86,7 @@ const BlogPost: NextPage<BlogPostProps> = ({ post, user }) => {
 };
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const auth = await authorizedRoute(context, true, false);
-  if (auth.redirect) return auth;
+  const auth = await authorizedRoute(context, false, false);
 
   const post = await prisma.blogPost.findUnique({
     where: {
@@ -113,7 +111,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   return {
     props: {
-      user: auth.props.user,
+      user: auth.props?.user ?? null,
       post: JSON.parse(JSON.stringify(post)),
     },
   };

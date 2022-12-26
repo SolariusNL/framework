@@ -5,6 +5,7 @@ import {
   Badge,
   Box,
   Burger,
+  Button,
   Container,
   createStyles,
   Drawer,
@@ -16,7 +17,7 @@ import {
   Text,
   ThemeIcon,
   Title,
-  useMantineColorScheme
+  useMantineColorScheme,
 } from "@mantine/core";
 import { useDisclosure, useLocalStorage } from "@mantine/hooks";
 import { SpotlightProvider } from "@mantine/spotlight";
@@ -28,9 +29,11 @@ import {
   HiArrowLeft,
   HiCode,
   HiCog,
+  HiDocumentText,
   HiGift,
   HiHome,
   HiLightBulb,
+  HiLogin,
   HiMail,
   HiSearch,
   HiShieldCheck,
@@ -39,7 +42,7 @@ import {
   HiSun,
   HiTicket,
   HiUser,
-  HiViewGrid
+  HiViewGrid,
 } from "react-icons/hi";
 import { getIpcRenderer } from "../util/electron";
 import { User } from "../util/prisma-types";
@@ -384,6 +387,18 @@ const Framework = ({
                 <UserMenu userMenuOpened={userMenuOpened} />
               </Group>
             )}
+            {!mobile && !user && (
+              <Group>
+                <Link href="/login" passHref>
+                  <Button variant="default" leftIcon={<HiLogin />}>
+                    Log in
+                  </Button>
+                </Link>
+                <Link href="/register" passHref>
+                  <Button leftIcon={<HiDocumentText />}>Sign up</Button>
+                </Link>
+              </Group>
+            )}
           </Group>
 
           {mobile && (
@@ -525,6 +540,18 @@ const Framework = ({
                   notificationData={user && user.notifications}
                 />
                 <Search />
+              </Group>
+            )}
+            {!user && (
+              <Group grow>
+                <Link href="/login" passHref>
+                  <Button variant="default" leftIcon={<HiLogin />}>
+                    Log in
+                  </Button>
+                </Link>
+                <Link href="/register" passHref>
+                  <Button leftIcon={<HiDocumentText />}>Sign up</Button>
+                </Link>
               </Group>
             )}
           </Container>

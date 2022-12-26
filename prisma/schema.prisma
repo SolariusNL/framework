@@ -636,8 +636,8 @@ model BlogPost {
 
 model SupportTicket {
   id           String              @id @default(uuid())
-  author       User                @relation("supportTickets", fields: [authorId], references: [id])
-  authorId     Int
+  author       User?               @relation("supportTickets", fields: [authorId], references: [id])
+  authorId     Int?
   title        String
   content      String
   createdAt    DateTime            @default(now())

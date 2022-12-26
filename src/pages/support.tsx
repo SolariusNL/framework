@@ -66,7 +66,7 @@ const Support: NextPage<SupportProps> = ({ user }) => {
       title: "",
       content: "",
       category: categories[0][0],
-      contactEmail: user.email,
+      contactEmail: user ? user.email : "",
       contactName: "",
       agree: false,
     },
@@ -103,15 +103,17 @@ const Support: NextPage<SupportProps> = ({ user }) => {
   const [page, setPage] = useState(1);
 
   useEffect(() => {
-    fetch("/api/support/tickets", {
-      headers: {
-        Authorization: String(getCookie(".frameworksession")),
-      },
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        setTickets(res.data.tickets);
-      });
+    if (user) {
+      fetch("/api/support/tickets", {
+        headers: {
+          Authorization: String(getCookie(".frameworksession")),
+        },
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          setTickets(res.data.tickets);
+        });
+    }
   }, [viewingTickets]);
 
   return (
@@ -226,6 +228,12 @@ const Support: NextPage<SupportProps> = ({ user }) => {
               </div>
             </>
           )}
+          {!user && (
+            <ModernEmptyState
+              title="Not logged in"
+              body="You must be logged in to view your tickets"
+            />
+          )}
         </Stack>
       </Modal>
       <Framework
@@ -337,7 +345,7 @@ const Support: NextPage<SupportProps> = ({ user }) => {
 };
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return await authorizedRoute(context, true, false);
+  return await authorizedRoute(context, false, false);
 }
 
 export default Support;

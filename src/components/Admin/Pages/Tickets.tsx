@@ -100,16 +100,22 @@ const Tickets: React.FC = () => {
                     </div>
                     <div className="flex justify-between">
                       <div className="flex gap-2 items-center">
-                        <UserContext user={ticket.author}>
-                          <Avatar
-                            size={28}
-                            src={getMediaUrl(ticket.author.avatarUri)}
-                            radius={999}
-                          />
-                        </UserContext>
-                        <Text weight={500} color="dimmed">
-                          {ticket.author.username}
-                        </Text>
+                        {ticket.author ? (
+                          <>
+                            <UserContext user={ticket.author}>
+                              <Avatar
+                                size={28}
+                                src={getMediaUrl(ticket.author.avatarUri)}
+                                radius={999}
+                              />
+                            </UserContext>
+                            <Text weight={500} color="dimmed">
+                              {ticket.author.username}
+                            </Text>
+                          </>
+                        ) : (
+                          <Text color="dimmed">User not logged in</Text>
+                        )}
                       </div>
                       <Anchor
                         onClick={async () => {
@@ -133,7 +139,7 @@ const Tickets: React.FC = () => {
                           });
                         }}
                       >
-                        Close
+                        Close ticket
                       </Anchor>
                     </div>
                   </>

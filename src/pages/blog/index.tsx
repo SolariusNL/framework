@@ -2,11 +2,12 @@ import {
   Avatar,
   Button,
   Card,
-  Modal, Switch,
+  Modal,
+  Switch,
   Text,
   Textarea,
   TextInput,
-  Title
+  Title,
 } from "@mantine/core";
 import { AdminPermission } from "@prisma/client";
 import { getCookie } from "cookies-next";
@@ -133,11 +134,10 @@ const Blog: NextPage<BlogProps> = ({ user, posts, featured }) => {
         modernTitle="Blog"
         modernSubtitle="Read our latest news and updates"
         activeTab="none"
-        {...(user.adminPermissions.includes(
-          AdminPermission.WRITE_BLOG_POST
-        ) && {
-          actions: [["Create post", () => setCreateBlogPostModal(true)]],
-        })}
+        {...(user &&
+          user.adminPermissions.includes(AdminPermission.WRITE_BLOG_POST) && {
+            actions: [["Create post", () => setCreateBlogPostModal(true)]],
+          })}
       >
         <Title order={3} mb={12}>
           Featured posts
@@ -162,8 +162,7 @@ const Blog: NextPage<BlogProps> = ({ user, posts, featured }) => {
 };
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const auth = await authorizedRoute(context, true, false);
-  if (auth.redirect) return auth;
+  const auth = await authorizedRoute(context, false, false);
 
   const posts = await prisma.blogPost.findMany({
     where: {
@@ -180,7 +179,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   return {
     props: {
-      user: auth.props.user,
+      user: auth.props?.user ?? null,
       posts: JSON.parse(JSON.stringify(posts)),
       featured: JSON.parse(JSON.stringify(featured)),
     },
