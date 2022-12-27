@@ -17,10 +17,11 @@ import type { GetServerSidePropsContext, NextPage } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { HiExclamation } from "react-icons/hi";
+import { HiExclamation, HiXCircle } from "react-icons/hi";
 import MinimalFooter from "../components/MinimalFooter";
 import authorizedRoute from "../util/authorizedRoute";
 import { setCookie } from "../util/cookies";
+import { PinInput } from "@mantine/labs";
 
 interface FormValues {
   username: string;
@@ -136,29 +137,30 @@ const Login: NextPage = () => {
           having trouble, make sure your clock is set correctly and that you are
           using the correct code for the right account.
         </Text>
-        <div className="flex gap-4 flex-col md:flex-row">
-          <div className="flex-1">
-            <TextInput
-              label="Code"
-              description="Enter the code from your authenticator app"
-              value={twofaCode}
-              onChange={(e) => setTwofaCode(e.currentTarget.value)}
-              error={twofaFailed ? "Invalid code" : undefined}
-              placeholder="123456"
-            />
-          </div>
-          <div className="flex-1">
-            <Button onClick={verifyTwoFactor} fullWidth>
-              Verify code
-            </Button>
-            <Text color="dimmed" size="sm" mt={6}>
-              Account:{" "}
-              <span className="font-mono font-semibold">
-                {form.values.username}@Framework
-              </span>
+        <PinInput
+          value={twofaCode}
+          onChange={(e) => setTwofaCode(e)}
+          length={6}
+          className="text-center flex justify-center"
+          size="lg"
+          type="number"
+          styles={{
+            input: {
+              minHeight: "fit-content",
+            }
+          }}
+        />
+        {twofaFailed && (
+          <div className="flex mt-2 justify-center items-center">
+            <HiXCircle className="text-red-500 mr-2" />
+            <Text color="red" size="sm">
+              Invalid code entered
             </Text>
           </div>
-        </div>
+        )}
+        <Button onClick={verifyTwoFactor} fullWidth mt={24}>
+          Verify code
+        </Button>
       </Modal>
       <Container size={420} my={40}>
         <Title align="center">Framework</Title>

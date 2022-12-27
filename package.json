@@ -27,6 +27,7 @@
     "@mantine/dates": "^5.5.4",
     "@mantine/form": "^5.0.2",
     "@mantine/hooks": "^5.0.2",
+    "@mantine/labs": "^5.9.5",
     "@mantine/modals": "5.8.3",
     "@mantine/next": "^5.0.2",
     "@mantine/notifications": "5.8.2",
