@@ -12,6 +12,7 @@ import {
   Query,
 } from "@storyofams/next-api-decorators";
 import { promises as fs } from "fs";
+import { PrefCategory } from "../../../components/Admin/Pages/Instance";
 import { AdminAction } from "../../../util/adminAction";
 import { Account, AdminAuthorized } from "../../../util/api/authorized";
 import { sendMail } from "../../../util/mail";
@@ -931,6 +932,69 @@ class AdminRouter {
     return {
       success: true,
     };
+  }
+
+  @Get("/prefs/:category")
+  @AdminAuthorized()
+  public async getPrefs(@Param("category") category: PrefCategory) {
+    const operations = {
+      [PrefCategory.Email]: async () => {
+        const emailEnvs = [
+          "MAIL_ENABLED",
+          "SMTP_HOST",
+          "SMTP_PASSWORD",
+          "SMTP_USERNAME",
+          "MAIL_DOMAIN",
+        ];
+        const envs = emailEnvs.map((e) => ({
+          key: e,
+          value: process.env[e],
+        }));
+        const map = envs.reduce((acc, cur) => {
+          acc[String(cur.key!)] = String(cur.value);
+          return acc;
+        }, {} as Record<string, string>);
+
+        return map;
+      },
+      [PrefCategory.Flags]: async () => {
+        const happykitEnvs = [
+          "NEXT_PUBLIC_FLAGS_KEY",
+          "NEXT_PUBLIC_FLAGS_PRODUCTION",
+          "NEXT_PUBLIC_FLAGS_PREVIEW",
+          "NEXT_PUBLIC_FLAGS_DEVELOPMENT",
+        ];
+        const envs = happykitEnvs.map((e) => ({
+          key: e.replace("NEXT_PUBLIC_", ""),
+          value: String(process.env[e]),
+        }));
+
+        return envs.reduce((acc, cur) => {
+          acc[cur.key!] = cur.value;
+          return acc;
+        }, {} as Record<string, string>);
+      },
+      [PrefCategory.Integrations]: async () => {
+        return [];
+      },
+    };
+
+    const operation =
+      operations[category as PrefCategory] ||
+      (() => {
+        throw new Error("Invalid category");
+      });
+
+    if (!operation) {
+      return {
+        success: false,
+        error: "Invalid category",
+      };
+    }
+
+    const prefs = await operation();
+
+    return prefs;
   }
 }
 
