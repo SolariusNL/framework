@@ -776,6 +776,21 @@ class AdminRouter {
           await createActionLog(`Reset ${user.username}'s password`, 3);
         },
       },
+      {
+        name: AdminAction.RESET_BIO,
+        action: async () => {
+          await prisma.user.update({
+            where: {
+              id: Number(uid),
+            },
+            data: {
+              bio: "This user has not yet written a bio.",
+            },
+          });
+
+          await createActionLog(`Reset ${user.username}'s bio`, 3);
+        },
+      },
     ];
 
     const foundAction = actions.find((a) => a.name === (action as AdminAction));

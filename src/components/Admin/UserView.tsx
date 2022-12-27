@@ -31,6 +31,7 @@ import { useFrameworkUser } from "../../contexts/FrameworkUser";
 import { getCookie } from "cookies-next";
 import { showNotification } from "@mantine/notifications";
 import { HiCheckCircle } from "react-icons/hi";
+import ResetBio from "./UserActions/ResetBio";
 
 interface UserViewProps {
   user: AdminViewUser;
@@ -378,6 +379,7 @@ const UserView = ({ user }: UserViewProps) => {
                 LogoutSessions,
                 ResetEmail,
                 ResetPassword,
+                ResetBio,
               ].map((Action, i) => (
                 <ReactNoSSR key={i}>
                   <Action user={user} />
@@ -415,10 +417,7 @@ const UserView = ({ user }: UserViewProps) => {
                             AdminPermission.EDIT_PERMISSIONS,
                             "edit permissions",
                           ],
-                          [
-                            AdminPermission.WRITE_BLOG_POST,
-                            "write blog posts",
-                          ]
+                          [AdminPermission.WRITE_BLOG_POST, "write blog posts"],
                         ].find((i) => i[0] === permission)![1]) as string
                     }
                     onChange={(e) => {

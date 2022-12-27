@@ -8,6 +8,7 @@ export enum AdminAction {
   LOGOUT_SESSIONS = "logout-sessions",
   RESET_EMAIL = "reset-email",
   RESET_PASSWORD = "reset-password",
+  RESET_BIO = "reset-bio",
 }
 
 async function performAdminAction(action: AdminAction, data: any, uid: number) {
