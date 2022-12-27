@@ -11,7 +11,8 @@ import {
 import { Connection } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import React from "react";
-import { HiTrash } from "react-icons/hi";
+import { HiStop, HiTrash } from "react-icons/hi";
+import shutdownNucleus from "../../util/fetch/shutdownNucleus";
 
 interface ConnectionsWidgetProps {
   filterId?: number;
@@ -102,7 +103,7 @@ const ConnectionsWidget = ({ filterId }: ConnectionsWidgetProps) => {
           Delete
         </Button>
       </Modal>
-      <Table striped>
+      <Table highlightOnHover>
         <thead>
           <tr>
             <th>Status</th>
@@ -144,7 +145,14 @@ const ConnectionsWidget = ({ filterId }: ConnectionsWidgetProps) => {
                 <td>{conn.ip}</td>
                 <td>{conn.port}</td>
                 <td>{conn.gameId}</td>
-                <td>
+                <td className="flex">
+                  <Tooltip label="Shutdown">
+                    <ActionIcon
+                      onClick={async () => await shutdownNucleus(conn.gameId)}
+                    >
+                      <HiStop />
+                    </ActionIcon>
+                  </Tooltip>
                   <Tooltip label="Delete">
                     <ActionIcon
                       color="red"

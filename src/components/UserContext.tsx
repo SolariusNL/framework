@@ -93,8 +93,8 @@ const UserContext = ({ user, children, customHref }: UserContextProps) => {
 
           <Button.Group className="p-0 px-0 py-0">
             <Link passHref href={customHref || `/profile/${user.username}`}>
-              <Button fullWidth size="xs">
-                <HiUser />
+              <Button fullWidth size="xs" leftIcon={<HiUser />}>
+                View profile
               </Button>
             </Link>
             <Button
@@ -103,8 +103,9 @@ const UserContext = ({ user, children, customHref }: UserContextProps) => {
               fullWidth
               size="xs"
               onClick={() => setReportOpened(true)}
+              leftIcon={<HiFlag />}
             >
-              <HiFlag />
+              Report
             </Button>
           </Button.Group>
         </HoverCard.Dropdown>

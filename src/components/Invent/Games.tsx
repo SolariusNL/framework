@@ -36,6 +36,7 @@ import {
   HiXCircle,
 } from "react-icons/hi";
 import abbreviateNumber from "../../util/abbreviate";
+import shutdownNucleus from "../../util/fetch/shutdownNucleus";
 import getMediaUrl from "../../util/getMedia";
 import { User } from "../../util/prisma-types";
 import Copy from "../Copy";
@@ -358,25 +359,10 @@ const Games = ({ user }: GamesProps) => {
                           color="red"
                           icon={<HiXCircle />}
                           onClick={async () => {
-                            await fetch(`/api/nucleus/shutdown/${game.id}`, {
-                              method: "POST",
-                              headers: {
-                                "Content-Type": "application/json",
-                                Authorization: String(
-                                  getCookie(".frameworksession")
-                                ),
-                              },
-                            }).then(() => {
-                              showNotification({
-                                title: "Success",
-                                message:
-                                  "All Cosmic servers have been shut down.",
-                                icon: <HiCheckCircle />,
-                              });
-                            });
+                            await shutdownNucleus(game.id);
                           }}
                         >
-                          Shutdown all connections
+                          Shutdown all servers
                         </Menu.Item>
                         <Menu.Item color="red" icon={<HiTrash />}>
                           Disable game
