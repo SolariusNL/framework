@@ -94,6 +94,8 @@
     "request-ip": "^3.3.0",
     "sanitize-html": "^2.7.1",
     "sharp": "^0.31.2",
+    "socket.io": "^4.5.4",
+    "socket.io-client": "^4.5.4",
     "speakeasy": "^2.0.0",
     "stripe": "^11.0.0",
     "three": "^0.143.0",

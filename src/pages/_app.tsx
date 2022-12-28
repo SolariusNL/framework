@@ -24,7 +24,6 @@ import {
 } from "@mantine/notifications";
 import { MDXProvider } from "@mdx-js/react";
 import { getCookie, setCookie } from "cookies-next";
-import { register } from "fetch-intercept";
 import isElectron from "is-electron";
 import { GetServerSidePropsContext } from "next";
 import { DefaultSeo } from "next-seo";
@@ -34,8 +33,10 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import NextNProgress from "nextjs-progressbar";
 import { useEffect, useState } from "react";
-import { HiCheckCircle, HiXCircle } from "react-icons/hi";
+import { HiCheckCircle } from "react-icons/hi";
+import ReactNoSSR from "react-no-ssr";
 import "../../flags.config";
+import SocketProvider from "../components/ContextProvider";
 import ElectronTitlebar from "../components/ElectronTitlebar";
 import Stateful from "../components/Stateful";
 import { FrameworkUserProvider } from "../contexts/FrameworkUser";
@@ -43,7 +44,6 @@ import { UserInformationWrapper } from "../contexts/UserInformationDialog";
 import "../styles/framework.css";
 import "../styles/tw.css";
 import logout from "../util/api/logout";
-import ReactNoSSR from "react-no-ssr";
 
 const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
   const { Component, pageProps } = props;
@@ -90,44 +90,20 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
     }
   }, [flags?.maintenanceEnabled]);
 
-  // register({
-  //   requestError: (error) => {
-  //     showNotification({
-  //       title: "Error",
-  //       message:
-  //         "An error occurred while processing your request: " +
-  //           JSON.stringify(error) || "Unknown error",
-  //       icon: <HiXCircle />,
-  //       color: "red",
-  //       id: "request-error",
-  //     });
+  async function initGateway() {
+    await fetch("/api/gateway/initialize", {
+      method: "GET",
+      headers: {
+        Authorization: String(getCookie(".frameworksession")),
+      },
+    });
+  }
 
-  //     return Promise.reject(error);
-  //   },
-  //   request: (url, config) => {
-  //     return [url, config];
-  //   },
-  //   response: (res) => {
-  //     if (res?.status >= 400 || res?.status < 200) {
-  //       throw res;
-  //     }
-
-  //     return res;
-  //   },
-  //   responseError: (error) => {
-  //     showNotification({
-  //       title: "Error",
-  //       message:
-  //         "An error occurred while processing your request: " +
-  //           JSON.stringify(error) || "Unknown error",
-  //       icon: <HiXCircle />,
-  //       color: "red",
-  //       id: "request-error",
-  //     });
-
-  //     return Promise.reject(error);
-  //   },
-  // });
+  useEffect(() => {
+    if (pageProps.user && typeof window !== "undefined") {
+      initGateway();
+    }
+  }, []);
 
   return (
     <>
@@ -221,252 +197,258 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
         >
           <ModalsProvider>
             <UserInformationWrapper>
-              <MDXProvider
-                components={{
-                  a: (props) => (
-                    <Link href={String(props.href)}>
-                      <Anchor {...(props as AnchorProps)} />
-                    </Link>
-                  ),
-                  hr: () => <Divider />,
-                }}
-              >
-                <NotificationsProvider position="top-center" zIndex={1000}>
-                  <FrameworkUserProvider
-                    value={pageProps && pageProps.user && pageProps.user}
-                  >
-                    <NextNProgress />
-                    <ReactNoSSR>{isElectron() && <ElectronTitlebar />}</ReactNoSSR>
-                    <Component {...pageProps} key={router.asPath} />
-                    <Modal
-                      withCloseButton={false}
-                      opened={
-                        pageProps != undefined &&
-                        pageProps.user &&
-                        pageProps.user.warning &&
-                        !pageProps.user.warningViewed
-                      }
-                      onClose={() => null}
+              <SocketProvider>
+                <MDXProvider
+                  components={{
+                    a: (props) => (
+                      <Link href={String(props.href)}>
+                        <Anchor {...(props as AnchorProps)} />
+                      </Link>
+                    ),
+                    hr: () => <Divider />,
+                  }}
+                >
+                  <NotificationsProvider position="top-center" zIndex={1000}>
+                    <FrameworkUserProvider
+                      value={pageProps && pageProps.user && pageProps.user}
                     >
-                      <Text mb={16}>
-                        You have received a warning from the staff team:{" "}
-                        <strong>
-                          {(pageProps != undefined &&
-                            pageProps.user &&
-                            pageProps.user.warning) ||
-                            "No warning reason provided"}
-                        </strong>
-                      </Text>
-
-                      <Text mb={24}>
-                        If you continue to violate our Community Guidelines, you
-                        may be permanently banned from Framework. Please, go
-                        through our policies again and make sure you understand
-                        them. We would hate to see you go!
-                      </Text>
-
-                      <Button
-                        fullWidth
-                        onClick={() => {
-                          fetch("/api/users/@me/warning/acknowledge", {
-                            method: "POST",
-                            headers: {
-                              "Content-Type": "application/json",
-                              Authorization: String(
-                                getCookie(".frameworksession")
-                              ),
-                            },
-                          }).then(() => router.reload());
-                        }}
+                      <NextNProgress />
+                      <ReactNoSSR>
+                        {isElectron() && <ElectronTitlebar />}
+                      </ReactNoSSR>
+                      <Component {...pageProps} key={router.asPath} />
+                      <Modal
+                        withCloseButton={false}
+                        opened={
+                          pageProps != undefined &&
+                          pageProps.user &&
+                          pageProps.user.warning &&
+                          !pageProps.user.warningViewed
+                        }
+                        onClose={() => null}
                       >
-                        Acknowledge
-                      </Button>
-                    </Modal>
-                    <Modal
-                      withCloseButton={false}
-                      opened={
-                        pageProps != undefined &&
-                        pageProps.user &&
-                        pageProps.user.banned
-                      }
-                      onClose={() => null}
-                    >
-                      <Text mb={16}>
-                        You have been permanently banned from Framework for
-                        violations of our Terms of Service and/or our Community
-                        Guidelines. You are not allowed to use Framework or
-                        create any additional accounts. This action is
-                        irreversible.
-                      </Text>
+                        <Text mb={16}>
+                          You have received a warning from the staff team:{" "}
+                          <strong>
+                            {(pageProps != undefined &&
+                              pageProps.user &&
+                              pageProps.user.warning) ||
+                              "No warning reason provided"}
+                          </strong>
+                        </Text>
 
-                      <Text mb={24}>
-                        Ban reason:{" "}
-                        <strong>
-                          {pageProps != undefined &&
-                            pageProps.user &&
-                            pageProps.user.banReason}
-                        </strong>
-                      </Text>
+                        <Text mb={24}>
+                          If you continue to violate our Community Guidelines,
+                          you may be permanently banned from Framework. Please,
+                          go through our policies again and make sure you
+                          understand them. We would hate to see you go!
+                        </Text>
 
-                      <Button
-                        fullWidth
-                        onClick={async () =>
-                          await logout().then(() => router.reload())
+                        <Button
+                          fullWidth
+                          onClick={() => {
+                            fetch("/api/users/@me/warning/acknowledge", {
+                              method: "POST",
+                              headers: {
+                                "Content-Type": "application/json",
+                                Authorization: String(
+                                  getCookie(".frameworksession")
+                                ),
+                              },
+                            }).then(() => router.reload());
+                          }}
+                        >
+                          Acknowledge
+                        </Button>
+                      </Modal>
+                      <Modal
+                        withCloseButton={false}
+                        opened={
+                          pageProps != undefined &&
+                          pageProps.user &&
+                          pageProps.user.banned
+                        }
+                        onClose={() => null}
+                      >
+                        <Text mb={16}>
+                          You have been permanently banned from Framework for
+                          violations of our Terms of Service and/or our
+                          Community Guidelines. You are not allowed to use
+                          Framework or create any additional accounts. This
+                          action is irreversible.
+                        </Text>
+
+                        <Text mb={24}>
+                          Ban reason:{" "}
+                          <strong>
+                            {pageProps != undefined &&
+                              pageProps.user &&
+                              pageProps.user.banReason}
+                          </strong>
+                        </Text>
+
+                        <Button
+                          fullWidth
+                          onClick={async () =>
+                            await logout().then(() => router.reload())
+                          }
+                        >
+                          Logout
+                        </Button>
+                      </Modal>
+
+                      <Dialog
+                        opened={
+                          !cookieConsent.accepted && !cookieConsent.rejected
                         }
                       >
-                        Logout
-                      </Button>
-                    </Modal>
+                        <Text size="sm" mb={12}>
+                          Framework and other Soodam.re services use cookies to
+                          help us provide you the best experience. By continuing
+                          to use our services, you agree to our use of cookies.
+                          Read our{" "}
+                          <Link href="/privacy">
+                            <Anchor>Privacy Policy</Anchor>
+                          </Link>{" "}
+                          for more information regarding your privacy and how we
+                          use cookies.
+                        </Text>
 
-                    <Dialog
-                      opened={
-                        !cookieConsent.accepted && !cookieConsent.rejected
-                      }
-                    >
-                      <Text size="sm" mb={12}>
-                        Framework and other Soodam.re services use cookies to
-                        help us provide you the best experience. By continuing
-                        to use our services, you agree to our use of cookies.
-                        Read our{" "}
-                        <Link href="/privacy">
-                          <Anchor>Privacy Policy</Anchor>
-                        </Link>{" "}
-                        for more information regarding your privacy and how we
-                        use cookies.
-                      </Text>
+                        <Group grow>
+                          <Button
+                            onClick={() =>
+                              setCookieConsent({
+                                accepted: true,
+                                rejected: false,
+                              })
+                            }
+                          >
+                            I agree
+                          </Button>
 
-                      <Group grow>
-                        <Button
-                          onClick={() =>
-                            setCookieConsent({
-                              accepted: true,
-                              rejected: false,
-                            })
-                          }
-                        >
-                          I agree
-                        </Button>
+                          <Button
+                            onClick={() =>
+                              setCookieConsent({
+                                accepted: false,
+                                rejected: true,
+                              })
+                            }
+                          >
+                            I do not agree
+                          </Button>
+                        </Group>
+                      </Dialog>
 
-                        <Button
-                          onClick={() =>
-                            setCookieConsent({
-                              accepted: false,
-                              rejected: true,
-                            })
-                          }
-                        >
-                          I do not agree
-                        </Button>
-                      </Group>
-                    </Dialog>
+                      <Modal
+                        title="Reset email"
+                        opened={
+                          pageProps != undefined &&
+                          pageProps.user &&
+                          pageProps.user.emailResetRequired
+                        }
+                        onClose={() => null}
+                        withCloseButton={false}
+                      >
+                        <Text mb={16}>
+                          You are required to reset your email address. Please
+                          enter a new email address below.
+                        </Text>
+                        <Stateful>
+                          {(email, setEmail) => (
+                            <>
+                              <TextInput
+                                type="email"
+                                label="Email"
+                                description="Your new email address"
+                                value={email}
+                                onChange={(e) =>
+                                  setEmail(e.currentTarget.value)
+                                }
+                              />
+                              <Button
+                                mt={14}
+                                leftIcon={<HiCheckCircle />}
+                                disabled={
+                                  !email ||
+                                  !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
+                                  email === pageProps.user.email
+                                }
+                                onClick={async () => {
+                                  await fetch("/api/users/@me/changeemail", {
+                                    method: "POST",
+                                    headers: {
+                                      "Content-Type": "application/json",
+                                      Authorization: String(
+                                        getCookie(".frameworksession")
+                                      ),
+                                    },
+                                    body: JSON.stringify({
+                                      newEmail: email,
+                                    }),
+                                  }).finally(() => router.reload());
+                                }}
+                              >
+                                Reset email
+                              </Button>
+                            </>
+                          )}
+                        </Stateful>
+                      </Modal>
 
-                    <Modal
-                      title="Reset email"
-                      opened={
-                        pageProps != undefined &&
-                        pageProps.user &&
-                        pageProps.user.emailResetRequired
-                      }
-                      onClose={() => null}
-                      withCloseButton={false}
-                    >
-                      <Text mb={16}>
-                        You are required to reset your email address. Please
-                        enter a new email address below.
-                      </Text>
-                      <Stateful>
-                        {(email, setEmail) => (
-                          <>
-                            <TextInput
-                              type="email"
-                              label="Email"
-                              description="Your new email address"
-                              value={email}
-                              onChange={(e) => setEmail(e.currentTarget.value)}
-                            />
-                            <Button
-                              mt={14}
-                              leftIcon={<HiCheckCircle />}
-                              disabled={
-                                !email ||
-                                !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
-                                email === pageProps.user.email
-                              }
-                              onClick={async () => {
-                                await fetch("/api/users/@me/changeemail", {
-                                  method: "POST",
-                                  headers: {
-                                    "Content-Type": "application/json",
-                                    Authorization: String(
-                                      getCookie(".frameworksession")
-                                    ),
-                                  },
-                                  body: JSON.stringify({
-                                    newEmail: email,
-                                  }),
-                                }).finally(() => router.reload());
-                              }}
-                            >
-                              Reset email
-                            </Button>
-                          </>
-                        )}
-                      </Stateful>
-                    </Modal>
-
-                    <Modal
-                      title="Reset password"
-                      opened={
-                        pageProps != undefined &&
-                        pageProps.user &&
-                        pageProps.user.passwordResetRequired
-                      }
-                      onClose={() => null}
-                      withCloseButton={false}
-                    >
-                      <Text mb={16}>
-                        You are required to reset your password. Please enter a
-                        new password below.
-                      </Text>
-                      <Stateful>
-                        {(password, setPassword) => (
-                          <>
-                            <PasswordInput
-                              label="Password"
-                              description="Your new password"
-                              value={password}
-                              onChange={(e) =>
-                                setPassword(e.currentTarget.value)
-                              }
-                            />
-                            <Button
-                              mt={14}
-                              leftIcon={<HiCheckCircle />}
-                              disabled={!password || password.length < 8}
-                              onClick={async () => {
-                                await fetch("/api/users/@me/changepassword", {
-                                  method: "POST",
-                                  headers: {
-                                    "Content-Type": "application/json",
-                                    Authorization: String(
-                                      getCookie(".frameworksession")
-                                    ),
-                                  },
-                                  body: JSON.stringify({
-                                    newPassword: password,
-                                  }),
-                                }).finally(() => router.reload());
-                              }}
-                            >
-                              Reset password
-                            </Button>
-                          </>
-                        )}
-                      </Stateful>
-                    </Modal>
-                  </FrameworkUserProvider>
-                </NotificationsProvider>
-              </MDXProvider>
+                      <Modal
+                        title="Reset password"
+                        opened={
+                          pageProps != undefined &&
+                          pageProps.user &&
+                          pageProps.user.passwordResetRequired
+                        }
+                        onClose={() => null}
+                        withCloseButton={false}
+                      >
+                        <Text mb={16}>
+                          You are required to reset your password. Please enter
+                          a new password below.
+                        </Text>
+                        <Stateful>
+                          {(password, setPassword) => (
+                            <>
+                              <PasswordInput
+                                label="Password"
+                                description="Your new password"
+                                value={password}
+                                onChange={(e) =>
+                                  setPassword(e.currentTarget.value)
+                                }
+                              />
+                              <Button
+                                mt={14}
+                                leftIcon={<HiCheckCircle />}
+                                disabled={!password || password.length < 8}
+                                onClick={async () => {
+                                  await fetch("/api/users/@me/changepassword", {
+                                    method: "POST",
+                                    headers: {
+                                      "Content-Type": "application/json",
+                                      Authorization: String(
+                                        getCookie(".frameworksession")
+                                      ),
+                                    },
+                                    body: JSON.stringify({
+                                      newPassword: password,
+                                    }),
+                                  }).finally(() => router.reload());
+                                }}
+                              >
+                                Reset password
+                              </Button>
+                            </>
+                          )}
+                        </Stateful>
+                      </Modal>
+                    </FrameworkUserProvider>
+                  </NotificationsProvider>
+                </MDXProvider>
+              </SocketProvider>
             </UserInformationWrapper>
           </ModalsProvider>
         </MantineProvider>

@@ -12,7 +12,8 @@ import ModernEmptyState from "../ModernEmptyState";
 import Notifications from "../Widgets/Notifications";
 
 interface NotificationFlyoutProps {
-  notificationData: Notification[];
+  notifications: Notification[];
+  setNotifications: (notifications: Notification[]) => void;
 }
 
 const useStyles = createStyles((theme) => ({
@@ -34,10 +35,12 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-const NotificationFlyout = ({ notificationData }: NotificationFlyoutProps) => {
+const NotificationFlyout = ({
+  notifications,
+  setNotifications,
+}: NotificationFlyoutProps) => {
   const [opened, setOpened] = useState(false);
   const { classes, cx } = useStyles();
-  const [notifications, setNotifications] = useState(notificationData);
 
   return (
     <Popover transition="pop-top-right" width={360}>

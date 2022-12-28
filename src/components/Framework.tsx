@@ -24,7 +24,7 @@ import { SpotlightProvider } from "@mantine/spotlight";
 import isElectron from "is-electron";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   HiArrowLeft,
   HiCode,
@@ -44,6 +44,7 @@ import {
   HiUser,
   HiViewGrid,
 } from "react-icons/hi";
+import SocketContext from "../contexts/Socket";
 import { getIpcRenderer } from "../util/electron";
 import { User } from "../util/prisma-types";
 import useConfig from "../util/useConfig";
@@ -304,6 +305,8 @@ const Framework = ({
   });
 
   const [isSSR, setIsSSR] = useState(true);
+  const [userState, setUserState] = useState(user);
+  const socket = useContext(SocketContext);
 
   React.useEffect(() => {
     setIsSSR(false);
@@ -320,7 +323,23 @@ const Framework = ({
         },
       ]);
     }
+
+    if (user) {
+      setUserState(user);
+    }
   }, [user]);
+
+  React.useEffect(() => {
+    if (socket) {
+      socket?.on("@user/notification", (data) => {
+        setUserState((prev) => ({
+          ...prev,
+          notifications: [...prev.notifications, data],
+        }));
+        console.log(userState);
+      });
+    }
+  }, [user, socket]);
 
   const items = tabs.map((tab) => (
     <TabNav.Tab
@@ -381,7 +400,13 @@ const Framework = ({
             {!mobile && user && (
               <Group>
                 <NotificationFlyout
-                  notificationData={user && user.notifications}
+                  notifications={userState?.notifications}
+                  setNotifications={(notifications) =>
+                    setUserState((prev) => ({
+                      ...prev,
+                      notifications,
+                    }))
+                  }
                 />
                 <CurrencyMenu currencyMenuOpened={currencyMenuOpened} />
                 <UserMenu userMenuOpened={userMenuOpened} />
@@ -537,7 +562,13 @@ const Framework = ({
                 <CurrencyMenu currencyMenuOpened={currencyMenuOpened} />
                 <UserMenu userMenuOpened={userMenuOpened} />
                 <NotificationFlyout
-                  notificationData={user && user.notifications}
+                  notifications={userState?.notifications}
+                  setNotifications={(notifications) =>
+                    setUserState((prev) => ({
+                      ...prev,
+                      notifications,
+                    }))
+                  }
                 />
                 <Search />
               </Group>
