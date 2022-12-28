@@ -13,6 +13,7 @@ import { getCookie } from "cookies-next";
 import React from "react";
 import { HiPlus, HiTrash } from "react-icons/hi";
 import { GameWithDatastore } from "../../pages/game/[id]/edit";
+import Copy from "../Copy";
 import ModernEmptyState from "../ModernEmptyState";
 import Stateful from "../Stateful";
 import EditGameTab from "./EditGameTab";
@@ -134,6 +135,7 @@ const Datastores = ({ game }: DatastoreProps) => {
         <Table striped mb={16}>
           <thead>
             <tr>
+              <th>ID</th>
               <th>Name</th>
               <th>Description</th>
               <th>Created at</th>
@@ -145,6 +147,12 @@ const Datastores = ({ game }: DatastoreProps) => {
             {datastores.length > 0 ? (
               datastores.map((datastore) => (
                 <tr key={datastore.id}>
+                  <td>
+                    <div className="flex items-center gap-2">
+                      <Copy value={datastore.id} />
+                      <Text color="dimmed">Copy ID</Text>
+                    </div>
+                  </td>
                   <td>{datastore.name}</td>
                   <td>{datastore.desc}</td>
                   <td>{new Date(datastore.createdAt).toLocaleString()}</td>
