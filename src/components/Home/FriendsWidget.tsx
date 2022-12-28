@@ -77,7 +77,7 @@ const FriendsWidget: React.FC = () => {
                         {friend.premium && <HiSparkles />}
                       </div>
                       {friend.alias && (
-                        <Text size="sm" color="gray" weight={500}>
+                        <Text size="sm" color="dimmed" weight={500}>
                           ({friend.alias})
                         </Text>
                       )}

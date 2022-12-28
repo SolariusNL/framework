@@ -61,7 +61,7 @@ class GatewayRouter {
             (params.model === "Session" && params.action === "delete") ||
             params.action === "deleteMany"
           ) {
-            if (result.token !== socket.handshake.auth.token) {
+            if (result.token === socket.handshake.auth.token) {
               socket.emit("@user/logout", {});
             }
           }
