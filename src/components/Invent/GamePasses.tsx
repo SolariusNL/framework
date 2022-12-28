@@ -1,17 +1,9 @@
-import {
-  ActionIcon,
-  Anchor,
-  Button,
-  Group,
-  ScrollArea,
-  Table,
-  Text,
-} from "@mantine/core";
+import { ActionIcon, Anchor, ScrollArea, Table, Text } from "@mantine/core";
 import { Gamepass } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { HiExternalLink, HiPencil, HiPlus } from "react-icons/hi";
+import { HiExternalLink, HiPencil } from "react-icons/hi";
 import { User } from "../../util/prisma-types";
 import ModernEmptyState from "../ModernEmptyState";
 import InventTab from "./InventTab";
@@ -54,7 +46,7 @@ const GamePasses = ({ user }: GamePassesProps) => {
       tabSubtitle="Game passes are a way to sell additional content for your games, for example, access to limited-time items or exclusive features."
     >
       <ScrollArea>
-        <Table mb={32}>
+        <Table>
           <thead>
             <tr>
               <th>Name</th>
@@ -93,10 +85,7 @@ const GamePasses = ({ user }: GamePassesProps) => {
                       </td>
                       <td>T${gp?.price}</td>
                       <td>{gp?.owners.length}</td>
-                      <td>
-                        T${gp?.owners?.length! * (gp?.price || 0)} (
-                        {gp?.owners?.length! * 100}%)
-                      </td>
+                      <td>T${gp?.owners?.length! * (gp?.price || 0)}</td>
                       <td>
                         <Link href={`/game/${g.id}/edit?view=store`} passHref>
                           <ActionIcon variant="light">
@@ -123,14 +112,6 @@ const GamePasses = ({ user }: GamePassesProps) => {
           </tbody>
         </Table>
       </ScrollArea>
-
-      <Group>
-        <Link href="/game/create" passHref>
-          <Button variant="subtle" leftIcon={<HiPlus />}>
-            Create Game
-          </Button>
-        </Link>
-      </Group>
     </InventTab>
   );
 };
