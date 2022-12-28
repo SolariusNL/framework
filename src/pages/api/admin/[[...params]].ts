@@ -11,7 +11,7 @@ import {
   Post,
   Query,
 } from "@storyofams/next-api-decorators";
-import { promises as fs } from "fs";
+import { promises as fs, readFileSync } from "fs";
 import { PrefCategory } from "../../../components/Admin/Pages/Instance";
 import { AdminAction } from "../../../util/adminAction";
 import { Account, AdminAuthorized } from "../../../util/api/authorized";
@@ -24,6 +24,8 @@ import {
   articleSelect,
 } from "../../../util/prisma-types";
 import { RateLimitMiddleware } from "../../../util/rateLimit";
+import { setEnvVar } from "@soodam.re/env-utils";
+import { join } from "path";
 
 class AdminRouter {
   @Get("/reports")
@@ -952,6 +954,31 @@ class AdminRouter {
   @Get("/prefs/:category")
   @AdminAuthorized()
   public async getPrefs(@Param("category") category: PrefCategory) {
+    function getLatest() {
+      const data = readFileSync(join(process.cwd(), ".env"), "utf8");
+      const lines = data.split("\n");
+      const envs = lines
+        .filter((l) => !l.startsWith("#"))
+        .map((l) => {
+          const [key, value] = l.split("=");
+          return {
+            key: String(key),
+            value: String(value),
+          };
+        });
+
+      return envs;
+    }
+
+    const envs = getLatest();
+
+    function getValue(key: string) {
+      return envs
+        .find((e) => e.key === key)
+        ?.value.replace(/"/g, "")
+        .replace(/ /g, "");
+    }
+
     const operations = {
       [PrefCategory.Email]: async () => {
         const emailEnvs = [
@@ -961,11 +988,11 @@ class AdminRouter {
           "SMTP_USERNAME",
           "MAIL_DOMAIN",
         ];
-        const envs = emailEnvs.map((e) => ({
+        const emailVars = emailEnvs.map((e) => ({
           key: e,
-          value: process.env[e],
+          value: String(getValue(e)),
         }));
-        const map = envs.reduce((acc, cur) => {
+        const map = emailVars.reduce((acc, cur) => {
           acc[String(cur.key!)] = String(cur.value);
           return acc;
         }, {} as Record<string, string>);
@@ -979,12 +1006,12 @@ class AdminRouter {
           "NEXT_PUBLIC_FLAGS_PREVIEW",
           "NEXT_PUBLIC_FLAGS_DEVELOPMENT",
         ];
-        const envs = happykitEnvs.map((e) => ({
-          key: e.replace("NEXT_PUBLIC_", ""),
-          value: String(process.env[e]),
+        const flagVars = happykitEnvs.map((e) => ({
+          key: e,
+          value: String(getValue(e)),
         }));
 
-        return envs.reduce((acc, cur) => {
+        return flagVars.reduce((acc, cur) => {
           acc[cur.key!] = cur.value;
           return acc;
         }, {} as Record<string, string>);
@@ -1010,6 +1037,65 @@ class AdminRouter {
     const prefs = await operation();
 
     return prefs;
+  }
+
+  @Post("/prefs/:key")
+  @AdminAuthorized()
+  public async updateEnv(
+    @Param("key") key: string,
+    @Body() body: { value: string },
+    @Account() user: User
+  ) {
+    if (
+      !user.adminPermissions.includes(AdminPermission.CHANGE_INSTANCE_SETTINGS)
+    ) {
+      return {
+        success: false,
+        error:
+          "You do not have permission to do this, missing CHANGE_INSTANCE_SETTINGS",
+      };
+    }
+
+    const { value } = body;
+
+    if (!value) {
+      return {
+        success: false,
+        error: "Value is required",
+      };
+    }
+
+    const changableEnvs = [
+      "MAIL_ENABLED",
+      "SMTP_HOST",
+      "SMTP_PASSWORD",
+      "SMTP_USERNAME",
+      "MAIL_DOMAIN",
+      "NEXT_PUBLIC_FLAGS_KEY",
+      "NEXT_PUBLIC_FLAGS_PRODUCTION",
+      "NEXT_PUBLIC_FLAGS_PREVIEW",
+      "NEXT_PUBLIC_FLAGS_DEVELOPMENT",
+    ];
+
+    if (!changableEnvs.includes(key)) {
+      return {
+        success: false,
+        error: "Invalid key - not changable",
+      };
+    }
+
+    try {
+      setEnvVar(process.cwd() + "/.env", key, value);
+    } catch (e: any) {
+      return {
+        success: false,
+        error: e.message || "Unknown error writing to .env file",
+      };
+    }
+
+    return {
+      success: true,
+    };
   }
 }
 
