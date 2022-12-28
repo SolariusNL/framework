@@ -25,6 +25,7 @@ interface PunishmentProps {
   setPunishOpened: (value: boolean) => void;
   user: NonUser;
   onCompleted?: () => void;
+  reportAuthor?: number;
 }
 
 const Punishment: React.FC<PunishmentProps> = ({
@@ -32,6 +33,7 @@ const Punishment: React.FC<PunishmentProps> = ({
   setPunishOpened,
   user = undefined,
   onCompleted = () => {},
+  reportAuthor,
 }) => {
   const submitPunishment = async (values: IPunishmentForm) => {
     await fetch(`/api/admin/users/${user?.id}/punish/${values.category}`, {
@@ -42,6 +44,7 @@ const Punishment: React.FC<PunishmentProps> = ({
       },
       body: JSON.stringify({
         reason: values.reason,
+        reportAuthorId: reportAuthor,
       }),
     })
       .then((res) => res.json())

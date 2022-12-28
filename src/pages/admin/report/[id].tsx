@@ -129,6 +129,7 @@ const ReportPage: NextPage<ReportProps> = ({ user, report }) => {
         onCompleted={() => {
           closeReport();
         }}
+        reportAuthor={report.author.id}
       />
 
       <Framework activeTab="none" user={user}>

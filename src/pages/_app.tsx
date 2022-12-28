@@ -100,7 +100,7 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
   }
 
   useEffect(() => {
-    if (pageProps.user && typeof window !== "undefined") {
+    if (pageProps && pageProps.user && typeof window !== "undefined") {
       initGateway();
     }
   }, []);

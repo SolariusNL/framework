@@ -26,6 +26,7 @@ import {
 import { RateLimitMiddleware } from "../../../util/rateLimit";
 import { setEnvVar } from "@soodam.re/env-utils";
 import { join } from "path";
+import createNotification from "../../../util/notifications";
 
 class AdminRouter {
   @Get("/reports")
@@ -442,7 +443,7 @@ class AdminRouter {
   public async punishUser(
     @Param("uid") uid: string,
     @Param("category") category: "ban" | "warning",
-    @Body() body: { reason: string },
+    @Body() body: { reason: string; reportAuthorId?: number },
     @Account() admin: User
   ) {
     if (body.reason.length < 3 || body.reason.length > 1024) {
@@ -533,6 +534,25 @@ class AdminRouter {
           reason: body.reason,
         },
       });
+    }
+
+    if (body.reportAuthorId) {
+      await prisma.user.update({
+        where: {
+          id: Number(body.reportAuthorId),
+        },
+        data: {
+          tickets: {
+            increment: 250,
+          },
+        },
+      });
+      await createNotification(
+        Number(body.reportAuthorId),
+        NotificationType.SUCCESS,
+        `Thank you for your report filed against ${user.username}! Appropriate action has been taken against the offender, and you have been rewarded with 250 tickets.`,
+        "Thank You"
+      );
     }
 
     return {
