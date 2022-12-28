@@ -44,7 +44,9 @@ const Punishment: React.FC<PunishmentProps> = ({
       },
       body: JSON.stringify({
         reason: values.reason,
-        reportAuthorId: reportAuthor,
+        ...(reportAuthor && user?.id !== reportAuthor && {
+          reportAuthorId: reportAuthor,
+        }),
       }),
     })
       .then((res) => res.json())
