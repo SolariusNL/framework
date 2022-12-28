@@ -1,7 +1,8 @@
 import { showNotification } from "@mantine/notifications";
 import { getCookie } from "cookies-next";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { HiBell } from "react-icons/hi";
+import { HiBell, HiXCircle } from "react-icons/hi";
 import { io, Socket } from "socket.io-client";
 import SocketContext from "../contexts/Socket";
 
@@ -9,6 +10,7 @@ const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     let socket: Socket;
@@ -25,6 +27,16 @@ const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
           title: updates.title,
           message: updates.message,
           icon: <HiBell />,
+        });
+      });
+
+      socket.on("@user/logout", () => {
+        console.log("logout");
+        router.push("/login");
+        showNotification({
+          title: "You have been logged out",
+          message: "You have been logged out from another device.",
+          icon: <HiXCircle />,
         });
       });
     }

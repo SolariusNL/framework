@@ -2,11 +2,10 @@ import { createHandler, Get, Res } from "@storyofams/next-api-decorators";
 import http from "http";
 import { NextApiResponse } from "next";
 import { Server } from "socket.io";
-import Authorized, { Account } from "../../../util/api/authorized";
+import Authorized from "../../../util/api/authorized";
 import { getAccountFromSession } from "../../../util/authorizedRoute";
 import logger from "../../../util/logger";
 import prisma from "../../../util/prisma";
-import type { User } from "../../../util/prisma-types";
 
 type NextApiResponseWithIO = NextApiResponse & {
   socket: {
@@ -56,6 +55,14 @@ class GatewayRouter {
           if (params.model === "Notification" && params.action === "create") {
             if (socket.data.user.id === result.userId) {
               socket.emit("@user/notification", result);
+            }
+          }
+          if (
+            (params.model === "Session" && params.action === "delete") ||
+            params.action === "deleteMany"
+          ) {
+            if (result.token !== socket.handshake.auth.token) {
+              socket.emit("@user/logout", {});
             }
           }
           return result;

@@ -2,13 +2,14 @@ import { getCookie } from "cookies-next";
 import { NonUser } from "../prisma-types";
 
 const apiUrl = "/api/users";
-const headers = {
-  "Content-Type": "application/json",
-  Authorization: String(getCookie(".frameworksession")),
-};
 
 async function fetchData(url: string): Promise<any> {
-  const response = await fetch(url, { headers });
+  const response = await fetch(url, {
+    headers: {
+      Authorization: String(getCookie(".frameworksession")),
+      "Content-Type": "application/json",
+    },
+  });
   const data = await response.json();
   if (data.success) {
     return data;
