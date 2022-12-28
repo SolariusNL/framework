@@ -38,6 +38,7 @@ const SideBySide = ({
             padding: 16,
           }),
           borderRadius: theme.radius.md,
+          overflow: "visible"
         }}
       >
         <div

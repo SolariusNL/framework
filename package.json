@@ -100,7 +100,8 @@
     "stripe": "^11.0.0",
     "three": "^0.143.0",
     "ts-node": "^10.9.1",
-    "zod": "^3.20.2"
+    "zod": "^3.20.2",
+    "zustand": "^4.1.5"
   },
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^4.1.3",

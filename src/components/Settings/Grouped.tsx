@@ -7,7 +7,7 @@ interface Grouped {
 
 const Grouped = ({ title, children }: Grouped) => {
   return (
-    <Card withBorder shadow="sm">
+    <Card withBorder shadow="sm" sx={{ overflow: "visible" }}>
       <Text weight={750} color="dimmed" mb={16}>
         {title}
       </Text>

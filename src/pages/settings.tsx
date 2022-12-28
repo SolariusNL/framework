@@ -8,6 +8,7 @@ import {
   HiGift,
   HiInformationCircle,
   HiKey,
+  HiMicrophone,
   HiPhotograph,
   HiTrash,
   HiUser,
@@ -24,6 +25,7 @@ import PrivacyTab from "../components/Settings/PrivacyTab";
 import SecurityTab from "../components/Settings/SecurityTab";
 import SessionsTab from "../components/Settings/SessionsTab";
 import SubscriptionTab from "../components/Settings/SubscriptionTab";
+import VoiceTab from "../components/Settings/Voice";
 import TabNav from "../components/TabNav";
 import authorizedRoute from "../util/authorizedRoute";
 import { User } from "../util/prisma-types";
@@ -116,6 +118,10 @@ const Settings: NextPage<SettingsProps> = ({ user }) => {
                     Appearance
                   </TabNav.Tab>
 
+                  <TabNav.Tab value="voice" icon={<HiMicrophone />}>
+                    Voice
+                  </TabNav.Tab>
+
                   <TabNav.Tab value="beta" icon={<HiBeaker />}>
                     Preview Program
                   </TabNav.Tab>
@@ -151,6 +157,7 @@ const Settings: NextPage<SettingsProps> = ({ user }) => {
           AppearanceTab,
           BetaTab,
           SessionsTab,
+          VoiceTab,
         ].map((Component, index) => (
           <ReactNoSSR
             key={index}
