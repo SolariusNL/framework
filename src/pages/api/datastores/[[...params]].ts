@@ -1,8 +1,18 @@
-import { Body, createHandler, Post } from "@storyofams/next-api-decorators";
-import Authorized, { Account } from "../../../util/api/authorized";
+import {
+  Body,
+  createHandler,
+  Get,
+  Param,
+  Post,
+} from "@storyofams/next-api-decorators";
+import Authorized, {
+  Account,
+  NucleusAuthorized,
+} from "../../../util/api/authorized";
 import prisma from "../../../util/prisma";
-import type { User } from "../../../util/prisma-types";
+import type { NucleusKey, User } from "../../../util/prisma-types";
 import { RateLimitMiddleware } from "../../../util/rateLimit";
+import { Nucleus } from "./../../../util/api/authorized";
 
 class DatastoreRouter {
   @Post("/new")
@@ -62,7 +72,7 @@ class DatastoreRouter {
         data: {
           create: {
             key: "hello",
-            value: "world",
+            value: { coins: 500 },
           },
         },
         createdAt: new Date(),
@@ -75,6 +85,130 @@ class DatastoreRouter {
       status: 200,
       success: true,
       datastore,
+    };
+  }
+
+  @Get("/:id/query/:key")
+  @NucleusAuthorized()
+  @RateLimitMiddleware(150)()
+  public async queryDatastore(
+    @Param("id") id: string,
+    @Param("key") key: string,
+    @Nucleus() nucleus: NucleusKey
+  ) {
+    const datastore = await prisma.gameDatastore.findFirst({
+      where: {
+        id: id,
+      },
+      include: {
+        game: true,
+        data: {
+          where: {
+            key: {
+              equals: key,
+            },
+          },
+        },
+      },
+    });
+
+    if (!datastore) {
+      return {
+        status: 404,
+        success: false,
+        body: {
+          message: "Datastore not found",
+        },
+      };
+    }
+
+    if (nucleus.connection.game.id !== datastore.game.id) {
+      return {
+        status: 403,
+        success: false,
+        body: {
+          message: "You do not have permission to access this datastore",
+        },
+      };
+    }
+
+    return {
+      status: 200,
+      success: true,
+      data: datastore.data[0],
+    };
+  }
+
+  @Post("/:id/set/:key")
+  @NucleusAuthorized()
+  @RateLimitMiddleware(150)()
+  public async setDatastore(
+    @Param("id") id: string,
+    @Param("key") key: string,
+    @Body() body: { value: object },
+    @Nucleus() nucleus: NucleusKey
+  ) {
+    const datastore = await prisma.gameDatastore.findFirst({
+      where: {
+        id: id,
+      },
+      include: {
+        game: true,
+      },
+    });
+
+    if (!datastore) {
+      return {
+        status: 404,
+        success: false,
+        body: {
+          message: "Datastore not found",
+        },
+      };
+    }
+
+    if (nucleus.connection.game.id !== datastore.game.id) {
+      return {
+        status: 403,
+        success: false,
+        body: {
+          message: "You do not have permission to access this datastore",
+        },
+      };
+    }
+
+    const data = await prisma.gameDatastoreKeyValuePair.findFirst({
+      where: {
+        key: key,
+        gameDatastoreId: datastore.id,
+      },
+    });
+
+    if (data) {
+      await prisma.gameDatastoreKeyValuePair.update({
+        where: {
+          id: data.id,
+        },
+        data: {
+          value: body.value,
+        },
+      });
+    } else {
+      await prisma.gameDatastoreKeyValuePair.create({
+        data: {
+          key: key,
+          value: body.value,
+          gameDatastore: {
+            connect: {
+              id: datastore.id,
+            },
+          },
+        },
+      });
+    }
+
+    return {
+      success: true,
     };
   }
 }
