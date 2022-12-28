@@ -77,7 +77,7 @@ const UserMenu = ({ userMenuOpened }: { userMenuOpened: boolean }) => {
           Daily prizes
         </Menu.Item>
         <Menu.Item icon={<HiTicket />} onClick={() => router.push("/redeem")}>
-          Redeem prizes
+          Redeem code
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item

@@ -1,5 +1,6 @@
 import {
   Accordion,
+  Anchor,
   Button,
   createStyles,
   Group,
@@ -12,6 +13,7 @@ import { useViewportSize } from "@mantine/hooks";
 import { GiftCodeGrant } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
+import Link from "next/link";
 import React from "react";
 import Celebration from "react-confetti";
 import Framework from "../components/Framework";
@@ -142,6 +144,11 @@ const Redeem: NextPage<RedeemProps> = ({ user }) => {
               </Title>
             </div>
 
+            <Text mb={24}>
+              Enter your gift card in the input to redeem its reward. If you
+              have a code to redeem, you came to the right place!
+            </Text>
+
             <Accordion defaultValue="info">
               <Accordion.Item value="info">
                 <Accordion.Control>About gift codes</Accordion.Control>
@@ -166,7 +173,7 @@ const Redeem: NextPage<RedeemProps> = ({ user }) => {
             </Accordion>
           </Stack>
         </Group>
-        <Group>
+        <Group className="w-full">
           <ShadedCard
             sx={(theme) => ({
               width: "100%",
@@ -212,6 +219,15 @@ const Redeem: NextPage<RedeemProps> = ({ user }) => {
               </>
             )}
           </ShadedCard>
+          <Text size="sm" color="dimmed">
+            Terms and conditions apply. Abuse of this system may result in
+            moderation of your account. If you have any questions, please
+            contact us at our{" "}
+            <Link href="/support" passHref>
+              <Anchor>support</Anchor>
+            </Link>{" "}
+            page.
+          </Text>
         </Group>
       </Group>
     </Framework>
