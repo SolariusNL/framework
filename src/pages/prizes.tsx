@@ -4,12 +4,11 @@ import {
   Container,
   createStyles,
   Text,
-  Title,
+  Title
 } from "@mantine/core";
 import { useViewportSize } from "@mantine/hooks";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
-import Link from "next/link";
 import React from "react";
 import Celebration from "react-confetti";
 import Framework from "../components/Framework";
@@ -17,11 +16,6 @@ import authorizedRoute from "../util/authorizedRoute";
 import { User } from "../util/prisma-types";
 
 export const useStyles = createStyles((theme) => ({
-  title: {
-    fontSize: 26,
-    fontWeight: 900,
-  },
-
   controls: {
     [theme.fn.smallerThan("xs")]: {
       flexDirection: "column-reverse",
@@ -48,8 +42,7 @@ const Prizes: NextPage<PrizesProps> = ({ user }) => {
   const [error, setError] = React.useState<string | undefined>(undefined);
   const [prizeData, setPrizeData] = React.useState<{
     success: boolean;
-    message: string;
-    code: string;
+    earned: number;
   }>();
 
   const { width, height } = useViewportSize();
@@ -87,26 +80,20 @@ const Prizes: NextPage<PrizesProps> = ({ user }) => {
   };
 
   return (
-    <Framework user={user} activeTab="none">
+    <Framework user={user} activeTab="none" modernTitle="Daily Prize" modernSubtitle="Claim your daily prize!">
       <Container size={460} my={30}>
         {finished && prizeData ? (
           <>
-            <Title className={classes.title} align="center" mb={36}>
-              Congratulations! {String(prizeData.message)}
+            <Title align="center" mb={36}>
+              Congratulations! You won {prizeData.earned} tickets!
             </Title>
-
-            <Link href={`/redeem?autofill=${prizeData.code}`} passHref>
-              <Button component="a" fullWidth>
-                Redeem your prize!
-              </Button>
-            </Link>
+            <Text color="dimmed">
+              Your tickets should be added to your account shortly.
+            </Text>
             {isClient && <Celebration width={width} height={height} />}
           </>
         ) : (
           <>
-            <Title className={classes.title} align="center">
-              Your daily prize
-            </Title>
             <Text color="dimmed" size="sm" align="center">
               You can get a random prize every day. Click the button below to
               claim your prize! Note that if we determine that you are using an
@@ -133,7 +120,7 @@ const Prizes: NextPage<PrizesProps> = ({ user }) => {
               }
               loading={loading}
             >
-              Get your daily prize
+              Claim prize
             </Button>
           </>
         )}

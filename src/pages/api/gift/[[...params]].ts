@@ -1,10 +1,8 @@
 import { GiftCodeGrant } from "@prisma/client";
 import { createHandler, Param, Post } from "@storyofams/next-api-decorators";
 import Authorized, { Account } from "../../../util/api/authorized";
-import generateGiftCode from "../../../util/generateGiftCode";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
-import { grantInformation } from "../../redeem";
 
 class GiftRouter {
   @Post("/redeem/:code")
@@ -197,11 +195,16 @@ class GiftRouter {
       };
     }
 
-    const prizes: GiftCodeGrant[] = [
-      GiftCodeGrant.THOUSAND_TICKETS,
-      GiftCodeGrant.TWOTHOUSAND_TICKETS,
-      GiftCodeGrant.FIVETHOUSAND_TICKETS,
+    const possible = [
+      10,
+      25,
+      50,
+      75,
+      100,
+      125,
+      150,
     ];
+    const random = possible[Math.floor(Math.random() * possible.length)];
 
     await prisma.user.update({
       where: {
@@ -209,23 +212,15 @@ class GiftRouter {
       },
       data: {
         lastRandomPrize: new Date(),
-      },
-    });
-
-    const prize = prizes[Math.floor(Math.random() * prizes.length)];
-
-    const code = await prisma.giftCode.create({
-      data: {
-        grant: prize,
-        code: String(generateGiftCode()),
-        redeemedAt: new Date(0),
+        tickets: {
+          increment: random,
+        }
       },
     });
 
     return {
       success: true,
-      message: grantInformation[prize].message,
-      code: code.code,
+      earned: random,
     };
   }
 }
