@@ -70,6 +70,7 @@ model User {
   busy                       Boolean               @default(false)
   banned                     Boolean               @default(false)
   banReason                  String                @default("")
+  banExpires                 DateTime?
   emailVerificationInstances EmailVerification[]   @relation("emailVerification")
   emailVerified              Boolean               @default(false)
   authTickets                NucleusAuthTicket[]   @relation("authTickets")

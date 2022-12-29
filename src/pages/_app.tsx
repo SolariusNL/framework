@@ -278,7 +278,7 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
                           action is irreversible.
                         </Text>
 
-                        <Text mb={24}>
+                        <Text mb={8}>
                           Ban reason:{" "}
                           <strong>
                             {pageProps != undefined &&
@@ -286,14 +286,42 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
                               pageProps.user.banReason}
                           </strong>
                         </Text>
+                        <Text mb={24}>
+                          Expires on:{" "}
+                          <strong>
+                            {pageProps != undefined &&
+                              pageProps.user &&
+                              new Date(
+                                pageProps.user.banExpires
+                              ).toLocaleDateString()}
+                          </strong>
+                        </Text>
 
                         <Button
                           fullWidth
-                          onClick={async () =>
-                            await logout().then(() => router.reload())
-                          }
+                          onClick={async () => {
+                            if (
+                              new Date(pageProps.user.banExpires).getTime() <=
+                              new Date().getTime()
+                            ) {
+                              await fetch("/api/users/@me/unlock", {
+                                method: "POST",
+                                headers: {
+                                  "Content-Type": "application/json",
+                                  Authorization: String(
+                                    getCookie(".frameworksession")
+                                  ),
+                                },
+                              }).then(() => router.reload());
+                            } else {
+                              await logout().then(() => router.reload());
+                            }
+                          }}
                         >
-                          Logout
+                          {new Date(pageProps.user.banExpires).getTime() <=
+                          new Date().getTime()
+                            ? "Unlock my account"
+                            : "Logout"}
                         </Button>
                       </Modal>
 

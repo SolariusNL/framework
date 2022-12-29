@@ -233,7 +233,10 @@ const UserView = ({ user }: UserViewProps) => {
                 {[
                   {
                     title: "Ban info",
-                    sections: [["Ban note", user.banReason]],
+                    sections: [
+                      ["Ban note", user.banReason],
+                      ["Expires", new Date(user.banExpires as Date).toLocaleString()],
+                    ],
                     condition: user.banned,
                   },
                   {
@@ -418,7 +421,10 @@ const UserView = ({ user }: UserViewProps) => {
                             "edit permissions",
                           ],
                           [AdminPermission.WRITE_BLOG_POST, "write blog posts"],
-                          [AdminPermission.CHANGE_INSTANCE_SETTINGS, "change instance settings"],
+                          [
+                            AdminPermission.CHANGE_INSTANCE_SETTINGS,
+                            "change instance settings",
+                          ],
                         ].find((i) => i[0] === permission)![1]) as string
                     }
                     onChange={(e) => {

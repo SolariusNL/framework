@@ -954,6 +954,40 @@ class UserRouter {
     };
   }
 
+  @Post("/@me/unlock")
+  @Authorized()
+  public async unlockUser(@Account() user: User) {
+    if (!user.banned) {
+      return {
+        success: false,
+        message: "User is not banned.",
+      };
+    }
+
+    if (new Date(user.banExpires as Date) <= new Date()) {
+      await prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          banned: false,
+          banExpires: null,
+          banReason: "",
+        },
+      });
+
+      return {
+        success: true,
+        message: "User unlocked successfully.",
+      };
+    } else {
+      return {
+        success: false,
+        message: "User is not eligible to be unlocked yet.",
+      };
+    }
+  }
+
   @Get("/:uid/pages/following")
   @Authorized()
   public async getFollowingPages(

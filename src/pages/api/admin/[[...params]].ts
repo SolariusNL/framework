@@ -443,7 +443,7 @@ class AdminRouter {
   public async punishUser(
     @Param("uid") uid: string,
     @Param("category") category: "ban" | "warning",
-    @Body() body: { reason: string; reportAuthorId?: number },
+    @Body() body: { reason: string; reportAuthorId?: number; expires?: string },
     @Account() admin: User
   ) {
     if (body.reason.length < 3 || body.reason.length > 1024) {
@@ -481,6 +481,9 @@ class AdminRouter {
         data: {
           banned: true,
           banReason: body.reason,
+          banExpires: body.expires
+            ? new Date(body.expires)
+            : new Date("9999-12-31T23:59:59.999Z"),
         },
       });
 

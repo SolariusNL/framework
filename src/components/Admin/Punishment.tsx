@@ -18,6 +18,7 @@ import { NonUser } from "../../util/prisma-types";
 interface IPunishmentForm {
   category: "warning" | "ban";
   reason: string;
+  expires?: Date;
 }
 
 interface PunishmentProps {
@@ -44,9 +45,11 @@ const Punishment: React.FC<PunishmentProps> = ({
       },
       body: JSON.stringify({
         reason: values.reason,
-        ...(reportAuthor && user?.id !== reportAuthor && {
-          reportAuthorId: reportAuthor,
-        }),
+        ...(reportAuthor &&
+          user?.id !== reportAuthor && {
+            reportAuthorId: reportAuthor,
+          }),
+        ...(values.expires && { expires: values.expires }),
       }),
     })
       .then((res) => res.json())
@@ -71,6 +74,7 @@ const Punishment: React.FC<PunishmentProps> = ({
     initialValues: {
       category: "warning",
       reason: "",
+      expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
     },
     validate: {
       reason: (value) => {
@@ -119,6 +123,55 @@ const Punishment: React.FC<PunishmentProps> = ({
             label="Reason"
             description="Explain the punishment"
             {...punishmentForm.getInputProps("reason")}
+          />
+
+          <Select
+            label="Expires"
+            description="Select punishment expiration date"
+            disabled={punishmentForm.values.category === "warning"}
+            data={[
+              {
+                label: "3 days",
+                value: new Date(
+                  Date.now() + 3 * 24 * 60 * 60 * 1000
+                ).toDateString(),
+              },
+              {
+                label: "7 days",
+                value: new Date(
+                  Date.now() + 7 * 24 * 60 * 60 * 1000
+                ).toDateString(),
+              },
+              {
+                label: "14 days",
+                value: new Date(
+                  Date.now() + 14 * 24 * 60 * 60 * 1000
+                ).toDateString(),
+              },
+              {
+                label: "30 days",
+                value: new Date(
+                  Date.now() + 30 * 24 * 60 * 60 * 1000
+                ).toDateString(),
+              },
+              {
+                label: "120 days",
+                value: new Date(
+                  Date.now() + 120 * 24 * 60 * 60 * 1000
+                ).toDateString(),
+              },
+              {
+                label: "365 days",
+                value: new Date(
+                  Date.now() + 365 * 24 * 60 * 60 * 1000
+                ).toDateString(),
+              },
+              {
+                label: "Permanent",
+                value: new Date("9999-12-31T23:59:59.999Z").toDateString(),
+              },
+            ]}
+            {...punishmentForm.getInputProps("expires")}
           />
         </Stack>
 

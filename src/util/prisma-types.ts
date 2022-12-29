@@ -157,6 +157,7 @@ export const userSelect: Prisma.UserSelect = {
   busy: true,
   banned: true,
   banReason: true,
+  banExpires: true,
   emailVerified: true,
   notifications: true,
   notificationPreferences: true,
