@@ -270,59 +270,64 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
                         }
                         onClose={() => null}
                       >
-                        <Text mb={16}>
-                          You have been permanently banned from Framework for
-                          violations of our Terms of Service and/or our
-                          Community Guidelines. You are not allowed to use
-                          Framework or create any additional accounts. This
-                          action is irreversible.
-                        </Text>
+                        {pageProps != undefined && pageProps.user && (
+                          <>
+                            <Text mb={16}>
+                              You have been permanently banned from Framework
+                              for violations of our Terms of Service and/or our
+                              Community Guidelines. You are not allowed to use
+                              Framework or create any additional accounts. This
+                              action is irreversible.
+                            </Text>
 
-                        <Text mb={8}>
-                          Ban reason:{" "}
-                          <strong>
-                            {pageProps != undefined &&
-                              pageProps.user &&
-                              pageProps.user.banReason}
-                          </strong>
-                        </Text>
-                        <Text mb={24}>
-                          Expires on:{" "}
-                          <strong>
-                            {pageProps != undefined &&
-                              pageProps.user &&
-                              new Date(
-                                pageProps.user.banExpires
-                              ).toLocaleDateString()}
-                          </strong>
-                        </Text>
+                            <Text mb={8}>
+                              Ban reason:{" "}
+                              <strong>
+                                {pageProps != undefined &&
+                                  pageProps.user &&
+                                  pageProps.user.banReason}
+                              </strong>
+                            </Text>
+                            <Text mb={24}>
+                              Expires on:{" "}
+                              <strong>
+                                {pageProps != undefined &&
+                                  pageProps.user &&
+                                  new Date(
+                                    pageProps.user.banExpires
+                                  ).toLocaleDateString()}
+                              </strong>
+                            </Text>
 
-                        <Button
-                          fullWidth
-                          onClick={async () => {
-                            if (
-                              new Date(pageProps.user.banExpires).getTime() <=
+                            <Button
+                              fullWidth
+                              onClick={async () => {
+                                if (
+                                  new Date(
+                                    pageProps.user.banExpires
+                                  ).getTime() <= new Date().getTime()
+                                ) {
+                                  await fetch("/api/users/@me/unlock", {
+                                    method: "POST",
+                                    headers: {
+                                      "Content-Type": "application/json",
+                                      Authorization: String(
+                                        getCookie(".frameworksession")
+                                      ),
+                                    },
+                                  }).then(() => router.reload());
+                                } else {
+                                  await logout().then(() => router.reload());
+                                }
+                              }}
+                            >
+                              {new Date(pageProps.user.banExpires).getTime() <=
                               new Date().getTime()
-                            ) {
-                              await fetch("/api/users/@me/unlock", {
-                                method: "POST",
-                                headers: {
-                                  "Content-Type": "application/json",
-                                  Authorization: String(
-                                    getCookie(".frameworksession")
-                                  ),
-                                },
-                              }).then(() => router.reload());
-                            } else {
-                              await logout().then(() => router.reload());
-                            }
-                          }}
-                        >
-                          {new Date(pageProps.user.banExpires).getTime() <=
-                          new Date().getTime()
-                            ? "Unlock my account"
-                            : "Logout"}
-                        </Button>
+                                ? "Unlock my account"
+                                : "Logout"}
+                            </Button>
+                          </>
+                        )}
                       </Modal>
 
                       <Dialog
