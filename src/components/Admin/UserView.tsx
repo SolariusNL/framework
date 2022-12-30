@@ -549,6 +549,10 @@ const UserView = ({ user }: UserViewProps) => {
                             AdminPermission.CHANGE_INSTANCE_SETTINGS,
                             "change instance settings",
                           ],
+                          [
+                            AdminPermission.IMPERSONATE_USERS,
+                            "impersonate users",
+                          ]
                         ].find((i) => i[0] === permission)![1]) as string
                     }
                     onChange={(e) => {
