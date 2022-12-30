@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "AdminPermission" ADD VALUE 'IMPERSONATE_USERS';

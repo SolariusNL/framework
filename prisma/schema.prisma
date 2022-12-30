@@ -145,6 +145,7 @@ enum AdminPermission {
   EDIT_PERMISSIONS
   WRITE_BLOG_POST
   CHANGE_INSTANCE_SETTINGS
+  IMPERSONATE_USERS
 }
 
 model DiscordConnectCode {

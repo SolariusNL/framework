@@ -20,13 +20,16 @@ import {
   useMantineColorScheme,
 } from "@mantine/core";
 import { useDisclosure, useLocalStorage } from "@mantine/hooks";
+import { showNotification } from "@mantine/notifications";
 import { SpotlightProvider } from "@mantine/spotlight";
+import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import isElectron from "is-electron";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useContext, useState } from "react";
 import {
   HiArrowLeft,
+  HiCheckCircle,
   HiCode,
   HiCog,
   HiDocumentText,
@@ -47,7 +50,6 @@ import {
 import SocketContext from "../contexts/Socket";
 import { getIpcRenderer } from "../util/electron";
 import { User } from "../util/prisma-types";
-import useConfig from "../util/useConfig";
 import useMediaQuery from "../util/useMediaQuery";
 import EmailReminder from "./EmailReminder";
 import Footer from "./Footer";
@@ -158,7 +160,8 @@ const Framework = ({
   const [currencyMenuOpened, _setCurrencyMenuOpened] = useState(false);
   const router = useRouter();
   const mobile = useMediaQuery("950");
-  const config = useConfig();
+  const oldCookie = getCookie(".frameworksession.old");
+  const [impersonating, setImpersonating] = useState(false);
 
   const tabs = [
     {
@@ -328,7 +331,6 @@ const Framework = ({
       setUserState(user);
     }
   }, [user]);
-
   React.useEffect(() => {
     if (socket) {
       socket?.on("@user/notification", (data) => {
@@ -340,6 +342,11 @@ const Framework = ({
       });
     }
   }, [user, socket]);
+  React.useEffect(() => {
+    if (oldCookie) {
+      setImpersonating(true);
+    }
+  }, []);
 
   const items = tabs.map((tab) => (
     <TabNav.Tab
@@ -366,6 +373,44 @@ const Framework = ({
       nothingFoundMessage="Nothing found..."
       disabled={user === null}
     >
+      {impersonating && (
+        <Box
+          sx={(theme) => ({
+            backgroundColor: theme.colorScheme === "dark" ? "black" : "white",
+            borderBottom: `1px solid ${
+              theme.colorScheme === "dark"
+                ? "transparent"
+                : theme.colors.gray[2]
+            }`,
+          })}
+          py="md"
+        >
+          <Container className="flex justify-between items-center">
+            <Text>
+              You are impersonating{" "}
+              <span className="font-bold">{user?.username}</span>.{" "}
+            </Text>
+            <Button
+              variant="white"
+              onClick={() => {
+                const newCookie = getCookie(".frameworksession.old");
+
+                setCookie(".frameworksession", newCookie);
+                deleteCookie(".frameworksession.old");
+
+                router.push("/admin/users");
+                showNotification({
+                  title: "Impersonation stopped",
+                  message: "You are no longer impersonating this user.",
+                  icon: <HiCheckCircle />,
+                });
+              }}
+            >
+              Stop impersonating
+            </Button>
+          </Container>
+        </Box>
+      )}
       <div
         className={classes.header}
         style={{

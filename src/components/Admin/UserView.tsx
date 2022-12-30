@@ -1,4 +1,5 @@
 import {
+  Accordion,
   Avatar,
   Badge,
   Button,
@@ -28,10 +29,11 @@ import ReactNoSSR from "react-no-ssr";
 import ResetPassword from "./UserActions/ResetPassword";
 import { AdminPermission } from "@prisma/client";
 import { useFrameworkUser } from "../../contexts/FrameworkUser";
-import { getCookie } from "cookies-next";
+import { getCookie, setCookie } from "cookies-next";
 import { showNotification } from "@mantine/notifications";
 import { HiCheckCircle } from "react-icons/hi";
 import ResetBio from "./UserActions/ResetBio";
+import { useRouter } from "next/router";
 
 interface UserViewProps {
   user: AdminViewUser;
@@ -46,6 +48,7 @@ const UserView = ({ user }: UserViewProps) => {
   const [punishOpened, setPunishOpened] = React.useState(false);
   const currentUser = useFrameworkUser()!;
   const [permissions, setPermissions] = React.useState<AdminPermission[]>([]);
+  const router = useRouter();
 
   React.useEffect(() => {
     if (user.adminPermissions) {
@@ -95,7 +98,31 @@ const UserView = ({ user }: UserViewProps) => {
           Punish
         </Button>
         <Button.Group>
-          <Button>Impersonate</Button>
+          <Button
+            onClick={() => {
+              const oldSession = getCookie(".frameworksession");
+              const newSession = user.sessions[0].token;
+
+              setCookie(".frameworksession.old", oldSession);
+              setCookie(".frameworksession", newSession);
+
+              router.push("/");
+              showNotification({
+                title: "Impersonating User",
+                message: `You are now impersonating ${user.username}. Click 'Stop impersonating' at the top right to stop.`,
+                icon: <HiCheckCircle />,
+                color: "green",
+              });
+            }}
+            disabled={
+              user.sessions.length === 0 ||
+              !currentUser.adminPermissions.includes(
+                AdminPermission.IMPERSONATE_USERS
+              )
+            }
+          >
+            Impersonate
+          </Button>
           <Link href={`/profile/${user.username}`}>
             <Button>View Profile</Button>
           </Link>
@@ -120,79 +147,173 @@ const UserView = ({ user }: UserViewProps) => {
         </Tabs.List>
 
         <Tabs.Panel value="info">
-          <Table striped mb={6}>
-            <tbody>
-              {[
-                ["Username", user.username],
-                ["Alias", user.alias],
-                [
-                  "Previous Usernames",
-                  user.previousUsernames.join(", ") || "None",
-                ],
-                ["ID", user.id],
-                ["Email", user.email],
-                ["Role", <Badge key={randomKey()}>{user.role}</Badge>],
-                ["Bio", user.bio],
-                ["Avatar URI", user.avatarUri],
-                ["Created at", user.createdAt],
-                ["Premium", user.premium],
-                ["Banned", user.banned],
-                ["Tickets", user.tickets],
-                ["TOTP Enabled", user.otpEnabled],
-                ["Linked Discord", user.discordAccount?.discordId],
-                ["Games", user.games.map((g) => g.id).join(", ")],
-                ["Links", user.profileLinks.map((l) => l.url).join(", ")],
-                ["Email Reset", user.emailResetRequired],
-                ["Password Reset", user.passwordResetRequired],
-                [
-                  "Followers",
-                  <div
-                    onClick={() => {
-                      setOpen(true);
-                      setUser(user);
-                      setDefaultTab("followers");
-                    }}
-                    key={randomKey()}
-                    className="cursor-pointer text-blue-500 underline"
-                  >
-                    {user._count.followers}
-                  </div>,
-                ],
-                [
-                  "Following",
-                  <div
-                    key={randomKey()}
-                    className="cursor-pointer text-blue-500 underline"
-                    onClick={() => {
-                      setOpen(true);
-                      setUser(user);
-                      setDefaultTab("following");
-                    }}
-                  >
-                    {user._count.following}
-                  </div>,
-                ],
-                ["Country", user.country],
-                ["Last seen", user.lastSeen],
-                ["Busy", user.busy],
-                ["Verified", user.emailVerified],
-                ["2FA", user.emailRequiredLogin],
-              ]
-                .map((i) => {
-                  if (typeof i[1] === "boolean") {
-                    return [i[0], i[1] ? "Yes" : "No"];
-                  }
-                  return i;
-                })
-                .map((h) => (
-                  <tr key={String(h[0])}>
-                    <td className="font-semibold">{String(h[0])}</td>
-                    <td>{h[1] as string | number | JSX.Element | null}</td>
-                  </tr>
-                ))}
-            </tbody>
-          </Table>
-          <NoteTable user={user as unknown as NoteUser} />
+          <Accordion
+            defaultValue="general"
+            styles={{
+              content: {
+                padding: 0,
+              },
+            }}
+          >
+            <Accordion.Item value="general">
+              <Accordion.Control>General Information</Accordion.Control>
+              <Accordion.Panel>
+                <Table striped mb={6}>
+                  <tbody>
+                    {[
+                      ["Username", user.username],
+                      ["Alias", user.alias],
+                      [
+                        "Previous Usernames",
+                        user.previousUsernames.join(", ") || "None",
+                      ],
+                      ["ID", user.id],
+                      ["Email", user.email],
+                      ["Role", <Badge key={randomKey()}>{user.role}</Badge>],
+                      ["Bio", user.bio],
+                      ["Avatar URI", user.avatarUri],
+                      ["Created at", user.createdAt],
+                      ["Premium", user.premium],
+                      ["Banned", user.banned],
+                      ["Tickets", user.tickets],
+                      ["TOTP Enabled", user.otpEnabled],
+                      ["Linked Discord", user.discordAccount?.discordId],
+                      ["Games", user.games.map((g) => g.id).join(", ")],
+                      ["Links", user.profileLinks.map((l) => l.url).join(", ")],
+                      ["Email Reset", user.emailResetRequired],
+                      ["Password Reset", user.passwordResetRequired],
+                      [
+                        "Followers",
+                        <div
+                          onClick={() => {
+                            setOpen(true);
+                            setUser(user);
+                            setDefaultTab("followers");
+                          }}
+                          key={randomKey()}
+                          className="cursor-pointer text-blue-500 underline"
+                        >
+                          {user._count.followers}
+                        </div>,
+                      ],
+                      [
+                        "Following",
+                        <div
+                          key={randomKey()}
+                          className="cursor-pointer text-blue-500 underline"
+                          onClick={() => {
+                            setOpen(true);
+                            setUser(user);
+                            setDefaultTab("following");
+                          }}
+                        >
+                          {user._count.following}
+                        </div>,
+                      ],
+                      ["Country", user.country],
+                      ["Last seen", user.lastSeen],
+                      ["Busy", user.busy],
+                      ["Verified", user.emailVerified],
+                      ["2FA", user.emailRequiredLogin],
+                    ]
+                      .map((i) => {
+                        if (typeof i[1] === "boolean") {
+                          return [i[0], i[1] ? "Yes" : "No"];
+                        }
+                        return i;
+                      })
+                      .map((h) => (
+                        <tr key={String(h[0])}>
+                          <td className="font-semibold">{String(h[0])}</td>
+                          <td>
+                            {h[1] as string | number | JSX.Element | null}
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </Table>
+              </Accordion.Panel>
+            </Accordion.Item>
+            <Accordion.Item value="totp">
+              <Accordion.Control>TOTP Details</Accordion.Control>
+              <Accordion.Panel>
+                {user.otpEnabled ? (
+                  <Table striped>
+                    <tbody>
+                      {[
+                        ["ASCII Secret", user.otpAscii],
+                        ["Base32 Secret", user.otpBase32],
+                        ["URI", user.otpAuthUrl],
+                        ["Hex Secret", user.otpHex],
+                      ].map((h) => (
+                        <tr key={String(h[0])}>
+                          <td className="font-semibold">{String(h[0])}</td>
+                          <td>
+                            {h[1] as string | number | JSX.Element | null}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
+                ) : (
+                  <ModernEmptyState
+                    title="No TOTP"
+                    body="This user does not have TOTP enabled."
+                  />
+                )}
+              </Accordion.Panel>
+            </Accordion.Item>
+            <Accordion.Item value="subscription">
+              <Accordion.Control>Subscription</Accordion.Control>
+              <Accordion.Panel>
+                {user.premium && user.premiumSubscription ? (
+                  <Table striped>
+                    <tbody>
+                      {[
+                        [
+                          "Created",
+                          new Date(
+                            user.premiumSubscription.createdAt
+                          ).toLocaleString(),
+                        ],
+                        [
+                          "Expires",
+                          new Date(
+                            user.premiumSubscription.expiresAt
+                          ).toLocaleString(),
+                        ],
+                        ["Type", user.premiumSubscription.type],
+                        [
+                          "Last Prize",
+                          new Date(
+                            user.premiumSubscription.lastReward
+                          ).toLocaleString(),
+                        ],
+                      ].map((h) => (
+                        <tr key={String(h[0])}>
+                          <td className="font-semibold">{String(h[0])}</td>
+                          <td>
+                            {h[1] as string | number | JSX.Element | null}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
+                ) : (
+                  <ModernEmptyState
+                    title="No Subscription"
+                    body="This user is not subscribed to Framework Premium"
+                  />
+                )}
+              </Accordion.Panel>
+            </Accordion.Item>
+            <Accordion.Item value="notes">
+              <Accordion.Control>Notes</Accordion.Control>
+              <Accordion.Panel>
+                <NoteTable user={user as unknown as NoteUser} />
+              </Accordion.Panel>
+            </Accordion.Item>
+          </Accordion>
         </Tabs.Panel>
 
         <Tabs.Panel value="sessions">
@@ -235,7 +356,10 @@ const UserView = ({ user }: UserViewProps) => {
                     title: "Ban info",
                     sections: [
                       ["Ban note", user.banReason],
-                      ["Expires", new Date(user.banExpires as Date).toLocaleString()],
+                      [
+                        "Expires",
+                        new Date(user.banExpires as Date).toLocaleString(),
+                      ],
                     ],
                     condition: user.banned,
                   },
