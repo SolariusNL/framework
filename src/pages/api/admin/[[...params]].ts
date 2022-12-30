@@ -14,7 +14,10 @@ import {
 import { promises as fs, readFileSync } from "fs";
 import { PrefCategory } from "../../../components/Admin/Pages/Instance";
 import { AdminAction } from "../../../util/adminAction";
-import { Account, AdminAuthorized } from "../../../util/api/authorized";
+import Authorized, {
+  Account,
+  AdminAuthorized,
+} from "../../../util/api/authorized";
 import { sendMail } from "../../../util/mail";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
@@ -630,7 +633,8 @@ class AdminRouter {
   @AdminAuthorized()
   public async getActivity(
     @Param("page") page: number,
-    @Query("importance") importance: number
+    @Query("importance") importance: number,
+    @Query("userId") userId: number
   ) {
     const activity = await prisma.adminActivityLog.findMany({
       orderBy: {
@@ -647,15 +651,22 @@ class AdminRouter {
           },
         },
       },
-      ...(importance !== undefined
-        ? {
-            where: {
+      where: {
+        ...(importance
+          ? {
               importance: {
                 gte: Number(importance),
               },
-            },
-          }
-        : {}),
+            }
+          : {}),
+        ...(userId
+          ? {
+              user: {
+                id: Number(userId),
+              },
+            }
+          : {}),
+      },
     });
 
     return {
@@ -1124,6 +1135,23 @@ class AdminRouter {
     return {
       success: true,
     };
+  }
+
+  @Get("/admins")
+  @Authorized()
+  public async getAdmins() {
+    const admins = await prisma.user.findMany({
+      where: {
+        role: "ADMIN",
+      },
+      select: {
+        id: true,
+        username: true,
+        avatarUri: true,
+      },
+    });
+
+    return admins;
   }
 }
 

@@ -10,6 +10,7 @@ import {
 import { AdminActivityLog } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import React, { forwardRef, useEffect, useState } from "react";
+import getAdmins from "../../../util/fetch/getAdmins";
 import getMediaUrl from "../../../util/getMedia";
 import ModernEmptyState from "../../ModernEmptyState";
 
@@ -32,15 +33,23 @@ const Activity: React.FC = () => {
     importance?: number;
     userId?: number;
   }>({ importance: 0, userId: 0 });
+  const [admins, setAdmins] = useState<
+    Array<{ username: string; avatarUri: string; id: number }>
+  >([]);
 
   const retrieveActivities = async () => {
-    await fetch(`/api/admin/activity/${page}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: String(getCookie(".frameworksession")),
-      },
-    })
+    await fetch(
+      `/api/admin/activity/${page}${
+        filter.importance !== 0 ? `?importance=${filter.importance}` : ""
+      }${filter.userId !== 0 ? `&userId=${filter.userId}` : ""}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: String(getCookie(".frameworksession")),
+        },
+      }
+    )
       .then((res) => res.json())
       .then((res) => {
         setActivities(res.activity);
@@ -49,10 +58,12 @@ const Activity: React.FC = () => {
 
   const setFilterValue = (key: string, value: number) => {
     setFilter((prev) => ({ ...prev, [key]: value }));
+    setPage(1);
   };
 
   useEffect(() => {
     retrieveActivities();
+    getAdmins().then((res) => setAdmins(res));
   }, [page]);
 
   useEffect(() => {
@@ -68,6 +79,8 @@ const Activity: React.FC = () => {
         setTotalPages(res.pages);
       });
   }, []);
+
+  useEffect(() => {}, [filter]);
 
   return (
     <>
@@ -94,29 +107,20 @@ const Activity: React.FC = () => {
             }}
           />
           <Select
-            data={
-              activities
-                ? activities
-                    .map((activity) => ({
-                      label: activity.user.username,
-                      value: String(activity.user.id),
-                      avatar: activity.user.avatarUri,
-                    }))
-                    .concat([{ label: "All", value: "0", avatar: "" }])
-                    .filter(
-                      (v, i, a) => a.findIndex((t) => t.label === v.label) === i
-                    )
-                : []
-            }
+            data={admins
+              .map((admin) => ({
+                label: admin.username,
+                value: String(admin.id),
+                avatar: admin.avatarUri,
+              }))
+              .concat([{ label: "All", value: "0", avatar: "" }])}
             label="User"
             placeholder="User filter"
             itemComponent={forwardRef<HTMLDivElement, UserItemProps>(
               ({ avatar, label, ...others }: UserItemProps, ref) => (
                 <Group noWrap ref={ref} {...others}>
                   <Avatar size={24} src={getMediaUrl(avatar)} radius={999} />
-                  <Text>
-                    {label}
-                  </Text>
+                  <Text>{label}</Text>
                 </Group>
               )
             )}
