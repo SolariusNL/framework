@@ -57,8 +57,8 @@ const Activity: React.FC = () => {
   };
 
   const setFilterValue = (key: string, value: number) => {
-    setFilter((prev) => ({ ...prev, [key]: value }));
     setPage(1);
+    setFilter((prev) => ({ ...prev, [key]: value }));
   };
 
   useEffect(() => {
@@ -80,7 +80,9 @@ const Activity: React.FC = () => {
       });
   }, []);
 
-  useEffect(() => {}, [filter]);
+  useEffect(() => {
+    retrieveActivities();
+  }, [filter]);
 
   return (
     <>

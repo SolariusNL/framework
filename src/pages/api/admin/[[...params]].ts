@@ -665,7 +665,7 @@ class AdminRouter {
             }
           : {}),
       },
-      skip: importance || userId ? 0 : (page - 1) * 50,
+      skip: (page - 1) * 50,
       take: 50,
     });
 
