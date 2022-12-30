@@ -12,6 +12,7 @@ import {
   MantineProvider,
   MantineTheme,
   Modal,
+  PaginationStylesParams,
   PasswordInput,
   Text,
   TextInput,
@@ -189,6 +190,25 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
                       theme.colorScheme === "dark"
                         ? theme.colors.dark[8]
                         : theme.colors.gray[0],
+                  },
+                }),
+              },
+              Pagination: {
+                styles: (
+                  theme: MantineTheme,
+                  params: PaginationStylesParams
+                ) => ({
+                  item: {
+                    fontFamily: "Inter var",
+                    "&[data-active]": {
+                      backgroundColor:
+                        theme.colors[params.color || theme.primaryColor][
+                          theme.colorScheme === "dark" ? 8 : 0
+                        ] + "80",
+                      border:
+                        "1px solid " +
+                        theme.colors[params.color || theme.primaryColor][6]
+                    },
                   },
                 }),
               },
