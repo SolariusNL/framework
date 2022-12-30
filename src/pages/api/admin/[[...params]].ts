@@ -665,8 +665,8 @@ class AdminRouter {
             }
           : {}),
       },
-      skip: (page - 1) * 50,
       take: 50,
+      ...(page ? { skip: (page - 1) * 50 } : {}),
     });
 
     return {

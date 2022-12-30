@@ -39,8 +39,8 @@ const Activity: React.FC = () => {
 
   const retrieveActivities = async () => {
     await fetch(
-      `/api/admin/activity/${page}${
-        filter.importance !== 0 ? `?importance=${filter.importance}` : ""
+      `/api/admin/activity/${page}?_${
+        filter.importance !== 0 ? `&importance=${filter.importance}` : ""
       }${filter.userId !== 0 ? `&userId=${filter.userId}` : ""}`,
       {
         method: "GET",
