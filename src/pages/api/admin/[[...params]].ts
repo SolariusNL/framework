@@ -640,8 +640,6 @@ class AdminRouter {
       orderBy: {
         createdAt: "desc",
       },
-      skip: (page - 1) * 50,
-      take: 50,
       include: {
         user: {
           select: {
@@ -667,6 +665,8 @@ class AdminRouter {
             }
           : {}),
       },
+      skip: importance || userId ? 0 : (page - 1) * 50,
+      take: 50,
     });
 
     return {
