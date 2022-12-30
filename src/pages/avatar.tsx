@@ -1,5 +1,6 @@
-import { Grid, ScrollArea, Tabs, Title } from "@mantine/core";
+import { Grid, ScrollArea, Skeleton, Tabs, Title } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
+import { useEffect, useState } from "react";
 import { HiAdjustments, HiBeaker, HiEmojiHappy } from "react-icons/hi";
 import AvatarViewer from "../components/AvatarViewer";
 import Framework from "../components/Framework";
@@ -13,6 +14,11 @@ interface AvatarProps {
 
 const Avatar: NextPage<AvatarProps> = ({ user }) => {
   const mobile = useMediaQuery("768");
+  const [client, setClient] = useState(false);
+
+  useEffect(() => {
+    setClient(true);
+  }, []);
 
   return (
     <Framework
@@ -23,7 +29,7 @@ const Avatar: NextPage<AvatarProps> = ({ user }) => {
     >
       <Grid columns={6}>
         <Grid.Col span={mobile ? 6 : 2}>
-          <AvatarViewer user={user} />
+          {client ? <AvatarViewer user={user} /> : <Skeleton height={300} />}
         </Grid.Col>
         <Grid.Col span={mobile ? 6 : 4}>
           <Tabs variant="pills" defaultValue="hats">

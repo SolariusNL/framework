@@ -58,7 +58,6 @@ const Avatar = ({ user }: AvatarProps) => {
         }}
       >
         <Suspense fallback={null}>
-          <pointLight position={[-13, -45, -1.8]} intensity={0.1} />
           <primitive
             object={
               new Mesh(
