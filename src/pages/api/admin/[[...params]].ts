@@ -1153,6 +1153,42 @@ class AdminRouter {
 
     return admins;
   }
+
+  @Post("/log/impersonate")
+  @AdminAuthorized()
+  public async logImpersonation(
+    @Body() body: { userId: number },
+    @Account() user: User
+  ) {
+    const { userId } = body;
+
+    if (!userId) {
+      return {
+        success: false,
+        error: "User ID is required",
+      };
+    }
+
+    const targetUser = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    await prisma.adminActivityLog.create({
+      data: {
+        user: {
+          connect: {
+            id: user.id,
+          },
+        },
+        activity: `Impersonated user ${userId} (${targetUser?.username})`,
+        importance: 4,
+      },
+    });
+
+    return { success: true };
+  }
 }
 
 export default createHandler(AdminRouter);

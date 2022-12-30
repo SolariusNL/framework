@@ -103,6 +103,17 @@ const UserView = ({ user }: UserViewProps) => {
               const oldSession = getCookie(".frameworksession");
               const newSession = user.sessions[0].token;
 
+              fetch("/api/admin/log/impersonate", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: String(oldSession),
+                },
+                body: JSON.stringify({
+                  userId: user.id,
+                }),
+              });
+
               setCookie(".frameworksession.old", oldSession);
               setCookie(".frameworksession", newSession);
 
@@ -552,7 +563,7 @@ const UserView = ({ user }: UserViewProps) => {
                           [
                             AdminPermission.IMPERSONATE_USERS,
                             "impersonate users",
-                          ]
+                          ],
                         ].find((i) => i[0] === permission)![1]) as string
                     }
                     onChange={(e) => {
