@@ -8,7 +8,6 @@ import {
   HiUserGroup,
 } from "react-icons/hi";
 import { useFrameworkUser } from "../../contexts/FrameworkUser";
-import ShadedButton from "../ShadedButton";
 import ShadedCard from "../ShadedCard";
 
 const QuickLinksWidget: React.FC = () => {
@@ -49,22 +48,20 @@ const QuickLinksWidget: React.FC = () => {
           },
         ].map(({ title, description, icon, color, link }) => (
           <Link href={link} key={title}>
-            <ShadedButton>
-              <div className="flex flex-col gap-4 cursor-pointer">
-                <div className="flex justify-between items-center">
-                  <ThemeIcon variant="light" color={color} size={38}>
-                    {icon}
-                  </ThemeIcon>
-                  <HiArrowRight />
-                </div>
-                <div>
-                  <Title order={5} mb={6}>
-                    {title}
-                  </Title>
-                  <Text color="dimmed">{description}</Text>
-                </div>
+            <div className="flex flex-col gap-4 cursor-pointer p-2">
+              <div className="flex justify-between items-center">
+                <ThemeIcon variant="light" color={color} size={38}>
+                  {icon}
+                </ThemeIcon>
+                <HiArrowRight />
               </div>
-            </ShadedButton>
+              <div>
+                <Title order={5} mb={6}>
+                  {title}
+                </Title>
+                <Text color="dimmed">{description}</Text>
+              </div>
+            </div>
           </Link>
         ))}
       </div>

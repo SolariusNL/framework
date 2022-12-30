@@ -7,8 +7,9 @@ import {
   Skeleton,
   Stack,
   Text,
-  Textarea,
+  Textarea
 } from "@mantine/core";
+import { useForm } from "@mantine/form";
 import { StatusPosts } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
@@ -16,7 +17,7 @@ import {
   HiChat,
   HiClipboardCopy,
   HiDotsVertical,
-  HiFlag,
+  HiFlag
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import { useFrameworkUser } from "../../contexts/FrameworkUser";
@@ -33,18 +34,29 @@ type StatusPost = StatusPosts & {
 };
 
 const FeedWidget: React.FC = () => {
-  const [statusMsg, setStatusMsg] = useState("");
   const [loading, setLoading] = useState(false);
   const user = useFrameworkUser()!;
   const [statusPosts, setStatusPosts] = useState<StatusPost[]>([]);
   const [reportOpened, setReportOpened] = useState(false);
   const [reportUser, setReportUser] = useState<NonUser>();
+  const form = useForm<{ status: string }>({
+    initialValues: {
+      status: "",
+    },
+    validate: {
+      status: (value) => {
+        if (value.length > 256 || value.length === 0) {
+          return "Status posts cannot be longer than 256 characters or empty";
+        }
+      },
+    },
+  });
 
-  const handleStatusPost = async () => {
+  const handleStatusPost = async (values: { status: string }) => {
     setLoading(true);
     await fetch("/api/users/@me/status", {
       method: "POST",
-      body: JSON.stringify({ status: statusMsg }),
+      body: JSON.stringify({ status: values.status }),
       headers: {
         "Content-Type": "application/json",
         Authorization: String(getCookie(".frameworksession")),
@@ -54,11 +66,10 @@ const FeedWidget: React.FC = () => {
       .then((res) => {
         if (res.success) {
           setStatusPosts([res.status as unknown as StatusPost, ...statusPosts]);
-          setStatusMsg("");
+          form.reset();
         }
       });
     setLoading(false);
-    setStatusMsg("");
   };
 
   const getStatusPosts = async () => {
@@ -95,28 +106,27 @@ const FeedWidget: React.FC = () => {
             className="rounded-full"
           />
           <div className="flex-grow">
-            <Textarea
-              placeholder="What's on your mind?"
-              icon={<HiChat />}
-              mb={12}
-              value={statusMsg}
-              onChange={(e) => setStatusMsg(e.currentTarget.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                }
-              }}
-            />
-            <Button
-              fullWidth
-              leftIcon={<HiChat />}
-              variant="subtle"
-              disabled={statusMsg.length === 0 || statusMsg.length > 256}
-              onClick={handleStatusPost}
-              loading={loading}
-            >
-              Post your status
-            </Button>
+            <form onSubmit={form.onSubmit(handleStatusPost)}>
+              <Textarea
+                placeholder="What's on your mind?"
+                mb={12}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                  }
+                }}
+                {...form.getInputProps("status")}
+              />
+              <Button
+                fullWidth
+                leftIcon={<HiChat />}
+                loading={loading}
+                variant="default"
+                type="submit"
+              >
+                Post your status
+              </Button>
+            </form>
           </div>
         </div>
         <Divider mt={32} mb={32} />
@@ -130,7 +140,7 @@ const FeedWidget: React.FC = () => {
             </ShadedCard>
           ) : (
             <>
-              <Stack spacing={16} className="mb-4">
+              <Stack spacing={24}>
                 {statusPosts.map((status) => (
                   <div key={status.id} className="flex justify-between">
                     <div className="flex">
@@ -145,18 +155,17 @@ const FeedWidget: React.FC = () => {
                         </UserContext>
                       </div>
                       <div className="flex-grow">
-                        <div className="flex gap-2">
-                          <Text color="dimmed" size="xs" mb={6} weight={600}>
+                        <div>
+                          <Text mb={2} size="sm">
                             @{status.user.username}
                           </Text>
-                          <Text size="xs">{" • "}</Text>
-                          <Text color="dimmed" size="xs" mb={6}>
+                          <Text color="dimmed" size="xs">
                             {getRelativeTime(
                               new Date(status.createdAt as Date)
                             )}
                           </Text>
                         </div>
-                        <Text>{status.content}</Text>
+                        <Text mt={12}>{status.content}</Text>
                       </div>
                     </div>
                     <div>
