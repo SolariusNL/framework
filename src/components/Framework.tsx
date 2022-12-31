@@ -411,7 +411,17 @@ const Framework = ({
   useEffect(() => {
     if (chatOpened) {
       getFriendsPages().then((pages) => setFriendsPages(pages));
-      getMyFriends(friendsPage).then((friends) => setFriends(friends));
+      getMyFriends(friendsPage).then((friends) => {
+        setFriends(friends);
+        if (currentConversation) {
+          setConversating(
+            friends.find(
+              (friend) => friend.id === currentConversation
+            ) as NonUser
+          );
+          setConversationOpen(true);
+        }
+      });
     }
   }, [chatOpened, friendsPage]);
 
@@ -462,7 +472,7 @@ const Framework = ({
         }
       });
     }
-  }, [user, socket]);
+  }, [user, socket, currentConversation]);
   React.useEffect(() => {
     if (oldCookie) {
       setImpersonating(true);
@@ -519,7 +529,7 @@ const Framework = ({
                         onClick={() => {
                           setConversationOpen(false);
                           setConversating(null);
-                          setCurrentConversation(0);
+                          setCurrentConversation(null);
                         }}
                       >
                         <HiArrowLeft />

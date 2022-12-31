@@ -72,7 +72,7 @@ const Register: NextPage = () => {
       .then((res) => {
         if (res.success) {
           setCookie(".frameworksession", res.token, 60);
-          router.push("/");
+          router.push("/").then(() => router.reload);
         } else {
           form.setErrors({
             username: res.message || "An unknown error occurred",

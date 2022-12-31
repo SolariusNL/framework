@@ -70,7 +70,7 @@ const Login: NextPage = () => {
       .then((res) => {
         if (res.success) {
           setCookie(".frameworksession", res.token, 365);
-          router.push("/");
+          router.push("/").then(() => router.reload());
         } else {
           showNotification({
             title: "Invalid code",
@@ -105,7 +105,7 @@ const Login: NextPage = () => {
             setTwofaUid(res.uid);
           } else {
             setCookie(".frameworksession", res.token, 60);
-            router.push("/");
+            router.push("/").then(() => router.reload());
           }
         } else {
           form.setErrors({

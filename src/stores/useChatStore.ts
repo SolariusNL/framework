@@ -7,7 +7,7 @@ interface ChatStore {
   opened: boolean;
   setOpened: (opened: boolean) => void;
   currentConversation: number;
-  setCurrentConversation: (id: number) => void;
+  setCurrentConversation: (id: number | null) => void;
 }
 
 const getInitialState = () => {
