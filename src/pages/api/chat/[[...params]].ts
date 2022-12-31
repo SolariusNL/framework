@@ -8,7 +8,7 @@ import {
 import { z } from "zod";
 import Authorized, { Account } from "../../../util/api/authorized";
 import prisma from "../../../util/prisma";
-import type { User } from "../../../util/prisma-types";
+import type { ChatMessage, User } from "../../../util/prisma-types";
 import { chatMessageSelect } from "../../../util/prisma-types";
 
 class ChatRouter {
@@ -108,6 +108,50 @@ class ChatRouter {
     });
 
     return message;
+  }
+
+  @Post("/conversation/:id/read")
+  @Authorized()
+  public async readMessage(@Account() user: User, @Param("id") id: number) {
+    await prisma.chatMessage.updateMany({
+      where: {
+        authorId: Number(id),
+        toId: Number(user.id),
+      },
+      data: {
+        seen: true,
+      },
+    });
+
+    return {
+      success: true,
+    };
+  }
+
+  @Get("/unread")
+  @Authorized()
+  public async getUnreadMessages(@Account() user: User) {
+    const messages: ChatMessage[] = (await prisma.chatMessage.findMany({
+      where: {
+        toId: Number(user.id),
+        seen: false,
+      },
+      select: chatMessageSelect,
+    })) as any;
+
+    const conversations: Record<number, typeof messages> = {};
+
+    messages.forEach((message) => {
+      const id = message.authorId;
+
+      if (!conversations[id]) {
+        conversations[id] = [];
+      }
+
+      conversations[id].push(message);
+    });
+
+    return conversations;
   }
 }
 

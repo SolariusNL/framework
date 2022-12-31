@@ -13,6 +13,7 @@ import {
   createStyles,
   Drawer,
   Group,
+  Indicator,
   Pagination,
   Paper,
   Popover,
@@ -371,6 +372,9 @@ const Framework = ({
       },
     },
   });
+  const [unreadMessages, setUnreadMessages] = useState<Record<string, number>>(
+    {}
+  );
 
   const getConversationData = async (id: number) => {
     const res = await fetch(`/api/chat/conversation/${id}`, {
@@ -408,6 +412,42 @@ const Framework = ({
     }
   };
 
+  const getUnreadMessages = async () => {
+    const res = await fetch("/api/chat/unread", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: String(getCookie(".frameworksession")),
+      },
+    });
+
+    const data = await res.json();
+    setUnreadMessages(
+      Object.fromEntries(
+        Object.entries(data).map(([key, value]) => [
+          key,
+          (value as ChatMessage[]).length,
+        ])
+      )
+    );
+  };
+
+  const markAsRead = async () => {
+    await fetch(`/api/chat/conversation/${conversating?.id}/read`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: String(getCookie(".frameworksession")),
+      },
+    });
+
+    setUnreadMessages((prev) => {
+      const copy = { ...prev };
+      delete copy[conversating?.id!];
+      return copy;
+    });
+  };
+
   useEffect(() => {
     if (chatOpened) {
       getFriendsPages().then((pages) => setFriendsPages(pages));
@@ -422,12 +462,14 @@ const Framework = ({
           setConversationOpen(true);
         }
       });
+      getUnreadMessages();
     }
   }, [chatOpened, friendsPage]);
 
   useEffect(() => {
     if (conversating) {
       getConversationData(conversating.id);
+      markAsRead();
     }
   }, [conversating]);
 
@@ -470,12 +512,17 @@ const Framework = ({
       socket?.on("@user/chat", (data) => {
         if (currentConversation === data.authorId) {
           setConversationData((prev) => [...prev, data]);
+          markAsRead();
         } else {
           showNotification({
             title: "New chat",
             message: `You have a new chat from ${data.author.username}.`,
             icon: <HiChatAlt2 />,
           });
+          setUnreadMessages((prev) => ({
+            ...prev,
+            [data.authorId]: prev[data.authorId] ? prev[data.authorId] + 1 : 1,
+          }));
         }
       });
     }
@@ -523,6 +570,25 @@ const Framework = ({
                 <div className="flex items-center gap-2">
                   <HiChatAlt2 size={22} />
                   <Text weight={600}>Chat</Text>
+                  {Object.values(unreadMessages).reduce(
+                    (prev, curr) => prev + curr,
+                    0
+                  ) > 0 && (
+                    <Indicator
+                      inline
+                      label={String(
+                        Object.values(unreadMessages).reduce(
+                          (prev, curr) => prev + curr,
+                          0
+                        )
+                      )}
+                      size={16}
+                      color="red"
+                      ml={10}
+                    >
+                      <></>
+                    </Indicator>
+                  )}
                 </div>
                 <ActionIcon onClick={() => setChatOpened(!chatOpened)}>
                   {chatOpened ? <HiChevronDown /> : <HiChevronUp />}
@@ -644,7 +710,19 @@ const Framework = ({
                                 size={24}
                                 className="mr-2"
                               />
-                              <Text size="sm">{friend.username}</Text>
+                              <Text size="sm" mr={16}>
+                                {friend.username}
+                              </Text>
+                              {unreadMessages[friend.id] > 0 && (
+                                <Indicator
+                                  inline
+                                  label={String(unreadMessages[friend.id])}
+                                  size={16}
+                                  color="red"
+                                >
+                                  <></>
+                                </Indicator>
+                              )}
                             </div>
                           </ShadedButton>
                         ))}
