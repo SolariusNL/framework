@@ -303,8 +303,20 @@ const snippet = Prisma.validator<Prisma.CodeSnippetArgs>()({
 
 export const chatMessageSelect: Prisma.ChatMessageSelect = {
   id: true,
-  author: nonCurrentUserSelect,
-  to: nonCurrentUserSelect,
+  author: {
+    select: {
+      id: true,
+      username: true,
+      avatarUri: true,
+    },
+  },
+  to: {
+    select: {
+      id: true,
+      username: true,
+      avatarUri: true,
+    },
+  },
   content: true,
   createdAt: true,
   authorId: true,
@@ -314,8 +326,20 @@ export const chatMessageSelect: Prisma.ChatMessageSelect = {
 
 const chatMessage = Prisma.validator<Prisma.ChatMessageArgs>()({
   include: {
-    author: nonCurrentUserSelect,
-    to: nonCurrentUserSelect,
+    author: {
+      select: {
+        id: true,
+        username: true,
+        avatarUri: true,
+      },
+    },
+    to: {
+      select: {
+        id: true,
+        username: true,
+        avatarUri: true,
+      },
+    },
   },
 });
 

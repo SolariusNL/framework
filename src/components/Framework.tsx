@@ -1,3 +1,4 @@
+import Picker from "@emoji-mart/react";
 import { useFlags } from "@happykit/flags/client";
 import {
   ActionIcon,
@@ -27,14 +28,14 @@ import {
   useMantineColorScheme,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { useDisclosure, useLocalStorage } from "@mantine/hooks";
+import { useDisclosure, useHotkeys, useLocalStorage } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import { SpotlightProvider } from "@mantine/spotlight";
 import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import isElectron from "is-electron";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   HiArrowLeft,
   HiChatAlt2,
@@ -44,12 +45,12 @@ import {
   HiCode,
   HiCog,
   HiDocumentText,
+  HiEmojiHappy,
   HiGift,
   HiHome,
   HiLightBulb,
   HiLogin,
   HiMail,
-  HiPaperAirplane,
   HiSearch,
   HiShieldCheck,
   HiShoppingBag,
@@ -69,6 +70,7 @@ import getMediaUrl from "../util/getMedia";
 import { ChatMessage, NonUser, User } from "../util/prisma-types";
 import { getFriendsPages, getMyFriends } from "../util/universe/friends";
 import useMediaQuery from "../util/useMediaQuery";
+import { useOnClickOutside } from "../util/useOnClickOutside";
 import EmailReminder from "./EmailReminder";
 import Footer from "./Footer";
 import CurrencyMenu from "./Framework/CurrencyMenu";
@@ -375,6 +377,11 @@ const Framework = ({
   const [unreadMessages, setUnreadMessages] = useState<Record<string, number>>(
     {}
   );
+  const messageInputRef = useRef<HTMLInputElement>(null);
+  const [picker, setPicker] = useState(false);
+  const pickerRef = useRef<HTMLDivElement>(null);
+
+  useOnClickOutside(pickerRef, () => setPicker(false));
 
   const getConversationData = async (id: number) => {
     const res = await fetch(`/api/chat/conversation/${id}`, {
@@ -447,6 +454,17 @@ const Framework = ({
       return copy;
     });
   };
+
+  useHotkeys([
+    [
+      "Slash",
+      () => {
+        if (messageInputRef.current) {
+          messageInputRef.current.focus();
+        }
+      },
+    ],
+  ]);
 
   useEffect(() => {
     if (chatOpened) {
@@ -561,6 +579,7 @@ const Framework = ({
               ...(chatOpened && {
                 paddingBottom: "0 !important",
               }),
+              overflow: "visible",
             }}
             withBorder
             p="md"
@@ -738,19 +757,60 @@ const Framework = ({
                           ? theme.colors.dark[9]
                           : theme.colors.gray[1],
                     })}
-                    p="md"
                   >
                     <form onSubmit={messageForm.onSubmit(sendMessage)}>
-                      <div className="flex gap-2">
-                        <TextInput
-                          placeholder="Type a message..."
-                          className="flex-1"
-                          {...messageForm.getInputProps("message")}
-                        />
-                        <ActionIcon type="submit" size="lg">
-                          <HiPaperAirplane />
-                        </ActionIcon>
-                      </div>
+                      <TextInput
+                        placeholder="Type a message..."
+                        className="flex-1"
+                        variant="unstyled"
+                        sx={(theme) => ({
+                          lineHeight: "0px",
+                          "& input": {
+                            paddingLeft: theme.spacing.sm,
+                            paddingRight: theme.spacing.md,
+                          },
+                          "&::placeholder": {
+                            paddingLeft: theme.spacing.sm,
+                            paddingRight: theme.spacing.md,
+                          },
+                        })}
+                        autoComplete="off"
+                        ref={messageInputRef}
+                        rightSection={
+                          <>
+                            <div
+                              ref={pickerRef}
+                              style={{ position: "relative" }}
+                            >
+                              <Box
+                                style={{
+                                  position: "absolute",
+                                  right: 0,
+                                  bottom: 50,
+                                }}
+                              >
+                                {picker && (
+                                  <Picker
+                                    navPosition="bottom"
+                                    native
+                                    onEmojiSelect={(emoji: any) => {
+                                      messageForm.setFieldValue(
+                                        "message",
+                                        messageForm.values.message +
+                                          emoji.native
+                                      );
+                                    }}
+                                  />
+                                )}
+                              </Box>
+                              <ActionIcon onClick={() => setPicker(!picker)}>
+                                <HiEmojiHappy />
+                              </ActionIcon>
+                            </div>
+                          </>
+                        }
+                        {...messageForm.getInputProps("message")}
+                      />
                     </form>
                   </Card.Section>
                 )}

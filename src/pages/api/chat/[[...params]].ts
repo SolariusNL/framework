@@ -49,10 +49,10 @@ class ChatRouter {
           },
         ],
       },
+      take: 75,
       orderBy: {
         createdAt: "asc",
       },
-      take: 100,
       select: chatMessageSelect,
     });
 
@@ -88,6 +88,52 @@ class ChatRouter {
       return {
         error: "User not found",
       };
+    }
+
+    const conversationLength = await prisma.chatMessage.count({
+      where: {
+        OR: [
+          {
+            authorId: Number(id),
+            toId: Number(user.id),
+          },
+          {
+            authorId: Number(user.id),
+            toId: Number(id),
+          },
+        ],
+      },
+    });
+
+    if (conversationLength >= 75) {
+      const oldestMessage = await prisma.chatMessage.findFirst({
+        where: {
+          OR: [
+            {
+              authorId: Number(id),
+              toId: Number(user.id),
+            },
+            {
+              authorId: Number(user.id),
+              toId: Number(id),
+            },
+          ],
+        },
+        orderBy: {
+          createdAt: "asc",
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      if (oldestMessage) {
+        await prisma.chatMessage.delete({
+          where: {
+            id: oldestMessage.id,
+          },
+        });
+      }
     }
 
     const message = await prisma.chatMessage.create({

@@ -198,6 +198,11 @@
   resolved "https://registry.yarnpkg.com/@csstools/selector-specificity/-/selector-specificity-2.0.2.tgz#1bfafe4b7ed0f3e4105837e056e0a89b108ebe36"
   integrity sha512-IkpVW/ehM1hWKln4fCA3NzJU8KwD+kIOvPZA4cqxoJHtE21CCzjyp+Kxbu0i5I4tBNOlXPL9mjwnWlL0VEG4Fg==
 
+"@emoji-mart/react@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@emoji-mart/react/-/react-1.1.0.tgz#afeaac086c951a0b6d782ff461955be1c9904706"
+  integrity sha512-6MnXNSfR69hmgH/mZIux4NGAjmS90f+rtJu8Soq1rCb27JWmYCQLAP7BqOVPUN4BL+c4ONUK+PPPihQho0eIxg==
+
 "@emotion/babel-plugin@^11.7.1":
   version "11.9.5"
   resolved "https://registry.yarnpkg.com/@emotion/babel-plugin/-/babel-plugin-11.9.5.tgz#99cdba190b40b782c276bfbd144df17cc42f765a"
@@ -2598,6 +2603,11 @@ embla-carousel@7.0.0:
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/embla-carousel/-/embla-carousel-7.0.0.tgz#a65d0b97866ff83135568eb7a92fb0bd6b99368a"
   integrity sha512-vgyElJaBRTtzWROQuO9Qx/VlibzKdhwnuQ2Ldh5/7/jddrB4XTI6IQlgR5ZglRaXjH4nXjVtUSwWWZMEIZQLFQ==
+
+emoji-mart@^5.4.0:
+  version "5.4.0"
+  resolved "https://registry.yarnpkg.com/emoji-mart/-/emoji-mart-5.4.0.tgz#441f3b89452d44516a70d88afe085a82806d757e"
+  integrity sha512-xrRrUmMqZG64oRxmUZcf8zSMUGQtIUYUL3aZD5iMkqAve+I9wMNh3OVOXL7NW9fEm48L2LI3BUPpj/DUIAJrVg==
 
 emoji-regex@^8.0.0:
   version "8.0.0"

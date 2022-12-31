@@ -20,6 +20,7 @@
     "create-config-schema": "typescript-json-schema src/types/Configuration.ts Configuration > framework.schema.json"
   },
   "dependencies": {
+    "@emoji-mart/react": "^1.1.0",
     "@emotion/react": "^11.9.3",
     "@emotion/server": "^11.4.0",
     "@happykit/flags": "^2.0.6",
@@ -68,6 +69,7 @@
     "dayjs": "^1.11.5",
     "embla-carousel-autoplay": "^7.0.0",
     "embla-carousel-react": "^7.0.0",
+    "emoji-mart": "^5.4.0",
     "fetch-intercept": "^2.4.0",
     "framer-motion": "^7.3.6",
     "is-electron": "^2.2.1",
