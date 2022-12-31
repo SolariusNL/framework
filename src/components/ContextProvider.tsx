@@ -19,6 +19,8 @@ const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
         auth: {
           token: getCookie(".frameworksession"),
         },
+        reconnectionAttempts: 25,
+        reconnectionDelay: 1000,
       });
       setSocket(socket);
 

@@ -36,6 +36,7 @@ import { useRouter } from "next/router";
 import React, { useContext, useEffect, useState } from "react";
 import {
   HiArrowLeft,
+  HiChatAlt2,
   HiCheckCircle,
   HiChevronDown,
   HiChevronUp,
@@ -452,6 +453,12 @@ const Framework = ({
       socket?.on("@user/chat", (data) => {
         if (currentConversation === data.authorId) {
           setConversationData((prev) => [...prev, data]);
+        } else {
+          showNotification({
+            title: "New chat",
+            message: `You have a new chat from ${data.author.username}.`,
+            icon: <HiChatAlt2 />,
+          });
         }
       });
     }
@@ -492,7 +499,10 @@ const Framework = ({
           >
             <Card.Section px={16} py={10} withBorder={chatOpened}>
               <div className="flex justify-between items-center">
-                <Text weight={600}>Chat</Text>
+                <div className="flex items-center gap-2">
+                  <HiChatAlt2 size={22} />
+                  <Text weight={600}>Chat</Text>
+                </div>
                 <ActionIcon onClick={() => setChatOpened(!chatOpened)}>
                   {chatOpened ? <HiChevronDown /> : <HiChevronUp />}
                 </ActionIcon>
