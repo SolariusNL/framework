@@ -26,9 +26,11 @@ const AuthorizedBase = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   if (player.banned) {
-    return res.status(403).json({
-      error: "You are banned from Framework",
-    });
+    if (!(new Date(player.banExpires as Date) < new Date())) {
+      return res.status(403).json({
+        error: "You are banned from Framework",
+      });
+    }
   }
 
   const bannedIps = await prisma.bannedIP.findMany({
