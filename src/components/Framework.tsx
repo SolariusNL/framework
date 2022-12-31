@@ -800,6 +800,8 @@ const Framework = ({
                                           emoji.native
                                       );
                                     }}
+                                    previewPosition="none"
+                                    autoFocus
                                   />
                                 )}
                               </Box>
