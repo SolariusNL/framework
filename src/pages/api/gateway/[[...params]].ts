@@ -65,6 +65,13 @@ class GatewayRouter {
               socket.emit("@user/logout", {});
             }
           }
+          if (
+            params.model === "ChatMessage" &&
+            params.action === "create" &&
+            result.toId === socket.data.user.id
+          ) {
+            socket.emit("@user/chat", result);
+          }
           return result;
         });
       });

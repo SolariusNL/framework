@@ -128,6 +128,8 @@ model User {
   otpAuthUrl                 String?
   authoredBlogPosts          BlogPost[]            @relation("blogPosts")
   authoredSupportTickets     SupportTicket[]       @relation("supportTickets")
+  sentChatMessages           ChatMessage[]         @relation("sentChatMessages")
+  receivedChatMessages       ChatMessage[]         @relation("receivedChatMessages")
 }
 
 model ConnectedAccount {
@@ -654,4 +656,15 @@ model SupportTicket {
 enum SupportTicketStatus {
   OPEN
   CLOSED
+}
+
+model ChatMessage {
+  id        String   @id @default(uuid())
+  author    User     @relation("sentChatMessages", fields: [authorId], references: [id])
+  authorId  Int
+  to        User     @relation("receivedChatMessages", fields: [toId], references: [id])
+  toId      Int
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }

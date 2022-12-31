@@ -1,7 +1,10 @@
-import { Button, Table, Text } from "@mantine/core";
+import { Anchor, Badge, Button, ScrollArea, Table, Text } from "@mantine/core";
 import { getCookie } from "cookies-next";
 import { useState } from "react";
 import { HiGift } from "react-icons/hi";
+import useExperimentsStore, {
+  EXPERIMENTS,
+} from "../../stores/useExperimentsStore";
 import { User } from "../../util/prisma-types";
 import ModernEmptyState from "../ModernEmptyState";
 import SettingsTab from "./SettingsTab";
@@ -13,6 +16,8 @@ interface BetaTabProps {
 const BetaTab = ({ user }: BetaTabProps) => {
   const [enrolled, setEnrolled] = useState(user.enrolledInPreview);
   const [loading, setLoading] = useState(false);
+  const { experiments, addExperiment, removeExperiment } =
+    useExperimentsStore();
 
   const enroll = async () => {
     setLoading(true);
@@ -47,25 +52,44 @@ const BetaTab = ({ user }: BetaTabProps) => {
             Available experiments:
           </Text>
 
-          <Table striped>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td colSpan={3}>
-                  <ModernEmptyState
-                    title="No experiments available"
-                    body="Check back later!"
-                  />
-                </td>
-              </tr>
-            </tbody>
-          </Table>
+          <ScrollArea>
+            <Table striped>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Description</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {EXPERIMENTS.map((experiment) => (
+                  <tr key={experiment.name}>
+                    <td>{experiment.name}</td>
+                    <td>{experiment.description}</td>
+                    <td>
+                      <Badge>{experiment.stage}</Badge>
+                    </td>
+                    <td>
+                      <Anchor
+                        onClick={() => {
+                          if (experiments.includes(experiment.id)) {
+                            removeExperiment(experiment.id);
+                          } else {
+                            addExperiment(experiment.id);
+                          }
+                        }}
+                      >
+                        {experiments.includes(experiment.id)
+                          ? "Disable"
+                          : "Enable"}
+                      </Anchor>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </ScrollArea>
         </>
       )}
     </SettingsTab>

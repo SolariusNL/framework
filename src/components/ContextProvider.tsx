@@ -35,7 +35,7 @@ const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
         router.push("/login");
         showNotification({
           title: "You have been logged out",
-          message: "You have been logged out from another device.",
+          message: "You have been logged out of your account.",
           icon: <HiXCircle />,
         });
       });

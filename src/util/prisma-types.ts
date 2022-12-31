@@ -301,6 +301,23 @@ const snippet = Prisma.validator<Prisma.CodeSnippetArgs>()({
   },
 });
 
+export const chatMessageSelect: Prisma.ChatMessageSelect = {
+  id: true,
+  author: nonCurrentUserSelect,
+  to: nonCurrentUserSelect,
+  content: true,
+  createdAt: true,
+  authorId: true,
+  toId: true,
+};
+
+const chatMessage = Prisma.validator<Prisma.ChatMessageArgs>()({
+  include: {
+    author: nonCurrentUserSelect,
+    to: nonCurrentUserSelect,
+  },
+});
+
 const game = Prisma.validator<Prisma.GameArgs>()({
   include: {
     updates: true,
@@ -392,3 +409,4 @@ export type Snippet = Prisma.CodeSnippetGetPayload<typeof snippet>;
 export type Message = Prisma.MessageGetPayload<typeof message>;
 export type Article = Prisma.AdminArticleGetPayload<typeof article>;
 export type BlogPost = Prisma.BlogPostGetPayload<typeof blogpost>;
+export type ChatMessage = Prisma.ChatMessageGetPayload<typeof chatMessage>;

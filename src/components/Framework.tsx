@@ -1,24 +1,31 @@
 import { useFlags } from "@happykit/flags/client";
 import {
   ActionIcon,
+  Affix,
   Anchor,
+  Avatar,
   Badge,
   Box,
   Burger,
   Button,
+  Card,
   Container,
   createStyles,
   Drawer,
   Group,
+  Pagination,
+  Paper,
   Popover,
   ScrollArea,
   Stack,
   Tabs,
   Text,
+  TextInput,
   ThemeIcon,
   Title,
   useMantineColorScheme,
 } from "@mantine/core";
+import { useForm } from "@mantine/form";
 import { useDisclosure, useLocalStorage } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import { SpotlightProvider } from "@mantine/spotlight";
@@ -26,10 +33,12 @@ import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import isElectron from "is-electron";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   HiArrowLeft,
   HiCheckCircle,
+  HiChevronDown,
+  HiChevronUp,
   HiCode,
   HiCog,
   HiDocumentText,
@@ -38,6 +47,7 @@ import {
   HiLightBulb,
   HiLogin,
   HiMail,
+  HiPaperAirplane,
   HiSearch,
   HiShieldCheck,
   HiShoppingBag,
@@ -48,8 +58,14 @@ import {
   HiViewGrid,
 } from "react-icons/hi";
 import SocketContext from "../contexts/Socket";
+import useChatStore from "../stores/useChatStore";
+import useExperimentsStore, {
+  ExperimentId,
+} from "../stores/useExperimentsStore";
 import { getIpcRenderer } from "../util/electron";
-import { User } from "../util/prisma-types";
+import getMediaUrl from "../util/getMedia";
+import { ChatMessage, NonUser, User } from "../util/prisma-types";
+import { getFriendsPages, getMyFriends } from "../util/universe/friends";
 import useMediaQuery from "../util/useMediaQuery";
 import EmailReminder from "./EmailReminder";
 import Footer from "./Footer";
@@ -58,6 +74,7 @@ import NotificationFlyout from "./Framework/NotificationFlyout";
 import Search from "./Framework/Search";
 import UserMenu from "./Framework/UserMenu";
 import FrameworkLogo from "./FrameworkLogo";
+import ShadedButton from "./ShadedButton";
 import TabNav from "./TabNav";
 
 interface FrameworkProps {
@@ -311,6 +328,98 @@ const Framework = ({
   const [userState, setUserState] = useState(user);
   const socket = useContext(SocketContext);
 
+  const items = tabs.map((tab) => (
+    <TabNav.Tab
+      value={tab.label.toLowerCase()}
+      key={tab.label}
+      onClick={() => {
+        router.push(tab.href);
+      }}
+      icon={tab.icon}
+    >
+      {tab.label}
+    </TabNav.Tab>
+  ));
+
+  const [searchPopoverOpen, setSearchPopoverOpen] = useState(false);
+  const { flags } = useFlags();
+  const { experiments } = useExperimentsStore();
+  const {
+    opened: chatOpened,
+    setOpened: setChatOpened,
+    currentConversation,
+    setCurrentConversation,
+  } = useChatStore();
+  const [friends, setFriends] = useState<NonUser[]>([]);
+  const [friendsPages, setFriendsPages] = useState(0);
+  const [friendsPage, setFriendsPage] = useState(1);
+  const [conversationOpen, setConversationOpen] = useState(false);
+  const [conversating, setConversating] = useState<NonUser | null>(null);
+  const [conversationData, setConversationData] = useState<ChatMessage[]>([]);
+  const messageForm = useForm<{
+    message: string;
+  }>({
+    initialValues: {
+      message: "",
+    },
+    validate: {
+      message: (value) => {
+        if (!value) return "Message cannot be empty";
+        if (value.length > 1000)
+          return "Message cannot be longer than 1000 characters";
+      },
+    },
+  });
+
+  const getConversationData = async (id: number) => {
+    const res = await fetch(`/api/chat/conversation/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: String(getCookie(".frameworksession")),
+      },
+    });
+
+    const data = await res.json();
+    setConversationData(data);
+  };
+
+  const sendMessage = async (values: { message: string }) => {
+    const { message } = values;
+    if (conversating) {
+      const res = await fetch(
+        `/api/chat/conversation/${conversating.id}/send`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: String(getCookie(".frameworksession")),
+          },
+          body: JSON.stringify({
+            content: message,
+          }),
+        }
+      );
+
+      const data = await res.json();
+      setConversationData((prev) => [...prev, data]);
+      messageForm.reset();
+    }
+  };
+
+  useEffect(() => {
+    if (chatOpened) {
+      getFriendsPages().then((pages) => setFriendsPages(pages));
+      getMyFriends(friendsPage).then((friends) => setFriends(friends));
+    }
+  }, [chatOpened, friendsPage]);
+
+  useEffect(() => {
+    if (conversating) {
+      getConversationData(conversating.id);
+    }
+  }, [conversating]);
+
   React.useEffect(() => {
     setIsSSR(false);
   }, []);
@@ -338,7 +447,12 @@ const Framework = ({
           ...prev,
           notifications: [...prev.notifications, data],
         }));
-        console.log(userState);
+      });
+
+      socket?.on("@user/chat", (data) => {
+        if (currentConversation === data.authorId) {
+          setConversationData((prev) => [...prev, data]);
+        }
       });
     }
   }, [user, socket]);
@@ -347,22 +461,6 @@ const Framework = ({
       setImpersonating(true);
     }
   }, []);
-
-  const items = tabs.map((tab) => (
-    <TabNav.Tab
-      value={tab.label.toLowerCase()}
-      key={tab.label}
-      onClick={() => {
-        router.push(tab.href);
-      }}
-      icon={tab.icon}
-    >
-      {tab.label}
-    </TabNav.Tab>
-  ));
-
-  const [searchPopoverOpen, setSearchPopoverOpen] = useState(false);
-  const { flags } = useFlags();
 
   return (
     <SpotlightProvider
@@ -373,6 +471,185 @@ const Framework = ({
       nothingFoundMessage="Nothing found..."
       disabled={user === null}
     >
+      {experiments.includes(ExperimentId.LiveChat) && (
+        <Affix
+          position={{
+            bottom: 0,
+            right: mobile ? 12 : 40,
+          }}
+        >
+          <Card
+            sx={{
+              borderBottomLeftRadius: "0 !important",
+              borderBottomRightRadius: "0 !important",
+              width: 280,
+              ...(chatOpened && {
+                paddingBottom: "0 !important",
+              }),
+            }}
+            withBorder
+            p="md"
+          >
+            <Card.Section px={16} py={10} withBorder={chatOpened}>
+              <div className="flex justify-between items-center">
+                <Text weight={600}>Chat</Text>
+                <ActionIcon onClick={() => setChatOpened(!chatOpened)}>
+                  {chatOpened ? <HiChevronDown /> : <HiChevronUp />}
+                </ActionIcon>
+              </div>
+            </Card.Section>
+            {chatOpened && (
+              <>
+                {conversationOpen && (
+                  <Card.Section px={16} py={10}>
+                    <div className="flex justify-between items-center">
+                      <Anchor
+                        className="flex gap-1 items-center"
+                        size="sm"
+                        onClick={() => {
+                          setConversationOpen(false);
+                          setConversating(null);
+                          setCurrentConversation(0);
+                        }}
+                      >
+                        <HiArrowLeft />
+                        Go back
+                      </Anchor>
+                      <div className="flex gap-2 items-center">
+                        <Avatar
+                          src={conversating?.avatarUri}
+                          size="sm"
+                          radius="xl"
+                        />
+                        <Text weight={600} size="sm">
+                          {conversating?.username}
+                        </Text>
+                      </div>
+                    </div>
+                  </Card.Section>
+                )}
+                <Card.Section
+                  sx={(theme) => ({
+                    backgroundColor:
+                      theme.colorScheme === "dark"
+                        ? theme.colors.dark[9]
+                        : theme.colors.gray[1],
+                  })}
+                  p="md"
+                  withBorder={conversationOpen}
+                >
+                  {conversationOpen ? (
+                    <div
+                      style={{
+                        height: 210,
+                        display: "flex",
+                        flexDirection: "column-reverse",
+                        overflowX: "hidden",
+                        overflowY: "auto",
+                      }}
+                    >
+                      <Stack spacing={12}>
+                        {conversationData &&
+                          conversationData.map((message) =>
+                            message.authorId === user?.id ? (
+                              <Paper
+                                sx={(theme) => ({
+                                  backgroundColor:
+                                    theme.colorScheme === "dark"
+                                      ? theme.colors.blue[9]
+                                      : theme.colors.blue[1],
+                                  textAlign: "right",
+                                  width: "fit-content",
+                                  alignSelf: "flex-end",
+                                })}
+                                p="sm"
+                              >
+                                <Text size="sm">{message.content}</Text>
+                              </Paper>
+                            ) : (
+                              <Paper
+                                sx={(theme) => ({
+                                  backgroundColor:
+                                    theme.colorScheme === "dark"
+                                      ? theme.colors.dark[8]
+                                      : theme.colors.gray[1],
+                                  textAlign: "left",
+                                  width: "fit-content",
+                                  alignSelf: "flex-start",
+                                })}
+                                p="sm"
+                              >
+                                <Text size="sm">{message.content}</Text>
+                              </Paper>
+                            )
+                          )}
+                      </Stack>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex justify-center items-center">
+                        <Pagination
+                          mb="md"
+                          radius={999}
+                          total={friendsPages}
+                          page={friendsPage}
+                          onChange={(page) => setFriendsPage(page)}
+                          size="sm"
+                        />
+                      </div>
+                      <Stack spacing={5}>
+                        {friends.map((friend) => (
+                          <ShadedButton
+                            key={friend.id}
+                            onClick={() => {
+                              setConversating(friend);
+                              setConversationOpen(true);
+                              setCurrentConversation(friend.id);
+                            }}
+                          >
+                            <div className="flex items-center">
+                              <Avatar
+                                src={getMediaUrl(friend.avatarUri)}
+                                size={24}
+                                className="mr-2"
+                              />
+                              <Text size="sm">{friend.username}</Text>
+                            </div>
+                          </ShadedButton>
+                        ))}
+                      </Stack>
+                    </>
+                  )}
+                </Card.Section>
+                {conversationOpen && (
+                  <Card.Section
+                    sx={(theme) => ({
+                      backgroundColor:
+                        theme.colorScheme === "dark"
+                          ? theme.colors.dark[9]
+                          : theme.colors.gray[1],
+                    })}
+                    p="md"
+                  >
+                    <form onSubmit={messageForm.onSubmit(sendMessage)}>
+                      <div className="flex gap-2">
+                        <TextInput
+                          placeholder="Type a message..."
+                          className="flex-1"
+                          {...messageForm.getInputProps("message")}
+                        />
+                        <ActionIcon type="submit" size="lg">
+                          <HiPaperAirplane />
+                        </ActionIcon>
+                      </div>
+                    </form>
+                  </Card.Section>
+                )}
+              </>
+            )}
+          </Card>
+        </Affix>
+      )}
       {impersonating && (
         <Box
           sx={(theme) => ({
@@ -633,7 +910,6 @@ const Framework = ({
           </Container>
         </Drawer>
       </div>
-
       {!noPadding ? (
         <>
           {flags?.bannerEnabled && (
@@ -780,7 +1056,6 @@ const Framework = ({
       ) : (
         <div>{children}</div>
       )}
-
       {!immersive && <Footer />}
     </SpotlightProvider>
   );
