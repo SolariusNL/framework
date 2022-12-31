@@ -6,34 +6,38 @@ import {
   Card,
   Checkbox,
   Group,
+  Modal,
+  Select,
   Stack,
   Table,
   Tabs,
   Text,
   Title,
 } from "@mantine/core";
+import { useForm } from "@mantine/form";
+import { showNotification } from "@mantine/notifications";
+import { AdminPermission } from "@prisma/client";
+import { getCookie, setCookie } from "cookies-next";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import React from "react";
+import { HiCheckCircle } from "react-icons/hi";
+import ReactNoSSR from "react-no-ssr";
+import { useFrameworkUser } from "../../contexts/FrameworkUser";
 import { useUserInformationDialog } from "../../contexts/UserInformationDialog";
 import getMediaUrl from "../../util/getMedia";
 import Copy from "../Copy";
 import ModernEmptyState from "../ModernEmptyState";
+import Stateful from "../Stateful";
 import NoteTable, { NoteUser } from "./NoteTable";
 import { AdminViewUser } from "./Pages/Users";
 import Punishment from "./Punishment";
 import AdjustTickets from "./UserActions/AdjustTickets";
 import LogoutSessions from "./UserActions/LogoutSessions";
-import ResetEmail from "./UserActions/ResetEmail";
-import ResetUsername from "./UserActions/ResetUsername";
-import ReactNoSSR from "react-no-ssr";
-import ResetPassword from "./UserActions/ResetPassword";
-import { AdminPermission } from "@prisma/client";
-import { useFrameworkUser } from "../../contexts/FrameworkUser";
-import { getCookie, setCookie } from "cookies-next";
-import { showNotification } from "@mantine/notifications";
-import { HiCheckCircle } from "react-icons/hi";
 import ResetBio from "./UserActions/ResetBio";
-import { useRouter } from "next/router";
+import ResetEmail from "./UserActions/ResetEmail";
+import ResetPassword from "./UserActions/ResetPassword";
+import ResetUsername from "./UserActions/ResetUsername";
 
 interface UserViewProps {
   user: AdminViewUser;
@@ -49,6 +53,27 @@ const UserView = ({ user }: UserViewProps) => {
   const currentUser = useFrameworkUser()!;
   const [permissions, setPermissions] = React.useState<AdminPermission[]>([]);
   const router = useRouter();
+  const impersonationForm = useForm<{
+    reason: string;
+    confirm: boolean;
+  }>({
+    initialValues: {
+      reason: "",
+      confirm: false,
+    },
+    validate: {
+      reason: (value) => {
+        if (!value) {
+          return "You must provide a reason for impersonating this user.";
+        }
+      },
+      confirm: (value: boolean) => {
+        if (!value) {
+          return "You must confirm that you understand the consequences of impersonating this user.";
+        }
+      },
+    },
+  });
 
   React.useEffect(() => {
     if (user.adminPermissions) {
@@ -98,42 +123,99 @@ const UserView = ({ user }: UserViewProps) => {
           Punish
         </Button>
         <Button.Group>
-          <Button
-            onClick={() => {
-              const oldSession = getCookie(".frameworksession");
-              const newSession = user.sessions[0].token;
+          <Stateful>
+            {(opened, setOpened) => (
+              <>
+                <Modal
+                  title="Impersonate user"
+                  opened={opened}
+                  onClose={() => setOpened(false)}
+                >
+                  <form
+                    onChange={() => {
+                      console.log(impersonationForm.values);
+                    }}
+                    onSubmit={impersonationForm.onSubmit((values) => {
+                      const oldSession = getCookie(".frameworksession");
+                      const newSession = user.sessions[0].token;
 
-              fetch("/api/admin/log/impersonate", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: String(oldSession),
-                },
-                body: JSON.stringify({
-                  userId: user.id,
-                }),
-              });
+                      fetch("/api/admin/log/impersonate", {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                          Authorization: String(oldSession),
+                        },
+                        body: JSON.stringify({
+                          userId: user.id,
+                          reason: values.reason,
+                        }),
+                      });
 
-              setCookie(".frameworksession.old", oldSession);
-              setCookie(".frameworksession", newSession);
+                      setCookie(".frameworksession.old", oldSession);
+                      setCookie(".frameworksession", newSession);
 
-              router.push("/");
-              showNotification({
-                title: "Impersonating User",
-                message: `You are now impersonating ${user.username}. Click 'Stop impersonating' at the top right to stop.`,
-                icon: <HiCheckCircle />,
-                color: "green",
-              });
-            }}
-            disabled={
-              user.sessions.length === 0 ||
-              !currentUser.adminPermissions.includes(
-                AdminPermission.IMPERSONATE_USERS
-              )
-            }
-          >
-            Impersonate
-          </Button>
+                      router.push("/");
+                      showNotification({
+                        title: "Impersonating User",
+                        message: `You are now impersonating ${user.username}. Click 'Stop impersonating' at the top right to stop.`,
+                        icon: <HiCheckCircle />,
+                        color: "green",
+                      });
+                    })}
+                  >
+                    <Select
+                      label="Reason"
+                      description="Why are you impersonating this user?"
+                      data={[
+                        {
+                          label: "Customer Support",
+                          value: "CUSTOMER_SUPPORT",
+                        },
+                        {
+                          label: "Account Recovery",
+                          value: "ACCOUNT_RECOVERY",
+                        },
+                        { label: "Debugging", value: "DEBUGGING" },
+                        { label: "Unspecified", value: "UNSPECIFIED" },
+                      ]}
+                      mb={16}
+                      placeholder="Select a reason"
+                      {...impersonationForm.getInputProps("reason")}
+                    />
+                    <Checkbox
+                      {...impersonationForm.getInputProps("confirm")}
+                      label="I understand that my actions in this impersonation session
+                      will be monitored and recorded, and that I will be held
+                      accountable for any actions I take."
+                      mb={16}
+                    />
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        variant="default"
+                        onClick={() => setOpened(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button type="submit">Impersonate</Button>
+                    </div>
+                  </form>
+                </Modal>
+                <Button
+                  onClick={() => {
+                    setOpened(true);
+                  }}
+                  disabled={
+                    user.sessions.length === 0 ||
+                    !currentUser.adminPermissions.includes(
+                      AdminPermission.IMPERSONATE_USERS
+                    )
+                  }
+                >
+                  Impersonate
+                </Button>
+              </>
+            )}
+          </Stateful>
           <Link href={`/profile/${user.username}`}>
             <Button>View Profile</Button>
           </Link>

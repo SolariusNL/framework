@@ -1157,10 +1157,10 @@ class AdminRouter {
   @Post("/log/impersonate")
   @AdminAuthorized()
   public async logImpersonation(
-    @Body() body: { userId: number },
+    @Body() body: { userId: number; reason: string },
     @Account() user: User
   ) {
-    const { userId } = body;
+    const { userId, reason } = body;
 
     if (!userId) {
       return {
@@ -1182,7 +1182,7 @@ class AdminRouter {
             id: user.id,
           },
         },
-        activity: `Impersonated user ${userId} (${targetUser?.username})`,
+        activity: `Impersonated user ${userId} (${targetUser?.username}) for ${reason}`,
         importance: 4,
       },
     });
