@@ -459,7 +459,14 @@ const Framework = ({
           notifications: [...prev.notifications, data],
         }));
       });
+    }
 
+    return () => {
+      socket?.off("@user/notification");
+    };
+  }, [user, socket]);
+  React.useEffect(() => {
+    if (socket) {
       socket?.on("@user/chat", (data) => {
         if (currentConversation === data.authorId) {
           setConversationData((prev) => [...prev, data]);
@@ -472,7 +479,11 @@ const Framework = ({
         }
       });
     }
-  }, [user, socket, currentConversation]);
+
+    return () => {
+      socket?.off("@user/chat");
+    };
+  }, [socket, currentConversation]);
   React.useEffect(() => {
     if (oldCookie) {
       setImpersonating(true);
