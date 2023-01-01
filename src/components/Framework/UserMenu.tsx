@@ -58,7 +58,7 @@ const UserMenu = ({ userMenuOpened }: { userMenuOpened: boolean }) => {
 
       <Menu.Dropdown>
         <Menu.Label>
-          👻 Framework {process.env.NEXT_PUBLIC_VERSION} - Built by Emil, Rosé{" "}
+          👻 Framework {process.env.NEXT_PUBLIC_VERSION} - Built by Emil
           {"&"} contributors
         </Menu.Label>
         <Menu.Divider />
