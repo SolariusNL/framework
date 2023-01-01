@@ -45,7 +45,7 @@ export const verificationEmail = async (userId: number, email: string) => {
       margin-top: 25px;
       text-align: center;
       color: #999;
-    ">Copyright © 2022 Soodam.re B.V. All rights reserved.</p>
+    ">Copyright © 2023 Soodam.re B.V. All rights reserved.</p>
     `
   );
 };
