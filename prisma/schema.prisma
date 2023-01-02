@@ -676,7 +676,7 @@ model Employee {
   id                String               @id @default(uuid())
   user              User?                @relation("employee", fields: [userId], references: [id])
   userId            Int?                 @unique
-  role              EmployeeRole         @unique @default(CONTENT_MODERATOR)
+  role              EmployeeRole         @default(CONTENT_MODERATOR)
   fullName          String
   contractExpiresAt DateTime
   createdAt         DateTime             @default(now())
