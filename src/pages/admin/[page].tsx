@@ -8,6 +8,7 @@ import {
   HiDesktopComputer,
   HiDocument,
   HiFolder,
+  HiGlobe,
   HiKey,
   HiServer,
   HiTicket,
@@ -18,6 +19,7 @@ import Activity from "../../components/Admin/Pages/Activity";
 import Articles from "../../components/Admin/Pages/Articles";
 import BannedIPs from "../../components/Admin/Pages/BannedIPs";
 import Dashboard from "../../components/Admin/Pages/Dashboard";
+import Directory from "../../components/Admin/Pages/Directory";
 import Instance from "../../components/Admin/Pages/Instance";
 import Invites from "../../components/Admin/Pages/Invites";
 import Reports from "../../components/Admin/Pages/Reports";
@@ -29,7 +31,6 @@ import TabNav from "../../components/TabNav";
 import authorizedRoute from "../../util/authorizedRoute";
 import prisma from "../../util/prisma";
 import { User } from "../../util/prisma-types";
-import useMediaQuery from "../../util/useMediaQuery";
 
 const pages: {
   [key: string]: {
@@ -102,6 +103,13 @@ const pages: {
     route: "/admin/comments",
     component: <></>,
     description: "Review comments made by users",
+  },
+  directory: {
+    label: "Directory",
+    icon: <HiGlobe />,
+    route: "/admin/directory",
+    component: <Directory />,
+    description: "Browse Soodam.re staff members",
   },
   tickets: {
     label: "Tickets",
