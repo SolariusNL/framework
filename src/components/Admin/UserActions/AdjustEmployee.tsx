@@ -4,12 +4,13 @@ import {
   Modal,
   Select,
   Stack,
-  TextInput,
+  TextInput
 } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
 import { useForm } from "@mantine/form";
 import { EmployeeRole, Role } from "@prisma/client";
-import React from "react";
+import dayjs from "dayjs";
+import React, { useEffect } from "react";
 import { HiUser } from "react-icons/hi";
 import performAdminAction, { AdminAction } from "../../../util/adminAction";
 import { User } from "../../../util/prisma-types";
@@ -33,7 +34,8 @@ const AdjustEmployee: React.FC<AdjustEmployeeProps> = ({ user }) => {
       role: user.employee?.role || EmployeeRole.CONTENT_MODERATOR,
       fullName: user.employee?.fullName || "",
       contractExpiresAt:
-        new Date(user.employee?.contractExpiresAt as Date) || new Date(),
+        new Date(user.employee?.contractExpiresAt as Date) ||
+        new Date(new Date().setMonth(new Date().getMonth() + 3)),
       contactEmail: user.employee?.contactEmail || "",
       probationary: user.employee?.probationary || false,
     },
@@ -64,6 +66,21 @@ const AdjustEmployee: React.FC<AdjustEmployeeProps> = ({ user }) => {
       },
     },
   });
+
+  useEffect(() => {
+    form.setFieldValue(
+      "role",
+      user.employee?.role || EmployeeRole.CONTENT_MODERATOR
+    );
+    form.setFieldValue("fullName", user.employee?.fullName || "");
+    form.setFieldValue(
+      "contractExpiresAt",
+      dayjs(user.employee?.contractExpiresAt as Date).toDate() ||
+        dayjs(new Date().setMonth(new Date().getMonth() + 3)).toDate()
+    );
+    form.setFieldValue("contactEmail", user.employee?.contactEmail || "");
+    form.setFieldValue("probationary", user.employee?.probationary || false);
+  }, [user]);
 
   return (
     <Stateful>
