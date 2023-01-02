@@ -47,6 +47,7 @@ const DeleteAccountTab = ({ user }: DeleteAccountTabProps) => {
                 leftIcon={<HiTrash />}
                 color="red"
                 onClick={() => setOpened(true)}
+                disabled={user.role === "ADMIN"}
               >
                 Delete Account
               </Button>
