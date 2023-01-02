@@ -84,6 +84,11 @@ const user = Prisma.validator<Prisma.UserArgs>()({
         following: true,
       },
     },
+    employee: {
+      include: {
+        assessmentHistory: true,
+      },
+    },
   },
 });
 
@@ -196,6 +201,11 @@ export const userSelect: Prisma.UserSelect = {
   adminPermissions: true,
   otpVerified: true,
   otpEnabled: true,
+  employee: {
+    include: {
+      assessmentHistory: true,
+    },
+  },
 };
 
 const article = Prisma.validator<Prisma.AdminArticleArgs>()({

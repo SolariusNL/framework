@@ -130,6 +130,8 @@ model User {
   authoredSupportTickets     SupportTicket[]       @relation("supportTickets")
   sentChatMessages           ChatMessage[]         @relation("sentChatMessages")
   receivedChatMessages       ChatMessage[]         @relation("receivedChatMessages")
+  employee                   Employee?             @relation("employee")
+  employeeId                 String?               @unique
 }
 
 model ConnectedAccount {
@@ -668,4 +670,41 @@ model ChatMessage {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
   seen      Boolean  @default(false)
+}
+
+model Employee {
+  id                String               @id @default(uuid())
+  user              User?                @relation("employee", fields: [userId], references: [id])
+  userId            Int?                 @unique
+  role              EmployeeRole         @unique @default(CONTENT_MODERATOR)
+  fullName          String
+  contractExpiresAt DateTime
+  createdAt         DateTime             @default(now())
+  contactEmail      String
+  probationary      Boolean              @default(true)
+  nextAssessmentAt  DateTime             @default(now())
+  assessmentHistory EmployeeAssessment[] @relation("assessmentHistory")
+}
+
+enum EmployeeRole {
+  CONTENT_MODERATOR
+  SUPPORT_AGENT
+  SOFTWARE_ENGINEER
+  INVESTOR
+  MARKETING
+  VICE_PRESIDENT
+  PRESIDENT
+  LEGAL_COUNSEL
+  SENIOR_SOFTWARE_ENGINEER
+  NETWORK_ADMINISTRATOR
+  NETWORK_ENGINEER
+  EXECUTIVE_VICE_PRESIDENT
+}
+
+model EmployeeAssessment {
+  id         String   @id @default(uuid())
+  employee   Employee @relation("assessmentHistory", fields: [employeeId], references: [id])
+  employeeId String
+  createdAt  DateTime @default(now())
+  score      Int
 }

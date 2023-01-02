@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "EmployeeRole" ADD VALUE 'EXECUTIVE_VICE_PRESIDENT';

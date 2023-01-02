@@ -12,7 +12,7 @@ import {
   Table,
   Tabs,
   Text,
-  Title,
+  Title
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
@@ -25,6 +25,7 @@ import { HiCheckCircle } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import { useFrameworkUser } from "../../contexts/FrameworkUser";
 import { useUserInformationDialog } from "../../contexts/UserInformationDialog";
+import employeeRoleMeta from "../../data/employeeRoles";
 import getMediaUrl from "../../util/getMedia";
 import Copy from "../Copy";
 import ModernEmptyState from "../ModernEmptyState";
@@ -32,6 +33,7 @@ import Stateful from "../Stateful";
 import NoteTable, { NoteUser } from "./NoteTable";
 import { AdminViewUser } from "./Pages/Users";
 import Punishment from "./Punishment";
+import AdjustEmployee from "./UserActions/AdjustEmployee";
 import AdjustTickets from "./UserActions/AdjustTickets";
 import LogoutSessions from "./UserActions/LogoutSessions";
 import ResetBio from "./UserActions/ResetBio";
@@ -400,6 +402,45 @@ const UserView = ({ user }: UserViewProps) => {
                 )}
               </Accordion.Panel>
             </Accordion.Item>
+            <Accordion.Item value="employee">
+              <Accordion.Control>Employee</Accordion.Control>
+              <Accordion.Panel>
+                {user.employee ? (
+                  <Table striped>
+                    <tbody>
+                      {[
+                        ["Role", employeeRoleMeta.get(user.employee.role)],
+                        ["Full Name", user.employee.fullName],
+                        [
+                          "Contract Expires",
+                          new Date(
+                            user.employee.contractExpiresAt as Date
+                          ).toLocaleString(),
+                        ],
+                        ["File Created", user.employee.createdAt],
+                        ["Contact Email", user.employee.contactEmail],
+                        [
+                          "Probationary",
+                          user.employee.probationary ? "Yes" : "No",
+                        ],
+                      ].map((h) => (
+                        <tr key={String(h[0])}>
+                          <td className="font-semibold">{String(h[0])}</td>
+                          <td>
+                            {h[1] as string | number | JSX.Element | null}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
+                ) : (
+                  <ModernEmptyState
+                    title="Not an Employee"
+                    body="This user is not an employee of Soodam.re, or has not been registered yet"
+                  />
+                )}
+              </Accordion.Panel>
+            </Accordion.Item>
             <Accordion.Item value="notes">
               <Accordion.Control>Notes</Accordion.Control>
               <Accordion.Panel>
@@ -600,6 +641,7 @@ const UserView = ({ user }: UserViewProps) => {
                 ResetEmail,
                 ResetPassword,
                 ResetBio,
+                AdjustEmployee,
               ].map((Action, i) => (
                 <ReactNoSSR key={i}>
                   <Action user={user} />

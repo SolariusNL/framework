@@ -1,7 +1,9 @@
 import {
   AdminPermission,
+  EmployeeRole,
   NotificationType,
   PunishmentType,
+  Role,
 } from "@prisma/client";
 import {
   Body,
@@ -30,6 +32,7 @@ import { RateLimitMiddleware } from "../../../util/rateLimit";
 import { setEnvVar } from "@soodam.re/env-utils";
 import { join } from "path";
 import createNotification from "../../../util/notifications";
+import { z } from "zod";
 
 class AdminRouter {
   @Get("/reports")
@@ -713,6 +716,7 @@ class AdminRouter {
       where: {
         id: Number(uid),
       },
+      include: { employee: true },
     });
 
     if (!user) {
@@ -830,6 +834,65 @@ class AdminRouter {
           });
 
           await createActionLog(`Reset ${user.username}'s bio`, 3);
+        },
+      },
+      {
+        name: AdminAction.EDIT_EMPLOYEE,
+        action: async () => {
+          if (user.role !== Role.ADMIN) {
+            return {
+              success: false,
+              error: "User is not an employee",
+            };
+          }
+
+          const formSchema = z.object({
+            role: z.nativeEnum(EmployeeRole).optional(),
+            fullName: z.string().optional(),
+            contractExpiresAt: z.date().optional(),
+            contactEmail: z.string().email().optional(),
+            probationary: z.boolean().optional(),
+          });
+
+          const form = formSchema.parse({
+            ...body,
+            contractExpiresAt: new Date(body.contractExpiresAt),
+          });
+
+          if (!user.employee) {
+            await prisma.employee.create({
+              data: {
+                role: form.role!,
+                fullName: form.fullName!,
+                contractExpiresAt: form.contractExpiresAt!,
+                contactEmail: form.contactEmail!,
+                probationary: form.probationary!,
+                user: {
+                  connect: {
+                    id: Number(uid),
+                  },
+                },
+              },
+            });
+          } else {
+            await prisma.employee.update({
+              where: {
+                id: String(user.employee.id),
+              },
+              data: {
+                role: form.role,
+                fullName: form.fullName,
+                contractExpiresAt: form.contractExpiresAt,
+                contactEmail: form.contactEmail,
+                probationary: form.probationary,
+              },
+            });
+          }
+
+          await createActionLog(
+            `Edited ${user.username}'s employee details`,
+            3
+          );
         },
       },
     ];
