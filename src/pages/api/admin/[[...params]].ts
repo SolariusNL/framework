@@ -1252,6 +1252,55 @@ class AdminRouter {
 
     return { success: true };
   }
+
+  @Get("/directory")
+  @AdminAuthorized()
+  public async getDirectory(
+    @Query("search") search?: string,
+    @Query("role") role?: EmployeeRole
+  ) {
+    const users = await prisma.employee.findMany({
+      where: {
+        ...(search
+          ? {
+              user: {
+                OR: [
+                  {
+                    employee: {
+                      fullName: {
+                        contains: search,
+                        mode: "insensitive",
+                      },
+                    },
+                  },
+                  {
+                    username: {
+                      contains: search,
+                      mode: "insensitive",
+                    },
+                  },
+                ],
+              },
+            }
+          : {}),
+        ...(role ? { role } : {}),
+      },
+      select: {
+        id: true,
+        fullName: true,
+        contactEmail: true,
+        role: true,
+        probationary: true,
+        contractExpiresAt: true,
+        createdAt: true,
+        user: {
+          select: nonCurrentUserSelect.select,
+        },
+      },
+    });
+
+    return users;
+  }
 }
 
 export default createHandler(AdminRouter);
