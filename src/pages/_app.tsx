@@ -122,6 +122,14 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
           locale: "en_US",
           url: "https://framework.soodam.rocks/",
           siteName: "Framework",
+          images: [
+            {
+              url: "https://cloud.soodam.rocks/index.php/s/N8zoLBqCrTMJnwM/preview",
+              alt: "The Framework logo.",
+              width: 1920,
+              height: 1080,
+            },
+          ],
         }}
         titleTemplate="%s | Framework"
         description="Framework is a free and open-source alternative to Roblox."
@@ -207,7 +215,7 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
                         ] + "80",
                       border:
                         "1px solid " +
-                        theme.colors[params.color || theme.primaryColor][6]
+                        theme.colors[params.color || theme.primaryColor][6],
                     },
                   },
                 }),
