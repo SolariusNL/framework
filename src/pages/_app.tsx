@@ -124,7 +124,8 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
           siteName: "Framework",
           images: [
             {
-              url: "https://cloud.soodam.rocks/index.php/s/N8zoLBqCrTMJnwM/preview",
+              secureUrl: "/logo-dark.png",
+              url: "/logo-dark.png",
               alt: "The Framework logo.",
               width: 1920,
               height: 1080,
