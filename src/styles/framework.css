@@ -17,6 +17,14 @@ h6 {
   font-family: Inter var !important;
 }
 
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: Inter var !important;
+}
+
 .embla {
   overflow: hidden;
   border-radius: 8px;

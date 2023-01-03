@@ -165,13 +165,9 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
                           ] + "85",
                       },
                       boxShadow:
-                        colorScheme === "dark"
-                          ? `inset 0 1.2px 0 0 ${
-                              theme.colors[
-                                params.color || theme.primaryColor
-                              ][5]
-                            }`
-                          : "inset 0 1.2px 0 0 hsla(0,0%,100%,.2);",
+                        colorScheme === "light"
+                          ? "inset 0 1.2px 0 0 hsla(0,0%,100%,.2);"
+                          : "",
                     }),
                   },
                 }),
@@ -217,7 +213,18 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
                       border:
                         "1px solid " +
                         theme.colors[params.color || theme.primaryColor][6],
+                      color:
+                        theme.colors[params.color || theme.primaryColor][
+                          theme.colorScheme === "dark" ? 2 : 9
+                        ],
                     },
+                  },
+                }),
+              },
+              Select: {
+                styles: (theme: MantineTheme) => ({
+                  item: {
+                    borderRadius: theme.defaultRadius + " !important",
                   },
                 }),
               },
