@@ -62,7 +62,6 @@ const GameCard = ({ game }: GameCardProps) => {
             },
           }}
           component="a"
-          target="_blank"
           p={0}
         >
           <Card.Section mb="md">
