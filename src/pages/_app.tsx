@@ -1,7 +1,9 @@
 import { useFlags } from "@happykit/flags/client";
 import {
+  AlertStylesParams,
   Anchor,
   AnchorProps,
+  BadgeStylesParams,
   Button,
   ButtonStylesParams,
   ColorScheme,
@@ -198,6 +200,31 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
                   },
                 }),
               },
+              Alert: {
+                styles: (theme: MantineTheme, params: AlertStylesParams) => ({
+                  root: {
+                    border: "1px solid",
+                    borderColor:
+                      theme.colorScheme === "dark"
+                        ? theme.colors[params.color || theme.primaryColor][2] +
+                          "65"
+                        : theme.colors[params.color || theme.primaryColor][9] +
+                          "90",
+                    backgroundColor:
+                      theme.colorScheme === "dark"
+                        ? theme.colors[params.color || theme.primaryColor][8] +
+                          "20"
+                        : theme.colors[params.color || theme.primaryColor][0] +
+                          "90",
+                  },
+                  message: {
+                    color:
+                      theme.colorScheme === "dark"
+                        ? theme.colors[params.color || theme.primaryColor][1]
+                        : theme.colors[params.color || theme.primaryColor][9],
+                  },
+                }),
+              },
               Pagination: {
                 styles: (
                   theme: MantineTheme,
@@ -218,6 +245,17 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
                           theme.colorScheme === "dark" ? 2 : 9
                         ],
                     },
+                  },
+                }),
+              },
+              Badge: {
+                styles: (theme: MantineTheme, params: BadgeStylesParams) => ({
+                  root: {
+                    border: "1px solid",
+                    borderColor:
+                      theme.colors[params.color || theme.primaryColor][
+                        theme.colorScheme === "dark" ? 2 : 9
+                      ] + "90",
                   },
                 }),
               },

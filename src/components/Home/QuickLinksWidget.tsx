@@ -50,7 +50,10 @@ const QuickLinksWidget: React.FC = () => {
           <Link href={link} key={title}>
             <div className="flex flex-col gap-4 cursor-pointer p-2">
               <div className="flex justify-between items-center">
-                <ThemeIcon variant="light" color={color} size={38}>
+                <ThemeIcon variant="light" color={color} size={38} sx={{
+                  border: "1px solid",
+                  borderColor: color[9]
+                }}>
                   {icon}
                 </ThemeIcon>
                 <HiArrowRight />
