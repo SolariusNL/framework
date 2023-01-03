@@ -1296,10 +1296,87 @@ class AdminRouter {
         user: {
           select: nonCurrentUserSelect.select,
         },
+        bio: true,
+        skills: true,
       },
     });
 
     return users;
+  }
+
+  @Post("/employee/update")
+  @AdminAuthorized()
+  public async updateEmployee(@Account() user: User, @Body() body: unknown) {
+    const updatable = [
+      {
+        path: "bio",
+        validate: (v: unknown) =>
+          typeof v === "string" && v.length < 300 && v.length > 0,
+        error: "Bio must be between 1 and 300 characters",
+      },
+      {
+        path: "skills",
+        validate: (v: unknown) =>
+          Array.isArray(v) && v.every((s) => typeof s === "string"),
+        error: "Skills must be an array of strings",
+      },
+    ];
+
+    const errors: string[] = [];
+
+    for (const u of updatable) {
+      const value = (body as any)[u.path];
+
+      if (value) {
+        if (!u.validate(value)) {
+          errors.push(u.error);
+        }
+      }
+
+      if (errors.length > 0) {
+        return {
+          success: false,
+          errors,
+        };
+      }
+    }
+
+    if ((body as any).skills) {
+      await prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          employee: {
+            update: {
+              skills: {
+                set: [],
+              },
+            },
+          },
+        },
+      });
+    }
+
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        employee: {
+          update: {
+            bio: (body as any).bio,
+            ...((body as any).skills
+              ? {
+                  skills: {
+                    set: (body as any).skills,
+                  },
+                }
+              : {}),
+          },
+        },
+      },
+    });
   }
 }
 

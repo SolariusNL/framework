@@ -1,8 +1,3 @@
-import { useEffect, useState } from "react";
-import { NonUser } from "../../../util/prisma-types";
-import { Employee, EmployeeRole } from "@prisma/client";
-import { getCookie } from "cookies-next";
-import ShadedButton from "../../ShadedButton";
 import {
   Avatar,
   Badge,
@@ -14,11 +9,16 @@ import {
   Text,
   TextInput,
 } from "@mantine/core";
-import getMediaUrl from "../../../util/getMedia";
+import { openModal } from "@mantine/modals";
+import { Employee, EmployeeRole } from "@prisma/client";
+import { getCookie } from "cookies-next";
+import { createElement, Fragment, useEffect, useState } from "react";
 import { HiArrowRight, HiMail, HiSearch } from "react-icons/hi";
 import employeeRoleMeta from "../../../data/employeeRoles";
+import getMediaUrl from "../../../util/getMedia";
+import { NonUser } from "../../../util/prisma-types";
 import ModernEmptyState from "../../ModernEmptyState";
-import { openModal } from "@mantine/modals";
+import ShadedButton from "../../ShadedButton";
 
 const headers = {
   "Content-Type": "application/json",
@@ -89,6 +89,16 @@ const Directory: React.FC = () => {
                   title: employee.user.username,
                   children: (
                     <>
+                      {employee.bio && (
+                        <Text mb={16}>
+                          {employee.bio.split("\n").map((line, i) => (
+                            <Fragment key={line}>
+                              {line}
+                              <br />
+                            </Fragment>
+                          ))}
+                        </Text>
+                      )}
                       <Stack spacing={4}>
                         {[
                           ["Username", employee.user.username],
@@ -118,13 +128,21 @@ const Directory: React.FC = () => {
                           </div>
                         ))}
                       </Stack>
+                      {employee.skills && employee.skills.length > 0 && (
+                        <div className="flex items-center gap-1 mt-4">
+                          {employee.skills.map((s) => (
+                            <Badge key={s}>{s}</Badge>
+                          ))}
+                        </div>
+                      )}
+
                       <Divider
                         mt={28}
                         mb={28}
                         label="Actions"
                         labelPosition="center"
                       />
-                      <div className="flex justify-end">
+                      <div className="flex justify-end gap-3">
                         <a href={`mailto:${employee.contactEmail}`}>
                           <Button leftIcon={<HiMail />} component="a">
                             Send email

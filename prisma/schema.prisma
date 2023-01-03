@@ -684,6 +684,9 @@ model Employee {
   probationary      Boolean              @default(true)
   nextAssessmentAt  DateTime             @default(now())
   assessmentHistory EmployeeAssessment[] @relation("assessmentHistory")
+  location          String               @default("No location provided.")
+  skills            String[]             @default([])
+  bio               String               @default("No bio provided.")
 }
 
 enum EmployeeRole {
