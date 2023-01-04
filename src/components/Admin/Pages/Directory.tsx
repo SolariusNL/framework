@@ -129,7 +129,7 @@ const Directory: React.FC = () => {
                         ))}
                       </Stack>
                       {employee.skills && employee.skills.length > 0 && (
-                        <div className="flex items-center gap-1 mt-4">
+                        <div className="flex items-center gap-1 mt-4 flex-wrap">
                           {employee.skills.map((s) => (
                             <Badge key={s}>{s}</Badge>
                           ))}
