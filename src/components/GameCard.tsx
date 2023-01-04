@@ -7,6 +7,7 @@ import {
   MantineColor,
   Text,
   Title,
+  Tooltip,
   useMantineTheme,
 } from "@mantine/core";
 import { randomId } from "@mantine/hooks";
@@ -82,13 +83,13 @@ const GameCard = ({ game }: GameCardProps) => {
           </Card.Section>
           <div className="flex justify-between mb-4">
             <Title order={4}>{game.name}</Title>
-            <UserContext user={game.author}>
+            <Tooltip label={game.author.username} openDelay={1300}>
               <Avatar
                 src={getMediaUrl(game.author.avatarUri)}
                 size={20}
                 radius="xl"
               />
-            </UserContext>
+            </Tooltip>
           </div>
           <div className="flex justify-around w-full">
             <div>
