@@ -178,6 +178,7 @@ const UserView = ({ user }: UserViewProps) => {
                           value: "ACCOUNT_RECOVERY",
                         },
                         { label: "Debugging", value: "DEBUGGING" },
+                        { label: "Moderation", value: "MODERATION" },
                         { label: "Unspecified", value: "UNSPECIFIED" },
                       ]}
                       mb={16}
