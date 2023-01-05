@@ -14,7 +14,7 @@ import {
   SimpleGrid,
   Text,
   ThemeIcon,
-  UnstyledButton
+  UnstyledButton,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import Link from "next/link";
@@ -29,7 +29,7 @@ import {
   HiLibrary,
   HiOfficeBuilding,
   HiUserGroup,
-  HiUsers
+  HiUsers,
 } from "react-icons/hi";
 import FrameworkLogo from "./FrameworkLogo";
 
@@ -282,12 +282,14 @@ const LandingHeader = () => {
               {tabItems}
             </Group>
 
-            <Link passHref href="/login">
-              <Group className={classes.hiddenMobile}>
+            <Group className={classes.hiddenMobile}>
+              <Link passHref href="/login">
                 <Button variant="default">Log in</Button>
+              </Link>
+              <Link passHref href="/register">
                 <Button>Sign up</Button>
-              </Group>
-            </Link>
+              </Link>
+            </Group>
 
             <Burger
               opened={drawerOpened}
