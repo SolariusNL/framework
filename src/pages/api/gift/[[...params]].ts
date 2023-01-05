@@ -195,15 +195,7 @@ class GiftRouter {
       };
     }
 
-    const possible = [
-      10,
-      25,
-      50,
-      75,
-      100,
-      125,
-      150,
-    ];
+    const possible = [5, 10, 25, 50, 75, 100];
     const random = possible[Math.floor(Math.random() * possible.length)];
 
     await prisma.user.update({
@@ -214,7 +206,7 @@ class GiftRouter {
         lastRandomPrize: new Date(),
         tickets: {
           increment: random,
-        }
+        },
       },
     });
 
