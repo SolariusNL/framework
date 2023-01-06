@@ -268,6 +268,7 @@ class AuthRouter {
             avatar: {
               create: {},
             },
+            tickets: 50,
           },
         },
         token: Array(12)
