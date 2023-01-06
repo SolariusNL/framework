@@ -42,7 +42,9 @@ import {
 import ReactNoSSR from "react-no-ssr";
 import AdminBadge from "../../components/Badges/Admin";
 import AlphaBadge from "../../components/Badges/Alpha";
+import EmailBadge from "../../components/Badges/Email";
 import PremiumBadge from "../../components/Badges/Premium";
+import TOTPBadge from "../../components/Badges/TOTP";
 import Framework from "../../components/Framework";
 import ThumbnailCarousel from "../../components/ImageCarousel";
 import ModernEmptyState from "../../components/ModernEmptyState";
@@ -486,6 +488,14 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
                       <AdminBadge user={viewing} key="admin" />,
                       viewing.role == "ADMIN",
                     ],
+                    [
+                      <EmailBadge user={viewing} key="email" />,
+                      viewing.emailVerified,
+                    ],
+                    [
+                      <TOTPBadge user={viewing} key="totp" />,
+                      !viewing.otpEnabled,
+                    ],
                   ].map(
                     ([badge, condition]) => condition && <div>{badge}</div>
                   )}
@@ -614,12 +624,14 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       alias: true,
       previousUsernames: true,
       profileLinks: true,
+      emailVerified: true,
       _count: {
         select: {
           followers: true,
           following: true,
         },
       },
+      otpEnabled: true,
     },
   });
 
