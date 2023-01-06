@@ -485,6 +485,10 @@ const Framework = ({
   }, [chatOpened, friendsPage]);
 
   useEffect(() => {
+    getUnreadMessages();
+  }, []);
+
+  useEffect(() => {
     if (conversating) {
       getConversationData(conversating.id);
       markAsRead();
