@@ -13,6 +13,7 @@ import {
   Tooltip,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { useClipboard } from "@mantine/hooks";
 import { openConfirmModal, openModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import { ApiKey, ApiKeyPermission } from "@prisma/client";
@@ -25,6 +26,7 @@ import ModernEmptyState from "../ModernEmptyState";
 const DeveloperKeys: React.FC = () => {
   const [keys, setKeys] = useState<ApiKey[]>();
   const [createOpened, setCreateOpened] = useState(false);
+  const { copy } = useClipboard();
   const createForm = useForm<{
     name: string;
     permissions: ApiKeyPermission[];
@@ -95,7 +97,7 @@ const DeveloperKeys: React.FC = () => {
                 disabled: true,
               },
               onConfirm() {
-                navigator.clipboard.writeText(data.key);
+                copy(data.key);
                 showNotification({
                   title: "Key copied",
                   message: "Your key has been copied to your clipboard.",
