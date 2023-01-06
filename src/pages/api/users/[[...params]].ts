@@ -462,10 +462,15 @@ class UserRouter {
             where: {
               OR: [
                 {
-                  username: value,
+                  username: {
+                    equals: value,
+                    mode: "insensitive",
+                  },
                 },
                 {
-                  previousUsernames: { has: value },
+                  previousUsernames: {
+                    has: value,
+                  },
                 },
               ],
             },
