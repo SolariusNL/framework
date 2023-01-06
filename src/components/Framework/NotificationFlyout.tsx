@@ -56,6 +56,11 @@ const NotificationFlyout = ({
               label={notifications.length}
               size={16}
               color="red"
+              styles={{
+                indicator: {
+                  display: notifications.length == 0 ? "none" : "block",
+                },
+              }}
             >
               <HiBell />
             </Indicator>
