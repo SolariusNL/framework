@@ -460,13 +460,22 @@ class UserRouter {
 
           const userExists = await prisma.user.findFirst({
             where: {
-              username: String(value),
-              previousUsernames: { has: value },
+              OR: [
+                {
+                  username: value,
+                },
+                {
+                  previousUsernames: { has: value },
+                },
+              ],
             },
           });
 
+          if (userExists) {
+            return false;
+          }
+
           if (
-            userExists ||
             user.tickets < 500 ||
             new Date(user.lastUsernameChange as Date).getTime() >
               new Date().getTime() - 604800000
