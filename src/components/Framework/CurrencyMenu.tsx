@@ -2,8 +2,10 @@ import { Group, Menu, Text, UnstyledButton } from "@mantine/core";
 import { useRouter } from "next/router";
 import {
   HiCurrencyDollar,
+  HiGift,
   HiShoppingBag,
   HiStar,
+  HiTicket,
   HiViewList,
 } from "react-icons/hi";
 import { useFrameworkUser } from "../../contexts/FrameworkUser";
@@ -70,7 +72,6 @@ const CurrencyMenu = ({
         >
           Transaction history
         </Menu.Item>
-
         {!user.premium && (
           <>
             <Menu.Divider />
@@ -82,6 +83,13 @@ const CurrencyMenu = ({
             </Menu.Item>
           </>
         )}
+        <Menu.Divider />
+        <Menu.Item icon={<HiGift />} onClick={() => router.push("/prizes")}>
+          Daily prizes
+        </Menu.Item>
+        <Menu.Item icon={<HiTicket />} onClick={() => router.push("/redeem")}>
+          Redeem code
+        </Menu.Item>
       </Menu.Dropdown>
     </Menu>
   );

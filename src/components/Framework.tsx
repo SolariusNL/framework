@@ -25,7 +25,7 @@ import {
   TextInput,
   ThemeIcon,
   Title,
-  useMantineColorScheme,
+  useMantineColorScheme
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure, useHotkeys, useLocalStorage } from "@mantine/hooks";
@@ -58,12 +58,12 @@ import {
   HiSun,
   HiTicket,
   HiUser,
-  HiViewGrid,
+  HiViewGrid
 } from "react-icons/hi";
 import SocketContext from "../contexts/Socket";
 import useChatStore from "../stores/useChatStore";
 import useExperimentsStore, {
-  ExperimentId,
+  ExperimentId
 } from "../stores/useExperimentsStore";
 import { getIpcRenderer } from "../util/electron";
 import getMediaUrl from "../util/getMedia";
@@ -76,6 +76,7 @@ import Footer from "./Footer";
 import CurrencyMenu from "./Framework/CurrencyMenu";
 import NotificationFlyout from "./Framework/NotificationFlyout";
 import Search from "./Framework/Search";
+import UpdateDrawer from "./Framework/UpdateDrawer";
 import UserMenu from "./Framework/UserMenu";
 import FrameworkLogo from "./FrameworkLogo";
 import ModernEmptyState from "./ModernEmptyState";
@@ -1004,7 +1005,7 @@ const Framework = ({
             </Group>
           </Container>
         )}
-
+        <UpdateDrawer />
         <Drawer
           opened={opened}
           onClose={toggle}

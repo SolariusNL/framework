@@ -10,18 +10,19 @@ import { useRouter } from "next/router";
 import {
   HiChevronDown,
   HiCog,
-  HiGift,
+  HiInformationCircle,
   HiLibrary,
   HiLogout,
   HiMoon,
   HiSun,
-  HiTicket,
   HiUser,
 } from "react-icons/hi";
 import { useFrameworkUser } from "../../contexts/FrameworkUser";
+import useUpdateDrawer from "../../stores/useUpdateDrawer";
 import logout from "../../util/api/logout";
 import getMediaUrl from "../../util/getMedia";
 import { User } from "../../util/prisma-types";
+import useMediaQuery from "../../util/useMediaQuery";
 import { frameworkStyles } from "../Framework";
 
 const UserMenu = ({ userMenuOpened }: { userMenuOpened: boolean }) => {
@@ -29,6 +30,8 @@ const UserMenu = ({ userMenuOpened }: { userMenuOpened: boolean }) => {
   const { classes, theme, cx } = frameworkStyles();
   const user = useFrameworkUser() as User;
   const router = useRouter();
+  const { setOpened: setUpdateDrawerOpened } = useUpdateDrawer();
+  const mobile = useMediaQuery("768");
 
   return (
     <Menu transition="pop-top-right" width={240}>
@@ -73,18 +76,17 @@ const UserMenu = ({ userMenuOpened }: { userMenuOpened: boolean }) => {
             <Menu.Divider />
           </>
         )}
-        <Menu.Item icon={<HiGift />} onClick={() => router.push("/prizes")}>
-          Daily prizes
-        </Menu.Item>
-        <Menu.Item icon={<HiTicket />} onClick={() => router.push("/redeem")}>
-          Redeem code
-        </Menu.Item>
-        <Menu.Divider />
         <Menu.Item
           icon={<HiUser />}
           onClick={() => router.push(`/profile/${user.username}`)}
         >
           Profile
+        </Menu.Item>
+        <Menu.Item
+          icon={<HiUser size={18} />}
+          onClick={() => router.push("/avatar")}
+        >
+          Avatar
         </Menu.Item>
         <Menu.Item
           icon={
@@ -102,12 +104,14 @@ const UserMenu = ({ userMenuOpened }: { userMenuOpened: boolean }) => {
         >
           Settings
         </Menu.Item>
-        <Menu.Item
-          icon={<HiUser size={18} />}
-          onClick={() => router.push("/avatar")}
-        >
-          Avatar
-        </Menu.Item>
+        {!mobile && (
+          <Menu.Item
+            icon={<HiInformationCircle size={18} />}
+            onClick={() => setUpdateDrawerOpened(true)}
+          >
+            What&apos;s new?
+          </Menu.Item>
+        )}
         <Menu.Divider />
         <Menu.Item
           sx={{ fontWeight: 500 }}
