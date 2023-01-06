@@ -1,9 +1,4 @@
-import {
-  Badge,
-  Divider,
-  Drawer, Text,
-  Title
-} from "@mantine/core";
+import { Badge, Divider, Drawer, Text, Title } from "@mantine/core";
 import Link from "next/link";
 import useUpdateDrawer from "../../stores/useUpdateDrawer";
 import ShadedButton from "../ShadedButton";
@@ -20,6 +15,7 @@ const UpdateDrawer: React.FC = () => {
     title: string;
     description: string;
     badge: BadgeType;
+    date: Date;
     href?: string;
   }> = [
     {
@@ -28,30 +24,36 @@ const UpdateDrawer: React.FC = () => {
         "You can now manage your API keys in the new Developer Dashboard.",
       badge: BadgeType.NEW,
       href: "/developer",
+      date: new Date("2023-01-06"),
     },
     {
       title: "New Profile Badges",
       description:
         "We've added badges for having your email verified, and for enabling TOTP 2FA.",
       badge: BadgeType.NEW,
+      date: new Date("2023-01-06"),
     },
     {
       title: "Username Changes",
       description:
         "We've fixed a bug that allowed users to change their username to one already in use. This is now fixed.",
       badge: BadgeType.FIX,
+      date: new Date("2023-01-06"),
     },
     {
       title: "What's New",
       description:
         "We've added a What's New drawer that will show you new features and bug fixes when invoked from the user menu.",
       badge: BadgeType.NEW,
+      date: new Date("2023-01-06"),
     },
     {
       title: "Live Chat",
       description:
         "We've added a live chat experiment to the preview program. It's based on websocket technology, and is currently in alpha. You can find it in Preview Program tab in your settings.",
       badge: BadgeType.EXPERIMENT,
+      date: new Date("2022-12-31"),
+      href: "/settings",
     },
   ];
 
@@ -73,34 +75,43 @@ const UpdateDrawer: React.FC = () => {
           height: "calc(100vh - 180px)",
         }}
       >
-        {newFeatures.map((feature) => (
-          <Link key={feature.title} href={feature.href || {}}>
-            <ShadedButton
-              key={feature.title}
-              className={feature.href ? "cursor-pointer" : "cursor-default"}
-            >
-              <div>
-                <div className="flex items-center justify-between w-full mb-2">
-                  <Text weight={500}>{feature.title}</Text>
-                  <Badge
-                    color={
-                      feature.badge === BadgeType.NEW
-                        ? "blue"
-                        : feature.badge === BadgeType.FIX
-                        ? "pink"
-                        : "grape"
-                    }
-                  >
-                    {feature.badge}
-                  </Badge>
+        {newFeatures
+          .sort((a, b) => b.date.getTime() - a.date.getTime())
+          .map((feature) => (
+            <Link key={feature.title} href={feature.href || {}}>
+              <ShadedButton
+                key={feature.title}
+                className={feature.href ? "cursor-pointer" : "cursor-default"}
+              >
+                <div>
+                  <div className="flex items-center justify-between w-full mb-2">
+                    <Text weight={500}>{feature.title}</Text>
+                    <Badge
+                      color={
+                        feature.badge === BadgeType.NEW
+                          ? "blue"
+                          : feature.badge === BadgeType.FIX
+                          ? "pink"
+                          : "grape"
+                      }
+                    >
+                      {feature.badge}
+                    </Badge>
+                  </div>
+                  <Text size="sm" color="dimmed" mb="sm">
+                    {feature.description}
+                  </Text>
+                  <Text size="sm" color="dimmed" weight={500}>
+                    {new Intl.DateTimeFormat("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    }).format(feature.date)}
+                  </Text>
                 </div>
-                <Text size="sm" color="dimmed">
-                  {feature.description}
-                </Text>
-              </div>
-            </ShadedButton>
-          </Link>
-        ))}
+              </ShadedButton>
+            </Link>
+          ))}
       </div>
     </Drawer>
   );
