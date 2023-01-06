@@ -531,24 +531,24 @@ class AdminRouter {
           importance: 4,
         },
       });
-
-      await prisma.punishmentLog.create({
-        data: {
-          user: {
-            connect: {
-              id: Number(uid),
-            },
-          },
-          punishedBy: {
-            connect: {
-              id: Number(admin.id),
-            },
-          },
-          type: category.toUpperCase() as PunishmentType,
-          reason: body.reason,
-        },
-      });
     }
+
+    await prisma.punishmentLog.create({
+      data: {
+        user: {
+          connect: {
+            id: Number(uid),
+          },
+        },
+        punishedBy: {
+          connect: {
+            id: Number(admin.id),
+          },
+        },
+        type: category.toUpperCase() as PunishmentType,
+        reason: body.reason,
+      },
+    });
 
     if (body.reportAuthorId) {
       await prisma.user.update({
