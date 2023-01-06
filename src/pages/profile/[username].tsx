@@ -494,7 +494,7 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
                     ],
                     [
                       <TOTPBadge user={viewing} key="totp" />,
-                      !viewing.otpEnabled,
+                      viewing.otpEnabled,
                     ],
                   ].map(
                     ([badge, condition]) => condition && <div>{badge}</div>
