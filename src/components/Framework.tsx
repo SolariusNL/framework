@@ -78,6 +78,7 @@ import NotificationFlyout from "./Framework/NotificationFlyout";
 import Search from "./Framework/Search";
 import UserMenu from "./Framework/UserMenu";
 import FrameworkLogo from "./FrameworkLogo";
+import ModernEmptyState from "./ModernEmptyState";
 import ShadedButton from "./ShadedButton";
 import TabNav from "./TabNav";
 
@@ -749,6 +750,12 @@ const Framework = ({
                             </div>
                           </ShadedButton>
                         ))}
+                        {friends.length === 0 && (
+                          <ModernEmptyState
+                            title="No friends"
+                            body="You do not have any friends to chat with."
+                          />
+                        )}
                       </Stack>
                     </>
                   )}
