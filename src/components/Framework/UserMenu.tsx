@@ -8,6 +8,7 @@ import {
 } from "@mantine/core";
 import { useRouter } from "next/router";
 import {
+  HiAdjustments,
   HiChevronDown,
   HiCog,
   HiInformationCircle,
@@ -68,7 +69,7 @@ const UserMenu = ({ userMenuOpened }: { userMenuOpened: boolean }) => {
         {user.role == "ADMIN" && (
           <>
             <Menu.Item
-              icon={<HiLibrary />}
+              icon={<HiLibrary size={18} />}
               onClick={() => router.push("/admin/dashboard")}
             >
               Admin dashboard
@@ -77,13 +78,13 @@ const UserMenu = ({ userMenuOpened }: { userMenuOpened: boolean }) => {
           </>
         )}
         <Menu.Item
-          icon={<HiUser />}
+          icon={<HiUser size={18} />}
           onClick={() => router.push(`/profile/${user.username}`)}
         >
           Profile
         </Menu.Item>
         <Menu.Item
-          icon={<HiUser size={18} />}
+          icon={<HiAdjustments size={18} />}
           onClick={() => router.push("/avatar")}
         >
           Avatar
