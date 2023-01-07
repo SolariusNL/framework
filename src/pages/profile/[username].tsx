@@ -35,7 +35,6 @@ import {
   HiGift,
   HiGlobe,
   HiOfficeBuilding,
-  HiShieldCheck,
   HiUser,
   HiUsers,
 } from "react-icons/hi";
@@ -159,19 +158,24 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
                   svg
                 />
               )}
-              <Tooltip
-                label={
-                  viewing.previousUsernames.length > 0
-                    ? `This user was previously known as: ${viewing.previousUsernames.join(
-                        ", "
-                      )}.`
-                    : "This user has not changed their username before."
-                }
-              >
-                <Text weight={500} size="xl" align="center">
-                  {viewing.username}
-                </Text>
-              </Tooltip>
+              <div className="flex items-center gap-3">
+                {viewing.role == "ADMIN" && (
+                  <Image src="/brand/white.png" width={16} height={16} />
+                )}
+                <Tooltip
+                  label={
+                    viewing.previousUsernames.length > 0
+                      ? `This user was previously known as: ${viewing.previousUsernames.join(
+                          ", "
+                        )}.`
+                      : "This user has not changed their username before."
+                  }
+                >
+                  <Text weight={500} size="xl" align="center">
+                    {viewing.username}
+                  </Text>
+                </Tooltip>
+              </div>
               {viewing.alias && (
                 <ReactNoSSR>
                   <Tooltip label="This user has an alias:">
@@ -199,9 +203,6 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
               <ReactNoSSR>
                 {viewing.busy && <Badge>Busy</Badge>}
                 {viewing.premium && <HiGift title="Premium" />}
-                {viewing.role == "ADMIN" && (
-                  <HiShieldCheck title="Official Framework Staff" />
-                )}
               </ReactNoSSR>
             </div>
 

@@ -17,6 +17,7 @@ const Settings: React.FC = () => {
   const [updatedValues, setUpdatedValues] = useState({
     bio: user.employee?.bio,
     skills: user.employee?.skills,
+    showOnProfile: user.employee?.showOnProfile,
   });
 
   const updateEmployee = async () => {

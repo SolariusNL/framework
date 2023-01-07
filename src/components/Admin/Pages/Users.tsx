@@ -20,6 +20,7 @@ import {
   UserAdminNotes,
 } from "@prisma/client";
 import { getCookie } from "cookies-next";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { HiBell, HiCheckCircle, HiSearch } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
@@ -354,7 +355,9 @@ const Users = () => {
                       <Text weight={600} className="mr-2">
                         {u.username}
                       </Text>
-                      {u.role === "ADMIN" && <Badge>Staff</Badge>}
+                      {u.role === "ADMIN" && (
+                        <Image src="/brand/white.png" width={16} height={16} />
+                      )}
                       {u.banned && <Badge color="red">Banned</Badge>}
                     </div>
                     <Text size="sm" color="dimmed">
