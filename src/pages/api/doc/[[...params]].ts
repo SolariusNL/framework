@@ -1,4 +1,4 @@
-import { createHandler, Get } from "@storyofams/next-api-decorators";
+import { createHandler, Get, SetHeader } from "@storyofams/next-api-decorators";
 import { readFile } from "fs/promises";
 import fetch from "node-fetch";
 import { RateLimitMiddleware } from "../../../util/rateLimit";
@@ -29,6 +29,7 @@ class DocRouter {
 
   @Get("/status")
   @RateLimitMiddleware(100)()
+  @SetHeader("Cache-Control", "public, max-age=1800")
   async getStatus() {
     const enabled = process.env.NEXT_PUBLIC_BETTER_UPTIME_ENABLED === "true";
     const key = process.env.BETTER_UPTIME_KEY;
