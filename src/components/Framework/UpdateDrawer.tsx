@@ -112,6 +112,10 @@ const UpdateDrawer: React.FC = () => {
                           ? "blue"
                           : feature.badge === BadgeType.FIX
                           ? "pink"
+                          : feature.badge === BadgeType.EXPERIMENT
+                          ? "indigo"
+                          : feature.badge === BadgeType.CHANGE
+                          ? "violet"
                           : "grape"
                       }
                     >
