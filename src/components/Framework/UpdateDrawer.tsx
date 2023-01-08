@@ -20,7 +20,7 @@ const UpdateDrawer: React.FC = () => {
     href?: string;
   }> = [
     {
-      title: "Email Verification for Daily Prize",
+      title: "Daily Prize Email Verification Requirement",
       description:
         "You must now verify your email to claim your daily prize. This is to prevent abuse, and to prevent any type of automated claiming.",
       badge: BadgeType.CHANGE,
@@ -92,8 +92,20 @@ const UpdateDrawer: React.FC = () => {
                 className={feature.href ? "cursor-pointer" : "cursor-default"}
               >
                 <div>
-                  <div className="flex items-center justify-between w-full mb-2">
-                    <Text weight={500}>{feature.title}</Text>
+                  <Text weight={500} className="mb-2">
+                    {feature.title}
+                  </Text>
+                  <Text size="sm" color="dimmed" mb="sm">
+                    {feature.description}
+                  </Text>
+                  <div className="flex items-center justify-between">
+                    <Text size="sm" color="dimmed" weight={500}>
+                      {new Intl.DateTimeFormat("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      }).format(feature.date)}
+                    </Text>
                     <Badge
                       color={
                         feature.badge === BadgeType.NEW
@@ -106,16 +118,6 @@ const UpdateDrawer: React.FC = () => {
                       {feature.badge}
                     </Badge>
                   </div>
-                  <Text size="sm" color="dimmed" mb="sm">
-                    {feature.description}
-                  </Text>
-                  <Text size="sm" color="dimmed" weight={500}>
-                    {new Intl.DateTimeFormat("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    }).format(feature.date)}
-                  </Text>
                 </div>
               </ShadedButton>
             </Link>
