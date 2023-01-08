@@ -7,6 +7,7 @@ enum BadgeType {
   NEW = "NEW",
   FIX = "FIX",
   EXPERIMENT = "EXPERIMENT",
+  CHANGE = "CHANGE",
 }
 
 const UpdateDrawer: React.FC = () => {
@@ -18,6 +19,13 @@ const UpdateDrawer: React.FC = () => {
     date: Date;
     href?: string;
   }> = [
+    {
+      title: "Email Verification for Daily Prize",
+      description:
+        "You must now verify your email to claim your daily prize. This is to prevent abuse, and to prevent any type of automated claiming.",
+      badge: BadgeType.CHANGE,
+      date: new Date("2023-01-08"),
+    },
     {
       title: "API Key Management",
       description:

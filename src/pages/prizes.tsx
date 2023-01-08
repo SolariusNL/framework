@@ -4,7 +4,7 @@ import {
   Container,
   createStyles,
   Text,
-  Title
+  Title,
 } from "@mantine/core";
 import { useViewportSize } from "@mantine/hooks";
 import { getCookie } from "cookies-next";
@@ -52,6 +52,11 @@ const Prizes: NextPage<PrizesProps> = ({ user }) => {
     setClient(true);
   }, []);
 
+  React.useEffect(() => {
+    if (user && !user.emailVerified)
+      setError("You must verify your email to claim prizes.");
+  }, [user]);
+
   const handlePrize = async () => {
     setLoading(true);
 
@@ -80,7 +85,12 @@ const Prizes: NextPage<PrizesProps> = ({ user }) => {
   };
 
   return (
-    <Framework user={user} activeTab="none" modernTitle="Daily Prize" modernSubtitle="Claim your daily prize!">
+    <Framework
+      user={user}
+      activeTab="none"
+      modernTitle="Daily Prize"
+      modernSubtitle="Claim your daily prize!"
+    >
       <Container size={460} my={30}>
         {finished && prizeData ? (
           <>
@@ -116,12 +126,18 @@ const Prizes: NextPage<PrizesProps> = ({ user }) => {
               mt={24}
               disabled={
                 new Date(user.lastRandomPrize!).getTime() >
-                Date.now() - 24 * 60 * 60 * 1000
+                  Date.now() - 24 * 60 * 60 * 1000 || !user.emailVerified
               }
               loading={loading}
             >
               Claim prize
             </Button>
+
+            {error && (
+              <Alert color="red" title="Error" mt={12}>
+                {error}
+              </Alert>
+            )}
           </>
         )}
       </Container>
