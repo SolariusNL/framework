@@ -16,6 +16,7 @@ import {
   Modal,
   PaginationStylesParams,
   PasswordInput,
+  Stack,
   Text,
   TextInput,
 } from "@mantine/core";
@@ -346,32 +347,49 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
                       >
                         {pageProps != undefined && pageProps.user && (
                           <>
+                            <Text mb={8}>
+                              Your account has been suspended for violations of
+                              our Terms of Service and/or our Community
+                              Guidelines.
+                            </Text>
                             <Text mb={16}>
-                              You have been permanently banned from Framework
-                              for violations of our Terms of Service and/or our
-                              Community Guidelines. You are not allowed to use
-                              Framework or create any additional accounts. This
-                              action is irreversible.
+                              You are not allowed to use Framework or create any
+                              additional accounts during the period of your ban.
                             </Text>
 
-                            <Text mb={8}>
-                              Ban reason:{" "}
-                              <strong>
-                                {pageProps != undefined &&
-                                  pageProps.user &&
-                                  pageProps.user.banReason}
-                              </strong>
-                            </Text>
-                            <Text mb={24}>
-                              Expires on:{" "}
-                              <strong>
-                                {pageProps != undefined &&
-                                  pageProps.user &&
-                                  new Date(
-                                    pageProps.user.banExpires
-                                  ).toLocaleDateString()}
-                              </strong>
-                            </Text>
+                            <Stack spacing={8} mb={24}>
+                              {[
+                                [
+                                  "Note",
+                                  pageProps != undefined &&
+                                    pageProps.user &&
+                                    pageProps.user.banReason,
+                                ],
+                                [
+                                  "Expires",
+                                  pageProps != undefined &&
+                                    pageProps.user &&
+                                    new Date(
+                                      pageProps.user.banExpires
+                                    ).toLocaleDateString(),
+                                ],
+                              ].map(([title, value]) => (
+                                <div
+                                  className="flex justify-between items-start"
+                                  key={title}
+                                >
+                                  <Text
+                                    color="dimmed"
+                                    className="whitespace-nowrap"
+                                  >
+                                    {title}
+                                  </Text>
+                                  <Text weight={500} className="text-right">
+                                    {value}
+                                  </Text>
+                                </div>
+                              ))}
+                            </Stack>
 
                             <Button
                               fullWidth
