@@ -37,20 +37,34 @@ import { z } from "zod";
 class AdminRouter {
   @Get("/reports")
   @AdminAuthorized()
-  public async getLatestReports() {
-    const latestReports = await prisma.userReport.findMany({
+  public async getReports(
+    @Query("page") page: number,
+    @Query("sort") sort: "reviewed" | "unreviewed" | "all" = "all"
+  ) {
+    const reports = await prisma.userReport.findMany({
       take: 12,
       orderBy: { createdAt: "desc" },
-      where: {
-        processed: false,
-      },
       include: {
         user: nonCurrentUserSelect,
         author: nonCurrentUserSelect,
       },
+      skip: (page - 1) * 12,
+      where: {
+        processed:
+          sort === "reviewed"
+            ? true
+            : sort === "unreviewed"
+            ? false
+            : undefined,
+      },
     });
+    const count = await prisma.userReport.count();
+    const pages = Math.ceil(count / 12);
 
-    return latestReports;
+    return {
+      reports,
+      pages,
+    };
   }
 
   @Post("/report/:id/close")

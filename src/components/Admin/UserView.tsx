@@ -12,7 +12,7 @@ import {
   Table,
   Tabs,
   Text,
-  Title
+  Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
@@ -254,7 +254,12 @@ const UserView = ({ user }: UserViewProps) => {
             <Accordion.Item value="general">
               <Accordion.Control>General Information</Accordion.Control>
               <Accordion.Panel>
-                <Table striped mb={6}>
+                <Table
+                  striped
+                  mb={6}
+                  // prevent tbody row from wrapping
+                  // tailwindcss
+                >
                   <tbody>
                     {[
                       ["Username", user.username],
@@ -320,7 +325,7 @@ const UserView = ({ user }: UserViewProps) => {
                       })
                       .map((h) => (
                         <tr key={String(h[0])}>
-                          <td className="font-semibold">{String(h[0])}</td>
+                          <td className="font-semibold whitespace-nowrap">{String(h[0])}</td>
                           <td>
                             {h[1] as string | number | JSX.Element | null}
                           </td>
@@ -343,7 +348,7 @@ const UserView = ({ user }: UserViewProps) => {
                         ["Hex Secret", user.otpHex],
                       ].map((h) => (
                         <tr key={String(h[0])}>
-                          <td className="font-semibold">{String(h[0])}</td>
+                          <td className="font-semibold whitespace-nowrap">{String(h[0])}</td>
                           <td>
                             {h[1] as string | number | JSX.Element | null}
                           </td>
@@ -387,7 +392,7 @@ const UserView = ({ user }: UserViewProps) => {
                         ],
                       ].map((h) => (
                         <tr key={String(h[0])}>
-                          <td className="font-semibold">{String(h[0])}</td>
+                          <td className="font-semibold whitespace-nowrap">{String(h[0])}</td>
                           <td>
                             {h[1] as string | number | JSX.Element | null}
                           </td>
@@ -426,7 +431,7 @@ const UserView = ({ user }: UserViewProps) => {
                         ],
                       ].map((h) => (
                         <tr key={String(h[0])}>
-                          <td className="font-semibold">{String(h[0])}</td>
+                          <td className="font-semibold whitespace-nowrap">{String(h[0])}</td>
                           <td>
                             {h[1] as string | number | JSX.Element | null}
                           </td>

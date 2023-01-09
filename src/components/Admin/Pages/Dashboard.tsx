@@ -7,7 +7,7 @@ import {
   HiUser,
   HiUsers,
   HiViewGrid,
-  HiXCircle,
+  HiXCircle
 } from "react-icons/hi";
 import { Report } from "../../../util/prisma-types";
 import useMediaQuery from "../../../util/useMediaQuery";
@@ -46,7 +46,7 @@ const Dashboard = () => {
         setStats(res);
       });
 
-    await fetch("/api/admin/reports", {
+    await fetch("/api/admin/reports?page=1", {
       headers: {
         Authorization: String(getCookie(".frameworksession")),
         "Content-Type": "application/json",
@@ -54,7 +54,7 @@ const Dashboard = () => {
     })
       .then((res) => res.json())
       .then((res) => {
-        setReports(res);
+        setReports(res.reports.filter((r: Report) => !r.processed));
       });
   };
 
@@ -90,17 +90,18 @@ const Dashboard = () => {
       <Title order={3} mb={24}>
         Recent Reports
       </Title>
-      {reports?.length === 0 ? (
-        <ModernEmptyState title="No reports" body="No reports to show." />
-      ) : (
-        <Grid columns={6}>
-          {reports?.slice(0, 6).map((report) => (
-            <Grid.Col key={report.id} span={mobile ? 6 : 2}>
-              <ReportCard report={report} />
-            </Grid.Col>
-          ))}
-        </Grid>
-      )}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {reports && reports.length > 0 ? (
+          reports.map((r) => <ReportCard report={r} key={r.id} />)
+        ) : (
+          <div className="col-span-3">
+            <ModernEmptyState
+              title="No reports"
+              body="There are no reports to review."
+            />
+          </div>
+        )}
+      </div>
 
       <Divider mt={36} mb={36} />
 
