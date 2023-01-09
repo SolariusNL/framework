@@ -28,7 +28,7 @@ import {
   useMantineColorScheme
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { useDisclosure, useHotkeys, useLocalStorage } from "@mantine/hooks";
+import { useHotkeys, useLocalStorage } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import { SpotlightProvider } from "@mantine/spotlight";
 import { deleteCookie, getCookie, setCookie } from "cookies-next";
@@ -65,6 +65,7 @@ import useChatStore from "../stores/useChatStore";
 import useExperimentsStore, {
   ExperimentId
 } from "../stores/useExperimentsStore";
+import useSidebar from "../stores/useSidebar";
 import { getIpcRenderer } from "../util/electron";
 import getMediaUrl from "../util/getMedia";
 import { ChatMessage, NonUser, User } from "../util/prisma-types";
@@ -178,7 +179,7 @@ const Framework = ({
   actions,
 }: FrameworkProps) => {
   const { classes } = frameworkStyles();
-  const [opened, { toggle }] = useDisclosure(false);
+  const { opened: sidebarOpened, setOpened: setSidebarOpened } = useSidebar();
   const [userMenuOpened, _setUserMenuOpened] = useState(false);
   const [currencyMenuOpened, _setCurrencyMenuOpened] = useState(false);
   const router = useRouter();
@@ -901,7 +902,7 @@ const Framework = ({
               {process.env.NODE_ENV === "development" && <Badge>Preview</Badge>}
             </Group>
 
-            {mobile && <Burger opened={opened} onClick={toggle} size="sm" />}
+            {mobile && <Burger opened={sidebarOpened} onClick={() => setSidebarOpened(true)} size="sm" />}
             {!mobile && user && (
               <Group>
                 <NotificationFlyout
@@ -1007,8 +1008,8 @@ const Framework = ({
         )}
         <UpdateDrawer />
         <Drawer
-          opened={opened}
-          onClose={toggle}
+          opened={sidebarOpened}
+          onClose={() => setSidebarOpened(false)}
           position="right"
           sx={{
             zIndex: 1000,
@@ -1020,7 +1021,7 @@ const Framework = ({
                 <Group
                   onClick={() => {
                     router.push(tab.href);
-                    toggle();
+                    setSidebarOpened(false);
                   }}
                   key={tab.label}
                   sx={{ cursor: "pointer" }}

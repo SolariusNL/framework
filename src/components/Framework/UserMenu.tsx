@@ -19,6 +19,7 @@ import {
   HiUser,
 } from "react-icons/hi";
 import { useFrameworkUser } from "../../contexts/FrameworkUser";
+import useSidebar from "../../stores/useSidebar";
 import useUpdateDrawer from "../../stores/useUpdateDrawer";
 import logout from "../../util/api/logout";
 import getMediaUrl from "../../util/getMedia";
@@ -32,6 +33,7 @@ const UserMenu = ({ userMenuOpened }: { userMenuOpened: boolean }) => {
   const user = useFrameworkUser() as User;
   const router = useRouter();
   const { setOpened: setUpdateDrawerOpened } = useUpdateDrawer();
+  const { setOpened: setSidebarOpened } = useSidebar();
   const mobile = useMediaQuery("768");
 
   return (
@@ -105,14 +107,15 @@ const UserMenu = ({ userMenuOpened }: { userMenuOpened: boolean }) => {
         >
           Settings
         </Menu.Item>
-        {!mobile && (
-          <Menu.Item
-            icon={<HiInformationCircle size={18} />}
-            onClick={() => setUpdateDrawerOpened(true)}
-          >
-            What&apos;s new?
-          </Menu.Item>
-        )}
+        <Menu.Item
+          icon={<HiInformationCircle size={18} />}
+          onClick={() => {
+            setUpdateDrawerOpened(true);
+            if (mobile) setSidebarOpened(false);
+          }}
+        >
+          What&apos;s new?
+        </Menu.Item>
         <Menu.Divider />
         <Menu.Item
           sx={{ fontWeight: 500 }}
