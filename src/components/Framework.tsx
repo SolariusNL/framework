@@ -25,7 +25,7 @@ import {
   TextInput,
   ThemeIcon,
   Title,
-  useMantineColorScheme
+  useMantineColorScheme,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useHotkeys, useLocalStorage } from "@mantine/hooks";
@@ -58,12 +58,12 @@ import {
   HiSun,
   HiTicket,
   HiUser,
-  HiViewGrid
+  HiViewGrid,
 } from "react-icons/hi";
 import SocketContext from "../contexts/Socket";
 import useChatStore from "../stores/useChatStore";
 import useExperimentsStore, {
-  ExperimentId
+  ExperimentId,
 } from "../stores/useExperimentsStore";
 import useSidebar from "../stores/useSidebar";
 import { getIpcRenderer } from "../util/electron";
@@ -186,6 +186,12 @@ const Framework = ({
   const mobile = useMediaQuery("950");
   const oldCookie = getCookie(".frameworksession.old");
   const [impersonating, setImpersonating] = useState(false);
+
+  useEffect(() => {
+    if (sidebarOpened) {
+      setSidebarOpened(false);
+    }
+  }, [router.asPath]);
 
   const tabs = [
     {
@@ -902,7 +908,13 @@ const Framework = ({
               {process.env.NODE_ENV === "development" && <Badge>Preview</Badge>}
             </Group>
 
-            {mobile && <Burger opened={sidebarOpened} onClick={() => setSidebarOpened(true)} size="sm" />}
+            {mobile && (
+              <Burger
+                opened={sidebarOpened}
+                onClick={() => setSidebarOpened(true)}
+                size="sm"
+              />
+            )}
             {!mobile && user && (
               <Group>
                 <NotificationFlyout

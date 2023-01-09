@@ -33,13 +33,15 @@ import { setEnvVar } from "@soodam.re/env-utils";
 import { join } from "path";
 import createNotification from "../../../util/notifications";
 import { z } from "zod";
+import type { ReportCategory } from "../../../components/ReportUser";
 
 class AdminRouter {
   @Get("/reports")
   @AdminAuthorized()
   public async getReports(
     @Query("page") page: number,
-    @Query("sort") sort: "reviewed" | "unreviewed" | "all" = "all"
+    @Query("sort") sort: "reviewed" | "unreviewed" | "all" = "all",
+    @Query("reason") reason: ReportCategory | "all" = "all",
   ) {
     const reports = await prisma.userReport.findMany({
       take: 12,
@@ -56,6 +58,7 @@ class AdminRouter {
             : sort === "unreviewed"
             ? false
             : undefined,
+        reason: reason ? reason : undefined,
       },
     });
     const count = await prisma.userReport.count({
@@ -66,6 +69,7 @@ class AdminRouter {
             : sort === "unreviewed"
             ? false
             : undefined,
+        reason: reason ? reason : undefined,
       },
     });
     const pages = Math.ceil(count / 12);
