@@ -8,13 +8,9 @@ import {
 import { Notification } from "@prisma/client";
 import { useState } from "react";
 import { HiBell } from "react-icons/hi";
+import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
 import ModernEmptyState from "../ModernEmptyState";
 import Notifications from "../Widgets/Notifications";
-
-interface NotificationFlyoutProps {
-  notifications: Notification[];
-  setNotifications: (notifications: Notification[]) => void;
-}
 
 const useStyles = createStyles((theme) => ({
   flyout: {
@@ -35,12 +31,10 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-const NotificationFlyout = ({
-  notifications,
-  setNotifications,
-}: NotificationFlyoutProps) => {
+const NotificationFlyout: React.FC = () => {
   const [opened, setOpened] = useState(false);
   const { classes, cx } = useStyles();
+  const { user, setUser } = useAuthorizedUserStore()!;
 
   return (
     <Popover transition="pop-top-right" width={360}>
@@ -53,12 +47,12 @@ const NotificationFlyout = ({
           <Group spacing={6}>
             <Indicator
               inline
-              label={notifications.length}
+              label={user?.notifications.length}
               size={16}
               color="red"
               styles={{
                 indicator: {
-                  display: notifications.length == 0 ? "none" : "block",
+                  display: user?.notifications.length == 0 ? "none" : "block",
                 },
               }}
             >
@@ -69,17 +63,14 @@ const NotificationFlyout = ({
       </Popover.Target>
 
       <Popover.Dropdown>
-        {notifications.length == 0 ? (
+        {user?.notifications.length == 0 ? (
           <ModernEmptyState
             title="No notifications"
             body="You have no notifications"
           />
         ) : (
           <>
-            <Notifications
-              notifications={notifications}
-              setNotifications={setNotifications}
-            />
+            <Notifications />
           </>
         )}
       </Popover.Dropdown>

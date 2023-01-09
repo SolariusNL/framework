@@ -9,6 +9,7 @@ import {
   HiViewList,
 } from "react-icons/hi";
 import { useFrameworkUser } from "../../contexts/FrameworkUser";
+import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
 import abbreviateNumber from "../../util/abbreviate";
 import { User } from "../../util/prisma-types";
 import { frameworkStyles } from "../Framework";
@@ -20,7 +21,7 @@ const CurrencyMenu = ({
 }) => {
   const router = useRouter();
   const { classes, theme, cx } = frameworkStyles();
-  const user = useFrameworkUser() as User;
+  const { user } = useAuthorizedUserStore();
 
   return (
     <Menu transition="pop-top-right">
@@ -38,7 +39,7 @@ const CurrencyMenu = ({
               size="sm"
               sx={{ lineHeight: 1 }}
             >
-              {abbreviateNumber(user.tickets)}
+              {abbreviateNumber(user?.tickets!)}
             </Text>
           </Group>
         </UnstyledButton>
@@ -47,7 +48,7 @@ const CurrencyMenu = ({
       <Menu.Dropdown>
         <Menu.Label>
           You have{" "}
-          {Math.round(user.tickets)
+          {Math.round(user?.tickets!)
             .toString()
             .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}{" "}
           tickets
@@ -72,7 +73,7 @@ const CurrencyMenu = ({
         >
           Transaction history
         </Menu.Item>
-        {!user.premium && (
+        {!user?.premium && (
           <>
             <Menu.Divider />
             <Menu.Item

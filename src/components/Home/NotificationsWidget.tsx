@@ -1,20 +1,15 @@
-import { useState } from "react";
-import { useFrameworkUser } from "../../contexts/FrameworkUser";
+import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
 import ModernEmptyState from "../ModernEmptyState";
 import ShadedCard from "../ShadedCard";
 import Notifications from "../Widgets/Notifications";
 
 const NotificationsWidget: React.FC = () => {
-  const user = useFrameworkUser()!;
-  const [notifications, setNotifications] = useState(user.notifications);
+  const { user } = useAuthorizedUserStore()!;
 
   return (
     <ShadedCard withBorder>
-      {notifications.length > 0 ? (
-        <Notifications
-          notifications={notifications}
-          setNotifications={setNotifications}
-        />
+      {user?.notifications.length! > 0 ? (
+        <Notifications />
       ) : (
         <div className="flex w-full justify-center items-center">
           <ModernEmptyState

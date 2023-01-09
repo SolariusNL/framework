@@ -4,6 +4,7 @@ import { getCookie } from "cookies-next";
 import { useRouter } from "next/router";
 import { HiOutlineShoppingBag, HiReceiptTax } from "react-icons/hi";
 import { useFrameworkUser } from "../../contexts/FrameworkUser";
+import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
 import { NonUser } from "../../util/prisma-types";
 
 interface DonateProps {
@@ -12,7 +13,7 @@ interface DonateProps {
 
 const Donate = ({ user }: DonateProps) => {
   const router = useRouter();
-  const currentUser = useFrameworkUser();
+  const { user: currentUser, setUser } = useAuthorizedUserStore();
 
   const handleDonate = async (amt: number) => {
     await fetch(`/api/users/${user.id}/donate/${amt}`, {
@@ -21,13 +22,17 @@ const Donate = ({ user }: DonateProps) => {
         "Content-Type": "application/json",
         Authorization: String(getCookie(".frameworksession")),
       },
-    }).then(() =>
+    }).then(() => {
       showNotification({
         title: "Donation Successful",
         message: `You have donated T$${amt} to ${user.username}`,
         icon: <HiReceiptTax />,
-      })
-    );
+      });
+      setUser({
+        ...currentUser!,
+        tickets: Number(currentUser?.tickets) - amt,
+      });
+    });
   };
 
   return (

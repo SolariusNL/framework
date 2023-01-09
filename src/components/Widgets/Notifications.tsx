@@ -8,19 +8,13 @@ import {
   HiExclamationCircle,
   HiInformationCircle,
 } from "react-icons/hi";
+import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
 import { getRelativeTime } from "../../util/relativeTime";
 import useMediaQuery from "../../util/useMediaQuery";
 
-interface NotificationProps {
-  notifications: Notification[];
-  setNotifications: (notifications: Notification[]) => void;
-}
-
-const Notifications: React.FC<NotificationProps> = ({
-  notifications,
-  setNotifications,
-}) => {
+const Notifications: React.FC = () => {
   const [activePage, setActivePage] = useState(1);
+  const { user, setUser } = useAuthorizedUserStore()!;
 
   const typeIcon = (type: NotificationType) => {
     switch (type) {
@@ -38,7 +32,12 @@ const Notifications: React.FC<NotificationProps> = ({
   };
 
   const handleReadNotification = (notification: Notification) => {
-    setNotifications(notifications.filter((n) => n.id !== notification.id));
+    setUser({
+      ...user!,
+      notifications: user!.notifications.filter(
+        (n) => n.id !== notification.id
+      ),
+    });
 
     fetch(`/api/notifications/${notification.id}/read`, {
       method: "POST",
@@ -58,7 +57,7 @@ const Notifications: React.FC<NotificationProps> = ({
           size="sm"
           radius="xl"
           withEdges
-          total={Math.ceil(notifications.length / (mobile ? 3 : 5))}
+          total={Math.ceil(user?.notifications?.length! / (mobile ? 3 : 5))}
           page={activePage}
           onChange={setActivePage}
           align="center"
@@ -66,12 +65,12 @@ const Notifications: React.FC<NotificationProps> = ({
       </div>
 
       <Timeline
-        active={notifications.length}
+        active={user?.notifications?.length}
         bulletSize={24}
         lineWidth={2}
         p={10}
       >
-        {notifications
+        {user?.notifications
           .sort(
             (a, b) =>
               new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()

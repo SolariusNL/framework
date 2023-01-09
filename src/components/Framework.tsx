@@ -61,6 +61,7 @@ import {
   HiViewGrid,
 } from "react-icons/hi";
 import SocketContext from "../contexts/Socket";
+import useAuthorizedUserStore from "../stores/useAuthorizedUser";
 import useChatStore from "../stores/useChatStore";
 import useExperimentsStore, {
   ExperimentId,
@@ -338,7 +339,6 @@ const Framework = ({
   });
 
   const [isSSR, setIsSSR] = useState(true);
-  const [userState, setUserState] = useState(user);
   const socket = useContext(SocketContext);
 
   const items = tabs.map((tab) => (
@@ -369,6 +369,7 @@ const Framework = ({
   const [conversationOpen, setConversationOpen] = useState(false);
   const [conversating, setConversating] = useState<NonUser | null>(null);
   const [conversationData, setConversationData] = useState<ChatMessage[]>([]);
+  const { user: userStore, setUser: setUserStore } = useAuthorizedUserStore()!;
   const messageForm = useForm<{
     message: string;
   }>({
@@ -521,16 +522,16 @@ const Framework = ({
     }
 
     if (user) {
-      setUserState(user);
+      setUserStore(user);
     }
   }, [user]);
   React.useEffect(() => {
-    if (socket) {
+    if (socket && userStore) {
       socket?.on("@user/notification", (data) => {
-        setUserState((prev) => ({
-          ...prev,
-          notifications: [...prev.notifications, data],
-        }));
+        setUserStore({
+          ...userStore,
+          notifications: [...userStore.notifications, data],
+        });
       });
     }
 
@@ -917,15 +918,7 @@ const Framework = ({
             )}
             {!mobile && user && (
               <Group>
-                <NotificationFlyout
-                  notifications={userState?.notifications}
-                  setNotifications={(notifications) =>
-                    setUserState((prev) => ({
-                      ...prev,
-                      notifications,
-                    }))
-                  }
-                />
+                <NotificationFlyout />
                 <CurrencyMenu currencyMenuOpened={currencyMenuOpened} />
                 <UserMenu userMenuOpened={userMenuOpened} />
               </Group>
@@ -1079,15 +1072,7 @@ const Framework = ({
               <Group>
                 <CurrencyMenu currencyMenuOpened={currencyMenuOpened} />
                 <UserMenu userMenuOpened={userMenuOpened} />
-                <NotificationFlyout
-                  notifications={userState?.notifications}
-                  setNotifications={(notifications) =>
-                    setUserState((prev) => ({
-                      ...prev,
-                      notifications,
-                    }))
-                  }
-                />
+                <NotificationFlyout />
                 <Search />
               </Group>
             )}
