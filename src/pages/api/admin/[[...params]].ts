@@ -58,7 +58,16 @@ class AdminRouter {
             : undefined,
       },
     });
-    const count = await prisma.userReport.count();
+    const count = await prisma.userReport.count({
+      where: {
+        processed:
+          sort === "reviewed"
+            ? true
+            : sort === "unreviewed"
+            ? false
+            : undefined,
+      },
+    });
     const pages = Math.ceil(count / 12);
 
     return {
