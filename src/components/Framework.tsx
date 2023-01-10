@@ -788,6 +788,8 @@ const Framework = ({
                           "& input": {
                             paddingLeft: theme.spacing.sm,
                             paddingRight: theme.spacing.md,
+                            // dont go under rightSection emoji picker
+                            width: "calc(100% - 20px)",
                           },
                           "&::placeholder": {
                             paddingLeft: theme.spacing.sm,

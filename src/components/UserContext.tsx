@@ -1,16 +1,15 @@
 import {
+  ActionIcon,
+  Anchor,
   Avatar,
-  Button,
-  Center,
   Group,
   HoverCard,
-  Indicator,
   Stack,
   Text,
 } from "@mantine/core";
 import Link from "next/link";
 import React from "react";
-import { HiFlag, HiUser } from "react-icons/hi";
+import { HiFlag } from "react-icons/hi";
 import { useFrameworkUser } from "../contexts/FrameworkUser";
 import getMediaUrl from "../util/getMedia";
 import { NonUser } from "../util/prisma-types";
@@ -34,80 +33,52 @@ const UserContext = ({ user, children, customHref }: UserContextProps) => {
         setOpened={setReportOpened}
       />
       <HoverCard
+        width={320}
         shadow="md"
         withArrow
         openDelay={200}
         closeDelay={400}
-        width={250}
       >
         <HoverCard.Target>
           <div style={{ cursor: "pointer" }}>{children}</div>
         </HoverCard.Target>
         <HoverCard.Dropdown p="lg">
-          <Center
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
-            <Indicator
-              color="green"
-              position="bottom-end"
-              disabled={
-                Date.now() - new Date(user.lastSeen).getTime() > 5 * 60 * 1000
-              }
-              mb={16}
-            >
-              <Avatar
-                src={getMediaUrl(user.avatarUri)}
-                alt={user.username}
-                radius="xl"
-              />
-            </Indicator>
-
-            <Stack spacing={5} align="center" mb={16}>
-              <Link
-                href={customHref || "/profile/[username]"}
-                as={`/profile/${user.username}`}
-              >
-                <div className="text-center cursor-pointer">
-                  <Text size="sm" weight={700} mb={6} sx={{ lineHeight: 1 }}>
-                    {user.username}
-                  </Text>
-                  <Text color="dimmed" size="xs" lineClamp={1}>
-                    {user.bio}
-                  </Text>
-                </div>
-              </Link>
-            </Stack>
-
-            <Group spacing="xl" mb={16}>
-              <Text size="sm">
-                <b>{user._count.following}</b> Following
-              </Text>
-              <Text size="sm">
-                <b>{user._count.followers}</b> Followers
-              </Text>
+          <Group position="apart">
+            <Group>
+              <Avatar src={getMediaUrl(user.avatarUri)} radius="xl" />
+              <Stack spacing={5}>
+                <Text size="sm" weight={700} sx={{ lineHeight: 1 }}>
+                  {user.alias ? user.alias : user.username}
+                </Text>
+                <Link href={`/profile/${user.username}`} passHref>
+                  <Anchor color="dimmed" size="xs" sx={{ lineHeight: 1 }}>
+                    @{user.username}
+                  </Anchor>
+                </Link>
+              </Stack>
             </Group>
-          </Center>
-
-          <Button.Group className="p-0 px-0 py-0">
-            <Link passHref href={customHref || `/profile/${user.username}`}>
-              <Button fullWidth size="xs" leftIcon={<HiUser />}>
-                View profile
-              </Button>
-            </Link>
-            <Button
-              disabled={currentUser?.id === user.id}
+            <ActionIcon
               color="red"
-              fullWidth
-              size="xs"
               onClick={() => setReportOpened(true)}
-              leftIcon={<HiFlag />}
+              variant="light"
+              disabled={currentUser?.id === user.id}
             >
-              Report
-            </Button>
-          </Button.Group>
+              <HiFlag />
+            </ActionIcon>
+          </Group>
+
+          <Text size="sm" mt="md" lineClamp={3}>
+            {user.bio ? user.bio : "No bio provided."}
+          </Text>
+
+          <Group mt="md" spacing="xl">
+            <Text size="sm">
+              <b>{user._count.following}</b> Following
+            </Text>
+            <Text size="sm">
+              <b>{user._count.followers}</b> Followers
+            </Text>
+          </Group>
         </HoverCard.Dropdown>
       </HoverCard>
     </>
