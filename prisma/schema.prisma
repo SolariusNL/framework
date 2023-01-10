@@ -309,6 +309,7 @@ model Game {
   datastores           GameDatastore[]         @relation("gameDatastore")
   gamepasses           Gamepass[]              @relation("gamepasses")
   copyrightMetadata    GameCopyrightMetadata[] @relation("gameCopyrightMetadata")
+  gameReports          UserReport[]            @relation("gameReport")
 }
 
 model GameComment {
@@ -414,6 +415,8 @@ model UserReport {
   authorId    Int
   processed   Boolean  @default(false)
   createdAt   DateTime @default(now())
+  game        Game?    @relation("gameReport", fields: [gameId], references: [id])
+  gameId      Int?
 }
 
 enum NotificationType {

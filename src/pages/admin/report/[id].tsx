@@ -5,9 +5,11 @@ import {
   Badge,
   Button,
   Card,
+  Divider,
   Grid,
   Group,
   Stack,
+  Table,
   Text,
   ThemeIcon,
   Title,
@@ -30,6 +32,7 @@ import ReactNoSSR from "react-no-ssr";
 import NoteTable, { NoteUser } from "../../../components/Admin/NoteTable";
 import Punishment from "../../../components/Admin/Punishment";
 import Framework from "../../../components/Framework";
+import ModernEmptyState from "../../../components/ModernEmptyState";
 import ShadedCard from "../../../components/ShadedCard";
 import UserContext from "../../../components/UserContext";
 import authorizedRoute from "../../../util/authorizedRoute";
@@ -37,6 +40,8 @@ import { exclude } from "../../../util/exclude";
 import getMediaUrl from "../../../util/getMedia";
 import prisma from "../../../util/prisma";
 import {
+  Game,
+  gameSelect,
   nonCurrentUserSelect,
   NonUser,
   Report,
@@ -60,6 +65,7 @@ interface ReportProps {
           user: NonUser;
         }[];
     };
+    game?: Game;
   };
 }
 
@@ -182,23 +188,62 @@ const ReportPage: NextPage<ReportProps> = ({ user, report }) => {
               </Grid.Col>
             </Grid>
 
-            {report.description.length < 30 && (
-              <Alert
-                icon={<HiShieldExclamation size={24} />}
-                color="orange"
-                title="Potential spam"
-                mb={24}
-              >
-                This warning is shown because the report description is less
-                than 30 characters. This is a potential sign of spam. If you
-                believe this is a mistake, please contact an HR.
-              </Alert>
-            )}
+            <ShadedCard>
+              {report.description.length < 30 && (
+                <Alert
+                  icon={<HiShieldExclamation size={24} />}
+                  color="orange"
+                  title="Potential spam"
+                  mb={24}
+                >
+                  This warning is shown because the report description is less
+                  than 30 characters. This is a potential sign of spam. If you
+                  believe this is a mistake, please contact an HR.
+                </Alert>
+              )}
 
-            <Title order={4} mb={10}>
-              {report.reason}
-            </Title>
-            <Text mb={24}>{report.description}</Text>
+              <Title order={4} mb={10}>
+                {report.reason}
+              </Title>
+              <Text>{report.description}</Text>
+              <Divider mt={32} mb={32} />
+              {!report.game ? (
+                <ModernEmptyState
+                  title="No data"
+                  body="This report has no data associated with it."
+                />
+              ) : (
+                report.game && (
+                  <Table striped>
+                    <tbody>
+                      {[
+                        ["Game ID", report.game.id],
+                        ["Name", report.game.name],
+                        [
+                          "Description",
+                          report.game.description.replace(/(<([^>]+)>)/gi, ""),
+                        ],
+                        [
+                          "Created",
+                          new Date(report.game.createdAt).toLocaleDateString(),
+                        ],
+                        ["Icon URI", report.game.iconUri || "None"],
+                        ["Likes", report.game.likedBy.length],
+                        ["Dislikes", report.game.dislikedBy.length],
+                        ["Visits", report.game.visits],
+                        ["Playing", report.game.playing],
+                        ["Rating", report.game.rating?.type || "None"],
+                      ].map(([key, value]) => (
+                        <tr key={key}>
+                          <td className="whitespace-nowrap">{key}</td>
+                          <td>{value}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
+                )
+              )}
+            </ShadedCard>
           </Grid.Col>
           <Grid.Col span={2}>
             <Text size="sm" color="dimmed" weight={500} mb={6}>
@@ -313,6 +358,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       reason: true,
       processed: true,
       createdAt: true,
+      game: {
+        select: gameSelect,
+      },
     },
   });
 

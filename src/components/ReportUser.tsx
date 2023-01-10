@@ -19,6 +19,7 @@ interface ReportUserProps {
   user: NonUser;
   opened: boolean;
   setOpened: (opened: boolean) => void;
+  game?: number;
 }
 
 export type ReportCategory =
@@ -42,7 +43,7 @@ export const category = {
   Other: "other",
 } as const;
 
-const ReportUser = ({ user, opened, setOpened }: ReportUserProps) => {
+const ReportUser = ({ user, opened, setOpened, game }: ReportUserProps) => {
   const [reason, setReason] = React.useState<ReportCategory>("Other");
   const [description, setDescription] = React.useState("");
   const [checked, setChecked] = React.useState(false);
@@ -65,6 +66,7 @@ const ReportUser = ({ user, opened, setOpened }: ReportUserProps) => {
       body: JSON.stringify({
         reason,
         description,
+        ...(game && { game }),
       }),
     })
       .then((res) => res.json())

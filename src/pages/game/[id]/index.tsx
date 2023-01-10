@@ -9,6 +9,7 @@ import {
   Group,
   Image,
   Loader,
+  Menu,
   Skeleton,
   Stack,
   Tabs,
@@ -26,9 +27,11 @@ import { useEffect, useState } from "react";
 import {
   HiCurrencyDollar,
   HiDotsVertical,
+  HiFlag,
   HiFolder,
   HiInformationCircle,
   HiLockClosed,
+  HiPencil,
   HiPlay,
   HiServer,
   HiShoppingBag,
@@ -40,6 +43,7 @@ import GameRating from "../../../components/GameRating";
 import ThumbnailCarousel from "../../../components/ImageCarousel";
 import Launching from "../../../components/Launching";
 import PlaceholderGameResource from "../../../components/PlaceholderGameResource";
+import ReportUser from "../../../components/ReportUser";
 import ShadedButton from "../../../components/ShadedButton";
 import ShadedCard from "../../../components/ShadedCard";
 import UserContext from "../../../components/UserContext";
@@ -53,7 +57,7 @@ import authorizedRoute from "../../../util/authorizedRoute";
 import { getIpcRenderer } from "../../../util/electron";
 import getMediaUrl from "../../../util/getMedia";
 import prisma from "../../../util/prisma";
-import { Game, gameSelect, User } from "../../../util/prisma-types";
+import { Game, gameSelect, NonUser, User } from "../../../util/prisma-types";
 import useMediaQuery from "../../../util/useMediaQuery";
 
 type GameWithGamepass = Game & {
@@ -72,6 +76,7 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
   const [game, setGame] = useState(gameData);
   const [launchingOpen, setLaunchingOpen] = useState(false);
   const [similarGames, setSimilarGames] = useState<Game[] | null>(null);
+  const [report, setReport] = useState(false);
 
   const getSimilarGames = async () => {
     await fetch(`/api/games/by/genre/${game.genre}`, {
@@ -92,6 +97,12 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
 
   return (
     <>
+      <ReportUser
+        user={game.author as NonUser}
+        game={game.id}
+        opened={report}
+        setOpened={setReport}
+      />
       <NextSeo
         title={String(game.name)}
         description={String(game.description.replace(/(<([^>]+)>)/gi, ""))}
@@ -265,16 +276,37 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
               </Link>
 
               <Group>
-                {game.author.id == user.id && (
-                  <Tooltip label="Edit game">
-                    <ActionIcon
-                      onClick={() => router.push(`/game/${game.id}/edit`)}
-                      color="dark"
-                    >
-                      <HiDotsVertical />
-                    </ActionIcon>
-                  </Tooltip>
-                )}
+                <Tooltip label="Edit game">
+                  <Menu width={160} shadow="sm">
+                    <Menu.Target>
+                      <ActionIcon color="dark">
+                        <HiDotsVertical />
+                      </ActionIcon>
+                    </Menu.Target>
+                    <Menu.Dropdown>
+                      <Menu.Label>{game.name}</Menu.Label>
+                      <Menu.Item
+                        disabled={game.author.id !== user.id}
+                        onClick={() => {
+                          router.push(`/games/${game.id}/edit`);
+                        }}
+                        icon={<HiPencil />}
+                      >
+                        Edit
+                      </Menu.Item>
+                      <Menu.Item
+                        disabled={game.author.id === user.id}
+                        onClick={() => {
+                          setReport(true);
+                        }}
+                        icon={<HiFlag />}
+                        color="red"
+                      >
+                        Report
+                      </Menu.Item>
+                    </Menu.Dropdown>
+                  </Menu>
+                </Tooltip>
               </Group>
             </Group>
 

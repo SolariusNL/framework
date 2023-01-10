@@ -201,10 +201,10 @@ class UserRouter {
   @RateLimitMiddleware(5)()
   public async reportUser(
     @Account() user: User,
-    @Body() data: { reason: string; description: string },
+    @Body() data: { reason: string; description: string; game?: number },
     @Param("id") id: number
   ) {
-    const { reason, description } = data;
+    const { reason, description, game } = data;
 
     if (
       !reason ||
@@ -236,12 +236,26 @@ class UserRouter {
       };
     }
 
+    if (game) {
+      const gameExists = await prisma.game.findFirst({
+        where: { id: game },
+      });
+
+      if (!gameExists) {
+        return {
+          success: false,
+          message: "Game not found",
+        };
+      }
+    }
+
     await prisma.userReport.create({
       data: {
         user: { connect: { id: reportingUser.id } },
         author: { connect: { id: user.id } },
         reason,
         description,
+        game: game ? { connect: { id: game } } : undefined,
       },
     });
 
