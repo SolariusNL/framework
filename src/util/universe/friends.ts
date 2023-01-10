@@ -18,8 +18,15 @@ async function fetchData(url: string): Promise<any> {
   }
 }
 
-async function getMyFriends(page: number = 1): Promise<NonUser[]> {
-  const data = await fetchData(`${apiUrl}/@me/friends/${page}`);
+async function getMyFriends(
+  page: number = 1,
+  search?: string
+): Promise<NonUser[]> {
+  const data = await fetchData(
+    `${apiUrl}/@me/friends/${page}?${new URLSearchParams({
+      search: search ?? "",
+    }).toString()}`
+  );
   return data.friends;
 }
 

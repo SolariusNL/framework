@@ -822,7 +822,11 @@ class UserRouter {
 
   @Get("/@me/friends/:page")
   @Authorized()
-  public async getFriends(@Account() user: User, @Param("page") page: string) {
+  public async getFriends(
+    @Account() user: User,
+    @Param("page") page: string,
+    @Query("search") search: string = ""
+  ) {
     const friends = await prisma.user.findMany({
       where: {
         following: {
@@ -834,6 +838,10 @@ class UserRouter {
           some: {
             id: user.id,
           },
+        },
+        username: {
+          contains: search,
+          mode: "insensitive",
         },
       },
       take: 5,

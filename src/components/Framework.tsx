@@ -1,51 +1,39 @@
-import Picker from "@emoji-mart/react";
 import { useFlags } from "@happykit/flags/client";
 import {
   ActionIcon,
   Affix,
   Anchor,
-  Avatar,
   Badge,
   Box,
   Burger,
   Button,
-  Card,
   Container,
   createStyles,
   Drawer,
   Group,
-  Indicator,
-  Pagination,
-  Paper,
   Popover,
   ScrollArea,
   Stack,
   Tabs,
   Text,
-  TextInput,
   ThemeIcon,
   Title,
   useMantineColorScheme,
 } from "@mantine/core";
-import { useForm } from "@mantine/form";
-import { useHotkeys, useLocalStorage } from "@mantine/hooks";
+import { useLocalStorage } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import { SpotlightProvider } from "@mantine/spotlight";
 import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import isElectron from "is-electron";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   HiArrowLeft,
-  HiChatAlt2,
   HiCheckCircle,
-  HiChevronDown,
-  HiChevronUp,
   HiCode,
   HiCog,
   HiDocumentText,
-  HiEmojiHappy,
   HiGift,
   HiHome,
   HiLightBulb,
@@ -62,17 +50,14 @@ import {
 } from "react-icons/hi";
 import SocketContext from "../contexts/Socket";
 import useAuthorizedUserStore from "../stores/useAuthorizedUser";
-import useChatStore from "../stores/useChatStore";
 import useExperimentsStore, {
   ExperimentId,
 } from "../stores/useExperimentsStore";
 import useSidebar from "../stores/useSidebar";
 import { getIpcRenderer } from "../util/electron";
-import getMediaUrl from "../util/getMedia";
-import { ChatMessage, NonUser, User } from "../util/prisma-types";
-import { getFriendsPages, getMyFriends } from "../util/universe/friends";
+import { User } from "../util/prisma-types";
 import useMediaQuery from "../util/useMediaQuery";
-import { useOnClickOutside } from "../util/useOnClickOutside";
+import Chat from "./Chat";
 import EmailReminder from "./EmailReminder";
 import Footer from "./Footer";
 import CurrencyMenu from "./Framework/CurrencyMenu";
@@ -81,8 +66,6 @@ import Search from "./Framework/Search";
 import UpdateDrawer from "./Framework/UpdateDrawer";
 import UserMenu from "./Framework/UserMenu";
 import FrameworkLogo from "./FrameworkLogo";
-import ModernEmptyState from "./ModernEmptyState";
-import ShadedButton from "./ShadedButton";
 import TabNav from "./TabNav";
 
 interface FrameworkProps {
@@ -357,153 +340,7 @@ const Framework = ({
   const [searchPopoverOpen, setSearchPopoverOpen] = useState(false);
   const { flags } = useFlags();
   const { experiments } = useExperimentsStore();
-  const {
-    opened: chatOpened,
-    setOpened: setChatOpened,
-    currentConversation,
-    setCurrentConversation,
-  } = useChatStore();
-  const [friends, setFriends] = useState<NonUser[]>([]);
-  const [friendsPages, setFriendsPages] = useState(0);
-  const [friendsPage, setFriendsPage] = useState(1);
-  const [conversationOpen, setConversationOpen] = useState(false);
-  const [conversating, setConversating] = useState<NonUser | null>(null);
-  const [conversationData, setConversationData] = useState<ChatMessage[]>([]);
   const { user: userStore, setUser: setUserStore } = useAuthorizedUserStore()!;
-  const messageForm = useForm<{
-    message: string;
-  }>({
-    initialValues: {
-      message: "",
-    },
-    validate: {
-      message: (value) => {
-        if (!value) return "Message cannot be empty";
-        if (value.length > 1000)
-          return "Message cannot be longer than 1000 characters";
-      },
-    },
-  });
-  const [unreadMessages, setUnreadMessages] = useState<Record<string, number>>(
-    {}
-  );
-  const messageInputRef = useRef<HTMLInputElement>(null);
-  const [picker, setPicker] = useState(false);
-  const pickerRef = useRef<HTMLDivElement>(null);
-
-  useOnClickOutside(pickerRef, () => setPicker(false));
-
-  const getConversationData = async (id: number) => {
-    const res = await fetch(`/api/chat/conversation/${id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: String(getCookie(".frameworksession")),
-      },
-    });
-
-    const data = await res.json();
-    setConversationData(data);
-  };
-
-  const sendMessage = async (values: { message: string }) => {
-    const { message } = values;
-    if (conversating) {
-      const res = await fetch(
-        `/api/chat/conversation/${conversating.id}/send`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: String(getCookie(".frameworksession")),
-          },
-          body: JSON.stringify({
-            content: message,
-          }),
-        }
-      );
-
-      const data = await res.json();
-      setConversationData((prev) => [...prev, data]);
-      messageForm.reset();
-    }
-  };
-
-  const getUnreadMessages = async () => {
-    const res = await fetch("/api/chat/unread", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: String(getCookie(".frameworksession")),
-      },
-    });
-
-    const data = await res.json();
-    setUnreadMessages(
-      Object.fromEntries(
-        Object.entries(data).map(([key, value]) => [
-          key,
-          (value as ChatMessage[]).length,
-        ])
-      )
-    );
-  };
-
-  const markAsRead = async () => {
-    await fetch(`/api/chat/conversation/${conversating?.id}/read`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: String(getCookie(".frameworksession")),
-      },
-    });
-
-    setUnreadMessages((prev) => {
-      const copy = { ...prev };
-      delete copy[conversating?.id!];
-      return copy;
-    });
-  };
-
-  useHotkeys([
-    [
-      "Slash",
-      () => {
-        if (messageInputRef.current) {
-          messageInputRef.current.focus();
-        }
-      },
-    ],
-  ]);
-
-  useEffect(() => {
-    if (chatOpened) {
-      getFriendsPages().then((pages) => setFriendsPages(pages));
-      getMyFriends(friendsPage).then((friends) => {
-        setFriends(friends);
-        if (currentConversation) {
-          setConversating(
-            friends.find(
-              (friend) => friend.id === currentConversation
-            ) as NonUser
-          );
-          setConversationOpen(true);
-        }
-      });
-      getUnreadMessages();
-    }
-  }, [chatOpened, friendsPage]);
-
-  useEffect(() => {
-    getUnreadMessages();
-  }, []);
-
-  useEffect(() => {
-    if (conversating) {
-      getConversationData(conversating.id);
-      markAsRead();
-    }
-  }, [conversating]);
 
   React.useEffect(() => {
     setIsSSR(false);
@@ -540,30 +377,6 @@ const Framework = ({
     };
   }, [user, socket]);
   React.useEffect(() => {
-    if (socket) {
-      socket?.on("@user/chat", (data) => {
-        if (currentConversation === data.authorId) {
-          setConversationData((prev) => [...prev, data]);
-          markAsRead();
-        } else {
-          showNotification({
-            title: "New chat",
-            message: `You have a new chat from ${data.author.username}.`,
-            icon: <HiChatAlt2 />,
-          });
-          setUnreadMessages((prev) => ({
-            ...prev,
-            [data.authorId]: prev[data.authorId] ? prev[data.authorId] + 1 : 1,
-          }));
-        }
-      });
-    }
-
-    return () => {
-      socket?.off("@user/chat");
-    };
-  }, [socket, currentConversation]);
-  React.useEffect(() => {
     if (oldCookie) {
       setImpersonating(true);
     }
@@ -585,262 +398,7 @@ const Framework = ({
             right: mobile ? 12 : 40,
           }}
         >
-          <Card
-            sx={{
-              borderBottomLeftRadius: "0 !important",
-              borderBottomRightRadius: "0 !important",
-              width: 280,
-              ...(chatOpened && {
-                paddingBottom: "0 !important",
-              }),
-              overflow: "visible",
-            }}
-            withBorder
-            p="md"
-          >
-            <Card.Section px={16} py={10} withBorder={chatOpened}>
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <HiChatAlt2 size={22} />
-                  <Text weight={600}>Chat</Text>
-                  {Object.values(unreadMessages).reduce(
-                    (prev, curr) => prev + curr,
-                    0
-                  ) > 0 && (
-                    <Indicator
-                      inline
-                      label={String(
-                        Object.values(unreadMessages).reduce(
-                          (prev, curr) => prev + curr,
-                          0
-                        )
-                      )}
-                      size={16}
-                      color="red"
-                      ml={10}
-                    >
-                      <></>
-                    </Indicator>
-                  )}
-                </div>
-                <ActionIcon onClick={() => setChatOpened(!chatOpened)}>
-                  {chatOpened ? <HiChevronDown /> : <HiChevronUp />}
-                </ActionIcon>
-              </div>
-            </Card.Section>
-            {chatOpened && (
-              <>
-                {conversationOpen && (
-                  <Card.Section px={16} py={10}>
-                    <div className="flex justify-between items-center">
-                      <Anchor
-                        className="flex gap-1 items-center"
-                        size="sm"
-                        onClick={() => {
-                          setConversationOpen(false);
-                          setConversating(null);
-                          setCurrentConversation(null);
-                        }}
-                      >
-                        <HiArrowLeft />
-                        Go back
-                      </Anchor>
-                      <div className="flex gap-2 items-center">
-                        <Avatar
-                          src={conversating?.avatarUri}
-                          size="sm"
-                          radius="xl"
-                        />
-                        <Text weight={600} size="sm">
-                          {conversating?.username}
-                        </Text>
-                      </div>
-                    </div>
-                  </Card.Section>
-                )}
-                <Card.Section
-                  sx={(theme) => ({
-                    backgroundColor:
-                      theme.colorScheme === "dark"
-                        ? theme.colors.dark[9]
-                        : theme.colors.gray[1],
-                  })}
-                  p="md"
-                  withBorder={conversationOpen}
-                >
-                  {conversationOpen ? (
-                    <div
-                      style={{
-                        height: 210,
-                        display: "flex",
-                        flexDirection: "column-reverse",
-                        overflowX: "hidden",
-                        overflowY: "auto",
-                      }}
-                    >
-                      <Stack spacing={12}>
-                        {conversationData &&
-                          conversationData.map((message) =>
-                            message.authorId === user?.id ? (
-                              <Paper
-                                sx={(theme) => ({
-                                  backgroundColor:
-                                    theme.colorScheme === "dark"
-                                      ? theme.colors.blue[9]
-                                      : theme.colors.blue[1],
-                                  textAlign: "right",
-                                  width: "fit-content",
-                                  alignSelf: "flex-end",
-                                })}
-                                p="sm"
-                              >
-                                <Text size="sm">{message.content}</Text>
-                              </Paper>
-                            ) : (
-                              <Paper
-                                sx={(theme) => ({
-                                  backgroundColor:
-                                    theme.colorScheme === "dark"
-                                      ? theme.colors.dark[8]
-                                      : theme.colors.gray[1],
-                                  textAlign: "left",
-                                  width: "fit-content",
-                                  alignSelf: "flex-start",
-                                })}
-                                p="sm"
-                              >
-                                <Text size="sm">{message.content}</Text>
-                              </Paper>
-                            )
-                          )}
-                      </Stack>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="flex justify-center items-center">
-                        <Pagination
-                          mb="md"
-                          radius={999}
-                          total={friendsPages}
-                          page={friendsPage}
-                          onChange={(page) => setFriendsPage(page)}
-                          size="sm"
-                        />
-                      </div>
-                      <Stack spacing={5}>
-                        {friends.map((friend) => (
-                          <ShadedButton
-                            key={friend.id}
-                            onClick={() => {
-                              setConversating(friend);
-                              setConversationOpen(true);
-                              setCurrentConversation(friend.id);
-                            }}
-                          >
-                            <div className="flex items-center">
-                              <Avatar
-                                src={getMediaUrl(friend.avatarUri)}
-                                size={24}
-                                className="mr-2"
-                              />
-                              <Text size="sm" mr={16}>
-                                {friend.username}
-                              </Text>
-                              {unreadMessages[friend.id] > 0 && (
-                                <Indicator
-                                  inline
-                                  label={String(unreadMessages[friend.id])}
-                                  size={16}
-                                  color="red"
-                                >
-                                  <></>
-                                </Indicator>
-                              )}
-                            </div>
-                          </ShadedButton>
-                        ))}
-                        {friends.length === 0 && (
-                          <ModernEmptyState
-                            title="No friends"
-                            body="You do not have any friends to chat with."
-                          />
-                        )}
-                      </Stack>
-                    </>
-                  )}
-                </Card.Section>
-                {conversationOpen && (
-                  <Card.Section
-                    sx={(theme) => ({
-                      backgroundColor:
-                        theme.colorScheme === "dark"
-                          ? theme.colors.dark[9]
-                          : theme.colors.gray[1],
-                    })}
-                  >
-                    <form onSubmit={messageForm.onSubmit(sendMessage)}>
-                      <TextInput
-                        placeholder="Type a message..."
-                        className="flex-1"
-                        variant="unstyled"
-                        sx={(theme) => ({
-                          lineHeight: "0px",
-                          "& input": {
-                            paddingLeft: theme.spacing.sm,
-                            paddingRight: theme.spacing.md,
-                            // dont go under rightSection emoji picker
-                            width: "calc(100% - 20px)",
-                          },
-                          "&::placeholder": {
-                            paddingLeft: theme.spacing.sm,
-                            paddingRight: theme.spacing.md,
-                          },
-                        })}
-                        autoComplete="off"
-                        ref={messageInputRef}
-                        rightSection={
-                          <>
-                            <div
-                              ref={pickerRef}
-                              style={{ position: "relative" }}
-                            >
-                              <Box
-                                style={{
-                                  position: "absolute",
-                                  right: 0,
-                                  bottom: 50,
-                                }}
-                              >
-                                {picker && (
-                                  <Picker
-                                    navPosition="bottom"
-                                    native
-                                    onEmojiSelect={(emoji: any) => {
-                                      messageForm.setFieldValue(
-                                        "message",
-                                        messageForm.values.message +
-                                          emoji.native
-                                      );
-                                    }}
-                                    previewPosition="none"
-                                    autoFocus
-                                  />
-                                )}
-                              </Box>
-                              <ActionIcon onClick={() => setPicker(!picker)}>
-                                <HiEmojiHappy />
-                              </ActionIcon>
-                            </div>
-                          </>
-                        }
-                        {...messageForm.getInputProps("message")}
-                      />
-                    </form>
-                  </Card.Section>
-                )}
-              </>
-            )}
-          </Card>
+          <Chat />
         </Affix>
       )}
       {impersonating && (
