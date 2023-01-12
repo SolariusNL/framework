@@ -3,15 +3,14 @@ import { GetServerSidePropsContext, NextPage } from "next";
 import {
   HiBeaker,
   HiBell,
+  HiCreditCard,
   HiDesktopComputer,
-  HiEye,
-  HiGift,
-  HiInformationCircle,
+  HiEye, HiInformationCircle,
   HiKey,
   HiMicrophone,
   HiPhotograph,
   HiTrash,
-  HiUser,
+  HiUser
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import Framework from "../components/Framework";
@@ -98,8 +97,8 @@ const Settings: NextPage<SettingsProps> = ({ user }) => {
                     Privacy
                   </TabNav.Tab>
 
-                  <TabNav.Tab value="subscriptions" icon={<HiGift />}>
-                    Subscriptions
+                  <TabNav.Tab value="subscriptions" icon={<HiCreditCard />}>
+                    Billing
                   </TabNav.Tab>
 
                   <TabNav.Tab value="notifications" icon={<HiBell />}>

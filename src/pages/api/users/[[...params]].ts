@@ -1069,6 +1069,29 @@ class UserRouter {
       pages: Math.ceil(followers / 10),
     };
   }
+
+  @Post("/@me/subscription/cancel")
+  @Authorized()
+  public async cancelSubscription(@Account() user: User) {
+    await prisma.premiumSubscription.delete({
+      where: {
+        userId: user.id,
+      },
+    });
+
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        premium: false,
+      },
+    });
+
+    return {
+      success: true,
+    };
+  }
 }
 
 export default createHandler(UserRouter);

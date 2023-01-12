@@ -1,18 +1,21 @@
 import {
   Badge,
   Button,
-  Card,
-  Center,
-  Group,
+  Stack,
   Text,
-  ThemeIcon,
   Title,
-  useMantineColorScheme,
+  useMantineTheme,
 } from "@mantine/core";
-import { PremiumSubscriptionType } from "@prisma/client";
-import { HiClock, HiGift, HiStop } from "react-icons/hi";
+import { openConfirmModal } from "@mantine/modals";
+import { showNotification } from "@mantine/notifications";
+import { getCookie } from "cookies-next";
+import Link from "next/link";
+import { HiCheck, HiCheckCircle, HiStop } from "react-icons/hi";
+import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
 import { User } from "../../util/prisma-types";
 import { getSubscriptionTypeString } from "../../util/universe/subscription";
+import ShadedCard from "../ShadedCard";
+import Grouped from "./Grouped";
 import SettingsTab from "./SettingsTab";
 import SideBySide from "./SideBySide";
 
@@ -20,118 +23,166 @@ interface SubscriptionTabProps {
   user: User;
 }
 
-const SubscriptionTab = ({ user }: SubscriptionTabProps) => {
-  const premium = user.premium;
-  const { colorScheme } = useMantineColorScheme();
+const SubscriptionTab = ({ user: _user }: SubscriptionTabProps) => {
+  const { colors } = useMantineTheme();
+  const { user, setUser } = useAuthorizedUserStore()!;
 
   return (
-    <SettingsTab tabValue="subscriptions" tabTitle="Subscriptions">
-      <Text mb={16}>Manage your Framework subscriptions.</Text>
+    <SettingsTab tabValue="subscriptions" tabTitle="Billing">
+      <Text mb={16}>Manage your subscriptions and billing information.</Text>
 
-      <SideBySide
-        title="Current Subscription"
-        description="Details about your current subscription, including payment method, billing cycle, and more."
-        right={
-          <Card shadow="sm" p="lg" withBorder>
-            <div
-              style={{
-                display: "flex",
-                gap: 26,
-              }}
-            >
-              <div>
-                <ThemeIcon size={64} variant="light" color="pink" radius="lg">
-                  {premium ? (
-                    <HiGift size={48} />
-                  ) : (
-                    <HiGift size={48} style={{ opacity: 0.5 }} />
-                  )}
-                </ThemeIcon>
-              </div>
-              <div>
-                <Badge size="lg" color="pink" mb={16}>
-                  {premium ? "Premium" : "Free"}
-                </Badge>
-                <Text>
-                  {premium
-                    ? "You are currently subscribed to the Premium plan."
-                    : "You're currently on the Free plan."}
-                </Text>
-                {premium && (
-                  <div
-                    style={{
-                      marginTop: 16,
+      <Grouped title="Plans">
+        <SideBySide
+          title="Framework Premium"
+          description="Support the development of Framework and get access to exclusive features."
+          noUpperBorder
+          shaded
+          actions={
+            <>
+              {user?.premium && user.premiumSubscription ? (
+                <Button
+                  leftIcon={<HiStop />}
+                  variant="subtle"
+                  color="red"
+                  fullWidth
+                  onClick={() =>
+                    openConfirmModal({
+                      title: "Are you sure?",
+                      children: (
+                        <Text>
+                          Are you sure you want to cancel your Premium
+                          subscription? You will immediately lose access to all
+                          premium features, and your subscription will go
+                          through one last billing cycle.
+                        </Text>
+                      ),
+                      labels: {
+                        confirm: "Yes, cancel",
+                        cancel: "Nevermind",
+                      },
+                      confirmProps: {
+                        color: "red",
+                      },
+                      onConfirm: async () => {
+                        setUser({
+                          ...user,
+                          premium: false,
+                          premiumSubscription: null,
+                        });
+                        showNotification({
+                          title: "Subscription ended",
+                          message:
+                            "We hate to see you go. We sincerely appreciate your support, and we hope you'll consider subscribing again in the future. Thank you!",
+                          icon: <HiCheckCircle />,
+                        });
+
+                        await fetch("/api/users/@me/subscription/cancel", {
+                          headers: {
+                            "Content-Type": "application/json",
+                            Authorization: String(
+                              getCookie(".frameworksession")
+                            ),
+                          },
+                          method: "POST",
+                        });
+                      },
+                    })
+                  }
+                >
+                  Cancel subscription
+                </Button>
+              ) : (
+                <Link href="/premium" passHref>
+                  <Button
+                    variant="gradient"
+                    fullWidth
+                    gradient={{
+                      from: colors.pink[8],
+                      to: colors.grape[8],
                     }}
                   >
+                    Subscribe
+                  </Button>
+                </Link>
+              )}
+            </>
+          }
+          right={
+            <ShadedCard className="flex flex-col items-center justify-center">
+              <Badge
+                variant={user?.premium ? "gradient" : "light"}
+                gradient={{
+                  from: colors.pink[8],
+                  to: colors.grape[8],
+                }}
+                mb="sm"
+              >
+                {user?.premium ? "Active" : "Inactive"}
+              </Badge>
+              <Title order={4} mb="sm">
+                {user?.premium
+                  ? "Subscribed to Premium"
+                  : "Framework Free Plan"}
+              </Title>
+              {user?.premium && user?.premiumSubscription ? (
+                <>
+                  <Stack spacing={3} mb="md">
                     {[
-                      {
-                        property: new Date(
-                          user.premiumSubscription?.expiresAt as Date
-                        ).toLocaleDateString(),
-                        icon: HiClock,
-                        label: "Next Renewal",
-                      },
-                      {
-                        property: new Date(
-                          user.premiumSubscription?.createdAt as Date
-                        ).toLocaleDateString(),
-                        icon: HiClock,
-                        label: "Started",
-                      },
-                      {
-                        property: getSubscriptionTypeString(
-                          user.premiumSubscription
-                            ?.type as PremiumSubscriptionType
-                        ),
-                        icon: HiGift,
-                        label: "Tier",
-                      },
-                    ].map((stat) => (
-                      <div
-                        style={{
-                          display: "flex",
-                          gap: 6,
-                          alignItems: "center",
-                        }}
-                        key={Math.floor(Math.random() * 100000)}
-                      >
-                        <stat.icon
-                          size={14}
-                          color={colorScheme === "dark" ? "#909296" : "#868e96"}
+                      "Pre-release access to new features",
+                      "Monthly tickets",
+                      "Priority support",
+                      "Access to exclusive content",
+                      "Love from the Framework team",
+                      "Free access to Soodam.re services for life",
+                    ].map((feature) => (
+                      <div className="flex items-center gap-2" key={feature}>
+                        <HiCheck
+                          color={colors.green[4]}
+                          size={18}
+                          className="flex-shrink-0"
                         />
-                        <Group spacing={6}>
-                          <Text size="sm" color="dimmed" weight={650}>
-                            {stat.label}
-                          </Text>
-                          <Text size="sm" color="dimmed">
-                            {stat.property}
-                          </Text>
-                        </Group>
+                        <Text size="sm" color="dimmed">
+                          {feature}
+                        </Text>
                       </div>
                     ))}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {premium && (
-              <Center mt={16}>
-                <Button.Group>
-                  <Button size="xs" variant="light" color="pink">
-                    Manage
-                  </Button>
-                  <Button size="xs" variant="light" color="pink">
-                    Cancel
-                  </Button>
-                </Button.Group>
-              </Center>
-            )}
-          </Card>
-        }
-        actions={
-          premium && <Button leftIcon={<HiStop />}>Cancel Subscription</Button>
-        }
-      />
+                  </Stack>
+                  <Stack spacing={3}>
+                    {[
+                      [
+                        "Plan",
+                        getSubscriptionTypeString(
+                          user.premiumSubscription.type
+                        ),
+                      ],
+                      [
+                        "Renews",
+                        new Date(
+                          user.premiumSubscription.expiresAt
+                        ).toLocaleDateString(),
+                      ],
+                    ].map(([label, value]) => (
+                      <div className="flex items-center gap-2" key={label}>
+                        <Text size="sm" color="dimmed">
+                          {label}
+                        </Text>
+                        <Text size="sm" color="dimmed" weight={500}>
+                          {value}
+                        </Text>
+                      </div>
+                    ))}
+                  </Stack>
+                </>
+              ) : (
+                <Text color="dimmed" align="center">
+                  You are not subscribed to Framework Premium. Why not give it a
+                  try?
+                </Text>
+              )}
+            </ShadedCard>
+          }
+        />
+      </Grouped>
     </SettingsTab>
   );
 };

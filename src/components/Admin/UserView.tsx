@@ -34,6 +34,7 @@ import NoteTable, { NoteUser } from "./NoteTable";
 import { AdminViewUser } from "./Pages/Users";
 import Punishment from "./Punishment";
 import AdjustEmployee from "./UserActions/AdjustEmployee";
+import AdjustSubscription from "./UserActions/AdjustSubscription";
 import AdjustTickets from "./UserActions/AdjustTickets";
 import LogoutSessions from "./UserActions/LogoutSessions";
 import ResetBio from "./UserActions/ResetBio";
@@ -325,7 +326,9 @@ const UserView = ({ user }: UserViewProps) => {
                       })
                       .map((h) => (
                         <tr key={String(h[0])}>
-                          <td className="font-semibold whitespace-nowrap">{String(h[0])}</td>
+                          <td className="font-semibold whitespace-nowrap">
+                            {String(h[0])}
+                          </td>
                           <td>
                             {h[1] as string | number | JSX.Element | null}
                           </td>
@@ -348,7 +351,9 @@ const UserView = ({ user }: UserViewProps) => {
                         ["Hex Secret", user.otpHex],
                       ].map((h) => (
                         <tr key={String(h[0])}>
-                          <td className="font-semibold whitespace-nowrap">{String(h[0])}</td>
+                          <td className="font-semibold whitespace-nowrap">
+                            {String(h[0])}
+                          </td>
                           <td>
                             {h[1] as string | number | JSX.Element | null}
                           </td>
@@ -392,7 +397,9 @@ const UserView = ({ user }: UserViewProps) => {
                         ],
                       ].map((h) => (
                         <tr key={String(h[0])}>
-                          <td className="font-semibold whitespace-nowrap">{String(h[0])}</td>
+                          <td className="font-semibold whitespace-nowrap">
+                            {String(h[0])}
+                          </td>
                           <td>
                             {h[1] as string | number | JSX.Element | null}
                           </td>
@@ -431,7 +438,9 @@ const UserView = ({ user }: UserViewProps) => {
                         ],
                       ].map((h) => (
                         <tr key={String(h[0])}>
-                          <td className="font-semibold whitespace-nowrap">{String(h[0])}</td>
+                          <td className="font-semibold whitespace-nowrap">
+                            {String(h[0])}
+                          </td>
                           <td>
                             {h[1] as string | number | JSX.Element | null}
                           </td>
@@ -648,6 +657,7 @@ const UserView = ({ user }: UserViewProps) => {
                 ResetPassword,
                 ResetBio,
                 AdjustEmployee,
+                AdjustSubscription,
               ].map((Action, i) => (
                 <ReactNoSSR key={i}>
                   <Action user={user} />

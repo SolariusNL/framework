@@ -2,6 +2,7 @@ import {
   AdminPermission,
   EmployeeRole,
   NotificationType,
+  PremiumSubscriptionType,
   PunishmentType,
   Role,
 } from "@prisma/client";
@@ -41,7 +42,7 @@ class AdminRouter {
   public async getReports(
     @Query("page") page: number,
     @Query("sort") sort: "reviewed" | "unreviewed" | "all" = "all",
-    @Query("reason") reason: ReportCategory | "all" = "all",
+    @Query("reason") reason: ReportCategory | "all" = "all"
   ) {
     const reports = await prisma.userReport.findMany({
       take: 12,
@@ -920,6 +921,47 @@ class AdminRouter {
             `Edited ${user.username}'s employee details`,
             3
           );
+        },
+      },
+      {
+        name: AdminAction.ADJUST_SUBSCRIPTION,
+        action: async () => {
+          const subscriptionSchema = z.object({
+            type: z.nativeEnum(PremiumSubscriptionType).optional(),
+            renew: z.date().optional(),
+          });
+
+          const subscription = subscriptionSchema.parse({
+            ...body,
+            renew: new Date(body.renew),
+          });
+
+          await prisma.user.update({
+            where: {
+              id: user.id,
+            },
+            data: {
+              premiumSubscription: {
+                upsert: {
+                  create: {
+                    type:
+                      subscription.type! ||
+                      PremiumSubscriptionType.PREMIUM_ONE_MONTH,
+                    expiresAt:
+                      subscription.renew! ||
+                      new Date(new Date().setMonth(new Date().getMonth() + 1)),
+                  },
+                  update: {
+                    type: subscription.type!,
+                    expiresAt: subscription.renew!,
+                  },
+                },
+              },
+              premium: true,
+            },
+          });
+
+          await createActionLog(`Adjusted ${user.username}'s subscription`, 3);
         },
       },
     ];
