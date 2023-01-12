@@ -68,6 +68,18 @@ async function grantPremiumMonthlyReward(user: User) {
         tickets: {
           increment: amt,
         },
+        premiumSubscription: {
+          update: {
+            lastReward: new Date(),
+          },
+        },
+        notifications: {
+          create: {
+            title: "Premium monthly reward",
+            message: `You have received ${amt} tickets for being a Framework Premium member. Thank you for your support!`,
+            type: NotificationType.SUCCESS,
+          },
+        },
       },
     });
   }
@@ -75,18 +87,18 @@ async function grantPremiumMonthlyReward(user: User) {
   const level = user.premiumSubscription?.type;
 
   if (
-    new Date(user.premiumSubscription!.lastReward) <
-    new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+    new Date().getTime() - user.premiumSubscription!.lastReward.getTime() >
+    1000 * 60 * 60 * 24 * 30
   ) {
     switch (level) {
       case PremiumSubscriptionType.PREMIUM_ONE_MONTH:
-        //await grantTickets(1200);
+        await grantTickets(1200);
         break;
       case PremiumSubscriptionType.PREMIUM_ONE_YEAR:
-        //await grantTickets(14400);
+        await grantTickets(14400);
         break;
       case PremiumSubscriptionType.PREMIUM_SIX_MONTHS:
-        //await grantTickets(7200);
+        await grantTickets(7200);
         break;
     }
   }
