@@ -266,10 +266,10 @@ const Chat: React.FC = () => {
                   Go back
                 </Anchor>
                 <div className="flex gap-2 items-center">
-                  <Avatar src={conversating?.avatarUri} size="sm" radius="xl" />
-                  <Text weight={600} size="sm">
-                    {conversating?.username}
+                  <Text color="dimmed" size="sm">
+                    @{conversating?.username}
                   </Text>
+                  <Avatar src={conversating?.avatarUri} size="sm" radius="xl" />
                 </div>
               </div>
             </Card.Section>
@@ -313,7 +313,7 @@ const Chat: React.FC = () => {
                   ? theme.colors.dark[9]
                   : theme.colors.gray[1],
             })}
-            p="md"
+            p={conversationOpen ? "md" : 0}
             withBorder={conversationOpen}
           >
             {conversationOpen ? (
@@ -365,7 +365,7 @@ const Chat: React.FC = () => {
               </div>
             ) : (
               <>
-                <Stack spacing={5}>
+                <Stack spacing={5} p={0}>
                   {friends.map((friend) => (
                     <ShadedButton
                       key={friend.id}
@@ -374,16 +374,22 @@ const Chat: React.FC = () => {
                         setConversationOpen(true);
                         setCurrentConversation(friend.id);
                       }}
+                      className="rounded-none px-4"
                     >
                       <div className="flex items-center">
                         <Avatar
                           src={getMediaUrl(friend.avatarUri)}
                           size={24}
-                          className="mr-2"
+                          className="mr-2 rounded-full"
                         />
-                        <Text size="sm" mr={16}>
-                          {friend.username}
-                        </Text>
+                        <div className="flex items-center">
+                          <Text size="sm" mr={6}>
+                            {friend.alias || friend.username}
+                          </Text>
+                          <Text size="sm" color="dimmed" mr={16}>
+                            @{friend.username}
+                          </Text>
+                        </div>
                         {unreadMessages[friend.id] > 0 && (
                           <Indicator
                             inline
@@ -399,7 +405,7 @@ const Chat: React.FC = () => {
                   ))}
                   {friends.length === 0 && (
                     <div className="flex justify-center">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 p-8">
                         <HiXCircle size={12} className="flex-shrink-0" />
                         <Text size="sm" color="dimmed">
                           No friends found
