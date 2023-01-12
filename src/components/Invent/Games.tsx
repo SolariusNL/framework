@@ -63,6 +63,7 @@ const Games = ({ user }: GamesProps) => {
             leftIcon={<HiPlus />}
             variant="default"
             onClick={() => router.push("/game/create")}
+            disabled={!user.emailVerified}
           >
             Create a Game
           </Button>
@@ -378,25 +379,27 @@ const Games = ({ user }: GamesProps) => {
             </Paper>
           );
         })}
-        <Link href="/game/create" passHref>
-          <Paper
-            withBorder
-            radius="md"
-            sx={{
-              backgroundColor:
-                colorScheme == "dark" ? theme.colors.dark[8] : "#fff",
-            }}
-            className="flex-1 opacity-50 cursor-pointer hover:opacity-100 transition-opacity duration-200 ease-in-out p-6 shadow-md py-12 h-fit"
-          >
-            <Text className="text-center" size="xl" weight={500}>
-              Create a new game
-            </Text>
-            <Text color="dimmed" className="text-center" size="sm">
-              Get started with a new game and build your library for others to
-              enjoy.
-            </Text>
-          </Paper>
-        </Link>
+        {user.emailVerified && (
+          <Link href="/game/create" passHref>
+            <Paper
+              withBorder
+              radius="md"
+              sx={{
+                backgroundColor:
+                  colorScheme == "dark" ? theme.colors.dark[8] : "#fff",
+              }}
+              className="flex-1 opacity-50 cursor-pointer hover:opacity-100 transition-opacity duration-200 ease-in-out p-6 shadow-md py-12 h-fit"
+            >
+              <Text className="text-center" size="xl" weight={500}>
+                Create a new game
+              </Text>
+              <Text color="dimmed" className="text-center" size="sm">
+                Get started with a new game and build your library for others to
+                enjoy.
+              </Text>
+            </Paper>
+          </Link>
+        )}
       </div>
     </InventTab>
   );

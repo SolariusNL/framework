@@ -181,7 +181,7 @@ const CreateGame: NextPage<CreateGameProps> = ({ user }) => {
               })}
               mb={10}
             />
-            <Button fullWidth type="submit">
+            <Button fullWidth type="submit" disabled={!user.emailVerified}>
               Create
             </Button>
           </Grid.Col>
