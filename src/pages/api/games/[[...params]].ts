@@ -617,18 +617,14 @@ class GameRouter {
   async getGames(
     @Query("likes") likes: "asc" | "desc" = "desc",
     @Query("visits") visits: "asc" | "desc" = "desc",
-    @Query("genres") genres: string = "",
-    @Param("page") page: number
+    @Query("genre") genre: string = "",
+    @Param("page") page: number,
+    @Query("search") search: string = ""
   ) {
     const results = await prisma.game.findMany({
       where: {
-        genre: genres
-          ? {
-              in: Object.values(GameGenre).filter((genre) =>
-                genres.split(",").includes(genre)
-              ),
-            }
-          : {},
+        name: search ? { contains: search, mode: "insensitive" } : {},
+        genre: genre ? { equals: genre as GameGenre } : {},
       },
       orderBy: [
         {
