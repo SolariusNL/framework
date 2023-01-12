@@ -1,6 +1,10 @@
 import { client } from "../app";
 import { scheduleJob } from "node-schedule";
-import { PremiumSubscriptionType, Prisma } from "@prisma/client";
+import {
+  NotificationType,
+  PremiumSubscriptionType,
+  Prisma,
+} from "@prisma/client";
 import { schedule } from "node-cron";
 
 const user = Prisma.validator<Prisma.UserArgs>()({
@@ -27,6 +31,14 @@ async function schedulePremiumExpiration(user: User) {
         premium: false,
         premiumSubscription: {
           delete: true,
+        },
+        notifications: {
+          create: {
+            title: "Subscription expired",
+            message:
+              "Your Framework Premium subscription has expired. You will no longer receive premium benefits. You can renew your subscription at any time.",
+            type: NotificationType.ALERT,
+          },
         },
       },
     });

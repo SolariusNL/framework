@@ -27,6 +27,8 @@ const AdjustSubscription: React.FC<AdjustSubscriptionProps> = ({ user }) => {
 
   useEffect(() => {
     form.reset();
+    form.setFieldValue("type", user.premiumSubscription?.type ?? null);
+    form.setFieldValue("renew", user.premiumSubscription?.expiresAt ?? null);
   }, [user]);
 
   return (
