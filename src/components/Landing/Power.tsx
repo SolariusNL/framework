@@ -21,7 +21,9 @@ const Power = () => {
     [
       "Greeting",
       `import { players, chat } from "@frameworkts/services";
-players.on("join", ({ username }) => {
+import { JoinEvent } from "@frameworkts/types/events";
+
+players.on<JoinEvent>("join", ({ username }) => {
   chat.broadcast(\`Welcome to the server, \${username}!\`);
 });`,
     ],

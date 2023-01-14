@@ -2,6 +2,7 @@ import { Button, Container, createStyles, Text, Title } from "@mantine/core";
 import { NextPage } from "next";
 import Link from "next/link";
 import Footer from "../components/Footer";
+import Faq from "../components/Landing/Faq";
 import Features from "../components/Landing/Features";
 import Power from "../components/Landing/Power";
 import Pros from "../components/Landing/Pros";
@@ -162,7 +163,7 @@ const Landing: NextPage = () => {
             </div>
           </div>
 
-          {[Pros, Power, Features].map((Component, index) => (
+          {[Pros, Power, Features, Faq].map((Component, index) => (
             <div key={index} className={classes.spacer}>
               <Component />
             </div>
