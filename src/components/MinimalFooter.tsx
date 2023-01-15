@@ -1,17 +1,17 @@
 import {
   ActionIcon,
   Anchor,
-  ColorScheme,
   Group,
   Stack,
   Text,
   useMantineColorScheme,
 } from "@mantine/core";
-import { useLocalStorage } from "@mantine/hooks";
 import Link from "next/link";
 import { HiMoon, HiSun } from "react-icons/hi";
 
-const MinimalFooter = () => {
+const MinimalFooter: React.FC<{
+  noLinks?: boolean;
+}> = ({ noLinks }) => {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const dark = colorScheme === "dark";
 
@@ -22,32 +22,35 @@ const MinimalFooter = () => {
       </Text>
 
       <Stack>
+        {!noLinks && (
+          <Group
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+            }}
+            spacing={14}
+            mb={6}
+          >
+            <Link href="/privacy">
+              <Anchor size="sm">Privacy</Anchor>
+            </Link>
+
+            <Link href="/terms">
+              <Anchor size="sm">Terms of Service</Anchor>
+            </Link>
+
+            <Link href="/guidelines">
+              <Anchor size="sm">Guidelines</Anchor>
+            </Link>
+          </Group>
+        )}
+
         <Group
           sx={{
-            display: "flex",
-            justifyContent: "center",
-          }}
-          spacing={14}
-          mb={6}
-        >
-          <Link href="/privacy">
-            <Anchor size="sm">Privacy</Anchor>
-          </Link>
-
-          <Link href="/terms">
-            <Anchor size="sm">Terms of Service</Anchor>
-          </Link>
-
-          <Link href="/guidelines">
-            <Anchor size="sm">Guidelines</Anchor>
-          </Link>
-        </Group>
-
-        <Group
-          sx={{
             justifyContent: "center",
             display: "flex",
           }}
+          {...(noLinks && { mt: 12 })}
         >
           <ActionIcon
             color={dark ? "yellow" : "blue"}

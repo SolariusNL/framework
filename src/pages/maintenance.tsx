@@ -1,13 +1,21 @@
 import { useFlags } from "@happykit/flags/client";
-import { Anchor, Container, createStyles, Text, Title } from "@mantine/core";
+import {
+  Anchor,
+  Button,
+  Container,
+  createStyles,
+  Text,
+  Title,
+} from "@mantine/core";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
+import MinimalFooter from "../components/MinimalFooter";
 
 const useStyles = createStyles((theme) => ({
   title: {
     fontSize: 26,
-    fontWeight: 900,
+    fontWeight: 600,
   },
 
   controls: {
@@ -45,12 +53,15 @@ const Maintenance: NextPage = () => {
         We are making things awesome. We will be back soon! Sorry for the
         inconvenience.
       </Text>
-      <Text color="dimmed" size="sm" align="center">
-        View updates at our{" "}
-        <Anchor href="https://status.soodam.rocks" target="_blank">
-          status page
-        </Anchor>
-      </Text>
+      <a
+        href="https://status.soodam.rocks"
+        target="_blank"
+        rel="noreferrer"
+        className="w-full flex justify-center no-underline mb-10"
+      >
+        <Button>View updates at our status page</Button>
+      </a>
+      <MinimalFooter noLinks />
     </Container>
   );
 };
