@@ -64,7 +64,10 @@ const Tasks: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {tasks && tasks.map((task) => <TaskCard key={task.id} task={task} />)}
+        {tasks &&
+          tasks.map((task) => (
+            <TaskCard key={task.id} task={task} setTasks={setTasks} />
+          ))}
         {tasks.length === 0 && (
           <div className="col-span-3">
             <ModernEmptyState

@@ -1,8 +1,12 @@
-import { Divider, Skeleton, Stack, Title } from "@mantine/core";
+import { Avatar, Divider, Skeleton, Stack, Text, Title } from "@mantine/core";
 import { EmployeeTask } from "@prisma/client";
 import { getCookie } from "cookies-next";
+import Link from "next/link";
 import { useEffect, useState } from "react";
+import getMediaUrl from "../../../util/getMedia";
+import { NonUser } from "../../../util/prisma-types";
 import ModernEmptyState from "../../ModernEmptyState";
+import ShadedButton from "../../ShadedButton";
 import ShadedCard from "../../ShadedCard";
 import TaskCard from "./TaskCard";
 
@@ -10,25 +14,49 @@ const EmployeeHome: React.FC = () => {
   const [tasks, setTasks] = useState<EmployeeTask[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    setLoading(true);
-    fetch("/api/employee/my/tasks?status=incomplete", {
-      method: "GET",
+  const [activeStaff, setActiveStaff] = useState<
+    Array<{ user: NonUser; fullName: string }>
+  >([]);
+  const [loadingStaff, setLoadingStaff] = useState(true);
+
+  const authorizedRequest = async (url: string, method: string) => {
+    return await fetch(url, {
+      method,
       headers: {
         "Content-Type": "application/json",
         Authorization: String(getCookie(".frameworksession")),
       },
-    })
+    });
+  };
+
+  useEffect(() => {
+    setLoading(true);
+    setLoadingStaff(true);
+
+    authorizedRequest("/api/employee/my/tasks?status=incomplete", "GET")
       .then((res) => res.json())
       .then((data) => {
         setTasks(data.tasks);
       });
+
+    authorizedRequest("/api/employee/my/active", "GET")
+      .then((res) => res.json())
+      .then((data) => {
+        setActiveStaff(data);
+      });
+
     setLoading(false);
+    setLoadingStaff(false);
   }, []);
 
   return (
     <Stack spacing={32}>
-      <Title order={3}>Tasks</Title>
+      <div>
+        <Title order={3}>Tasks</Title>
+        <Text color="dimmed">
+          These are the tasks that you have been assigned to complete.
+        </Text>
+      </div>
       <ShadedCard>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {loading
@@ -36,10 +64,57 @@ const EmployeeHome: React.FC = () => {
                 <Skeleton key={i} height={150} />
               ))
             : tasks &&
-              tasks.map((task) => <TaskCard key={task.id} task={task} />)}
+              tasks.map((task) => (
+                <TaskCard key={task.id} task={task} setTasks={setTasks} />
+              ))}
           {!loading && tasks.length === 0 && (
             <div className="col-span-3">
               <ModernEmptyState title="No tasks" body="You have no tasks" />
+            </div>
+          )}
+        </div>
+      </ShadedCard>
+      <Divider />
+      <div>
+        <Title order={3}>Active Staff</Title>
+        <Text color="dimmed">See who is currently active on Framework.</Text>
+      </div>
+      <ShadedCard>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {loadingStaff
+            ? Array.from({ length: 3 }).map((_, i) => (
+                <Skeleton key={i} height={110} />
+              ))
+            : activeStaff &&
+              activeStaff.map((staff) => (
+                <Link
+                  href={`/profile/${staff.user.username}`}
+                  passHref
+                  key={staff.user.id}
+                >
+                  <ShadedButton>
+                    <div className="flex items-center gap-4 w-full">
+                      <Avatar
+                        src={getMediaUrl(staff.user.avatarUri)}
+                        size={32}
+                        radius={999}
+                      />
+                      <div>
+                        <Text size="lg">{staff.fullName}</Text>
+                        <Text size="sm" color="dimmed">
+                          {staff.user.username}
+                        </Text>
+                      </div>
+                    </div>
+                  </ShadedButton>
+                </Link>
+              ))}
+          {!loadingStaff && activeStaff.length === 0 && (
+            <div className="col-span-3">
+              <ModernEmptyState
+                title="No active staff"
+                body="No staff are currently active"
+              />
             </div>
           )}
         </div>
