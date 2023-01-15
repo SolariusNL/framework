@@ -2,6 +2,7 @@ import { GetServerSidePropsContext, NextPage } from "next";
 import { useRouter } from "next/router";
 import {
   HiBookmark,
+  HiBriefcase,
   HiChartBar,
   HiChat,
   HiCog,
@@ -37,7 +38,8 @@ const pages: {
     label: string;
     icon: React.ReactNode;
     route: string;
-    component: React.ReactNode;
+    component?: React.ReactNode;
+    redirect?: string;
     description: string;
   };
 } = {
@@ -47,6 +49,13 @@ const pages: {
     route: "/admin",
     component: <Dashboard />,
     description: "Basic information about this instance",
+  },
+  employee: {
+    label: "Employee Dashboard",
+    icon: <HiBriefcase />,
+    route: "/admin/employee/home",
+    redirect: "/admin/employee/home",
+    description: "Employee dashboard",
   },
   keys: {
     label: "Keys",
@@ -157,7 +166,15 @@ const AdminPage: NextPage<AdminPageProps> = ({ user, pageStr }) => {
       >
         <TabNav.List sx={{ flexWrap: "wrap" }}>
           {Object.keys(pages).map((p) => (
-            <TabNav.Tab key={p} value={p} icon={pages[p].icon}>
+            <TabNav.Tab
+              key={p}
+              value={p}
+              icon={pages[p].icon}
+              {...(pages[p].redirect &&
+                !pages[p].component && {
+                  onClick: () => router.push(String(pages[p].redirect)),
+                })}
+            >
               {pages[p].label}
             </TabNav.Tab>
           ))}

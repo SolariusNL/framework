@@ -4,19 +4,20 @@ import {
   Menu,
   Text,
   UnstyledButton,
-  useMantineColorScheme,
+  useMantineColorScheme
 } from "@mantine/core";
 import { useRouter } from "next/router";
 import {
   HiAdjustments,
   HiChevronDown,
+  HiChevronRight,
   HiCog,
   HiInformationCircle,
   HiLibrary,
   HiLogout,
   HiMoon,
   HiSun,
-  HiUser,
+  HiUser
 } from "react-icons/hi";
 import { useFrameworkUser } from "../../contexts/FrameworkUser";
 import useSidebar from "../../stores/useSidebar";
@@ -27,7 +28,13 @@ import { User } from "../../util/prisma-types";
 import useMediaQuery from "../../util/useMediaQuery";
 import { frameworkStyles } from "../Framework";
 
-const UserMenu = ({ userMenuOpened }: { userMenuOpened: boolean }) => {
+const UserMenu = ({
+  userMenuOpened,
+  right,
+}: {
+  userMenuOpened: boolean;
+  right?: boolean;
+}) => {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const { classes, theme, cx } = frameworkStyles();
   const user = useFrameworkUser() as User;
@@ -37,27 +44,47 @@ const UserMenu = ({ userMenuOpened }: { userMenuOpened: boolean }) => {
   const mobile = useMediaQuery("768");
 
   return (
-    <Menu transition="pop-top-right" width={240}>
+    <Menu
+      transition={right ? "pop" : "pop-top-right"}
+      width={240}
+      position={right ? "right" : undefined}
+    >
       <Menu.Target>
         <UnstyledButton
           className={cx(classes.user, {
             [classes.userActive]: userMenuOpened,
           })}
+          {...(right && {
+            sx: {
+              width: "100%",
+            },
+          })}
         >
-          <Group spacing={12}>
-            <Avatar
-              src={
-                getMediaUrl(user.avatarUri) ||
-                `https://avatars.dicebear.com/api/identicon/${user.id}.png`
-              }
-              alt={user.username}
-              radius="xl"
-              size={20}
-            />
-            <Text weight={600} size="sm" sx={{ lineHeight: 1 }} mr={3}>
-              {user.username}
-            </Text>
-            <HiChevronDown size={12} stroke="1.5" />
+          <Group
+            spacing={12}
+            {...(right && {
+              position: "apart",
+            })}
+          >
+            <div className="flex items-center gap-4">
+              <Avatar
+                src={
+                  getMediaUrl(user.avatarUri) ||
+                  `https://avatars.dicebear.com/api/identicon/${user.id}.png`
+                }
+                alt={user.username}
+                radius="xl"
+                size={20}
+              />
+              <Text weight={600} size="sm" sx={{ lineHeight: 1 }} mr={3}>
+                {user.username}
+              </Text>
+            </div>
+            {right ? (
+              <HiChevronRight size={12} stroke="1.5" />
+            ) : (
+              <HiChevronDown size={12} stroke="1.5" />
+            )}
           </Group>
         </UnstyledButton>
       </Menu.Target>

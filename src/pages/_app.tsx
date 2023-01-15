@@ -88,7 +88,10 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
 
   useEffect(() => {
     if (flags?.maintenanceEnabled == true) {
-      if (router.pathname !== "/maintenance") {
+      if (
+        router.pathname !== "/maintenance" &&
+        !router.pathname.startsWith("/admin")
+      ) {
         router.push("/maintenance");
       }
     }

@@ -691,6 +691,8 @@ model Employee {
   location          String               @default("No location provided.")
   skills            String[]             @default([])
   bio               String               @default("No bio provided.")
+  tasks             EmployeeTask[]       @relation("employeeTasks")
+  posts             EmployeePost[]       @relation("employeePosts")
 }
 
 enum EmployeeRole {
@@ -737,4 +739,25 @@ enum ApiKeyPermission {
   USER_CHAT_WRITE
   USER_CHECKLIST_READ
   USER_CHECKLIST_WRITE
+}
+
+model EmployeeTask {
+  id          String    @id @default(uuid())
+  employee    Employee  @relation("employeeTasks", fields: [employeeId], references: [id])
+  employeeId  String
+  title       String
+  content     String
+  createdAt   DateTime  @default(now())
+  completed   Boolean   @default(false)
+  completedAt DateTime?
+}
+
+model EmployeePost {
+  id         String   @id @default(uuid())
+  employee   Employee @relation("employeePosts", fields: [employeeId], references: [id])
+  employeeId String
+  title      String
+  content    String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now())
 }
