@@ -25,7 +25,7 @@ const SubscriptionWidget: React.FC = () => {
   }, []);
 
   return (
-    <ShadedCard withBorder>
+    <ShadedCard withBorder solid>
       {user.premium ? (
         <div className="flex flex-col justify-center items-center">
           <Text weight={500} mb={12} color="dimmed">

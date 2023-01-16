@@ -7,7 +7,7 @@ const NotificationsWidget: React.FC = () => {
   const { user } = useAuthorizedUserStore()!;
 
   return (
-    <ShadedCard withBorder>
+    <ShadedCard withBorder solid>
       {user?.notifications.length! > 0 ? (
         <Notifications />
       ) : (

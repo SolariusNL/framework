@@ -14,7 +14,7 @@ const QuickLinksWidget: React.FC = () => {
   const user = useFrameworkUser()!;
 
   return (
-    <ShadedCard withBorder p={8}>
+    <ShadedCard withBorder p={8} solid>
       <div className="grid grid-cols-2 gap-4">
         {[
           {

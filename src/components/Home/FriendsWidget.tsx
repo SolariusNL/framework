@@ -36,7 +36,7 @@ const FriendsWidget: React.FC = () => {
   }, [friendsTab]);
 
   return (
-    <ShadedCard withBorder>
+    <ShadedCard withBorder solid>
       <div className="flex justify-center mb-4">
         <Badge variant="dot" color="green">
           {friends &&

@@ -97,7 +97,7 @@ const FeedWidget: React.FC = () => {
         opened={reportOpened}
         setOpened={setReportOpened}
       />
-      <ShadedCard withBorder>
+      <ShadedCard withBorder solid>
         <div className="flex flex-grow">
           <Avatar
             size={42}
