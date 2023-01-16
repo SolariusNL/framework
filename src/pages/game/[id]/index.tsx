@@ -288,7 +288,7 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                       <Menu.Item
                         disabled={game.author.id !== user.id}
                         onClick={() => {
-                          router.push(`/games/${game.id}/edit`);
+                          router.push(`/game/${game.id}/edit`);
                         }}
                         icon={<HiPencil />}
                       >
