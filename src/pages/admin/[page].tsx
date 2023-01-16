@@ -50,13 +50,6 @@ const pages: {
     component: <Dashboard />,
     description: "Basic information about this instance",
   },
-  employee: {
-    label: "Employee Dashboard",
-    icon: <HiBriefcase />,
-    route: "/admin/employee/home",
-    redirect: "/admin/employee/home",
-    description: "Employee dashboard",
-  },
   keys: {
     label: "Keys",
     icon: <HiKey />,
@@ -134,6 +127,13 @@ const pages: {
     component: <Activity />,
     description: "Review admin activity logs",
   },
+  "employee/home": {
+    label: "Employee Portal",
+    icon: <HiBriefcase />,
+    route: "/admin/employee/home",
+    component: <></>,
+    description: "Access the employee portal",
+  },
   settings: {
     label: "Settings",
     icon: <HiCog />,
@@ -166,15 +166,7 @@ const AdminPage: NextPage<AdminPageProps> = ({ user, pageStr }) => {
       >
         <TabNav.List sx={{ flexWrap: "wrap" }}>
           {Object.keys(pages).map((p) => (
-            <TabNav.Tab
-              key={p}
-              value={p}
-              icon={pages[p].icon}
-              {...(pages[p].redirect &&
-                !pages[p].component && {
-                  onClick: () => router.push(String(pages[p].redirect)),
-                })}
-            >
+            <TabNav.Tab key={p} value={p} icon={pages[p].icon}>
               {pages[p].label}
             </TabNav.Tab>
           ))}

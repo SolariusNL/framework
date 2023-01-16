@@ -1,5 +1,6 @@
 import {
   AppShell,
+  Avatar,
   Badge,
   Box,
   Burger,
@@ -12,6 +13,8 @@ import {
   Text,
   Title,
 } from "@mantine/core";
+import { useLocalStorage } from "@mantine/hooks";
+import { openModal } from "@mantine/modals";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -28,10 +31,10 @@ import {
 import ReactNoSSR from "react-no-ssr";
 import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
 import logout from "../../util/api/logout";
+import getMediaUrl from "../../util/getMedia";
 import { User } from "../../util/prisma-types";
 import useMediaQuery from "../../util/useMediaQuery";
 import Footer from "../Footer";
-import UserMenu from "../Framework/UserMenu";
 import FrameworkLogo from "../FrameworkLogo";
 import EmployeeHome from "./Employee/Home";
 import Tasks from "./Employee/Tasks";
@@ -178,12 +181,56 @@ const EmployeeDashboardNav: React.FC<{
     data.find((item) => item.label.toLowerCase() === active) || data[0];
   const mobile = useMediaQuery("768");
   const [opened, setOpened] = useState(false);
+  const [warningShown, setWarningShown] = useLocalStorage({
+    key: "admin-mobile-warning",
+    defaultValue: false,
+  });
 
   useEffect(() => {
     if (user) {
       setUser(user);
     }
   }, [user]);
+
+  useEffect(() => {
+    if (mobile && !warningShown) {
+      openModal({
+        title: "Mobile",
+        children: (
+          <Text>
+            This page is not optimized for mobile devices. Please use a desktop
+            device to access this page.
+          </Text>
+        ),
+      });
+      setWarningShown(true);
+    }
+  });
+
+  const SidebarItem: React.FC<{
+    onClick?: () => void;
+    icon:
+      | React.ComponentType<
+          React.SVGProps<SVGSVGElement> & { title?: string | undefined }
+        >
+      | React.ReactNode;
+    label: string;
+  }> = ({ onClick, icon: Icon, label }) => (
+    <a className={classes.link + " cursor-pointer"} onClick={onClick}>
+      {typeof Icon === "function" ? (
+        <Icon className={classes.linkIcon} stroke="1.5" />
+      ) : (
+        <Group
+          sx={(theme) => ({
+            marginRight: theme.spacing.sm,
+          })}
+        >
+          {Icon}
+        </Group>
+      )}
+      <span>{label}</span>
+    </a>
+  );
 
   const links = data.map((item) => (
     <Link
@@ -218,28 +265,40 @@ const EmployeeDashboardNav: React.FC<{
             <Navbar.Section grow>
               <Group className={classes.header} position="apart">
                 <FrameworkLogo />
-                <Badge>Beta</Badge>
+                <Badge
+                  variant="gradient"
+                  gradient={{
+                    from: "pink",
+                    to: "grape",
+                  }}
+                >
+                  Corporate
+                </Badge>
               </Group>
               {links}
             </Navbar.Section>
 
             <Navbar.Section className={classes.footer}>
-              <UserMenu right userMenuOpened={null as any} />
+              <SidebarItem
+                icon={
+                  <Avatar
+                    size={20}
+                    src={getMediaUrl(user?.avatarUri)}
+                    radius={999}
+                  />
+                }
+                label={user?.username || "..."}
+              />
               <Link href={"/admin/dashboard"}>
-                <a className={classes.link + " cursor-pointer"}>
-                  <HiArrowLeft className={classes.linkIcon} stroke="1.5" />
-                  <span>Return to Framework</span>
-                </a>
+                <SidebarItem label="Return to admin" icon={HiArrowLeft} />
               </Link>
-              <a
-                className={classes.link + " cursor-pointer"}
+              <SidebarItem
+                label="Logout"
+                icon={HiLogout}
                 onClick={async () =>
                   await logout().then(() => router.push("/login"))
                 }
-              >
-                <HiLogout className={classes.linkIcon} stroke="1.5" />
-                <span>Logout</span>
-              </a>
+              />
             </Navbar.Section>
           </Navbar>
         }
@@ -264,7 +323,14 @@ const EmployeeDashboardNav: React.FC<{
                   />
                 </MediaQuery>
 
-                <FrameworkLogo />
+                <div className="flex items-center gap-4">
+                  <Text size="lg" weight={500}>
+                    {page?.label}
+                  </Text>
+                  <Text size="sm" color="dimmed" lineClamp={1}>
+                    {page?.subtitle}
+                  </Text>
+                </div>
               </div>
             </Header>
           ),

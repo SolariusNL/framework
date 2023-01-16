@@ -1,6 +1,7 @@
 import {
   Anchor,
   Badge,
+  Divider,
   Modal,
   Text,
   Title,
@@ -20,9 +21,10 @@ const TaskCard: React.FC<{
     <>
       <Modal title={task.title} opened={open} onClose={() => setOpen(false)}>
         <>
-          <TypographyStylesProvider mb={16}>
+          <TypographyStylesProvider>
             <div dangerouslySetInnerHTML={{ __html: task.content }} />
           </TypographyStylesProvider>
+          <Divider mt="lg" mb="lg" />
           <div className="flex items-center justify-between">
             <Badge color={task.completed ? "green" : "blue"}>
               {task.completed ? "Completed" : "In Progress"}

@@ -1,5 +1,13 @@
-import { Avatar, Divider, Skeleton, Stack, Text, Title } from "@mantine/core";
-import { EmployeeTask } from "@prisma/client";
+import {
+  Avatar,
+  Badge,
+  Divider,
+  Skeleton,
+  Stack,
+  Text,
+  Title,
+} from "@mantine/core";
+import { EmployeeRole, EmployeeTask } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -15,7 +23,12 @@ const EmployeeHome: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   const [activeStaff, setActiveStaff] = useState<
-    Array<{ user: NonUser; fullName: string }>
+    Array<{
+      user: NonUser;
+      fullName: string;
+      role: EmployeeRole;
+      contactEmail: string;
+    }>
   >([]);
   const [loadingStaff, setLoadingStaff] = useState(true);
 
@@ -80,7 +93,7 @@ const EmployeeHome: React.FC = () => {
         <Text color="dimmed">See who is currently active on Framework.</Text>
       </div>
       <ShadedCard>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {loadingStaff
             ? Array.from({ length: 3 }).map((_, i) => (
                 <Skeleton key={i} height={110} />
@@ -92,8 +105,8 @@ const EmployeeHome: React.FC = () => {
                   passHref
                   key={staff.user.id}
                 >
-                  <ShadedButton>
-                    <div className="flex items-center gap-4 w-full">
+                  <ShadedButton className="flex flex-col w-full">
+                    <div className="flex items-center gap-4 w-full mb-4">
                       <Avatar
                         src={getMediaUrl(staff.user.avatarUri)}
                         size={32}
@@ -102,9 +115,15 @@ const EmployeeHome: React.FC = () => {
                       <div>
                         <Text size="lg">{staff.fullName}</Text>
                         <Text size="sm" color="dimmed">
-                          {staff.user.username}
+                          @{staff.user.username}
                         </Text>
                       </div>
+                    </div>
+                    <div className="flex items-center justify-between w-full">
+                      <Badge size="sm">{staff.role}</Badge>
+                      <Text size="sm" color="dimmed">
+                        {staff.contactEmail}
+                      </Text>
                     </div>
                   </ShadedButton>
                 </Link>

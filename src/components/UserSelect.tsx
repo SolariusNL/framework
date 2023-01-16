@@ -21,14 +21,18 @@ const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
   ({ avatarUri, username, bio, banned, role, ...others }: ItemProps, ref) => (
     <div ref={ref} {...others}>
       <Group noWrap>
-        <Avatar src={getMediaUrl(avatarUri)} />
+        <Avatar src={getMediaUrl(avatarUri)} radius={999} size={24} />
 
         <div>
           <Group spacing={8}>
             <Text size="sm">{username}</Text>
             <Group spacing={4}>
-              {banned && <Badge color="red">Banned</Badge>}
-              {role === "ADMIN" && <Badge>Staff</Badge>}
+              {banned && (
+                <Badge color="red" size="sm">
+                  Banned
+                </Badge>
+              )}
+              {role === "ADMIN" && <Badge size="sm">Staff</Badge>}
             </Group>
           </Group>
           <Text size="xs" color="dimmed" lineClamp={1}>

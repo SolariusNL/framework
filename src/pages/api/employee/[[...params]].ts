@@ -4,9 +4,11 @@ import {
   Get,
   Param,
   Patch,
+  Post,
   Query,
 } from "@storyofams/next-api-decorators";
 import { Account, AdminAuthorized } from "../../../util/api/authorized";
+import { sendMail } from "../../../util/mail";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
 import { nonCurrentUserSelect } from "../../../util/prisma-types";
@@ -65,6 +67,62 @@ class EmployeeRouter {
     return task;
   }
 
+  @Post("/my/tasks/assign")
+  @AdminAuthorized()
+  public async assignTask(
+    @Body()
+    { user, title, content }: { user: number; title: string; content: string },
+    @Account() assignee: User
+  ) {
+    const task = await prisma.employeeTask.create({
+      data: {
+        title,
+        content,
+        employee: {
+          connect: {
+            userId: user,
+          },
+        },
+      },
+      select: {
+        employee: {
+          select: {
+            user: {
+              select: {
+                email: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    sendMail(
+      task.employee.user?.email!,
+      "New task assigned",
+      `
+      <h1>New task assigned</h1>
+      <hr />
+      <table>
+        <tr>
+          <td>Title</td>
+          <td>${title}</td>
+        </tr>
+        <tr>
+          <td>Content</td>
+          <td>${content}</td>
+        </tr>
+        <tr>
+          <td>Assigned by</td>
+          <td>${assignee.employee?.fullName} (${assignee.username})</td>
+        </tr>
+      </table>
+      `
+    );
+
+    return task;
+  }
+
   @Get("/my/active")
   @AdminAuthorized()
   public async getActiveStaff() {
@@ -81,6 +139,8 @@ class EmployeeRouter {
           select: nonCurrentUserSelect.select,
         },
         fullName: true,
+        role: true,
+        contactEmail: true,
       },
     });
 
