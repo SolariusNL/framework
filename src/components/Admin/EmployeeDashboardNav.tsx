@@ -27,6 +27,7 @@ import {
   HiHome,
   HiLogout,
   HiPresentationChartBar,
+  HiViewBoards,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
@@ -36,6 +37,7 @@ import { User } from "../../util/prisma-types";
 import useMediaQuery from "../../util/useMediaQuery";
 import Footer from "../Footer";
 import FrameworkLogo from "../FrameworkLogo";
+import Board from "./Employee/Board";
 import EmployeeHome from "./Employee/Home";
 import Tasks from "./Employee/Tasks";
 import Directory from "./Pages/Directory";
@@ -125,6 +127,13 @@ const data = [
     subtitle: "Manage your employment at Soodam.re",
   },
   {
+    label: "Board",
+    icon: HiViewBoards,
+    href: "/admin/employee/board",
+    render: () => <Board />,
+    subtitle: "View news and announcements from HR",
+  },
+  {
     label: "Directory",
     icon: HiBookmark,
     href: "/admin/employee/directory",
@@ -163,6 +172,7 @@ const data = [
 
 export type PageName =
   | "home"
+  | "board"
   | "directory"
   | "tasks"
   | "assessments"

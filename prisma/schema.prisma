@@ -133,6 +133,9 @@ model User {
   employee                   Employee?             @relation("employee")
   employeeId                 String?               @unique
   apiKeys                    ApiKey[]              @relation("apiKeys")
+  boardPosts                 PortalBoardPost[]     @relation("portalBoardPosts")
+  upvotedBoardPosts          PortalBoardPost[]     @relation("portalBoardPostUpvotes")
+  downvotedBoardPosts        PortalBoardPost[]     @relation("portalBoardPostDownvotes")
 }
 
 model ConnectedAccount {
@@ -760,4 +763,17 @@ model EmployeePost {
   content    String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @default(now())
+}
+
+model PortalBoardPost {
+  id        String   @id @default(uuid())
+  author    User     @relation("portalBoardPosts", fields: [authorId], references: [id])
+  authorId  Int
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  tags      String[]
+  upvotes   User[]   @relation("portalBoardPostUpvotes")
+  downvotes User[]   @relation("portalBoardPostDownvotes")
 }

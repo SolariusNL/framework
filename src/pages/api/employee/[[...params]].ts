@@ -1,3 +1,4 @@
+import { AdminPermission } from "@prisma/client";
 import {
   Body,
   createHandler,
@@ -6,7 +7,9 @@ import {
   Patch,
   Post,
   Query,
+  UnauthorizedException,
 } from "@storyofams/next-api-decorators";
+import { postSelect } from "../../../components/Admin/Employee/Board";
 import { Account, AdminAuthorized } from "../../../util/api/authorized";
 import { sendMail } from "../../../util/mail";
 import prisma from "../../../util/prisma";
@@ -145,6 +148,44 @@ class EmployeeRouter {
     });
 
     return active;
+  }
+
+  @Post("/board/post")
+  @AdminAuthorized()
+  public async postBoard(
+    @Account() user: User,
+    @Body() { title, content }: { title: string; content: string }
+  ) {
+    if (!user.adminPermissions.includes(AdminPermission.WRITE_BLOG_POST)) {
+      throw new UnauthorizedException("You do not have permission to do this");
+    }
+
+    const post = await prisma.portalBoardPost.create({
+      data: {
+        title,
+        content,
+        author: {
+          connect: {
+            id: user.id,
+          },
+        },
+      },
+    });
+
+    return post;
+  }
+
+  @Get("/board")
+  @AdminAuthorized()
+  public async getBoard() {
+    const posts = await prisma.portalBoardPost.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+      select: postSelect,
+    });
+
+    return posts;
   }
 }
 
