@@ -72,6 +72,9 @@ const ReferralsTab: React.FC<ReferralsTabProps> = ({ user: _user }) => {
             icon: <HiCheckCircle />,
           });
           setProperty("tickets", user?.tickets! + 150);
+          setProperty("usedReferral", {
+            code,
+          });
         }
       });
   };

@@ -48,6 +48,7 @@ class ReferralsRouter {
         "Your account is older than 30 days, you can't use a referral code"
       );
     }
+    if (user.usedReferral) throw new BadRequestException("You already used a referral code");
 
     const referral = await prisma.referral.findUnique({
       where: {
