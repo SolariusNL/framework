@@ -6,6 +6,7 @@ const ShadedCard = (
     title?: string;
     titleWithBorder?: boolean;
     onClick?: () => void;
+    // @deprecated
     solid?: boolean;
   }
 ) => {
@@ -14,7 +15,7 @@ const ShadedCard = (
       sx={(theme) => ({
         backgroundColor:
           theme.colorScheme === "dark"
-            ? props.solid ? "#000" : theme.colors.dark[9]
+            ? theme.colors.dark[9]
             : theme.colors.gray[0],
         overflow: "visible",
       })}
