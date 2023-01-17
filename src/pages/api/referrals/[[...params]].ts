@@ -45,12 +45,11 @@ class ReferralsRouter {
     if (!code) throw new BadRequestException("No code provided");
 
     if (
-      // must be less than a month old
-      new Date().getTime() - new Date(user.createdAt).getTime() <
-      1000 * 60 * 60 * 24 * 30
+      new Date(user.createdAt).getTime() + 2592000000 >
+                Date.now()
     ) {
       throw new BadRequestException(
-        "Your account must be at least a month old to use a referral code"
+        "Your account is older than 30 days, you can't use a referral code"
       );
     }
 
