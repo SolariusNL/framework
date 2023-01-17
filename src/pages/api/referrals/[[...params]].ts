@@ -44,6 +44,15 @@ class ReferralsRouter {
   ) {
     if (!code) throw new BadRequestException("No code provided");
 
+    if (
+      new Date(user.createdAt).getTime() >
+      Date.now() - 1000 * 60 * 60 * 24 * 30
+    ) {
+      throw new BadRequestException(
+        "Your account must be at least a month old to use a referral code"
+      );
+    }
+
     const referral = await prisma.referral.findUnique({
       where: {
         code,

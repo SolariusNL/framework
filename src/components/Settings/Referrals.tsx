@@ -154,7 +154,7 @@ const ReferralsTab: React.FC<ReferralsTabProps> = ({ user: _user }) => {
         <Grouped title="Referral Code">
           <SideBySide
             title="Create a referral code"
-            description="Create a referral code to earn 150 tickets for each time it us used."
+            description="Create a referral code to earn 150 tickets for each time it is used."
             icon={<HiTicket />}
             right={
               <Button
