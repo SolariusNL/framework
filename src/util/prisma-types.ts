@@ -89,6 +89,21 @@ const user = Prisma.validator<Prisma.UserArgs>()({
         assessmentHistory: true,
       },
     },
+    referral: {
+      select: {
+        code: true,
+        _count: {
+          select: {
+            usedBy: true,
+          },
+        },
+      },
+    },
+    usedReferral: {
+      select: {
+        code: true,
+      },
+    },
   },
 });
 
@@ -204,6 +219,21 @@ export const userSelect: Prisma.UserSelect = {
   employee: {
     include: {
       assessmentHistory: true,
+    },
+  },
+  referral: {
+    select: {
+      code: true,
+      _count: {
+        select: {
+          usedBy: true,
+        },
+      },
+    },
+  },
+  usedReferral: {
+    select: {
+      code: true,
     },
   },
 };

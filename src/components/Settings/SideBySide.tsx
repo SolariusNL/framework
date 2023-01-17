@@ -38,7 +38,7 @@ const SideBySide = ({
             padding: 16,
           }),
           borderRadius: theme.radius.md,
-          overflow: "visible"
+          overflow: "visible",
         }}
       >
         <div
@@ -47,12 +47,8 @@ const SideBySide = ({
             ...(mobile ? { marginBottom: 16 } : {}),
           }}
         >
-          <Title order={4} mb={16}>
-            {icon && (
-              <div style={{ display: "inline-block", marginRight: 8 }}>
-                {icon}
-              </div>
-            )}
+          <Title order={4} mb={16} className="flex items-center gap-2 ">
+            {icon && icon}
             {title}
           </Title>
           <Text

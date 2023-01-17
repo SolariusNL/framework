@@ -136,6 +136,10 @@ model User {
   boardPosts                 PortalBoardPost[]     @relation("portalBoardPosts")
   upvotedBoardPosts          PortalBoardPost[]     @relation("portalBoardPostUpvotes")
   downvotedBoardPosts        PortalBoardPost[]     @relation("portalBoardPostDownvotes")
+  referral                   Referral?             @relation("referrals")
+  referralId                 String?
+  usedReferral               Referral?             @relation("usedReferral", fields: [usedReferralId], references: [id])
+  usedReferralId             String?
 }
 
 model ConnectedAccount {
@@ -776,4 +780,13 @@ model PortalBoardPost {
   tags      String[]
   upvotes   User[]   @relation("portalBoardPostUpvotes")
   downvotes User[]   @relation("portalBoardPostDownvotes")
+}
+
+model Referral {
+  id        String   @id @default(uuid())
+  user      User?    @relation("referrals", fields: [userId], references: [id])
+  userId    Int?     @unique
+  createdAt DateTime @default(now())
+  code      Int      @unique
+  usedBy    User[]   @relation("usedReferral")
 }

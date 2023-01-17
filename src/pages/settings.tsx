@@ -9,6 +9,7 @@ import {
   HiKey,
   HiMicrophone,
   HiPhotograph,
+  HiTicket,
   HiTrash,
   HiUser
 } from "react-icons/hi";
@@ -21,6 +22,7 @@ import BetaTab from "../components/Settings/BetaTab";
 import DeleteAccountTab from "../components/Settings/DeleteAccountTab";
 import NotificationsTab from "../components/Settings/NotificationsTab";
 import PrivacyTab from "../components/Settings/PrivacyTab";
+import ReferralsTab from "../components/Settings/Referrals";
 import SecurityTab from "../components/Settings/SecurityTab";
 import SessionsTab from "../components/Settings/SessionsTab";
 import SubscriptionTab from "../components/Settings/SubscriptionTab";
@@ -124,6 +126,10 @@ const Settings: NextPage<SettingsProps> = ({ user }) => {
                   <TabNav.Tab value="beta" icon={<HiBeaker />}>
                     Preview Program
                   </TabNav.Tab>
+
+                  <TabNav.Tab value="referrals" icon={<HiTicket />}>
+                    Referrals
+                  </TabNav.Tab>
                 </SettingsGroup>
 
                 <Divider />
@@ -157,6 +163,7 @@ const Settings: NextPage<SettingsProps> = ({ user }) => {
           BetaTab,
           SessionsTab,
           VoiceTab,
+          ReferralsTab
         ].map((Component, index) => (
           <ReactNoSSR
             key={index}

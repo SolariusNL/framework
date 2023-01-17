@@ -375,13 +375,13 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
                         ? "Verified"
                         : emailVerificationSent
                         ? "Sent!"
-                        : "Verify email"}
+                        : "Verify"}
                     </Button>
                     <Button
                       leftIcon={<HiPencil />}
                       onClick={() => setEmailModal(true)}
                     >
-                      Change email
+                      Change
                     </Button>
                   </Group>
                 }
@@ -396,7 +396,7 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
               description="Require email verification before logging into your account."
               right={
                 <Descriptive
-                  title="Enable two-factor authentication"
+                  title="Enable email verification"
                   description="Require a code from your inbox before logging into your account."
                 >
                   <Switch
@@ -425,7 +425,7 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
               description="Require two-factor authentication before logging into your account, from an authenticator app."
               right={
                 <Descriptive
-                  title="Enable two-factor authentication"
+                  title="Enable TOTP verification"
                   description="Require a code from your authenticator app before logging into your account."
                 >
                   <Switch
