@@ -81,9 +81,9 @@ const ReferralsTab: React.FC<ReferralsTabProps> = ({ user: _user }) => {
 
   return (
     <SettingsTab tabTitle="Referrals" tabValue="referrals">
-      {user?.referral ? (
-        <>
-          <Grouped title="Referral Code">
+      <Grouped title="Referral code">
+        {user?.referral ? (
+          <>
             <SideBySide
               title="Your referral code"
               description="Share this code with new friends to earn you both 150 tickets!"
@@ -119,42 +119,8 @@ const ReferralsTab: React.FC<ReferralsTabProps> = ({ user: _user }) => {
               shaded
               noUpperBorder
             />
-            {!user?.usedReferral &&
-              new Date(user?.createdAt!).getTime() + 2592000000 >
-                Date.now() && (
-                <SideBySide
-                  title="Enter code"
-                  description="Enter a referral code to earn 150 tickets."
-                  icon={<HiGift />}
-                  right={
-                    <form
-                      onSubmit={enterForm.onSubmit(async (values) => {
-                        await enterReferral(values.code);
-                      })}
-                    >
-                      <NumberInput
-                        label="Code"
-                        description="Enter the code you were given."
-                        required
-                        min={10000000}
-                        max={99999999}
-                        mb="sm"
-                        hideControls
-                        {...enterForm.getInputProps("code")}
-                      />
-                      <Button variant="subtle" type="submit" fullWidth>
-                        Submit
-                      </Button>
-                    </form>
-                  }
-                  shaded
-                  noUpperBorder
-                />
-              )}
-          </Grouped>
-        </>
-      ) : (
-        <Grouped title="Referral Code">
+          </>
+        ) : (
           <SideBySide
             title="Create a referral code"
             description="Create a referral code to earn 150 tickets for each time it is used."
@@ -171,8 +137,39 @@ const ReferralsTab: React.FC<ReferralsTabProps> = ({ user: _user }) => {
             shaded
             noUpperBorder
           />
-        </Grouped>
-      )}
+        )}
+        {!user?.usedReferral &&
+          new Date(user?.createdAt!).getTime() + 2592000000 > Date.now() && (
+            <SideBySide
+              title="Enter code"
+              description="Enter a referral code to earn 150 tickets."
+              icon={<HiGift />}
+              right={
+                <form
+                  onSubmit={enterForm.onSubmit(async (values) => {
+                    await enterReferral(values.code);
+                  })}
+                >
+                  <NumberInput
+                    label="Code"
+                    description="Enter the code you were given."
+                    required
+                    min={10000000}
+                    max={99999999}
+                    mb="sm"
+                    hideControls
+                    {...enterForm.getInputProps("code")}
+                  />
+                  <Button variant="subtle" type="submit" fullWidth>
+                    Submit
+                  </Button>
+                </form>
+              }
+              shaded
+              noUpperBorder
+            />
+          )}
+      </Grouped>
     </SettingsTab>
   );
 };
