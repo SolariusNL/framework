@@ -1,13 +1,11 @@
-import { Alert, Divider, Stack, Switch, Text, Title } from "@mantine/core";
+import { Alert, Divider, Stack, Text, Title } from "@mantine/core";
 import { PrivacyPreferences } from "@prisma/client";
 import { useState } from "react";
 import { HiArrowsExpand, HiCheckCircle, HiEye, HiShare } from "react-icons/hi";
 import { User } from "../../util/prisma-types";
-import Descriptive from "../Descriptive";
+import SwitchCard from "../SwitchCard";
 import { updateAccount } from "./AccountTab";
-import Grouped from "./Grouped";
 import SettingsTab from "./SettingsTab";
-import SideBySide from "./SideBySide";
 
 interface PrivacyTabProps {
   user: User;
@@ -60,6 +58,9 @@ const PrivacyTab = ({ user }: PrivacyTabProps) => {
       },
     },
   };
+  const categoryDescriptions = {
+    ANALYTICS: "Framework will use the following data to improve the platform",
+  };
   const [updated, setUpdated] = useState<PrivacyPreferences[]>(
     user.privacyPreferences
   );
@@ -111,50 +112,40 @@ const PrivacyTab = ({ user }: PrivacyTabProps) => {
       <Stack mb={32}>
         {Object.keys(privacyDescriptions).map((category) => {
           return (
-            <Grouped
+            <SwitchCard
               title={category.charAt(0) + category.slice(1).toLowerCase()}
+              description={
+                categoryDescriptions[
+                  category as keyof typeof categoryDescriptions
+                ]
+              }
               key={category}
-            >
-              {Object.keys(privacyDescriptions[category]).map((key) => {
+              data={Object.keys(privacyDescriptions[category]).map((key) => {
                 const p = privacyDescriptions[category][
                   key as keyof typeof PrivacyPreferences
                 ] as { title: string; description: string; label: string };
-
-                return (
-                  <SideBySide
-                    title={p.title}
-                    description={p.description}
-                    key={key}
-                    shaded
-                    noUpperBorder
-                    right={
-                        <Switch
-                          defaultChecked={
-                            user.privacyPreferences.find(
-                              (n) => n == (key as PrivacyPreferences)
-                            ) != null
-                          }
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setUpdated([
-                                ...updated,
-                                key as PrivacyPreferences,
-                              ]);
-                            } else {
-                              setUpdated(
-                                updated.filter(
-                                  (n) => n != (key as PrivacyPreferences)
-                                )
-                              );
-                            }
-                          }}
-                          label={p.label}
-                        />
-                    }
-                  />
-                );
+                return {
+                  title: p.title,
+                  description: p.description,
+                  checked:
+                    user.privacyPreferences.find(
+                      (n) => n == (key as keyof typeof PrivacyPreferences)
+                    ) != null,
+                  pointer: key,
+                };
               })}
-            </Grouped>
+              onChange={(checked, pointer) => {
+                const pointerAsKey = pointer as keyof typeof PrivacyPreferences;
+
+                if (checked) {
+                  setUpdated([...updated, PrivacyPreferences[pointerAsKey]]);
+                } else {
+                  setUpdated(
+                    updated.filter((n) => n != PrivacyPreferences[pointerAsKey])
+                  );
+                }
+              }}
+            />
           );
         })}
       </Stack>

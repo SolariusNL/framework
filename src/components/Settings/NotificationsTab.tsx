@@ -1,13 +1,11 @@
-import { Alert, Checkbox, Stack } from "@mantine/core";
+import { Alert, Stack } from "@mantine/core";
 import { ReceiveNotification } from "@prisma/client";
 import { useState } from "react";
 import { HiCheckCircle } from "react-icons/hi";
 import { User } from "../../util/prisma-types";
-import Descriptive from "../Descriptive";
+import SwitchCard from "../SwitchCard";
 import { updateAccount } from "./AccountTab";
-import Grouped from "./Grouped";
 import SettingsTab from "./SettingsTab";
-import SideBySide from "./SideBySide";
 
 interface NotificationsTabProps {
   user: User;
@@ -49,6 +47,11 @@ const NotificationsTab = ({ user }: NotificationsTabProps) => {
     },
   };
 
+  const categoryDescriptions = {
+    SECURITY: "Receive notifications about your account's security",
+    DONATIONS: "Receive notifications about donations",
+  };
+
   return (
     <SettingsTab
       tabValue="notifications"
@@ -68,55 +71,45 @@ const NotificationsTab = ({ user }: NotificationsTabProps) => {
       <Stack mb={32}>
         {Object.keys(notificationDescriptions).map((category) => {
           return (
-            <Grouped
+            <SwitchCard
               title={category.charAt(0) + category.slice(1).toLowerCase()}
+              description={
+                categoryDescriptions[
+                  category as keyof typeof categoryDescriptions
+                ]
+              }
               key={category}
-            >
-              {Object.keys(notificationDescriptions[category]).map((key) => {
-                const notification = notificationDescriptions[category][
-                  key as keyof typeof ReceiveNotification
-                ] as { title: string; description: string; label: string };
+              data={Object.keys(notificationDescriptions[category]).map(
+                (key) => {
+                  const notification = notificationDescriptions[category][
+                    key as keyof typeof ReceiveNotification
+                  ] as { title: string; description: string; label: string };
+                  return {
+                    title: notification.title,
+                    description: notification.description,
+                    checked:
+                      user.notificationPreferences.find(
+                        (n) => n == (key as ReceiveNotification)
+                      ) != null,
+                    pointer: key,
+                  };
+                }
+              )}
+              onChange={(checked, pointer) => {
+                const pointerAsKey =
+                  pointer as keyof typeof ReceiveNotification;
 
-                return (
-                  <SideBySide
-                    title={notification.title}
-                    description={notification.description}
-                    key={key}
-                    shaded
-                    noUpperBorder
-                    right={
-                      <Descriptive
-                        title={notification.title}
-                        description={notification.description}
-                      >
-                        <Checkbox
-                          defaultChecked={
-                            user.notificationPreferences.find(
-                              (n) => n == (key as ReceiveNotification)
-                            ) != null
-                          }
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setUpdated([
-                                ...updated,
-                                key as ReceiveNotification,
-                              ]);
-                            } else {
-                              setUpdated(
-                                updated.filter(
-                                  (n) => n != (key as ReceiveNotification)
-                                )
-                              );
-                            }
-                          }}
-                          label={notification.label}
-                        />
-                      </Descriptive>
-                    }
-                  />
-                );
-              })}
-            </Grouped>
+                if (checked) {
+                  setUpdated([...updated, ReceiveNotification[pointerAsKey]]);
+                } else {
+                  setUpdated(
+                    updated.filter(
+                      (n) => n != ReceiveNotification[pointerAsKey]
+                    )
+                  );
+                }
+              }}
+            />
           );
         })}
       </Stack>
