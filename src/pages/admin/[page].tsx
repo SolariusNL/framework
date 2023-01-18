@@ -1,21 +1,41 @@
-import { GetServerSidePropsContext, NextPage } from "next";
-import { useRouter } from "next/router";
 import {
+  AppShell,
+  Avatar,
+  Badge,
+  Box,
+  Burger,
+  Container,
+  createStyles,
+  Group,
+  Header,
+  MediaQuery,
+  Navbar,
+  ScrollArea,
+  Text,
+  Title,
+} from "@mantine/core";
+import { useLocalStorage } from "@mantine/hooks";
+import { openModal } from "@mantine/modals";
+import { GetServerSidePropsContext } from "next";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import {
+  HiArrowLeft,
   HiBookmark,
-  HiBriefcase,
-  HiChartBar,
-  HiChat,
+  HiCheck,
   HiCog,
-  HiDesktopComputer,
   HiDocument,
   HiFolder,
-  HiGlobe,
+  HiHome,
   HiKey,
+  HiLogout,
   HiServer,
-  HiTicket,
   HiUsers,
-  HiViewGrid,
+  HiWifi,
 } from "react-icons/hi";
+import ReactNoSSR from "react-no-ssr";
+import Tasks from "../../components/Admin/Employee/Tasks";
 import Activity from "../../components/Admin/Pages/Activity";
 import Articles from "../../components/Admin/Pages/Articles";
 import BannedIPs from "../../components/Admin/Pages/BannedIPs";
@@ -24,156 +44,371 @@ import Directory from "../../components/Admin/Pages/Directory";
 import Instance from "../../components/Admin/Pages/Instance";
 import Invites from "../../components/Admin/Pages/Invites";
 import Reports from "../../components/Admin/Pages/Reports";
-import Tickets from "../../components/Admin/Pages/Tickets";
 import Users from "../../components/Admin/Pages/Users";
 import Settings from "../../components/Admin/Settings";
-import Framework from "../../components/Framework";
-import TabNav from "../../components/TabNav";
+import Footer from "../../components/Footer";
+import FrameworkLogo from "../../components/FrameworkLogo";
+import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
+import logout from "../../util/api/logout";
 import authorizedRoute from "../../util/authorizedRoute";
+import getMediaUrl from "../../util/getMedia";
 import prisma from "../../util/prisma";
 import { User } from "../../util/prisma-types";
+import useMediaQuery from "../../util/useMediaQuery";
 
-const pages: {
-  [key: string]: {
-    label: string;
-    icon: React.ReactNode;
-    route: string;
-    component?: React.ReactNode;
-    redirect?: string;
-    description: string;
+const useStyles = createStyles((theme, _params, getRef) => {
+  const icon = getRef("icon");
+  return {
+    header: {
+      paddingBottom: theme.spacing.md,
+      marginBottom: theme.spacing.md * 1.5,
+      borderBottom: `1px solid ${
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[4]
+          : theme.colors.gray[2]
+      }`,
+    },
+
+    footer: {
+      paddingTop: theme.spacing.md,
+      marginTop: theme.spacing.md,
+      borderTop: `1px solid ${
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[4]
+          : theme.colors.gray[2]
+      }`,
+    },
+
+    link: {
+      ...theme.fn.focusStyles(),
+      display: "flex",
+      alignItems: "center",
+      textDecoration: "none",
+      fontSize: theme.fontSizes.sm,
+      color:
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[1]
+          : theme.colors.gray[7],
+      padding: `${theme.spacing.xs}px ${theme.spacing.md}px`,
+      borderRadius: theme.radius.md,
+      fontWeight: 500,
+
+      "&:hover": {
+        backgroundColor:
+          theme.colorScheme === "dark" ? theme.colors.dark[8] : theme.white,
+        color: theme.colorScheme === "dark" ? theme.white : theme.black,
+
+        [`& .${icon}`]: {
+          color: theme.colorScheme === "dark" ? theme.white : theme.black,
+        },
+      },
+    },
+
+    linkIcon: {
+      ref: icon,
+      color:
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[2]
+          : theme.colors.gray[6],
+      marginRight: theme.spacing.md + 2,
+    },
+
+    linkActive: {
+      "&, &:hover": {
+        backgroundColor: theme.fn.variant({
+          variant: "light",
+          color: theme.primaryColor,
+        }).background,
+        color: theme.fn.variant({ variant: "light", color: theme.primaryColor })
+          .color,
+        [`& .${icon}`]: {
+          color: theme.fn.variant({
+            variant: "light",
+            color: theme.primaryColor,
+          }).color,
+        },
+      },
+    },
   };
-} = {
-  dashboard: {
+});
+
+const data = [
+  {
     label: "Dashboard",
-    icon: <HiDesktopComputer />,
-    route: "/admin",
-    component: <Dashboard />,
+    icon: HiHome,
+    href: "/admin/dashboard",
+    render: <Dashboard />,
     description: "Basic information about this instance",
   },
-  keys: {
-    label: "Keys",
-    icon: <HiKey />,
-    route: "/admin/keys",
-    component: <Invites />,
-    description: "Manage invite keys",
-  },
-  users: {
-    label: "Users",
-    icon: <HiUsers />,
-    route: "/admin/users",
-    component: <Users />,
-    description: "Manage users, their information & their roles",
-  },
-  instance: {
-    label: "Instance",
-    icon: <HiServer />,
-    route: "/admin/instance",
-    component: <Instance />,
-    description: "Manage this Framework instance, update your server, etc.",
-  },
-  reports: {
-    label: "Reports",
-    icon: <HiBookmark />,
-    route: "/admin/reports",
-    component: <Reports />,
-    description: "Review reports made by users",
-  },
-  bannedIps: {
-    label: "Banned IPs",
-    icon: <HiChartBar />,
-    route: "/admin/bannedips",
-    component: <BannedIPs />,
-    description: "Manage banned IPs",
-  },
-  games: {
-    label: "Games",
-    icon: <HiViewGrid />,
-    route: "/admin/games",
-    component: <></>,
-    description: "Manage games on your instance",
-  },
-  articles: {
+  {
     label: "Articles",
-    icon: <HiFolder />,
-    route: "/admin/articles",
-    component: <Articles />,
-    description: "See news regarding administration policies",
+    icon: HiFolder,
+    href: "/admin/articles",
+    render: <Articles />,
+    subtitle: "View news and announcements from HR",
   },
-  comments: {
-    label: "Comments",
-    icon: <HiChat />,
-    route: "/admin/comments",
-    component: <></>,
-    description: "Review comments made by users",
+  {
+    label: "Keys",
+    icon: HiKey,
+    href: "/admin/keys",
+    render: <Invites />,
+    subtitle: "Manage your keys and invites",
   },
-  directory: {
+  {
+    label: "Users",
+    icon: HiUsers,
+    href: "/admin/users",
+    render: <Users />,
+    subtitle: "Manage users, roles, permissions, and more",
+  },
+  {
+    label: "Instance",
+    icon: HiServer,
+    href: "/admin/instance",
+    render: <Instance />,
+    subtitle: "Manage this Framework instance",
+  },
+  {
+    label: "Reports",
+    icon: HiBookmark,
+    href: "/admin/reports",
+    render: <Reports />,
+    subtitle: "View reports made by users",
+  },
+  {
+    label: "IPs",
+    icon: HiWifi,
+    href: "/admin/ips",
+    render: <BannedIPs />,
+    subtitle: "Manage banned IPs",
+  },
+  {
     label: "Directory",
-    icon: <HiGlobe />,
-    route: "/admin/directory",
-    component: <Directory />,
-    description: "Browse Soodam.re staff members",
+    icon: HiBookmark,
+    href: "/admin/directory",
+    render: <Directory />,
+    subtitle: "View the directory of all employees",
   },
-  tickets: {
-    label: "Tickets",
-    icon: <HiTicket />,
-    route: "/admin/tickets",
-    component: <Tickets />,
-    description: "Review support tickets",
+  {
+    label: "Tasks",
+    icon: HiCheck,
+    href: "/admin/tasks",
+    render: <Tasks />,
+    subtitle: "View your tasks and manage them",
   },
-  activity: {
+  {
     label: "Activity",
-    icon: <HiDocument />,
-    route: "/admin/activity",
-    component: <Activity />,
-    description: "Review admin activity logs",
+    icon: HiDocument,
+    href: "/admin/activity",
+    render: <Activity />,
+    subtitle: "Review admin activity logs",
   },
-  "employee/home": {
-    label: "Employee Portal",
-    icon: <HiBriefcase />,
-    route: "/admin/employee/home",
-    component: <></>,
-    description: "Access the employee portal",
-  },
-  settings: {
+  {
     label: "Settings",
-    icon: <HiCog />,
-    route: "/admin/settings",
-    component: <Settings />,
-    description: "Manage your personal admin settings",
+    icon: HiCog,
+    href: "/admin/settings",
+    render: <Settings />,
+    subtitle: "Manage your personal admin settings",
   },
-};
+];
 
-interface AdminPageProps {
+export type PageName =
+  | "home"
+  | "board"
+  | "directory"
+  | "tasks"
+  | "assessments"
+  | "performance"
+  | "settings";
+
+const AdminDashboard: React.FC<{
+  activePage: PageName;
   user: User;
-  pageStr: string;
-}
-
-const AdminPage: NextPage<AdminPageProps> = ({ user, pageStr }) => {
-  const page = pages[pages[pageStr] ? pageStr : "dashboard"];
+}> = ({ activePage, user }) => {
+  const { classes, cx, theme } = useStyles();
+  const [active, setActive] = useState(activePage || "home");
+  const { setUser } = useAuthorizedUserStore()!;
   const router = useRouter();
+  const page =
+    data.find((item) => item.label.toLowerCase() === active) || data[0];
+  const mobile = useMediaQuery("768");
+  const [opened, setOpened] = useState(false);
+  const [warningShown, setWarningShown] = useLocalStorage({
+    key: "admin-mobile-warning",
+    defaultValue: false,
+  });
+
+  useEffect(() => {
+    if (user) {
+      setUser(user);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (mobile && !warningShown) {
+      openModal({
+        title: "Mobile",
+        children: (
+          <Text>
+            This page is not optimized for mobile devices. Please use a desktop
+            device to access this page.
+          </Text>
+        ),
+      });
+      setWarningShown(true);
+    }
+  });
+
+  const SidebarItem: React.FC<{
+    onClick?: () => void;
+    icon:
+      | React.ComponentType<
+          React.SVGProps<SVGSVGElement> & { title?: string | undefined }
+        >
+      | React.ReactNode;
+    label: string;
+  }> = ({ onClick, icon: Icon, label }) => (
+    <a className={classes.link + " cursor-pointer"} onClick={onClick}>
+      {typeof Icon === "function" ? (
+        <Icon className={classes.linkIcon} stroke="1.5" />
+      ) : (
+        <Group
+          sx={(theme) => ({
+            marginRight: theme.spacing.sm,
+          })}
+        >
+          {Icon}
+        </Group>
+      )}
+      <span>{label}</span>
+    </a>
+  );
+
+  const links = data.map((item) => (
+    <Link
+      key={item.label}
+      href={item.href}
+      onClick={(event) => {
+        setActive(item.label as PageName);
+        event.preventDefault();
+      }}
+    >
+      <a
+        className={cx(classes.link, {
+          [classes.linkActive]: item.label.toLowerCase() === active,
+        })}
+      >
+        <item.icon className={classes.linkIcon} stroke="1.5" />
+        <span>{item.label}</span>
+      </a>
+    </Link>
+  ));
 
   return (
-    <Framework
-      user={user}
-      activeTab="none"
-      modernTitle={page.label}
-      modernSubtitle={page.description}
-    >
-      <TabNav
-        value={pageStr}
-        onTabChange={(t) => router.push(String(t))}
-        mb={32}
+    <>
+      <AppShell
+        navbar={
+          <Navbar
+            width={{ sm: 300 }}
+            p="md"
+            hiddenBreakpoint="sm"
+            hidden={!opened}
+          >
+            <Navbar.Section>
+              <Group className={classes.header} position="apart">
+                <FrameworkLogo />
+                <Badge
+                  variant="gradient"
+                  gradient={{
+                    from: "pink",
+                    to: "grape",
+                  }}
+                >
+                  Corporate
+                </Badge>
+              </Group>
+            </Navbar.Section>
+
+            <Navbar.Section grow component={ScrollArea}>
+              {links}
+            </Navbar.Section>
+
+            <Navbar.Section className={classes.footer}>
+              <SidebarItem
+                icon={
+                  <Avatar
+                    size={20}
+                    src={getMediaUrl(user?.avatarUri)}
+                    radius={999}
+                  />
+                }
+                label={user?.username || "..."}
+              />
+              <Link href={"/"}>
+                <SidebarItem label="Return to Frameork" icon={HiArrowLeft} />
+              </Link>
+              <SidebarItem
+                label="Logout"
+                icon={HiLogout}
+                onClick={async () =>
+                  await logout().then(() => router.push("/login"))
+                }
+              />
+            </Navbar.Section>
+          </Navbar>
+        }
+        padding={0}
+        {...(mobile && {
+          header: (
+            <Header height={50} p="md">
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  height: "100%",
+                }}
+              >
+                <MediaQuery largerThan="sm" styles={{ display: "none" }}>
+                  <Burger
+                    opened={opened}
+                    onClick={() => setOpened((o) => !o)}
+                    size="sm"
+                    color={theme.colors.gray[6]}
+                    mr="xl"
+                  />
+                </MediaQuery>
+
+                <div className="flex items-center gap-4">
+                  <Text size="lg" weight={500}>
+                    {page?.label}
+                  </Text>
+                  <Text size="sm" color="dimmed" lineClamp={1}>
+                    {page?.subtitle}
+                  </Text>
+                </div>
+              </div>
+            </Header>
+          ),
+        })}
       >
-        <TabNav.List sx={{ flexWrap: "wrap" }}>
-          {Object.keys(pages).map((p) => (
-            <TabNav.Tab key={p} value={p} icon={pages[p].icon}>
-              {pages[p].label}
-            </TabNav.Tab>
-          ))}
-        </TabNav.List>
-      </TabNav>
-      {page.component}
-    </Framework>
+        <Box
+          sx={(theme) => ({
+            backgroundColor: theme.colorScheme === "dark" ? "#000" : "#fff",
+          })}
+          p={32}
+          mb={32}
+        >
+          <Container>
+            <Title mb={8}>{page?.label}</Title>
+            <Text color="dimmed">{page?.subtitle}</Text>
+          </Container>
+        </Box>
+        <Container>
+          {page?.render && <ReactNoSSR>{page.render}</ReactNoSSR>}
+        </Container>
+        <Footer />
+      </AppShell>
+    </>
   );
 };
 
@@ -186,7 +421,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     return user;
   }
 
-  if (!pages[pageStr]) {
+  if (!data.find((item) => item.label.toLowerCase() === pageStr)) {
     return {
       redirect: {
         destination: "/404",
@@ -203,16 +438,18 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
         },
       },
       importance: 1,
-      activity: `Viewed the ${pages[pageStr].label} page`,
+      activity: `Viewed the ${
+        data.find((item) => item.label.toLowerCase() === pageStr)?.label
+      } page`,
     },
   });
 
   return {
     props: {
       user: user.props.user,
-      pageStr,
+      activePage: pageStr,
     },
   };
 }
 
-export default AdminPage;
+export default AdminDashboard;
