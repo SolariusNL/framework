@@ -1,8 +1,9 @@
-import { Button, Text } from "@mantine/core";
+import { Text } from "@mantine/core";
 import { openConfirmModal } from "@mantine/modals";
 import { HiMail } from "react-icons/hi";
 import performAdminAction, { AdminAction } from "../../../util/adminAction";
 import { User } from "../../../util/prisma-types";
+import Action from "./Action";
 
 interface ResetEmailProps {
   user: User;
@@ -10,8 +11,8 @@ interface ResetEmailProps {
 
 const ResetEmail: React.FC<ResetEmailProps> = ({ user }) => {
   return (
-    <Button
-      leftIcon={<HiMail />}
+    <Action
+      icon={HiMail}
       onClick={() => {
         openConfirmModal({
           title: "Confirm email reset",
@@ -30,9 +31,9 @@ const ResetEmail: React.FC<ResetEmailProps> = ({ user }) => {
           },
         });
       }}
-    >
-      Reset Email
-    </Button>
+      title="Reset email"
+      description="Reset the user's email. They will be asked to add a new email on their visit."
+    />
   );
 };
 

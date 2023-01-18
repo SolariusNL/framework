@@ -29,6 +29,7 @@ import employeeRoleMeta from "../../data/employeeRoles";
 import getMediaUrl from "../../util/getMedia";
 import Copy from "../Copy";
 import ModernEmptyState from "../ModernEmptyState";
+import ShadedCard from "../ShadedCard";
 import Stateful from "../Stateful";
 import NoteTable, { NoteUser } from "./NoteTable";
 import { AdminViewUser } from "./Pages/Users";
@@ -648,22 +649,24 @@ const UserView = ({ user }: UserViewProps) => {
           {currentUser.adminPermissions.includes(
             AdminPermission.RUN_ACTIONS
           ) ? (
-            <Group spacing={5}>
-              {[
-                AdjustTickets,
-                ResetUsername,
-                LogoutSessions,
-                ResetEmail,
-                ResetPassword,
-                ResetBio,
-                AdjustEmployee,
-                AdjustSubscription,
-              ].map((Action, i) => (
-                <ReactNoSSR key={i}>
-                  <Action user={user} />
-                </ReactNoSSR>
-              ))}
-            </Group>
+            <ShadedCard>
+              <Stack spacing={12}>
+                {[
+                  AdjustTickets,
+                  ResetUsername,
+                  LogoutSessions,
+                  ResetEmail,
+                  ResetPassword,
+                  ResetBio,
+                  AdjustEmployee,
+                  AdjustSubscription,
+                ].map((Action, i) => (
+                  <ReactNoSSR key={i}>
+                    <Action user={user} />
+                  </ReactNoSSR>
+                ))}
+              </Stack>
+            </ShadedCard>
           ) : (
             <ModernEmptyState
               title="No actions available"

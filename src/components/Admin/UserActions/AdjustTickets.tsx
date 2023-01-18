@@ -1,9 +1,10 @@
 import { Button, Modal, NumberInput, Text } from "@mantine/core";
 import React from "react";
-import { HiCurrencyDollar } from "react-icons/hi";
+import { HiTicket } from "react-icons/hi";
 import performAdminAction, { AdminAction } from "../../../util/adminAction";
 import { User } from "../../../util/prisma-types";
 import Stateful from "../../Stateful";
+import Action from "./Action";
 
 interface AdjustTicketsProps {
   user: User;
@@ -15,9 +16,12 @@ const AdjustTickets: React.FC<AdjustTicketsProps> = ({ user }) => {
     <Stateful>
       {(open, setOpen) => (
         <>
-          <Button leftIcon={<HiCurrencyDollar />} onClick={() => setOpen(true)}>
-            Adjust Ticket Balance
-          </Button>
+          <Action
+            title="Adjust tickets"
+            description="Adjust user's ticket balance (override)"
+            onClick={() => setOpen(true)}
+            icon={HiTicket}
+          />
           <Modal
             title="Adjust user's ticket balance"
             onClose={() => setOpen(false)}

@@ -7,6 +7,7 @@ import { HiCalendar, HiCreditCard, HiStop } from "react-icons/hi";
 import performAdminAction, { AdminAction } from "../../../util/adminAction";
 import { User } from "../../../util/prisma-types";
 import Stateful from "../../Stateful";
+import Action from "./Action";
 
 interface AdjustSubscriptionProps {
   user: User;
@@ -35,9 +36,12 @@ const AdjustSubscription: React.FC<AdjustSubscriptionProps> = ({ user }) => {
     <Stateful>
       {(open, setOpen) => (
         <>
-          <Button leftIcon={<HiCreditCard />} onClick={() => setOpen(true)}>
-            Adjust Subscription
-          </Button>
+          <Action
+            title="Adjust subscription"
+            description="Adjust user's Premium subscription"
+            onClick={() => setOpen(true)}
+            icon={HiCreditCard}
+          />
           <Modal
             title="Adjust user's subscription"
             onClose={() => setOpen(false)}

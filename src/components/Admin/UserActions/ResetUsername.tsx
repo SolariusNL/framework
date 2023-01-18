@@ -1,8 +1,9 @@
-import { Button, Text } from "@mantine/core";
+import { Text } from "@mantine/core";
 import { openConfirmModal } from "@mantine/modals";
 import { HiClock } from "react-icons/hi";
 import performAdminAction, { AdminAction } from "../../../util/adminAction";
 import { User } from "../../../util/prisma-types";
+import Action from "./Action";
 
 interface ResetUsernameProps {
   user: User;
@@ -10,8 +11,8 @@ interface ResetUsernameProps {
 
 const ResetUsername: React.FC<ResetUsernameProps> = ({ user }) => {
   return (
-    <Button
-      leftIcon={<HiClock />}
+    <Action
+      icon={HiClock}
       onClick={async () => {
         openConfirmModal({
           title: "Confirm username reset",
@@ -32,9 +33,9 @@ const ResetUsername: React.FC<ResetUsernameProps> = ({ user }) => {
           },
         });
       }}
-    >
-      Reset Username
-    </Button>
+      title="Reset username"
+      description="Reset the user's username. A random username will be generated for them."
+    />
   );
 };
 

@@ -1,8 +1,9 @@
-import { Button, Text } from "@mantine/core";
+import { Text } from "@mantine/core";
 import { openConfirmModal } from "@mantine/modals";
-import { HiChat, HiKey } from "react-icons/hi";
+import { HiChat } from "react-icons/hi";
 import performAdminAction, { AdminAction } from "../../../util/adminAction";
 import { User } from "../../../util/prisma-types";
+import Action from "./Action";
 
 interface ResetBioProps {
   user: User;
@@ -10,8 +11,8 @@ interface ResetBioProps {
 
 const ResetBio: React.FC<ResetBioProps> = ({ user }) => {
   return (
-    <Button
-      leftIcon={<HiChat />}
+    <Action
+      icon={HiChat}
       onClick={() => {
         openConfirmModal({
           title: "Confirm bio reset",
@@ -29,9 +30,9 @@ const ResetBio: React.FC<ResetBioProps> = ({ user }) => {
           },
         });
       }}
-    >
-      Reset bio
-    </Button>
+      title="Reset bio"
+      description="Reset the user's bio"
+    />
   );
 };
 

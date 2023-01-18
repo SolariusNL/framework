@@ -4,17 +4,18 @@ import {
   Modal,
   Select,
   Stack,
-  TextInput
+  TextInput,
 } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
 import { useForm } from "@mantine/form";
-import { EmployeeRole, Role } from "@prisma/client";
+import { EmployeeRole } from "@prisma/client";
 import dayjs from "dayjs";
 import React, { useEffect } from "react";
 import { HiUser } from "react-icons/hi";
 import performAdminAction, { AdminAction } from "../../../util/adminAction";
 import { User } from "../../../util/prisma-types";
 import Stateful from "../../Stateful";
+import Action from "./Action";
 
 interface AdjustEmployeeProps {
   user: User;
@@ -86,13 +87,12 @@ const AdjustEmployee: React.FC<AdjustEmployeeProps> = ({ user }) => {
     <Stateful>
       {(open, setOpen) => (
         <>
-          <Button
-            leftIcon={<HiUser />}
+          <Action
+            title="Adjust employee"
+            description="Adjust employee information"
             onClick={() => setOpen(true)}
-            disabled={user.role !== Role.ADMIN}
-          >
-            Adjust Employee
-          </Button>
+            icon={HiUser}
+          />
           <Modal
             title="Modify employee information"
             onClose={() => setOpen(false)}

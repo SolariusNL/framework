@@ -1,8 +1,9 @@
-import { Button, Text } from "@mantine/core";
+import { Text } from "@mantine/core";
 import { openConfirmModal } from "@mantine/modals";
 import { HiLogout } from "react-icons/hi";
 import performAdminAction, { AdminAction } from "../../../util/adminAction";
 import { User } from "../../../util/prisma-types";
+import Action from "./Action";
 
 interface LogoutSessionsProps {
   user: User;
@@ -10,8 +11,8 @@ interface LogoutSessionsProps {
 
 const LogoutSessions: React.FC<LogoutSessionsProps> = ({ user }) => {
   return (
-    <Button
-      leftIcon={<HiLogout />}
+    <Action
+      icon={HiLogout}
       onClick={() => {
         openConfirmModal({
           title: "Confirm session clearing",
@@ -29,9 +30,9 @@ const LogoutSessions: React.FC<LogoutSessionsProps> = ({ user }) => {
           },
         });
       }}
-    >
-      Clear Sessions
-    </Button>
+      title="Clear sessions"
+      description="Log the user out of all their sessions"
+    />
   );
 };
 

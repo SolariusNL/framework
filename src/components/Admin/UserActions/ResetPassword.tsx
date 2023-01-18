@@ -1,8 +1,9 @@
-import { Button, Text } from "@mantine/core";
+import { Text } from "@mantine/core";
 import { openConfirmModal } from "@mantine/modals";
 import { HiKey } from "react-icons/hi";
 import performAdminAction, { AdminAction } from "../../../util/adminAction";
 import { User } from "../../../util/prisma-types";
+import Action from "./Action";
 
 interface ResetPasswordProps {
   user: User;
@@ -10,8 +11,8 @@ interface ResetPasswordProps {
 
 const ResetPassword: React.FC<ResetPasswordProps> = ({ user }) => {
   return (
-    <Button
-      leftIcon={<HiKey />}
+    <Action
+      icon={HiKey}
       onClick={() => {
         openConfirmModal({
           title: "Confirm password reset",
@@ -30,9 +31,9 @@ const ResetPassword: React.FC<ResetPasswordProps> = ({ user }) => {
           },
         });
       }}
-    >
-      Reset Password
-    </Button>
+      title="Reset password"
+      description="Reset the user's password. They will be asked to add a new password on their visit."
+    />
   );
 };
 
