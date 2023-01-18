@@ -20,6 +20,14 @@ const UpdateDrawer: React.FC = () => {
     href?: string;
   }> = [
     {
+      title: "Referral Program",
+      description:
+        "We've added a referral program. Access your referral code & enter your friends' referral codes in the Settings page.",
+      badge: BadgeType.NEW,
+      href: "/settings",
+      date: new Date("2023-01-18"),
+    },
+    {
       title: "Daily Prize Email Verification Requirement",
       description:
         "You must now verify your email to claim your daily prize. This is to prevent abuse, and to prevent any type of automated claiming.",
