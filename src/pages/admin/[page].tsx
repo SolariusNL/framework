@@ -138,7 +138,7 @@ const data = [
     icon: HiHome,
     href: "/admin/dashboard",
     render: <Dashboard />,
-    description: "Basic information about this instance",
+    subtitle: "Basic information about this instance",
   },
   {
     label: "Articles",

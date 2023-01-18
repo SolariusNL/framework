@@ -131,6 +131,15 @@ class AdminRouter {
       },
     });
 
+    const latestThreeUsers = await prisma.user.findMany({
+      take: 3,
+      orderBy: { createdAt: "desc" },
+      select: {
+        ...nonCurrentUserSelect.select,
+        email: true,
+      },
+    });
+
     return {
       user: {
         userDiff:
@@ -141,6 +150,7 @@ class AdminRouter {
         usersThisMonth: usersCreatedThisMonth,
         totalUsers: await prisma.user.count(),
         bannedUsers: await prisma.user.count({ where: { banned: true } }),
+        latestThreeUsers,
       },
       games: {
         totalGames: await prisma.game.count(),

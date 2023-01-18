@@ -15,22 +15,6 @@ const useStyles = createStyles((theme) => ({
       boxShadow: theme.shadows.md,
       transform: "scale(1.02)",
     },
-
-    "&::before": {
-      content: "''",
-      position: "absolute",
-      top: 0,
-      bottom: 0,
-      left: 0,
-      width: 6,
-      backgroundImage: theme.fn.linearGradient(
-        0,
-        theme.colors.pink[6],
-        theme.colors.orange[6]
-      ),
-      borderTopLeftRadius: theme.radius.md,
-      borderBottomLeftRadius: theme.radius.md,
-    },
   },
 }));
 
@@ -51,12 +35,11 @@ const ResourceCard = ({
   return (
     <Link href={link}>
       <ShadedCard withBorder className={classes.card}>
-        <div className="ml-4">
+        <div>
           <ThemeIcon
             size="xl"
             radius="md"
-            variant="gradient"
-            gradient={{ deg: 0, from: "pink", to: "orange" }}
+            variant="light"
           >
             {icon}
           </ThemeIcon>
