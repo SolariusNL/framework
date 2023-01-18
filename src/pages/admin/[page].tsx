@@ -345,7 +345,7 @@ const AdminDashboard: React.FC<{
                 label={user?.username || "..."}
               />
               <Link href={"/"}>
-                <SidebarItem label="Return to Frameork" icon={HiArrowLeft} />
+                <SidebarItem label="Return to Framework" icon={HiArrowLeft} />
               </Link>
               <SidebarItem
                 label="Logout"
