@@ -181,6 +181,18 @@ class ChatRouter {
       where: {
         toId: Number(user.id),
         seen: false,
+        author: {
+          followers: {
+            some: {
+              id: Number(user.id),
+            },
+          },
+          following: {
+            some: {
+              id: Number(user.id),
+            },
+          },
+        },
       },
       select: chatMessageSelect,
     })) as any;
