@@ -7,7 +7,7 @@ const Action: React.FC<{
   icon: React.FC<{ className?: string }>;
 }> = ({ title, description, onClick, icon: Icon }) => {
   return (
-    <div className="flex items-center justify-between gap-4">
+    <div className="flex items-center justify-between gap-6">
       <Icon className="flex-shrink-0" />
       <div>
         <Text size="lg">{title}</Text>

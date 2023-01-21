@@ -142,6 +142,7 @@ model User {
   referralId                 String?
   usedReferral               Referral?             @relation("usedReferral", fields: [usedReferralId], references: [id])
   usedReferralId             String?
+  loginQR                    LoginQR?              @relation("loginQRs")
 }
 
 model ConnectedAccount {
@@ -791,4 +792,12 @@ model Referral {
   createdAt DateTime @default(now())
   code      Int      @unique
   usedBy    User[]   @relation("usedReferral")
+}
+
+model LoginQR {
+  id        String   @id @default(uuid())
+  user      User?    @relation("loginQRs", fields: [userId], references: [id])
+  userId    Int?     @unique
+  createdAt DateTime @default(now())
+  code      String   @unique @default(uuid())
 }

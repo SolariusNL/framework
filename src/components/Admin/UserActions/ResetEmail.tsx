@@ -9,7 +9,10 @@ interface ResetEmailProps {
   user: User;
 }
 
-const ResetEmail: React.FC<ResetEmailProps> = ({ user }) => {
+const ResetEmail: React.FC<ResetEmailProps> & {
+  title: string;
+  description: string;
+} = ({ user }) => {
   return (
     <Action
       icon={HiMail}
@@ -36,5 +39,9 @@ const ResetEmail: React.FC<ResetEmailProps> = ({ user }) => {
     />
   );
 };
+
+ResetEmail.title = "Reset email";
+ResetEmail.description =
+  "Reset the user's email. They will be asked to add a new email on their visit.";
 
 export default ResetEmail;

@@ -10,7 +10,10 @@ interface AdjustTicketsProps {
   user: User;
 }
 
-const AdjustTickets: React.FC<AdjustTicketsProps> = ({ user }) => {
+const AdjustTickets: React.FC<AdjustTicketsProps> & {
+  title: string;
+  description: string;
+} = ({ user }) => {
   const [tickets, setTickets] = React.useState(0);
   return (
     <Stateful>
@@ -60,5 +63,8 @@ const AdjustTickets: React.FC<AdjustTicketsProps> = ({ user }) => {
     </Stateful>
   );
 };
+
+AdjustTickets.title = "Adjust tickets";
+AdjustTickets.description = "Adjust user's ticket balance (override)";
 
 export default AdjustTickets;

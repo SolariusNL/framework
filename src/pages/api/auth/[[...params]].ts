@@ -1,12 +1,15 @@
-import { OperatingSystem } from "@prisma/client";
+import { NotificationType, OperatingSystem } from "@prisma/client";
 import {
   Body,
   createHandler,
+  Get,
   Param,
   Post,
   Req,
+  Res,
 } from "@storyofams/next-api-decorators";
-import type { NextApiRequest } from "next";
+import { setCookie } from "cookies-next";
+import type { NextApiRequest, NextApiResponse } from "next";
 import { getClientIp } from "request-ip";
 import Authorized, { Account } from "../../../util/api/authorized";
 import { hashPass, isSamePass } from "../../../util/hash/password";
@@ -473,6 +476,99 @@ class AuthRouter {
         success: false,
       };
     }
+  }
+
+  @Post("/loginqr/generate")
+  @Authorized()
+  public async generateLoginQR(@Account() user: User) {
+    await prisma.loginQR.deleteMany({
+      where: {
+        userId: user.id,
+      },
+    });
+
+    const code = await prisma.loginQR.create({
+      data: {
+        user: {
+          connect: {
+            id: user.id,
+          },
+        },
+      },
+      select: {
+        code: true,
+      },
+    });
+
+    return { code: code.code };
+  }
+
+  @Get("/loginqr/verify/:code")
+  public async verifyLoginQR(
+    @Param("code") code: string,
+    @Req() request: NextApiRequest,
+    @Res() response: NextApiResponse
+  ) {
+    const qr = await prisma.loginQR.findFirst({
+      where: {
+        code: String(code),
+      },
+      include: {
+        user: true,
+      },
+    });
+
+    if (!qr) {
+      return {
+        status: 400,
+        message: "Invalid QR code",
+      };
+    }
+
+    const ip = getClientIp(request);
+    const os = getOperatingSystem(String(request.headers["user-agent"] || ""));
+
+    await prisma.loginQR.delete({
+      where: {
+        code: String(code),
+      },
+    });
+
+    const session = await prisma.session.create({
+      data: {
+        user: {
+          connect: {
+            id: Number(qr.userId),
+          },
+        },
+        token: Array(12)
+          .fill(0)
+          .map(() => Math.random().toString(36).substring(2))
+          .join(""),
+        ip: String(ip),
+        ua: String(request.headers["user-agent"] || "Unknown"),
+        os: OperatingSystem[os as keyof typeof OperatingSystem],
+      },
+      include: {
+        user: true,
+      },
+    });
+
+    setCookie(".frameworksession", session.token, {
+      maxAge: 60 * 60 * 24 * 7,
+      req: request,
+      res: response,
+    });
+
+    createNotification(
+      session.user.id,
+      NotificationType.LOGIN,
+      `Your account was logged in from ${ip} on a ${os} device. If this wasn't you, change your password immediately and reset your sessions.`,
+      "QR Login"
+    );
+
+    response.redirect("/");
+    response.end();
   }
 }
 

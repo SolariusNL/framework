@@ -9,7 +9,10 @@ interface ResetPasswordProps {
   user: User;
 }
 
-const ResetPassword: React.FC<ResetPasswordProps> = ({ user }) => {
+const ResetPassword: React.FC<ResetPasswordProps> & {
+  title: string;
+  description: string;
+} = ({ user }) => {
   return (
     <Action
       icon={HiKey}
@@ -36,5 +39,9 @@ const ResetPassword: React.FC<ResetPasswordProps> = ({ user }) => {
     />
   );
 };
+
+ResetPassword.title = "Reset password";
+ResetPassword.description =
+  "Reset the user's password. They will be asked to add a new password on their visit.";
 
 export default ResetPassword;

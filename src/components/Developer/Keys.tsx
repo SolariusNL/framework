@@ -179,7 +179,7 @@ const DeveloperKeys: React.FC = () => {
               {keys && keys.length > 0 ? (
                 keys.map((key) => (
                   <tr key={key.id}>
-                    <td>{key.name}</td>
+                    <td className="font-semibold">{key.name}</td>
                     <td>{new Date(key.createdAt).toLocaleDateString()}</td>
                     <td className="flex items-center gap-2">
                       <ActionIcon
@@ -199,8 +199,8 @@ const DeveloperKeys: React.FC = () => {
                                   [
                                     "Permissions",
                                     <div
-                                      className="flex flex-wrap gap-2 justify-end"
                                       key="permissions"
+                                      className="flex flex-col text-right gap-y-2"
                                     >
                                       {key.permissions.map((permission) => (
                                         <Tooltip

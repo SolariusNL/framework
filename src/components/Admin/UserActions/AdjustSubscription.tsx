@@ -13,7 +13,10 @@ interface AdjustSubscriptionProps {
   user: User;
 }
 
-const AdjustSubscription: React.FC<AdjustSubscriptionProps> = ({ user }) => {
+const AdjustSubscription: React.FC<AdjustSubscriptionProps> & {
+  title: string;
+  description: string;
+} = ({ user }) => {
   const form = useForm<{
     type: PremiumSubscriptionType | null;
     renew: Date | null;
@@ -98,5 +101,8 @@ const AdjustSubscription: React.FC<AdjustSubscriptionProps> = ({ user }) => {
     </Stateful>
   );
 };
+
+AdjustSubscription.title = "Adjust subscription";
+AdjustSubscription.description = "Adjust user's Premium subscription";
 
 export default AdjustSubscription;

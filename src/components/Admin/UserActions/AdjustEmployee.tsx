@@ -29,7 +29,10 @@ interface FormValues {
   probationary: boolean;
 }
 
-const AdjustEmployee: React.FC<AdjustEmployeeProps> = ({ user }) => {
+const AdjustEmployee: React.FC<AdjustEmployeeProps> & {
+  title: string;
+  description: string;
+} = ({ user }) => {
   const form = useForm<FormValues>({
     initialValues: {
       role: user.employee?.role || EmployeeRole.CONTENT_MODERATOR,
@@ -167,5 +170,8 @@ const AdjustEmployee: React.FC<AdjustEmployeeProps> = ({ user }) => {
     </Stateful>
   );
 };
+
+AdjustEmployee.title = "Adjust employee";
+AdjustEmployee.description = "Adjust employee information";
 
 export default AdjustEmployee;

@@ -7,11 +7,13 @@ import {
   Checkbox,
   Group,
   Modal,
+  Pagination,
   Select,
   Stack,
   Table,
   Tabs,
   Text,
+  TextInput,
   Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
@@ -56,7 +58,19 @@ const UserView = ({ user }: UserViewProps) => {
   const [punishOpened, setPunishOpened] = React.useState(false);
   const currentUser = useFrameworkUser()!;
   const [permissions, setPermissions] = React.useState<AdminPermission[]>([]);
+  const [actionSearch, setActionSearch] = React.useState("");
+  const actions = [
+    AdjustTickets,
+    ResetUsername,
+    LogoutSessions,
+    ResetEmail,
+    ResetPassword,
+    ResetBio,
+    AdjustEmployee,
+    AdjustSubscription,
+  ];
   const router = useRouter();
+  const [actionPage, setActionPage] = React.useState(1);
   const impersonationForm = useForm<{
     reason: string;
     confirm: boolean;
@@ -78,6 +92,15 @@ const UserView = ({ user }: UserViewProps) => {
       },
     },
   });
+
+  const SearchInput = () => (
+    <TextInput
+      placeholder="Search for actions..."
+      onChange={(e) => setActionSearch(e.target.value)}
+      mb="md"
+      value={actionSearch}
+    />
+  );
 
   React.useEffect(() => {
     if (user.adminPermissions) {
@@ -256,12 +279,7 @@ const UserView = ({ user }: UserViewProps) => {
             <Accordion.Item value="general">
               <Accordion.Control>General Information</Accordion.Control>
               <Accordion.Panel>
-                <Table
-                  striped
-                  mb={6}
-                  // prevent tbody row from wrapping
-                  // tailwindcss
-                >
+                <Table striped mb={6}>
                   <tbody>
                     {[
                       ["Username", user.username],
@@ -650,21 +668,24 @@ const UserView = ({ user }: UserViewProps) => {
             AdminPermission.RUN_ACTIONS
           ) ? (
             <ShadedCard>
+              <SearchInput />
+              <div className="w-full flex justify-center mb-5">
+                <Pagination
+                  total={Math.ceil(actions.length / 5)}
+                  page={actionPage}
+                  onChange={setActionPage}
+                  radius="md"
+                />
+              </div>
               <Stack spacing={12}>
-                {[
-                  AdjustTickets,
-                  ResetUsername,
-                  LogoutSessions,
-                  ResetEmail,
-                  ResetPassword,
-                  ResetBio,
-                  AdjustEmployee,
-                  AdjustSubscription,
-                ].map((Action, i) => (
-                  <ReactNoSSR key={i}>
-                    <Action user={user} />
-                  </ReactNoSSR>
-                ))}
+                {actions
+                  .filter((a) => a.title.toLowerCase().includes(actionSearch))
+                  .slice((actionPage - 1) * 5, actionPage * 5)
+                  .map((Action, i) => (
+                    <ReactNoSSR key={i}>
+                      <Action user={user} />
+                    </ReactNoSSR>
+                  ))}
               </Stack>
             </ShadedCard>
           ) : (

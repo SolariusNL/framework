@@ -9,7 +9,10 @@ interface LogoutSessionsProps {
   user: User;
 }
 
-const LogoutSessions: React.FC<LogoutSessionsProps> = ({ user }) => {
+const LogoutSessions: React.FC<LogoutSessionsProps> & {
+  title: string;
+  description: string;
+} = ({ user }) => {
   return (
     <Action
       icon={HiLogout}
@@ -35,5 +38,8 @@ const LogoutSessions: React.FC<LogoutSessionsProps> = ({ user }) => {
     />
   );
 };
+
+LogoutSessions.title = "Clear sessions";
+LogoutSessions.description = "Log the user out of all their sessions";
 
 export default LogoutSessions;

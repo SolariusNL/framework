@@ -9,7 +9,10 @@ interface ResetUsernameProps {
   user: User;
 }
 
-const ResetUsername: React.FC<ResetUsernameProps> = ({ user }) => {
+const ResetUsername: React.FC<ResetUsernameProps> & {
+  title: string;
+  description: string;
+} = ({ user }) => {
   return (
     <Action
       icon={HiClock}
@@ -38,5 +41,9 @@ const ResetUsername: React.FC<ResetUsernameProps> = ({ user }) => {
     />
   );
 };
+
+ResetUsername.title = "Reset username";
+ResetUsername.description =
+  "Reset the user's username. A random username will be generated for them.";
 
 export default ResetUsername;

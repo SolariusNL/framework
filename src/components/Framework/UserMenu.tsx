@@ -2,11 +2,16 @@ import {
   Avatar,
   Group,
   Menu,
+  Modal,
   Text,
   UnstyledButton,
-  useMantineColorScheme
+  useMantineColorScheme,
 } from "@mantine/core";
+import { getCookie } from "cookies-next";
+import Image from "next/image";
 import { useRouter } from "next/router";
+import { toDataURL } from "qrcode";
+import React, { useEffect } from "react";
 import {
   HiAdjustments,
   HiChevronDown,
@@ -16,15 +21,15 @@ import {
   HiLibrary,
   HiLogout,
   HiMoon,
+  HiQrcode,
   HiSun,
-  HiUser
+  HiUser,
 } from "react-icons/hi";
-import { useFrameworkUser } from "../../contexts/FrameworkUser";
+import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
 import useSidebar from "../../stores/useSidebar";
 import useUpdateDrawer from "../../stores/useUpdateDrawer";
 import logout from "../../util/api/logout";
 import getMediaUrl from "../../util/getMedia";
-import { User } from "../../util/prisma-types";
 import useMediaQuery from "../../util/useMediaQuery";
 import { frameworkStyles } from "../Framework";
 
@@ -37,123 +42,192 @@ const UserMenu = ({
 }) => {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const { classes, theme, cx } = frameworkStyles();
-  const user = useFrameworkUser() as User;
+  const { user, setProperty } = useAuthorizedUserStore();
   const router = useRouter();
   const { setOpened: setUpdateDrawerOpened } = useUpdateDrawer();
   const { setOpened: setSidebarOpened } = useSidebar();
   const mobile = useMediaQuery("768");
+  const [quickLoginOpened, setQuickLoginOpened] = React.useState(false);
+  const [qrDataUrl, setQrDataUrl] = React.useState("");
+
+  const refetch = async () => {
+    await fetch("/api/auth/loginqr/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: String(getCookie(".frameworksession")),
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setProperty("loginQR", data.code);
+        const apiUrl =
+          process.env.NODE_ENV === "development"
+            ? "http://10.1.1.5:3000"
+            : "https://framework.soodam.rocks";
+        toDataURL(
+          `${apiUrl}/api/auth/loginqr/verify/${data.code}`,
+          {
+            width: 256,
+          },
+          (err, url) => {
+            if (err) throw err;
+            setQrDataUrl(url);
+          }
+        );
+      });
+  };
+
+  useEffect(() => {
+    if (quickLoginOpened) {
+      refetch();
+      const interval = setInterval(() => {
+        refetch();
+      }, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [quickLoginOpened]);
 
   return (
-    <Menu
-      transition={right ? "pop" : "pop-top-right"}
-      width={240}
-      position={right ? "right" : undefined}
-    >
-      <Menu.Target>
-        <UnstyledButton
-          className={cx(classes.user, {
-            [classes.userActive]: userMenuOpened,
-          })}
-          {...(right && {
-            sx: {
-              width: "100%",
-            },
-          })}
-        >
-          <Group
-            spacing={12}
+    <>
+      <Modal
+        title="Quick login"
+        opened={quickLoginOpened}
+        onClose={() => setQuickLoginOpened(false)}
+      >
+        <Text size="sm" color="dimmed" mb="lg">
+          Scan this QR code with your camera to log in to Framework on another
+          device. Do not share this code with anyone. It allows anyone with this
+          code to log in to your account.
+        </Text>
+
+        <div className="flex justify-center p-4">
+          <Image
+            src={qrDataUrl}
+            width={256}
+            height={256}
+            className="rounded-md"
+          />
+        </div>
+      </Modal>
+      <Menu
+        transition={right ? "pop" : "pop-top-right"}
+        width={240}
+        position={right ? "right" : undefined}
+      >
+        <Menu.Target>
+          <UnstyledButton
+            className={cx(classes.user, {
+              [classes.userActive]: userMenuOpened,
+            })}
             {...(right && {
-              position: "apart",
+              sx: {
+                width: "100%",
+              },
             })}
           >
-            <div className="flex items-center gap-4">
-              <Avatar
-                src={
-                  getMediaUrl(user.avatarUri) ||
-                  `https://avatars.dicebear.com/api/identicon/${user.id}.png`
-                }
-                alt={user.username}
-                radius="xl"
-                size={20}
-              />
-              <Text weight={600} size="sm" sx={{ lineHeight: 1 }} mr={3}>
-                {user.username}
-              </Text>
-            </div>
-            {right ? (
-              <HiChevronRight size={12} stroke="1.5" />
-            ) : (
-              <HiChevronDown size={12} stroke="1.5" />
-            )}
-          </Group>
-        </UnstyledButton>
-      </Menu.Target>
-
-      <Menu.Dropdown>
-        <Menu.Label>
-          👻 Framework {process.env.NEXT_PUBLIC_VERSION} - Built by Emil
-          {"&"} contributors
-        </Menu.Label>
-        <Menu.Divider />
-        {user.role == "ADMIN" && (
-          <>
-            <Menu.Item
-              icon={<HiLibrary size={18} />}
-              onClick={() => router.push("/admin/dashboard")}
+            <Group
+              spacing={12}
+              {...(right && {
+                position: "apart",
+              })}
             >
-              Admin dashboard
-            </Menu.Item>
-            <Menu.Divider />
-          </>
-        )}
-        <Menu.Item
-          icon={<HiUser size={18} />}
-          onClick={() => router.push(`/profile/${user.username}`)}
-        >
-          Profile
-        </Menu.Item>
-        <Menu.Item
-          icon={<HiAdjustments size={18} />}
-          onClick={() => router.push("/avatar")}
-        >
-          Avatar
-        </Menu.Item>
-        <Menu.Item
-          icon={
-            colorScheme === "dark" ? <HiMoon size={18} /> : <HiSun size={18} />
-          }
-          color={colorScheme === "dark" ? "yellow" : "blue"}
-          onClick={() => toggleColorScheme()}
-        >
-          Change theme
-        </Menu.Item>
-        <Menu.Divider />
-        <Menu.Item
-          icon={<HiCog size={18} />}
-          onClick={() => router.push("/settings")}
-        >
-          Settings
-        </Menu.Item>
-        <Menu.Item
-          icon={<HiInformationCircle size={18} />}
-          onClick={() => {
-            setUpdateDrawerOpened(true);
-            if (mobile) setSidebarOpened(false);
-          }}
-        >
-          What&apos;s new?
-        </Menu.Item>
-        <Menu.Divider />
-        <Menu.Item
-          sx={{ fontWeight: 500 }}
-          color="red"
-          icon={<HiLogout />}
-          onClick={async () => await logout().then(() => router.push("/login"))}
-        >
-          Logout
-        </Menu.Item>
-      </Menu.Dropdown>
-    </Menu>
+              <div className="flex items-center gap-4">
+                <Avatar
+                  src={
+                    getMediaUrl(user?.avatarUri!) ||
+                    `https://avatars.dicebear.com/api/identicon/${user?.id}.png`
+                  }
+                  alt={user?.username}
+                  radius="xl"
+                  size={20}
+                />
+                <Text weight={600} size="sm" sx={{ lineHeight: 1 }} mr={3}>
+                  {user?.username}
+                </Text>
+              </div>
+              {right ? (
+                <HiChevronRight size={12} stroke="1.5" />
+              ) : (
+                <HiChevronDown size={12} stroke="1.5" />
+              )}
+            </Group>
+          </UnstyledButton>
+        </Menu.Target>
+
+        <Menu.Dropdown>
+          <Menu.Label>
+            👻 Framework {process.env.NEXT_PUBLIC_VERSION} - Built by Emil
+            {"&"} contributors
+          </Menu.Label>
+          <Menu.Divider />
+          {user?.role == "ADMIN" && (
+            <>
+              <Menu.Item
+                icon={<HiLibrary />}
+                onClick={() => router.push("/admin/dashboard")}
+              >
+                Admin dashboard
+              </Menu.Item>
+              <Menu.Divider />
+            </>
+          )}
+          <Menu.Item
+            icon={<HiUser />}
+            onClick={() => router.push(`/profile/${user?.username}`)}
+          >
+            Profile
+          </Menu.Item>
+          <Menu.Item
+            icon={<HiAdjustments />}
+            onClick={() => router.push("/avatar")}
+          >
+            Avatar
+          </Menu.Item>
+          <Menu.Item
+            icon={colorScheme === "dark" ? <HiMoon /> : <HiSun />}
+            color={colorScheme === "dark" ? "yellow" : "blue"}
+            onClick={() => toggleColorScheme()}
+          >
+            Change theme
+          </Menu.Item>
+          <Menu.Divider />
+          <Menu.Item icon={<HiCog />} onClick={() => router.push("/settings")}>
+            Settings
+          </Menu.Item>
+          <Menu.Item
+            icon={<HiInformationCircle />}
+            onClick={() => {
+              setUpdateDrawerOpened(true);
+              if (mobile) setSidebarOpened(false);
+            }}
+          >
+            What&apos;s new?
+          </Menu.Item>
+          <Menu.Divider />
+          <Menu.Item
+            icon={<HiQrcode />}
+            onClick={() => {
+              setQuickLoginOpened(true);
+              setSidebarOpened(false);
+              setUpdateDrawerOpened(false);
+            }}
+          >
+            Quick login
+          </Menu.Item>
+          <Menu.Item
+            sx={{ fontWeight: 500 }}
+            color="red"
+            icon={<HiLogout />}
+            onClick={async () =>
+              await logout().then(() => router.push("/login"))
+            }
+          >
+            Logout
+          </Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
+    </>
   );
 };
 

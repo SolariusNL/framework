@@ -104,6 +104,7 @@ const user = Prisma.validator<Prisma.UserArgs>()({
         code: true,
       },
     },
+    loginQR: true,
   },
 });
 
@@ -236,6 +237,7 @@ export const userSelect: Prisma.UserSelect = {
       code: true,
     },
   },
+  loginQR: true,
 };
 
 const article = Prisma.validator<Prisma.AdminArticleArgs>()({

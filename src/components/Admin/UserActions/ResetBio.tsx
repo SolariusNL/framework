@@ -9,7 +9,10 @@ interface ResetBioProps {
   user: User;
 }
 
-const ResetBio: React.FC<ResetBioProps> = ({ user }) => {
+const ResetBio: React.FC<ResetBioProps> & {
+  title: string;
+  description: string;
+} = ({ user }) => {
   return (
     <Action
       icon={HiChat}
@@ -35,5 +38,8 @@ const ResetBio: React.FC<ResetBioProps> = ({ user }) => {
     />
   );
 };
+
+ResetBio.title = "Reset bio";
+ResetBio.description = "Reset the user's bio";
 
 export default ResetBio;
