@@ -1,4 +1,5 @@
 @import url("https://rsms.me/inter/inter.css");
+@import url("https://fonts.googleapis.com/css2?family=Lexend+Deca&display=swap");
 
 html,
 body {
@@ -14,7 +15,8 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: Inter var !important;
+  font-family: Lexend Deca, Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
+    Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif !important;
 }
 
 button,
