@@ -1,3 +1,4 @@
+import { ReceiveNotification } from "@prisma/client";
 import {
   Body,
   createHandler,
@@ -7,9 +8,12 @@ import {
 } from "@storyofams/next-api-decorators";
 import { z } from "zod";
 import Authorized, { Account } from "../../../util/api/authorized";
+import { sendMail } from "../../../util/mail";
 import prisma from "../../../util/prisma";
 import type { ChatMessage, User } from "../../../util/prisma-types";
 import { chatMessageSelect } from "../../../util/prisma-types";
+
+const lastEmailSent = new Map<number, Date>();
 
 class ChatRouter {
   @Get("/conversation/:id")
@@ -152,6 +156,36 @@ class ChatRouter {
       },
       select: chatMessageSelect,
     });
+
+    if (
+      to.lastSeen &&
+      Date.now() - new Date(to.lastSeen).getTime() > 5 * 60 * 1000 &&
+      to.notificationPreferences.includes(ReceiveNotification.MISSED_MESSAGES)
+    ) {
+      const lastSent = lastEmailSent.get(to.id);
+      if (!lastSent || Date.now() - lastSent.getTime() > 5 * 60 * 1000) {
+        lastEmailSent.set(to.id, new Date());
+
+        sendMail(
+          to.email,
+          `New message from ${user.username}`,
+          `
+          <h1>New message from ${user.username}</h1>
+          <table>
+            <tr>
+              <td>From</td>
+              <td>${user.username}</td>
+            </tr>
+            <tr>
+              <td>Message</td>
+              <td>${content}</td>
+            </tr>
+          </table>
+          <a href="https://framework.soodam.rocks">Go to Framework</a>
+        `
+        );
+      }
+    }
 
     return message;
   }

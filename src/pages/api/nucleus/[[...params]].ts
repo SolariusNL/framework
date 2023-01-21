@@ -4,9 +4,12 @@ import {
   Header,
   Param,
   Post,
+  Query,
 } from "@storyofams/next-api-decorators";
+import fetch from "node-fetch";
 import Authorized, {
   Account,
+  AdminAuthorized,
   Nucleus,
   NucleusAuthorized,
 } from "../../../util/api/authorized";
@@ -15,7 +18,6 @@ import prisma from "../../../util/prisma";
 import type { NucleusKey, User } from "../../../util/prisma-types";
 import { nonCurrentUserSelect } from "../../../util/prisma-types";
 import { RateLimitMiddleware } from "../../../util/rateLimit";
-import fetch from "node-fetch";
 
 class NucleusRouter {
   @Post("/auth")
@@ -322,7 +324,7 @@ class NucleusRouter {
       where: {
         id: String(id),
         game: {
-          authorId: user.id,
+          authorId: user.role === "ADMIN" ? undefined : user.id,
         },
       },
     });
@@ -389,7 +391,7 @@ class NucleusRouter {
     const game = await prisma.game.findFirst({
       where: {
         id: Number(gameid),
-        authorId: user.id,
+        authorId: user.role === "ADMIN" ? undefined : user.id,
       },
     });
 
@@ -426,6 +428,92 @@ class NucleusRouter {
     return {
       success: true,
       message: "Game shut down",
+    };
+  }
+
+  @Get("/test/:gameid")
+  @Authorized()
+  public async test(@Param("gameid") gameid: number, @Account() user: User) {
+    const game = await prisma.game.findFirst({
+      where: {
+        id: Number(gameid),
+        authorId: user.role === "ADMIN" ? undefined : user.id,
+      },
+    });
+
+    if (!game) {
+      return {
+        success: false,
+        message:
+          "Invalid game or you do not have permission to test its connections",
+      };
+    }
+
+    const connections = await prisma.connection.findMany({
+      where: {
+        gameId: game.id,
+      },
+    });
+
+    const conn = connections[0];
+
+    async function error() {
+      logger().warn(
+        `Failed to test connection ${conn.id} for game ${conn.gameId}, will be marked as offline`
+      );
+      await prisma.connection.update({
+        where: {
+          id: conn.id,
+        },
+        data: {
+          online: false,
+        },
+      });
+
+      return {
+        success: false,
+        message: "Connection offline",
+      };
+    }
+
+    try {
+      const res = await fetch(`http://${conn.ip}:${conn.port}/api/server`);
+
+      if (!res.ok) {
+        return error();
+      }
+
+      const json = await res.json();
+
+      return {
+        success: true,
+        data: json,
+      };
+    } catch (e) {
+      return error();
+    }
+  }
+
+  @Get("/servers")
+  @AdminAuthorized()
+  public async getServers(
+    @Query("page") page: number,
+    @Query("status") status: "online" | "offline" | "all"
+  ) {
+    const where = {
+      online: status === "all" ? undefined : status === "online",
+    };
+
+    const count = await prisma.connection.count({ where });
+    const connections = await prisma.connection.findMany({
+      where,
+      take: 20,
+      skip: (page - 1) * 20,
+    });
+
+    return {
+      pages: Math.ceil(count / 20),
+      servers: connections,
     };
   }
 }

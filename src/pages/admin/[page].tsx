@@ -39,6 +39,7 @@ import Tasks from "../../components/Admin/Employee/Tasks";
 import Activity from "../../components/Admin/Pages/Activity";
 import Articles from "../../components/Admin/Pages/Articles";
 import BannedIPs from "../../components/Admin/Pages/BannedIPs";
+import Cosmic from "../../components/Admin/Pages/Cosmic";
 import Dashboard from "../../components/Admin/Pages/Dashboard";
 import Directory from "../../components/Admin/Pages/Directory";
 import Instance from "../../components/Admin/Pages/Instance";
@@ -204,12 +205,20 @@ const data = [
     subtitle: "Review admin activity logs",
   },
   {
+    label: "Cosmic",
+    icon: HiServer,
+    href: "/admin/cosmic",
+    render: <Cosmic />,
+    subtitle: "Manage Cosmic servers through the Nucleus API",
+  },
+  {
     label: "Settings",
     icon: HiCog,
     href: "/admin/settings",
     render: <Settings />,
     subtitle: "Manage your personal admin settings",
-  },
+    show: false,
+  }
 ];
 
 export type PageName =
@@ -284,10 +293,10 @@ const AdminDashboard: React.FC<{
     </a>
   );
 
-  const links = data.map((item) => (
+  const links = data.filter((item) => item.show !== false).map((item) => (
     <Link
       key={item.label}
-      href={item.href}
+      href={String(item.href)}
       onClick={(event) => {
         setActive(item.label as PageName);
         event.preventDefault();
@@ -347,13 +356,9 @@ const AdminDashboard: React.FC<{
               <Link href={"/"}>
                 <SidebarItem label="Return to Framework" icon={HiArrowLeft} />
               </Link>
-              <SidebarItem
-                label="Logout"
-                icon={HiLogout}
-                onClick={async () =>
-                  await logout().then(() => router.push("/login"))
-                }
-              />
+              <Link href={"/admin/settings"}>
+                <SidebarItem label="Settings" icon={HiCog} />
+              </Link>
             </Navbar.Section>
           </Navbar>
         }

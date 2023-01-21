@@ -8,42 +8,54 @@ import {
   Text,
   Tooltip,
 } from "@mantine/core";
+import { openModal } from "@mantine/modals";
+import { showNotification } from "@mantine/notifications";
+import { Prism } from "@mantine/prism";
 import { Connection } from "@prisma/client";
 import { getCookie } from "cookies-next";
-import React from "react";
-import { HiStop, HiTrash } from "react-icons/hi";
+import React, { useEffect } from "react";
+import { HiStop, HiTrash, HiWifi, HiXCircle } from "react-icons/hi";
 import shutdownNucleus from "../../util/fetch/shutdownNucleus";
+import ModernEmptyState from "../ModernEmptyState";
 
 interface ConnectionsWidgetProps {
   filterId?: number;
+  controlledData?: Connection[];
 }
 
-const ConnectionsWidget = ({ filterId }: ConnectionsWidgetProps) => {
-  const [conns, setConns] = React.useState<Connection[] | null>(null);
+const ConnectionsWidget = ({
+  filterId,
+  controlledData,
+}: ConnectionsWidgetProps) => {
+  const [conns, setConns] = React.useState<Connection[] | null>(
+    controlledData || null
+  );
   const [loading, setLoading] = React.useState(false);
   const [selected, setSelected] = React.useState<Connection | null>(null);
 
   const [deleteOpen, setDeleteOpen] = React.useState(false);
 
   React.useEffect(() => {
-    setLoading(true);
-    fetch("/api/nucleus/my/connections", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: String(getCookie(".frameworksession")),
-      },
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        setConns(
-          filterId
-            ? res.filter((conn: Connection) => conn.gameId === filterId)
-            : res
-        );
+    if (!controlledData) {
+      setLoading(true);
+      fetch("/api/nucleus/my/connections", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: String(getCookie(".frameworksession")),
+        },
       })
-      .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
+        .then((res) => res.json())
+        .then((res) => {
+          setConns(
+            filterId
+              ? res.filter((conn: Connection) => conn.gameId === filterId)
+              : res
+          );
+        })
+        .catch((err) => console.error(err))
+        .finally(() => setLoading(false));
+    }
   }, []);
 
   const deleteConnection = async () => {
@@ -70,6 +82,10 @@ const ConnectionsWidget = ({ filterId }: ConnectionsWidgetProps) => {
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
   };
+
+  useEffect(() => {
+    if (controlledData) setConns(controlledData);
+  }, [controlledData]);
 
   return (
     <>
@@ -146,6 +162,48 @@ const ConnectionsWidget = ({ filterId }: ConnectionsWidgetProps) => {
                 <td>{conn.port}</td>
                 <td>{conn.gameId}</td>
                 <td className="flex">
+                  <Tooltip label="Test connection">
+                    <ActionIcon
+                      onClick={async () => {
+                        await fetch(`/api/nucleus/test/${conn.gameId}`, {
+                          method: "GET",
+                          headers: {
+                            "Content-Type": "application/json",
+                            Authorization: String(
+                              getCookie(".frameworksession")
+                            ),
+                          },
+                        })
+                          .then((res) => res.json())
+                          .then((res) => {
+                            if (res.success) {
+                              openModal({
+                                title: "Connection Test",
+                                children: (
+                                  <>
+                                    <Text mb="md">
+                                      Connection to {conn.ip}:{conn.port} was
+                                      successful. Here is the response:
+                                    </Text>
+                                    <Prism language="json">
+                                      {JSON.stringify(res.data, null, 2)}
+                                    </Prism>
+                                  </>
+                                ),
+                              });
+                            } else {
+                              showNotification({
+                                title: "Connection Failed",
+                                message: `Connection to ${conn.ip}:${conn.port} failed.`,
+                                icon: <HiXCircle />,
+                              });
+                            }
+                          });
+                      }}
+                    >
+                      <HiWifi />
+                    </ActionIcon>
+                  </Tooltip>
                   <Tooltip label="Shutdown">
                     <ActionIcon
                       onClick={async () => await shutdownNucleus(conn.gameId)}
@@ -169,7 +227,12 @@ const ConnectionsWidget = ({ filterId }: ConnectionsWidgetProps) => {
             ))
           ) : (
             <tr>
-              <td colSpan={5}>No connections found</td>
+              <td colSpan={5}>
+                <ModernEmptyState
+                  title="No servers"
+                  body="There are no servers to display"
+                />
+              </td>
             </tr>
           )}
         </tbody>

@@ -20,6 +20,8 @@ enum ReceiveNotification {
   SENT_DONATION
   LOGIN
   ADMIN_REPORTS
+  SERVER_OFFLINE
+  MISSED_MESSAGES
 }
 
 enum PrivacyPreferences {

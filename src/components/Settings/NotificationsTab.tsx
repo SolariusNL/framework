@@ -45,6 +45,19 @@ const NotificationsTab = ({ user }: NotificationsTabProps) => {
         label: "Receive outbound donation notifications",
       },
     },
+    EMAILS: {
+      MISSED_MESSAGES: {
+        title: "When you miss messages",
+        description: "Receive an email when you miss messages in a chat",
+        label: "Receive missed message emails",
+      },
+      SERVER_OFFLINE: {
+        title: "When one of your servers goes offline",
+        description:
+          "Receive an email when one of your Cosmic servers goes offline",
+        label: "Receive server offline emails",
+      },
+    },
   };
 
   const categoryDescriptions = {
