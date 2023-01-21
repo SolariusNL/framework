@@ -125,7 +125,7 @@ const Register: NextPage = () => {
               label="Email"
               type="email"
               description="Used to send you password reset emails, and for general protection."
-              placeholder="amogus@gmail.com"
+              placeholder="Enter an email"
               required
               {...form.getInputProps("email")}
             />
@@ -134,7 +134,7 @@ const Register: NextPage = () => {
               label="Password"
               type="password"
               description="Your password is used to login to your account."
-              placeholder="poop123123123"
+              placeholder="Enter a password"
               required
               {...form.getInputProps("password")}
             />

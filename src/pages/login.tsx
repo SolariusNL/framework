@@ -183,7 +183,7 @@ const Login: NextPage = () => {
               <TextInput
                 label="Password"
                 type="password"
-                placeholder="balllicker935"
+                placeholder="Enter a password"
                 required
                 {...form.getInputProps("password")}
               />
