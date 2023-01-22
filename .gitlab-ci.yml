@@ -1,0 +1,22 @@
+Copy code
+image: node:14.x
+
+cache:
+  paths:
+    - node_modules/
+    - .next/cache/
+
+stages:
+  - test
+
+test:
+  script:
+    - yarn
+    - yarn run generate
+    - yarn run create-config
+    - yarn run build
+    - yarn run lint
+  only:
+    - main
+    - merge_requests
+    - tags
