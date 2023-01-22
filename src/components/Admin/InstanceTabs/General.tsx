@@ -20,10 +20,10 @@ const GeneralTab: React.FC = () => {
         setVersion(res.version);
       });
 
-    fetch("https://tsodinq.github.io/framework/docs/version.txt")
-      .then((res) => res.text())
-      .then((res) => {
-        setLatestVersion(res.substring(0, res.length - 1));
+    fetch("https://invent.soodam.rocks/api/v4/projects/2/releases/0.6.3")
+      .then((res) => res.json())
+      .then((res: { tag_name: string }) => {
+        setLatestVersion(res.tag_name);
       });
   }, []);
 
@@ -38,7 +38,7 @@ const GeneralTab: React.FC = () => {
             Installed
           </Text>
           <Anchor
-            href={`https://github.com/Tsodinq/framework/releases/tag/${version}`}
+            href={`https://invent.soodam.rocks/Soodam.re/framework/-/releases/${version}`}
             target="_blank"
             className="flex items-center"
           >
@@ -53,7 +53,7 @@ const GeneralTab: React.FC = () => {
             Latest
           </Text>
           <Anchor
-            href={`https://github.com/Tsodinq/framework/releases/tag/${version}`}
+            href={`https://invent.soodam.rocks/Soodam.re/framework/-/releases/${version}`}
             target="_blank"
             className="flex items-center"
           >

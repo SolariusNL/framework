@@ -82,7 +82,7 @@ const AboutTab = ({ user }: AboutTabProps) => {
         <Button
           leftIcon={<HiExternalLink />}
           component="a"
-          href="https://github.com/Tsodinq/framework"
+          href="https://invent.soodam.rocks/Soodam.re/framework"
           target="_blank"
           rel="noreferrer"
         >
@@ -92,7 +92,7 @@ const AboutTab = ({ user }: AboutTabProps) => {
         <Button
           leftIcon={<HiExternalLink />}
           component="a"
-          href="https://github.com/Tsodinq/framework/issues"
+          href="https://invent.soodam.rocks/Soodam.re/framework/-/issues/new?issue[assignee_id]=&issue[milestone_id]="
           target="_blank"
           rel="noreferrer"
         >
@@ -102,7 +102,7 @@ const AboutTab = ({ user }: AboutTabProps) => {
         <Button
           leftIcon={<HiExternalLink />}
           component="a"
-          href="https://github.com/Tsodinq/framework/blob/main/LICENSE"
+          href="https://invent.soodam.rocks/Soodam.re/framework/-/blob/main/LICENSE"
           target="_blank"
           rel="noreferrer"
         >
