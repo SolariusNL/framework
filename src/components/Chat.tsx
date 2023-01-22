@@ -67,6 +67,7 @@ const Chat: React.FC = () => {
   const [picker, setPicker] = useState(false);
   const pickerRef = useRef<HTMLDivElement>(null);
   const socket = useContext(SocketContext);
+  const messagesRef = useRef<HTMLDivElement>(null);
 
   useOnClickOutside(pickerRef, () => setPicker(false));
 
@@ -183,6 +184,12 @@ const Chat: React.FC = () => {
         if (currentConversation === data.authorId) {
           setConversationData((prev) => [...prev, data]);
           markAsRead();
+          setTimeout(() => {
+            messagesRef.current?.scrollTo({
+              top: messagesRef.current?.scrollHeight,
+              behavior: "smooth",
+            });
+          }, 300);
         } else {
           showNotification({
             title: "New chat",
@@ -325,6 +332,7 @@ const Chat: React.FC = () => {
                   overflowX: "hidden",
                   overflowY: "auto",
                 }}
+                ref={messagesRef}
               >
                 <Stack spacing={12}>
                   {conversationData &&

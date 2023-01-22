@@ -7,7 +7,7 @@ import {
   Skeleton,
   Stack,
   Text,
-  Textarea
+  Textarea,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { StatusPosts } from "@prisma/client";
@@ -17,7 +17,8 @@ import {
   HiChat,
   HiClipboardCopy,
   HiDotsVertical,
-  HiFlag
+  HiFlag,
+  HiHeart,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import { useFrameworkUser } from "../../contexts/FrameworkUser";
@@ -142,60 +143,82 @@ const FeedWidget: React.FC = () => {
             <>
               <Stack spacing={24}>
                 {statusPosts.map((status) => (
-                  <div key={status.id} className="flex justify-between">
-                    <div className="flex">
-                      <div>
-                        <UserContext user={status.user}>
-                          <Avatar
-                            size={42}
-                            src={getMediaUrl(status.user.avatarUri)}
-                            mr={12}
-                            className="rounded-full"
-                          />
-                        </UserContext>
-                      </div>
-                      <div className="flex-grow">
+                  <div key={status.id}>
+                    <div className="flex justify-between">
+                      <div className="flex">
                         <div>
-                          <Text mb={2} size="sm">
-                            @{status.user.username}
-                          </Text>
-                          <Text color="dimmed" size="xs">
-                            {getRelativeTime(
-                              new Date(status.createdAt as Date)
-                            )}
-                          </Text>
+                          <UserContext user={status.user}>
+                            <Avatar
+                              size={42}
+                              src={getMediaUrl(status.user.avatarUri)}
+                              mr={12}
+                              className="rounded-full"
+                            />
+                          </UserContext>
                         </div>
-                        <Text mt={12}>{status.content}</Text>
+                        <div className="flex-grow">
+                          <div>
+                            <Text mb={2} size="sm">
+                              @{status.user.username}
+                            </Text>
+                            <Text color="dimmed" size="xs">
+                              {getRelativeTime(
+                                new Date(status.createdAt as Date)
+                              )}
+                            </Text>
+                          </div>
+                          <Text mt={12} mb="md">
+                            {status.content}
+                          </Text>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              compact
+                              leftIcon={<HiHeart />}
+                              color="pink"
+                              variant="light"
+                            >
+                              0
+                            </Button>
+                            <Button
+                              compact
+                              leftIcon={<HiChat />}
+                              color="blue"
+                              variant="light"
+                            >
+                              0
+                            </Button>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                    <div>
-                      <Menu width={180}>
-                        <Menu.Target>
-                          <ActionIcon>
-                            <HiDotsVertical />
-                          </ActionIcon>
-                        </Menu.Target>
-                        <Menu.Dropdown>
-                          <Menu.Item
-                            color="red"
-                            icon={<HiFlag />}
-                            onClick={() => {
-                              setReportUser(status.user);
-                              setReportOpened(true);
-                            }}
-                          >
-                            Report
-                          </Menu.Item>
-                          <Menu.Item
-                            icon={<HiClipboardCopy />}
-                            onClick={() => {
-                              navigator.clipboard.writeText(status.content);
-                            }}
-                          >
-                            Copy content
-                          </Menu.Item>
-                        </Menu.Dropdown>
-                      </Menu>
+                      <div>
+                        <Menu width={180}>
+                          <Menu.Target>
+                            <ActionIcon>
+                              <HiDotsVertical />
+                            </ActionIcon>
+                          </Menu.Target>
+                          <Menu.Dropdown>
+                            <Menu.Item
+                              color="red"
+                              icon={<HiFlag />}
+                              onClick={() => {
+                                setReportUser(status.user);
+                                setReportOpened(true);
+                              }}
+                            >
+                              Report
+                            </Menu.Item>
+                            <Menu.Item
+                              icon={<HiClipboardCopy />}
+                              onClick={() => {
+                                navigator.clipboard.writeText(status.content);
+                              }}
+                            >
+                              Copy content
+                            </Menu.Item>
+                          </Menu.Dropdown>
+                        </Menu>
+                      </div>
                     </div>
                   </div>
                 ))}
