@@ -7,13 +7,11 @@ import {
   Checkbox,
   Group,
   Modal,
-  Pagination,
   Select,
   Stack,
   Table,
   Tabs,
   Text,
-  TextInput,
   Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
@@ -24,26 +22,17 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import { HiCheckCircle } from "react-icons/hi";
-import ReactNoSSR from "react-no-ssr";
 import { useFrameworkUser } from "../../contexts/FrameworkUser";
 import { useUserInformationDialog } from "../../contexts/UserInformationDialog";
 import employeeRoleMeta from "../../data/employeeRoles";
 import getMediaUrl from "../../util/getMedia";
 import Copy from "../Copy";
 import ModernEmptyState from "../ModernEmptyState";
-import ShadedCard from "../ShadedCard";
 import Stateful from "../Stateful";
 import NoteTable, { NoteUser } from "./NoteTable";
 import { AdminViewUser } from "./Pages/Users";
 import Punishment from "./Punishment";
-import AdjustEmployee from "./UserActions/AdjustEmployee";
-import AdjustSubscription from "./UserActions/AdjustSubscription";
-import AdjustTickets from "./UserActions/AdjustTickets";
-import LogoutSessions from "./UserActions/LogoutSessions";
-import ResetBio from "./UserActions/ResetBio";
-import ResetEmail from "./UserActions/ResetEmail";
-import ResetPassword from "./UserActions/ResetPassword";
-import ResetUsername from "./UserActions/ResetUsername";
+import UserActions from "./UserActions";
 
 interface UserViewProps {
   user: AdminViewUser;
@@ -58,19 +47,7 @@ const UserView = ({ user }: UserViewProps) => {
   const [punishOpened, setPunishOpened] = React.useState(false);
   const currentUser = useFrameworkUser()!;
   const [permissions, setPermissions] = React.useState<AdminPermission[]>([]);
-  const [actionSearch, setActionSearch] = React.useState("");
-  const actions = [
-    AdjustTickets,
-    ResetUsername,
-    LogoutSessions,
-    ResetEmail,
-    ResetPassword,
-    ResetBio,
-    AdjustEmployee,
-    AdjustSubscription,
-  ];
   const router = useRouter();
-  const [actionPage, setActionPage] = React.useState(1);
   const impersonationForm = useForm<{
     reason: string;
     confirm: boolean;
@@ -92,15 +69,6 @@ const UserView = ({ user }: UserViewProps) => {
       },
     },
   });
-
-  const SearchInput = () => (
-    <TextInput
-      placeholder="Search for actions..."
-      onChange={(e) => setActionSearch(e.target.value)}
-      mb="md"
-      value={actionSearch}
-    />
-  );
 
   React.useEffect(() => {
     if (user.adminPermissions) {
@@ -664,36 +632,7 @@ const UserView = ({ user }: UserViewProps) => {
         </Tabs.Panel>
 
         <Tabs.Panel value="actions">
-          {currentUser.adminPermissions.includes(
-            AdminPermission.RUN_ACTIONS
-          ) ? (
-            <ShadedCard>
-              <SearchInput />
-              <div className="w-full flex justify-center mb-5">
-                <Pagination
-                  total={Math.ceil(actions.length / 5)}
-                  page={actionPage}
-                  onChange={setActionPage}
-                  radius="md"
-                />
-              </div>
-              <Stack spacing={12}>
-                {actions
-                  .filter((a) => a.title.toLowerCase().includes(actionSearch))
-                  .slice((actionPage - 1) * 5, actionPage * 5)
-                  .map((Action, i) => (
-                    <ReactNoSSR key={i}>
-                      <Action user={user} />
-                    </ReactNoSSR>
-                  ))}
-              </Stack>
-            </ShadedCard>
-          ) : (
-            <ModernEmptyState
-              title="No actions available"
-              body="You do not have permission to run actions."
-            />
-          )}
+          <UserActions target={user} />
         </Tabs.Panel>
 
         <Tabs.Panel value="permissions">
