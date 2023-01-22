@@ -170,7 +170,7 @@ class ChatRouter {
           to.email,
           `New message from ${user.username}`,
           `
-          <h1>New message from ${user.username}</h1>
+          <h1>You got a new message from ${user.username}</h1>
           <table>
             <tr>
               <td>From</td>
