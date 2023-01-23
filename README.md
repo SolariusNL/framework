@@ -1,8 +1,7 @@
 <div align="center">
-  <h1>Framework App</h1>
+  <img src="https://invent.soodam.rocks/Soodam.re/framework/-/raw/main/public/logo-dark.png" />
+  <h1>Framework</h1>
   
-[![Main workflow](https://github.com/Tsodinq/framework/actions/workflows/main.yml/badge.svg)](https://github.com/Tsodinq/framework/actions/workflows/main.yml)
-
   Framework is an online platform that empowers imagination and innovation. This repository is the home to the Framework web application.
   
 </div>
@@ -22,11 +21,11 @@ Framework is built on the following technologies:
 
 Framework has a pretty large, distributed codebase consisting of what we call 'components'. Check them out, and freely research the workings of our platform.
 
-- [framework-flags](https://github.com/Tsodinq/framework-flags) - **ℹ️ Under Development** Our own feature flag implementation, soon to replace HappyKit
-- [framework-persistent-file-storage](https://github.com/Tsodinq/framework-persistent-file-storage) - Serve images from static Next.js directories
-- [framework-discord](https://github.com/Tsodinq/framework-discord) - Source code of Framework's Discord bot
-- [framework-desktop](https://github.com/Tsodinq/framework-desktop) - Framework desktop client
-- [framework-wiki](https://github.com/Tsodinq/framework-wiki) - Framework wiki, contains guides, tutorials, API documentation, and lots more
+- [framework-flags](https://invent.soodam.rocks/Soodam.re/framework-flags) - **ℹ️ Under Development** Our own feature flag implementation, soon to replace HappyKit
+- [framework-persistent-file-storage](https://invent.soodam.rocks/Soodam.re/framework-persistent-file-storage) - Serve images from static Next.js directories
+- [framework-discord](https://invent.soodam.rocks/Soodam.re/framework-discord) - Source code of Framework's Discord bot
+- [framework-desktop](https://invent.soodam.rocks/Soodam.re/framework-desktop) - Framework desktop client
+- [framework-wiki](https://invent.soodam.rocks/Soodam.re/framework-wiki) - Framework wiki, contains guides, tutorials, API documentation, and lots more
 
 ## Directory Structure
 
