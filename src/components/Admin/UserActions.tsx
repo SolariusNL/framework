@@ -35,7 +35,7 @@ const ActionList: React.FC<{
 
   return (
     <>
-      {user?.adminPermissions.includes(AdminPermission.EDIT_PERMISSIONS) ? (
+      {user?.adminPermissions.includes(AdminPermission.RUN_ACTIONS) ? (
         actions
           .filter((a) => a.title.toLowerCase().includes(actionSearch))
           .slice((actionPage - 1) * 5, actionPage * 5)
