@@ -203,7 +203,6 @@ const UserView = ({ user }: UserViewProps) => {
                     setOpened(true);
                   }}
                   disabled={
-                    user.sessions.length === 0 ||
                     !currentUser.adminPermissions.includes(
                       AdminPermission.IMPERSONATE_USERS
                     )
