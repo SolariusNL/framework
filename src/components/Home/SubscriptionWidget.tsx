@@ -41,7 +41,7 @@ const SubscriptionWidget: React.FC = () => {
       <Section title="Recommended games" description="Games you might like." />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {games.map((game, i) => (
-          <Link href={`/games/${game.id}`} key={i}>
+          <Link href={`/game/${game.id}`} key={i}>
             <ShadedButton className="w-full flex flex-col">
               <Text size="lg" weight={500}>
                 {game.name}
