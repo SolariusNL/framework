@@ -54,6 +54,7 @@ import useExperimentsStore, {
   ExperimentId,
 } from "../stores/useExperimentsStore";
 import useSidebar from "../stores/useSidebar";
+import logout from "../util/api/logout";
 import { getIpcRenderer } from "../util/electron";
 import { User } from "../util/prisma-types";
 import useMediaQuery from "../util/useMediaQuery";
@@ -420,17 +421,19 @@ const Framework = ({
             </Text>
             <Button
               variant="white"
-              onClick={() => {
+              onClick={async () => {
                 const newCookie = getCookie(".frameworksession.old");
 
-                setCookie(".frameworksession", newCookie);
-                deleteCookie(".frameworksession.old");
+                await logout().then(() => {
+                  setCookie(".frameworksession", newCookie);
+                  deleteCookie(".frameworksession.old");
 
-                router.push("/admin/users");
-                showNotification({
-                  title: "Impersonation stopped",
-                  message: "You are no longer impersonating this user.",
-                  icon: <HiCheckCircle />,
+                  router.push("/admin/users");
+                  showNotification({
+                    title: "Impersonation stopped",
+                    message: "You are no longer impersonating this user.",
+                    icon: <HiCheckCircle />,
+                  });
                 });
               }}
             >

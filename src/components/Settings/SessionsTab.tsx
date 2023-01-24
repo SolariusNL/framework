@@ -134,6 +134,12 @@ const SessionsTab: React.FC<SessionsTabProps> = ({ user }) => {
                       : session.ip}{" "}
                     - {session.ua.split(")")[0].split("(")[1]}
                   </Text>
+                  {session.impersonation && (
+                    <Text mt="md" color="dimmed" size="sm">
+                      Your account is being accessed by a staff member
+                      using this session.
+                    </Text>
+                  )}
                 </div>
               </div>
               <Tooltip label="Log out of this session">
