@@ -36,9 +36,11 @@ import { frameworkStyles } from "../Framework";
 const UserMenu = ({
   userMenuOpened,
   right,
+  minimal,
 }: {
   userMenuOpened: boolean;
   right?: boolean;
+  minimal?: boolean;
 }) => {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const { classes, theme, cx } = frameworkStyles();
@@ -142,15 +144,19 @@ const UserMenu = ({
                   radius="xl"
                   size={20}
                 />
-                <Text weight={600} size="sm" sx={{ lineHeight: 1 }} mr={3}>
-                  {user?.username}
-                </Text>
+                {!minimal && (
+                  <>
+                    <Text weight={600} size="sm" sx={{ lineHeight: 1 }} mr={3}>
+                      {user?.username}
+                    </Text>
+                    {right ? (
+                      <HiChevronRight size={12} stroke="1.5" />
+                    ) : (
+                      <HiChevronDown size={12} stroke="1.5" />
+                    )}
+                  </>
+                )}
               </div>
-              {right ? (
-                <HiChevronRight size={12} stroke="1.5" />
-              ) : (
-                <HiChevronDown size={12} stroke="1.5" />
-              )}
             </Group>
           </UnstyledButton>
         </Menu.Target>

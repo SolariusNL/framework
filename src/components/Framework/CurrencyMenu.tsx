@@ -8,16 +8,16 @@ import {
   HiTicket,
   HiViewList,
 } from "react-icons/hi";
-import { useFrameworkUser } from "../../contexts/FrameworkUser";
 import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
 import abbreviateNumber from "../../util/abbreviate";
-import { User } from "../../util/prisma-types";
 import { frameworkStyles } from "../Framework";
 
 const CurrencyMenu = ({
   currencyMenuOpened,
+  minimal,
 }: {
   currencyMenuOpened: boolean;
+  minimal?: boolean;
 }) => {
   const router = useRouter();
   const { classes, theme, cx } = frameworkStyles();
@@ -32,15 +32,17 @@ const CurrencyMenu = ({
           })}
         >
           <Group spacing={6}>
-            <HiCurrencyDollar color={theme.colors.green[3]} />
-            <Text
-              color={theme.colors.green[4]}
-              weight={600}
-              size="sm"
-              sx={{ lineHeight: 1 }}
-            >
-              {abbreviateNumber(user?.tickets!)}
-            </Text>
+            <HiTicket color={theme.colors.green[3]} />
+            {!minimal && (
+              <Text
+                color={theme.colors.green[4]}
+                weight={600}
+                size="sm"
+                sx={{ lineHeight: 1 }}
+              >
+                {abbreviateNumber(user?.tickets!)}
+              </Text>
+            )}
           </Group>
         </UnstyledButton>
       </Menu.Target>

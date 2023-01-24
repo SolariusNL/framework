@@ -5,7 +5,6 @@ import {
   Popover,
   UnstyledButton,
 } from "@mantine/core";
-import { Notification } from "@prisma/client";
 import { useState } from "react";
 import { HiBell } from "react-icons/hi";
 import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
@@ -55,6 +54,7 @@ const NotificationFlyout: React.FC = () => {
                   display: user?.notifications.length == 0 ? "none" : "block",
                 },
               }}
+              className="flex items-center justify-center"
             >
               <HiBell />
             </Indicator>

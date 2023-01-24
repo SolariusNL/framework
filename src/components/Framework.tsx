@@ -11,10 +11,9 @@ import {
   createStyles,
   Drawer,
   Group,
+  NavLink,
   Popover,
-  ScrollArea,
   Stack,
-  Tabs,
   Text,
   ThemeIcon,
   Title,
@@ -184,42 +183,49 @@ const Framework = ({
       href: "/",
       icon: <HiHome />,
       color: "pink",
+      description: "Your experience at a glance",
     },
     {
       label: "Games",
       href: "/games",
       icon: <HiViewGrid />,
       color: "violet",
+      description: "Browse Frameworks catalog of immersive games",
     },
     {
       label: "Catalog",
       href: "/catalog",
       icon: <HiShoppingBag />,
       color: "blue",
+      description: "Find some new items for your avatar",
     },
     {
       label: "Invent",
       href: "/invent",
       icon: <HiLightBulb />,
       color: "teal",
+      description: "Where imagination comes to life",
     },
     {
       label: "Messages",
       href: "/messages",
       icon: <HiMail />,
       color: "green",
+      description: "Chat with friends and other players",
     },
     {
       label: "Avatar",
       href: "/avatar",
       icon: <HiUser />,
       color: "orange",
+      description: "Manage your avatar",
     },
     {
       label: "Settings",
       href: "/settings",
       icon: <HiCog />,
       color: "grape",
+      description: "Manage your account and other settings",
     },
   ];
   const { toggleColorScheme } = useMantineColorScheme();
@@ -461,24 +467,30 @@ const Framework = ({
         <Container
           className={classes.mainSection}
           sx={{
-            paddingTop: mobile ? 10 : 0,
+            paddingTop: 0,
             paddingBottom: mobile ? 16 : 0,
           }}
         >
           <Group position="apart">
             <Group spacing={12}>
               <Link href="/" passHref>
-                <FrameworkLogo />
+                <FrameworkLogo square={mobile} />
               </Link>
               {process.env.NODE_ENV === "development" && <Badge>Preview</Badge>}
             </Group>
 
             {mobile && (
-              <Burger
-                opened={sidebarOpened}
-                onClick={() => setSidebarOpened(true)}
-                size="sm"
-              />
+              <div className="flex items-center gap-1">
+                <NotificationFlyout />
+                <CurrencyMenu currencyMenuOpened={currencyMenuOpened} minimal />
+                <UserMenu userMenuOpened={userMenuOpened} minimal />
+                <Burger
+                  opened={sidebarOpened}
+                  onClick={() => setSidebarOpened(true)}
+                  size="sm"
+                  ml="sm"
+                />
+              </div>
             )}
             {!mobile && user && (
               <Group>
@@ -500,41 +512,6 @@ const Framework = ({
               </Group>
             )}
           </Group>
-
-          {mobile && (
-            <Tabs
-              defaultValue={activeTab}
-              variant="pills"
-              classNames={{
-                tabsList: classes.tabsList,
-              }}
-              mt={14}
-            >
-              <div>
-                <ScrollArea>
-                  <Tabs.List>
-                    {tabs.map((tab) => (
-                      <Tabs.Tab
-                        value={tab.label.toLowerCase()}
-                        key={tab.label}
-                        onClick={() => {
-                          router.push(tab.href);
-                        }}
-                        sx={{
-                          width: "140px",
-                        }}
-                      >
-                        <Group>
-                          {tab.icon}
-                          <Text>{tab.label}</Text>
-                        </Group>
-                      </Tabs.Tab>
-                    ))}
-                  </Tabs.List>
-                </ScrollArea>
-              </div>
-            </Tabs>
-          )}
         </Container>
         {!mobile && (
           <Container mt={10}>
@@ -585,61 +562,20 @@ const Framework = ({
           }}
         >
           <Container>
-            <Stack spacing={24} mb={32}>
+            <Stack spacing={"xs"} mb="md">
               {tabs.map((tab) => (
-                <Group
-                  onClick={() => {
-                    router.push(tab.href);
-                    setSidebarOpened(false);
-                  }}
-                  key={tab.label}
-                  sx={{ cursor: "pointer" }}
-                >
-                  <ThemeIcon
-                    variant="outline"
-                    color={tab.color}
-                    size={24}
-                    sx={(theme) => ({
-                      boxShadow: `0 0 17px ${
-                        theme.colors[tab.color][9] + "70"
-                      }`,
-                    })}
-                  >
-                    {tab.icon}
-                  </ThemeIcon>
-                  <Text
-                    color={tab.color}
-                    sx={(theme) => ({
-                      color: theme.colors[tab.color][4] + "100",
-                      borderBottom:
-                        "3px solid " + theme.colors[tab.color][9] + "95",
-                      transition: "all 0.3s ease-in-out",
-                      "&:before": {
-                        transition: "all 0.3s ease-in-out",
-                      },
-                      "&:hover": {
-                        borderBottom:
-                          "3px solid " + theme.colors[tab.color][9] + "90",
-                      },
-                      textShadow: `0 0 27px ${
-                        theme.colors[tab.color][9] + "75"
-                      }`,
-                    })}
-                  >
-                    {tab.label}
-                  </Text>
-                </Group>
+                <Link href={tab.href} passHref key={tab.href}>
+                  <NavLink
+                    className="rounded-md"
+                    icon={tab.icon}
+                    description={tab.description}
+                    label={tab.label}
+                    active={router.pathname === tab.href}
+                  />
+                </Link>
               ))}
             </Stack>
-
-            {user && (
-              <Group>
-                <CurrencyMenu currencyMenuOpened={currencyMenuOpened} />
-                <UserMenu userMenuOpened={userMenuOpened} />
-                <NotificationFlyout />
-                <Search />
-              </Group>
-            )}
+            
             {!user && (
               <Group grow>
                 <Link href="/login" passHref>
