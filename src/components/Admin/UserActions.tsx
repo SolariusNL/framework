@@ -68,6 +68,7 @@ const Search = ({ value, onChange, ref }: any) => {
       defaultValue={value}
       onChange={handleChange}
       mb="md"
+      key="action-search-input"
     />
   );
 };
