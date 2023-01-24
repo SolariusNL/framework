@@ -20,6 +20,20 @@ const UpdateDrawer: React.FC = () => {
     href?: string;
   }> = [
     {
+      title: "Dashboard Redesign",
+      description:
+        "We've redesigned the Dashboard to streamline the UX.",
+      badge: BadgeType.NEW,
+      href: "/",
+      date: new Date("2023-01-24"),
+    },
+    {
+      title: "Quick Login",
+      description: "Quick login allows you to quickly access your account using a QR code,",
+      badge: BadgeType.NEW,
+      date: new Date("2023-01-21"),
+    },
+    {
       title: "Referral Program",
       description:
         "We've added a referral program. Access your referral code & enter your friends' referral codes in the Settings page.",
