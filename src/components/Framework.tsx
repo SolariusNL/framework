@@ -391,6 +391,7 @@ const Framework = ({
       shortcut="mod + space"
       nothingFoundMessage="Nothing found..."
       disabled={user === null}
+      radius="md"
     >
       {experiments.includes(ExperimentId.LiveChat) && (
         <Affix

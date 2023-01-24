@@ -12,7 +12,6 @@ import {
   Post,
   Query,
 } from "@storyofams/next-api-decorators";
-import { widgetIds } from "../..";
 import { category } from "../../../components/ReportUser";
 import countries from "../../../data/countries";
 import getTimezones from "../../../data/timezones";
@@ -596,18 +595,6 @@ class UserRouter {
           return true;
         },
         error: "You must verify your email before modifying this setting",
-      },
-      {
-        name: "hiddenHomeWidgets",
-        verify: async (value: any) => {
-          if (!Array.isArray(value)) return false;
-          for (const v of value) {
-            if (!widgetIds.includes(v)) return false;
-          }
-
-          return true;
-        },
-        error: "Invalid hidden home widgets",
       },
     ];
 

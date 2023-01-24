@@ -1,57 +1,81 @@
-import { Text, Title } from "@mantine/core";
+import { Avatar, Text } from "@mantine/core";
+import { getCookie } from "cookies-next";
+import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useFrameworkUser } from "../../contexts/FrameworkUser";
-import ModernEmptyState from "../ModernEmptyState";
-import ShadedCard from "../ShadedCard";
+import { HiThumbDown, HiThumbUp } from "react-icons/hi";
+import getMediaUrl from "../../util/getMedia";
+import { Game } from "../../util/prisma-types";
+import ShadedButton from "../ShadedButton";
+import { Section } from "./FriendsWidget";
 
 const SubscriptionWidget: React.FC = () => {
-  const user = useFrameworkUser()!;
+  const [games, setGames] = useState<
+    Array<
+      Game & {
+        _count: {
+          likedBy: number;
+          dislikedBy: number;
+        };
+      }
+    >
+  >([]);
 
-  const msPerMinute = 60 * 1000;
-  const msPerHour = msPerMinute * 60;
-  const msPerDay = msPerHour * 24;
-  const msPerMonth = msPerDay * 30;
-  const msPerYear = msPerDay * 365;
-
-  const [elapsed, setElapsed] = useState<number>(-0);
+  const fetchRecommendedGames = async () => {
+    await fetch("/api/dashboard/recommended/games", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: String(getCookie(".frameworksession")),
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => setGames(data));
+  };
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      setElapsed(
-        new Date(user.premiumSubscription?.expiresAt as Date).getTime() -
-          new Date().getTime()
-      );
-    }
+    fetchRecommendedGames();
   }, []);
 
   return (
-    <ShadedCard withBorder solid>
-      {user.premium ? (
-        <div className="flex flex-col justify-center items-center">
-          <Text weight={500} mb={12} color="dimmed">
-            Your subscription renews in
-          </Text>
-          <Title order={3}>
-            {elapsed < msPerMinute
-              ? "less than a minute"
-              : elapsed < msPerHour
-              ? Math.round(elapsed / msPerMinute) + " minutes"
-              : elapsed < msPerDay
-              ? Math.round(elapsed / msPerHour) + " hours"
-              : elapsed < msPerMonth
-              ? Math.round(elapsed / msPerDay) + " days"
-              : elapsed < msPerYear
-              ? Math.round(elapsed / msPerMonth) + " months"
-              : Math.round(elapsed / msPerYear) + " years"}
-          </Title>
-        </div>
-      ) : (
-        <ModernEmptyState
-          title="No subscription"
-          body="You are not subscribed to Framework Premium."
-        />
-      )}
-    </ShadedCard>
+    <>
+      <Section title="Recommended games" description="Games you might like." />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {games.map((game, i) => (
+          <Link href={`/games/${game.id}`} key={i}>
+            <ShadedButton className="w-full flex flex-col">
+              <Text size="lg" weight={500}>
+                {game.name}
+              </Text>
+              <Text size="sm" color="dimmed" lineClamp={2} mb="md">
+                {game.description.replace(/(<([^>]+)>)/gi, " ")}
+              </Text>
+              <div className="flex justify-between items-center w-full">
+                <div className="flex gap-2 items-center">
+                  {[
+                    {
+                      icon: <HiThumbUp size={14} className="text-gray-400" />,
+                      text: game._count.likedBy,
+                    },
+                    {
+                      icon: <HiThumbDown size={14} className="text-gray-400" />,
+                      text: game._count.dislikedBy,
+                    },
+                  ].map((item, i) => (
+                    <div className="flex items-center gap-1" key={i}>
+                      {item.icon}
+                      <Text size="sm" color="dimmed">
+                        {item.text}
+                      </Text>
+                    </div>
+                  ))}
+                </div>
+                <Avatar src={getMediaUrl(game.author.avatarUri)} size={20} />
+              </div>
+            </ShadedButton>
+          </Link>
+        ))}
+      </div>
+    </>
   );
 };
 
