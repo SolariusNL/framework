@@ -4,12 +4,14 @@ import {
   Button,
   Divider,
   Menu,
+  Modal,
   Skeleton,
   Stack,
   Text,
   Textarea,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { openModal } from "@mantine/modals";
 import { StatusPosts } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
@@ -19,6 +21,7 @@ import {
   HiDotsVertical,
   HiFlag,
   HiHeart,
+  HiPlus,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import { useFrameworkUser } from "../../contexts/FrameworkUser";
@@ -29,6 +32,7 @@ import ModernEmptyState from "../ModernEmptyState";
 import ReportUser from "../ReportUser";
 import ShadedCard from "../ShadedCard";
 import UserContext from "../UserContext";
+import { Section } from "./FriendsWidget";
 
 type StatusPost = StatusPosts & {
   user: NonUser;
@@ -40,6 +44,7 @@ const FeedWidget: React.FC = () => {
   const [statusPosts, setStatusPosts] = useState<StatusPost[]>([]);
   const [reportOpened, setReportOpened] = useState(false);
   const [reportUser, setReportUser] = useState<NonUser>();
+  const [newPost, setNewPost] = useState(false);
   const form = useForm<{ status: string }>({
     initialValues: {
       status: "",
@@ -68,6 +73,7 @@ const FeedWidget: React.FC = () => {
         if (res.success) {
           setStatusPosts([res.status as unknown as StatusPost, ...statusPosts]);
           form.reset();
+          setNewPost(false);
         }
       });
     setLoading(false);
@@ -98,52 +104,53 @@ const FeedWidget: React.FC = () => {
         opened={reportOpened}
         setOpened={setReportOpened}
       />
-      <ShadedCard withBorder solid>
-        <div className="flex flex-grow">
-          <Avatar
-            size={42}
-            src={getMediaUrl(user.avatarUri)}
-            mr={12}
-            className="rounded-full"
+      <Modal
+        title="New post"
+        opened={newPost}
+        onClose={() => setNewPost(false)}
+      >
+        <form onSubmit={form.onSubmit(handleStatusPost)}>
+          <Textarea
+            label="Status"
+            description="What's on your mind?"
+            placeholder="Enter your status..."
+            mb="xl"
+            {...form.getInputProps("status")}
           />
-          <div className="flex-grow">
-            <form onSubmit={form.onSubmit(handleStatusPost)}>
-              <Textarea
-                placeholder="What's on your mind?"
-                mb={12}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                  }
-                }}
-                {...form.getInputProps("status")}
-              />
-              <Button
-                fullWidth
-                leftIcon={<HiChat />}
-                loading={loading}
-                variant="default"
-                type="submit"
-              >
-                Post your status
-              </Button>
-            </form>
+          <div className="flex justify-end">
+            <Button type="submit" variant="default">
+              Post
+            </Button>
           </div>
-        </div>
-        <Divider mt={32} mb={32} />
-        <ReactNoSSR onSSR={<Skeleton height={430} />}>
-          {statusPosts !== undefined && statusPosts.length === 0 ? (
-            <ShadedCard>
-              <ModernEmptyState
-                title="No status posts yet"
-                body="Your friends will post here when they have something to say."
-              />
-            </ShadedCard>
-          ) : (
-            <>
-              <Stack spacing={24}>
-                {statusPosts.map((status) => (
-                  <div key={status.id}>
+        </form>
+      </Modal>
+      <Section
+        title="Feed"
+        description="Your friends' status posts."
+        right={
+          <Button
+            variant="default"
+            leftIcon={<HiPlus />}
+            onClick={() => setNewPost(true)}
+          >
+            New post
+          </Button>
+        }
+      />
+      <ReactNoSSR onSSR={<Skeleton height={430} />}>
+        {statusPosts !== undefined && statusPosts.length === 0 ? (
+          <ShadedCard>
+            <ModernEmptyState
+              title="No status posts yet"
+              body="Your friends will post here when they have something to say."
+            />
+          </ShadedCard>
+        ) : (
+          <>
+            <Stack spacing={"md"}>
+              {statusPosts.map((status) => (
+                <ShadedCard key={status.id}>
+                  <div>
                     <div className="flex justify-between">
                       <div className="flex">
                         <div>
@@ -167,27 +174,7 @@ const FeedWidget: React.FC = () => {
                               )}
                             </Text>
                           </div>
-                          <Text mt={12} mb="md">
-                            {status.content}
-                          </Text>
-                          <div className="flex items-center gap-2">
-                            <Button
-                              compact
-                              leftIcon={<HiHeart />}
-                              color="pink"
-                              variant="light"
-                            >
-                              0
-                            </Button>
-                            <Button
-                              compact
-                              leftIcon={<HiChat />}
-                              color="blue"
-                              variant="light"
-                            >
-                              0
-                            </Button>
-                          </div>
+                          <Text mt={12}>{status.content}</Text>
                         </div>
                       </div>
                       <div>
@@ -221,12 +208,12 @@ const FeedWidget: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                ))}
-              </Stack>
-            </>
-          )}
-        </ReactNoSSR>
-      </ShadedCard>
+                </ShadedCard>
+              ))}
+            </Stack>
+          </>
+        )}
+      </ReactNoSSR>
     </>
   );
 };

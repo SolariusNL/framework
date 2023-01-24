@@ -2,23 +2,30 @@ import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
 import ModernEmptyState from "../ModernEmptyState";
 import ShadedCard from "../ShadedCard";
 import Notifications from "../Widgets/Notifications";
+import { Section } from "./FriendsWidget";
 
 const NotificationsWidget: React.FC = () => {
   const { user } = useAuthorizedUserStore()!;
 
   return (
-    <ShadedCard withBorder solid>
+    <>
+      <Section
+        title="Notifications"
+        description="Quick management of your notifications."
+      />
       {user?.notifications.length! > 0 ? (
-        <Notifications />
+        <ShadedCard>
+          <Notifications />
+        </ShadedCard>
       ) : (
-        <div className="flex w-full justify-center items-center">
+        <ShadedCard className="flex w-full justify-center items-center">
           <ModernEmptyState
             title="No notifications"
-            body="Nothing to see here."
+            body="You're all caught up!"
           />
-        </div>
+        </ShadedCard>
       )}
-    </ShadedCard>
+    </>
   );
 };
 

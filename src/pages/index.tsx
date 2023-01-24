@@ -1,68 +1,86 @@
-import { Modal, Skeleton, Stack, Switch, Text } from "@mantine/core";
-import { getCookie } from "cookies-next";
+import { Badge, NavLink } from "@mantine/core";
+import { openSpotlight } from "@mantine/spotlight";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { useEffect, useState } from "react";
-import ReactNoSSR from "react-no-ssr";
+import {
+  HiBell,
+  HiChat,
+  HiLink,
+  HiSearch,
+  HiSparkles,
+  HiUsers,
+} from "react-icons/hi";
 import Framework from "../components/Framework";
 import FeedWidget from "../components/Home/FeedWidget";
 import FriendsWidget from "../components/Home/FriendsWidget";
 import NotificationsWidget from "../components/Home/NotificationsWidget";
 import QuickLinksWidget from "../components/Home/QuickLinksWidget";
 import SubscriptionWidget from "../components/Home/SubscriptionWidget";
-import ModernEmptyState from "../components/ModernEmptyState";
 import authorizedRoute from "../util/authorizedRoute";
 import { User } from "../util/prisma-types";
+import useMediaQuery from "../util/useMediaQuery";
 
 interface HomeProps {
   user: User;
 }
 
-const widgets = [
-  {
-    title: "Friends",
-    description: "A list for easy access to your friends, and who's online.",
-    id: "friends",
-    component: <FriendsWidget />,
-    side: "left",
-  },
-  {
-    title: "Quick Links",
-    description: "Quick access to some common pages.",
-    id: "quick-links",
-    component: <QuickLinksWidget />,
-    side: "left",
-  },
-  {
-    title: "Subscription Renewal",
-    description: "See when your subscription renews.",
-    id: "subscription",
-    component: <SubscriptionWidget />,
-    side: "left",
-  },
-  {
-    title: "Feed",
-    description: "A feed of your friends' status posts.",
-    id: "feed",
-    component: <FeedWidget />,
-    side: "right",
-  },
-  {
-    title: "Notifications",
-    description: "Quick management of your notifications.",
-    id: "notifications",
-    component: <NotificationsWidget />,
-    side: "right",
-  },
-];
-
-export const widgetIds = widgets.map((widget) => widget.id);
-
 const Home: NextPage<HomeProps> = ({ user }) => {
   const [timeMessage, setTimeMessage] = useState("");
-  const [hiddenWidgets, setHiddenWidgets] = useState<string[]>(
-    user.hiddenHomeWidgets
-  );
-  const [editWidgetsOpen, setEditWidgetsOpen] = useState(false);
+  const widgets = [
+    {
+      title: "Friends",
+      description: "A list for easy access to your friends, and who's online.",
+      id: "friends",
+      component: <FriendsWidget />,
+      side: "left",
+      icon: <HiUsers />,
+    },
+    {
+      title: "Spotlight",
+      description: "Quick access to different parts of Framework.",
+      id: "quick-links",
+      component: <></>,
+      side: "left",
+      icon: <HiSearch />,
+      onClick: () => openSpotlight(),
+    },
+    {
+      title: "Games",
+      description: "List of games curated for you.",
+      id: "subscription",
+      component: <SubscriptionWidget />,
+      side: "left",
+      icon: <HiSparkles />,
+    },
+    {
+      title: "Feed",
+      description: "A feed of your friends' status posts.",
+      id: "feed",
+      component: <FeedWidget />,
+      side: "right",
+      icon: <HiChat />,
+    },
+    {
+      title: "Notifications",
+      description: "Quick management of your notifications.",
+      id: "notifications",
+      component: <NotificationsWidget />,
+      side: "right",
+      icon:
+        user.notifications.length > 0 ? (
+          <Badge
+            size="xs"
+            variant="filled"
+            color="red"
+            sx={{ width: 16, height: 16, padding: 0 }}
+          >
+            {user.notifications.length}
+          </Badge>
+        ) : (
+          <HiBell />
+        ),
+    },
+  ];
 
   useEffect(() => {
     setTimeMessage(
@@ -76,112 +94,37 @@ const Home: NextPage<HomeProps> = ({ user }) => {
     );
   }, []);
 
+  const [activeIndex, setActiveIndex] = useState(0);
+  const mobile = useMediaQuery("768");
+
   return (
     <Framework
       user={user}
       activeTab="home"
       modernTitle={`${timeMessage}, ${user.username}!`}
       modernSubtitle="Your experience at a glance"
-      actions={[["Edit widgets", () => setEditWidgetsOpen(true)]]}
     >
-      <Modal
-        opened={editWidgetsOpen}
-        onClose={() => setEditWidgetsOpen(false)}
-        title="Edit widgets"
-      >
-        <Stack spacing={16}>
+      <div className="flex flex-col md:flex-row gap-8">
+        <div
+          className="md:flex md:flex-col md:gap-2 flex-row grid grid-cols-2 gap-2 md:grid-cols-1 md:grid-rows-3"
+          {...(!mobile && { style: { width: 240 } })}
+        >
           {widgets.map((widget) => (
-            <div className="flex items-center justify-between" key={widget.id}>
-              <div>
-                <Text weight={500}>{widget.title}</Text>
-                <Text size="sm" color="dimmed">
-                  {widget.description}
-                </Text>
-              </div>
-              <div>
-                <Switch
-                  defaultChecked={!hiddenWidgets.includes(widget.id)}
-                  onChange={async () => {
-                    setHiddenWidgets(
-                      hiddenWidgets.includes(widget.id)
-                        ? hiddenWidgets.filter((id) => id !== widget.id)
-                        : [...hiddenWidgets, widget.id]
-                    );
-
-                    const hidden = hiddenWidgets.includes(widget.id)
-                      ? hiddenWidgets.filter((id) => id !== widget.id)
-                      : [...hiddenWidgets, widget.id];
-
-                    await fetch("/api/users/@me/update", {
-                      method: "POST",
-                      headers: {
-                        "Content-Type": "application/json",
-                        Authorization: String(getCookie(".frameworksession")),
-                      },
-                      body: JSON.stringify({
-                        hiddenHomeWidgets: hidden,
-                      }),
-                    });
-                  }}
-                />
-              </div>
-            </div>
-          ))}
-        </Stack>
-      </Modal>
-      <div className="flex flex-col md:flex-row gap-4">
-        <div
-          className={`flex-1 ${
-            widgets
-              .filter((widget) => widget.side === "left")
-              .every((widget) => hiddenWidgets.includes(widget.id))
-              ? "hidden"
-              : ""
-          }`}
-        >
-          <Stack spacing={12}>
-            {widgets
-              .filter(
-                (widget) =>
-                  widget.side === "left" && !hiddenWidgets.includes(widget.id)
-              )
-              .map((widget) => (
-                <ReactNoSSR onSSR={<Skeleton height={300} />} key={widget.id}>
-                  {widget.component}
-                </ReactNoSSR>
-              ))}
-          </Stack>
-        </div>
-        <div
-          className={`flex-1 ${
-            widgets
-              .filter((widget) => widget.side === "right")
-              .every((widget) => hiddenWidgets.includes(widget.id))
-              ? "hidden"
-              : ""
-          }`}
-        >
-          <Stack spacing={12}>
-            {widgets
-              .filter(
-                (widget) =>
-                  widget.side === "right" && !hiddenWidgets.includes(widget.id)
-              )
-              .map((widget) => (
-                <ReactNoSSR onSSR={<Skeleton height={300} />} key={widget.id}>
-                  {widget.component}
-                </ReactNoSSR>
-              ))}
-          </Stack>
-        </div>
-        {widgets.every((widget) => hiddenWidgets.includes(widget.id)) && (
-          <div className="flex-1">
-            <ModernEmptyState
-              title="No widgets"
-              body="You've hidden all of your widgets. You can edit your widgets by clicking the Edit Widgets button right of the page title."
+            <NavLink
+              label={widget.title}
+              description={widget.description}
+              icon={widget.icon}
+              key={widget.id}
+              active={activeIndex === widgets.indexOf(widget)}
+              onClick={() => {
+                if (widget.onClick) widget.onClick();
+                else setActiveIndex(widgets.indexOf(widget));
+              }}
+              className="rounded-md"
             />
-          </div>
-        )}
+          ))}
+        </div>
+        <div className="flex-1">{widgets[activeIndex].component}</div>
       </div>
     </Framework>
   );
