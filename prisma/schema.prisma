@@ -244,13 +244,14 @@ model Invite {
 }
 
 model Session {
-  id     String          @id @default(uuid())
-  user   User            @relation("userSessions", fields: [userId], references: [id])
-  userId Int
-  token  String          @unique
-  ip     String          @default("")
-  ua     String          @default("")
-  os     OperatingSystem @default(OTHER)
+  id            String          @id @default(uuid())
+  user          User            @relation("userSessions", fields: [userId], references: [id])
+  userId        Int
+  token         String          @unique
+  ip            String          @default("")
+  ua            String          @default("")
+  os            OperatingSystem @default(OTHER)
+  impersonation Boolean         @default(false)
 }
 
 enum OperatingSystem {

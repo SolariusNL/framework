@@ -132,7 +132,6 @@ const UserView = ({ user }: UserViewProps) => {
                     }}
                     onSubmit={impersonationForm.onSubmit((values) => {
                       const oldSession = getCookie(".frameworksession");
-                      const newSession = user.sessions[0].token;
 
                       fetch("/api/admin/log/impersonate", {
                         method: "POST",
@@ -144,18 +143,21 @@ const UserView = ({ user }: UserViewProps) => {
                           userId: user.id,
                           reason: values.reason,
                         }),
-                      });
+                      })
+                        .then((res) => res.json())
+                        .then((res) => {
+                          const newSession = res.token;
+                          setCookie(".frameworksession.old", oldSession);
+                          setCookie(".frameworksession", newSession);
 
-                      setCookie(".frameworksession.old", oldSession);
-                      setCookie(".frameworksession", newSession);
-
-                      router.push("/");
-                      showNotification({
-                        title: "Impersonating User",
-                        message: `You are now impersonating ${user.username}. Click 'Stop impersonating' at the top right to stop.`,
-                        icon: <HiCheckCircle />,
-                        color: "green",
-                      });
+                          router.push("/");
+                          showNotification({
+                            title: "Impersonating User",
+                            message: `You are now impersonating ${user.username}. Click 'Stop impersonating' at the top right to stop.`,
+                            icon: <HiCheckCircle />,
+                            color: "green",
+                          });
+                        });
                     })}
                   >
                     <Select

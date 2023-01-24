@@ -2,10 +2,12 @@ import {
   AdminPermission,
   EmployeeRole,
   NotificationType,
+  OperatingSystem,
   PremiumSubscriptionType,
   PunishmentType,
   Role,
 } from "@prisma/client";
+import { setEnvVar } from "@soodam.re/env-utils";
 import {
   Body,
   createHandler,
@@ -13,28 +15,30 @@ import {
   Param,
   Post,
   Query,
+  Request,
 } from "@storyofams/next-api-decorators";
 import { promises as fs, readFileSync } from "fs";
+import type { NextApiRequest } from "next";
+import { join } from "path";
+import { z } from "zod";
 import { PrefCategory } from "../../../components/Admin/Pages/Instance";
+import type { ReportCategory } from "../../../components/ReportUser";
 import { AdminAction } from "../../../util/adminAction";
 import Authorized, {
   Account,
   AdminAuthorized,
 } from "../../../util/api/authorized";
 import { sendMail } from "../../../util/mail";
+import createNotification from "../../../util/notifications";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
 import {
+  articleSelect,
   nonCurrentUserSelect,
   userSelect,
-  articleSelect,
 } from "../../../util/prisma-types";
 import { RateLimitMiddleware } from "../../../util/rateLimit";
-import { setEnvVar } from "@soodam.re/env-utils";
-import { join } from "path";
-import createNotification from "../../../util/notifications";
-import { z } from "zod";
-import type { ReportCategory } from "../../../components/ReportUser";
+import { getOperatingSystem } from "../../../util/ua";
 
 class AdminRouter {
   @Get("/reports")
@@ -1300,7 +1304,8 @@ class AdminRouter {
   @AdminAuthorized()
   public async logImpersonation(
     @Body() body: { userId: number; reason: string },
-    @Account() user: User
+    @Account() user: User,
+    @Request() request: NextApiRequest
   ) {
     const { userId, reason } = body;
 
@@ -1329,7 +1334,36 @@ class AdminRouter {
       },
     });
 
-    return { success: true };
+    const session = await prisma.session.create({
+      data: {
+        user: {
+          connect: {
+            id: Number(userId),
+          },
+        },
+        token: Array(12)
+          .fill(0)
+          .map(() => Math.random().toString(36).substring(2))
+          .join(""),
+        ip: "N/A",
+        ua: String(request.headers["user-agent"] || "Unknown"),
+        os: OperatingSystem[
+          getOperatingSystem(
+            String(request.headers["user-agent"]) || ""
+          ) as keyof typeof OperatingSystem
+        ],
+        impersonation: true,
+      },
+    });
+
+    await createNotification(
+      userId,
+      NotificationType.ALERT,
+      `You have been impersonated by ${user.username} for ${reason}. This was done by a Soodam.re staff member. If you did not authorize this, please contact us immediately.`,
+      "Impersonation"
+    );
+
+    return { success: true, token: session.token };
   }
 
   @Get("/directory")
