@@ -29,10 +29,10 @@ import {
   HiFolder,
   HiHome,
   HiKey,
-  HiLogout,
   HiServer,
   HiUsers,
   HiWifi,
+  HiTicket
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import Tasks from "../../components/Admin/Employee/Tasks";
@@ -46,11 +46,11 @@ import Instance from "../../components/Admin/Pages/Instance";
 import Invites from "../../components/Admin/Pages/Invites";
 import Reports from "../../components/Admin/Pages/Reports";
 import Users from "../../components/Admin/Pages/Users";
+import Tickets from "../../components/Admin/Pages/Tickets";
 import Settings from "../../components/Admin/Settings";
 import Footer from "../../components/Footer";
 import FrameworkLogo from "../../components/FrameworkLogo";
 import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
-import logout from "../../util/api/logout";
 import authorizedRoute from "../../util/authorizedRoute";
 import getMediaUrl from "../../util/getMedia";
 import prisma from "../../util/prisma";
@@ -182,6 +182,13 @@ const data = [
     href: "/admin/ips",
     render: <BannedIPs />,
     subtitle: "Manage banned IPs",
+  },
+  {
+    label: "Tickets",
+    icon: HiTicket,
+    href: "/admin/tickets",
+    render: <Tickets />,
+    subtitle: "Manage user-submitted support tickets",
   },
   {
     label: "Directory",
