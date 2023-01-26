@@ -22,14 +22,14 @@ const UpdateDrawer: React.FC = () => {
     {
       title: "Dashboard Redesign",
       description:
-        "We've redesigned the Dashboard to streamline the UX.",
+        "We've redesigned the Dashboard to streamline the UX. More features to come!",
       badge: BadgeType.NEW,
       href: "/",
       date: new Date("2023-01-24"),
     },
     {
       title: "Quick Login",
-      description: "Quick login allows you to quickly access your account using a QR code,",
+      description: "Quick login allows you to quickly access your account using a QR code without needing to enter any credentials.",
       badge: BadgeType.NEW,
       date: new Date("2023-01-21"),
     },
