@@ -1,4 +1,5 @@
 import { ReceiveNotification } from "@prisma/client";
+import { render } from "@react-email/render";
 import {
   Body,
   createHandler,
@@ -7,6 +8,7 @@ import {
   Post,
 } from "@storyofams/next-api-decorators";
 import { z } from "zod";
+import MissedMessage from "../../../../email/emails/missed-message";
 import Authorized, { Account } from "../../../util/api/authorized";
 import { sendMail } from "../../../util/mail";
 import prisma from "../../../util/prisma";
@@ -169,20 +171,12 @@ class ChatRouter {
         sendMail(
           to.email,
           `New message from ${user.username}`,
-          `
-          <h1>You got a new message from ${user.username}</h1>
-          <table>
-            <tr>
-              <td>From</td>
-              <td>${user.username}</td>
-            </tr>
-            <tr>
-              <td>Message</td>
-              <td>${content}</td>
-            </tr>
-          </table>
-          <a href="https://framework.soodam.rocks">Go to Framework</a>
-        `
+          render(
+            MissedMessage({
+              from: user.username,
+              message: content,
+            }) as React.ReactElement
+          )
         );
       }
     }

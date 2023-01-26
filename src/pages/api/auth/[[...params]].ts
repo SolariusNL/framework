@@ -1,4 +1,5 @@
 import { NotificationType, OperatingSystem } from "@prisma/client";
+import { render } from "@react-email/render";
 import {
   Body,
   createHandler,
@@ -11,6 +12,7 @@ import {
 import { setCookie } from "cookies-next";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getClientIp } from "request-ip";
+import LoginCode from "../../../../email/emails/login-code";
 import Authorized, { Account } from "../../../util/api/authorized";
 import { hashPass, isSamePass } from "../../../util/hash/password";
 import { sendMail } from "../../../util/mail";
@@ -98,32 +100,19 @@ class AuthRouter {
       sendMail(
         account.email,
         "Login Authorization",
-        `
-        <div style="width: 500px; margin: 0 auto; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); border-radius: 12px; padding: 16px;">
-          <h1 style="color: #333;">Verify login for ${account.username}</h1>
-          <p style="margin-bottom: 25px; color: #666;">
-            Someone is trying to login to your account from a ${getOperatingSystemString(
-              os
-            )} device with IP ${ip}. If this wasn't you, you can change your password to prevent this from happening again. Your code is:
-          </p>
-          <h3 style="margin-bottom: 25px; color: #333;">${emailAuth.code}</h3>
-          <a href="${
-            process.env.NODE_ENV === "production"
-              ? "https://framework.soodam.rocks/verifyemail/login"
-              : "http://localhost:3000/verifyemail/login"
-          }/${emailAuth.id}" style="
-              color: #0066cc;
-              display: inline-block;
-              text-decoration: none;
-              padding: 8px 10px;
-              border-radius: 12px;
-              text-align: center;
-          ">
-          Verify Login
-        </a>
-        </div>
-        <p style="margin-top: 25px; text-align: center; color: #999;">Copyright © 2023 Soodam.re B.V. All rights reserved.</p>
-        `
+        render(
+          LoginCode({
+            username: account.username,
+            os: getOperatingSystemString(os),
+            ip: String(ip),
+            code: String(emailAuth.code),
+            url: `${
+              process.env.NODE_ENV === "production"
+                ? "https://framework.soodam.rocks/verifyemail/login"
+                : "http://localhost:3000/verifyemail/login"
+            }/${emailAuth.id}`,
+          }) as React.ReactElement
+        )
       );
 
       return {

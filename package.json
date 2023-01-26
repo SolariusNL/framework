@@ -17,7 +17,8 @@
     "setup-projects": "cd cron && yarn && cd .. && yarn run generate && yarn && yarn run create-config && yarn run create-config-schema",
     "analyze": "cross-env ANALYZE=true yarn run build",
     "create-config": "ts-node --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\" scripts/create-config.ts",
-    "create-config-schema": "typescript-json-schema src/types/Configuration.ts Configuration > framework.schema.json"
+    "create-config-schema": "typescript-json-schema src/types/Configuration.ts Configuration > framework.schema.json",
+    "emails:dev": "cd email && yarn run dev"
   },
   "dependencies": {
     "@emoji-mart/react": "^1.1.0",
@@ -41,6 +42,7 @@
     "@next/bundle-analyzer": "^12.2.5",
     "@next/mdx": "^13.0.6",
     "@prisma/client": "^4.1.1",
+    "@react-email/render": "0.0.6",
     "@react-three/drei": "^9.21.0",
     "@react-three/fiber": "^8.3.1",
     "@soodam.re/env-utils": "^1.0.1",

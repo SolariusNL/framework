@@ -7,6 +7,7 @@ import {
   PunishmentType,
   Role,
 } from "@prisma/client";
+import { render } from "@react-email/render";
 import { setEnvVar } from "@soodam.re/env-utils";
 import {
   Body,
@@ -39,6 +40,7 @@ import {
 } from "../../../util/prisma-types";
 import { RateLimitMiddleware } from "../../../util/rateLimit";
 import { getOperatingSystem } from "../../../util/ua";
+import SupportTicketClosed from "../../../../email/emails/support-ticket-closed";
 
 class AdminRouter {
   @Get("/reports")
@@ -1124,11 +1126,11 @@ class AdminRouter {
     sendMail(
       t.contactEmail,
       "Support Ticket Closed",
-      `
-      <h1>Support Ticket Closed</h1>
-      <p>Your support ticket has been closed. If you have any further questions, please contact us again.</p>
-      <small>This is an automated message regarding your support ticket (title: ${t.title}).</small>
-      `
+      render(
+        SupportTicketClosed({
+          title: t.title,
+        }) as React.ReactElement
+      )
     );
 
     return {
