@@ -331,6 +331,7 @@ async function cli() {
     "--help": [Boolean, "Shows this help message"],
     "--set-pwd": [Boolean, "Sets the password for the admin user"],
     "--generate-invite": [Boolean, "Generates an invite code"],
+    "--clear-admin-activity": [Boolean, "Clears the admin activity log"],
   };
 
   let opts: { name: string; value: any }[] = [];
@@ -474,6 +475,13 @@ async function cli() {
     prisma.$disconnect();
   }
 
+  if (contains("--clear-admin-activity")) {
+    const prisma = new PrismaClient();
+    await prisma.adminActivityLog.deleteMany({});
+    logger().info("Admin activity cleared");
+    prisma.$disconnect();
+  }
+
   if (wasArgful) {
     logger().info("Finished");
     process.exit(0);
@@ -490,7 +498,7 @@ async function macosAlert(
   const e = await spawnSync("osascript", [
     "-e",
     `display alert "${title}" message "${message}" as ${as} buttons {"${buttons.join(
-      '", "'
+      "\", \""
     )}"} default button "${defaultButton || buttons[0]}"`,
   ]);
 
