@@ -72,7 +72,7 @@ class SupportRouter {
     });
 
     sendMail(
-      String(process.env.SUPPORT_EMAIL),
+      String(data.data.contactEmail),
       "New support ticket",
       render(
         SupportTicketCreated({
@@ -86,25 +86,54 @@ class SupportRouter {
         }) as React.ReactElement
       )
     );
-    sendMail(
-      data.data.contactEmail,
-      "Support ticket created",
+   sendMail(
+      String(process.env.SUPPORT_EMAIL),
+      "New support ticket",
       `
       <div style="max-width: 600px; margin: 0 auto; padding: 20px; box-sizing: border-box;">
-        <h1 style="font-size: 24px; color: #333; margin-bottom: 20px;">Support Ticket Created</h1>
-        <p style="font-size: 16px; color: #666;">Your support ticket has been created and will be reviewed by our support team.</p>
-        <p style="font-size: 16px; color: #666;">You can view your support ticket status at any time by logging into your account and visiting the support page, and clicking 'View Tickets'.</p>
-        <p style="font-size:16px;color:#666;">Thank you for contacting us!</p>
-        <hr style="margin: 20px 0;" />
-        <h2 style="font-size: 20px; color: #333; margin-top: 20px; margin-bottom: 10px;">Ticket</h2>
+        <h1 style="font-size: 24px; color: #333; margin-bottom: 20px;">New Support Ticket</h1>
+        <p style="font-size: 16px; color: #666;">A new support ticket has been submitted on the website:</p>
         <ul style="list-style: none; margin: 0; padding: 0;">
             <li style="margin-bottom: 10px;">
-              <strong style="display: block; font-size: 16px; color: #333;">Title:</strong> ${data.data.title}
+              <strong style="display: block; font-size: 16px; color: #333;">Title:</strong> ${
+                data.data.title
+              }
             </li>
             <li style="margin-bottom: 10px;">
-              <strong style="display: block; font-size: 16px; color: #333;">Content:</strong> ${data.data.content}
+              <strong style="display: block; font-size: 16px; color: #333;">Content:</strong> ${
+                data.data.content
+              }
+            </li>
+            <li style="margin-bottom: 10px;">
+              <strong style="display: block; font-size: 16px; color: #333;">Category:</strong> ${
+                data.data.category.substring(0, 1).toUpperCase() +
+                data.data.category.substring(1)
+              }
+            </li>
+            <li style="margin-bottom: 10px;">
+              <strong style="display: block; font-size: 16px; color: #333;">Contact Email:</strong> ${
+                data.data.contactEmail
+              }
+            </li>
+            <li style="margin-bottom: 10px;">
+              <strong style="display: block; font-size: 16px; color: #333;">Contact Name:</strong> ${
+                data.data.contactName
+              }
             </li>
         </ul>
+        <h2 style="font-size: 20px; color: #333; margin-top: 20px; margin-bottom: 10px;">User</h2>
+        <div style="display: flex; align-items: center;">
+            ${
+              user
+                ? `<img src="${getMediaUrl(
+                    user.avatarUri
+                  )}" alt="User Avatar" style="width: 24px; height: 24px; margin-right: 10px;" />
+              <strong style="font-size: 16px; color: #333;">${
+                user.username
+              }</strong>`
+                : "<strong style=\"font-size: 16px; color: #333;\">Anonymous</strong>"
+            }
+        </div>
       </div>
       `
     );
