@@ -143,6 +143,7 @@ model User {
   usedReferral               Referral?             @relation("usedReferral", fields: [usedReferralId], references: [id])
   usedReferralId             String?
   loginQR                    LoginQR?              @relation("loginQRs")
+  quickLoginEnabled          Boolean               @default(true)
 }
 
 model ConnectedAccount {
