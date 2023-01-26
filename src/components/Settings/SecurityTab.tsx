@@ -23,8 +23,10 @@ import {
   HiLockClosed,
   HiMail,
   HiPencil,
+  HiQrcode,
   HiXCircle,
 } from "react-icons/hi";
+import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
 import { getCookie } from "../../util/cookies";
 import { User } from "../../util/prisma-types";
 import Descriptive from "../Descriptive";
@@ -58,6 +60,7 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
   const [base32, setBase32] = useState("");
   const [twoFactorCode, setTwoFactorCode] = useState("");
   const [invalid, setInvalid] = useState(false);
+  const { setUser } = useAuthorizedUserStore();
 
   const sendEmailVerification = async () => {
     await fetch("/api/users/@me/verifyemail", {
@@ -441,6 +444,27 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
                 </Descriptive>
               }
               icon={<HiDeviceMobile />}
+              shaded
+              noUpperBorder
+            />
+            <SideBySide
+              title="Enable Quick Login"
+              description="Quick login allows you to log in to your account through a QR code, without needing to enter any credentials."
+              right={
+                <Descriptive
+                  title="Enable Quick Login"
+                  description="Enable quick login to log in to your account through a QR code."
+                >
+                  <Switch
+                    defaultChecked={user.quickLoginEnabled}
+                    onChange={async (e) => {
+                      update("quickLoginEnabled", e.target.checked);
+                      setUser({ ...user, quickLoginEnabled: e.target.checked });
+                    }}
+                  />
+                </Descriptive>
+              }
+              icon={<HiQrcode />}
               shaded
               noUpperBorder
             />

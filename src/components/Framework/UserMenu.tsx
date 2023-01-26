@@ -31,6 +31,7 @@ import useUpdateDrawer from "../../stores/useUpdateDrawer";
 import logout from "../../util/api/logout";
 import getMediaUrl from "../../util/getMedia";
 import useMediaQuery from "../../util/useMediaQuery";
+import ClickToReveal from "../ClickToReveal";
 import { frameworkStyles } from "../Framework";
 
 const UserMenu = ({
@@ -103,13 +104,22 @@ const UserMenu = ({
           code to log in to your account.
         </Text>
 
-        <div className="flex justify-center p-4">
-          <Image
-            src={qrDataUrl}
-            width={256}
-            height={256}
-            className="rounded-md"
-          />
+        <div className="flex justify-center p-4 flex-col items-center">
+          <ClickToReveal
+            hiddenType="blur"
+            blurStrength={8}
+            className="rounded-md mb-8 w-fit"
+          >
+            <Image
+              src={qrDataUrl}
+              width={256}
+              height={256}
+              className="rounded-md w-fit"
+            />
+          </ClickToReveal>
+          <Text size="sm" color="dimmed" align="center">
+            Click to reveal QR code
+          </Text>
         </div>
       </Modal>
       <Menu
@@ -211,16 +221,18 @@ const UserMenu = ({
             What&apos;s new?
           </Menu.Item>
           <Menu.Divider />
-          <Menu.Item
-            icon={<HiQrcode />}
-            onClick={() => {
-              setQuickLoginOpened(true);
-              setSidebarOpened(false);
-              setUpdateDrawerOpened(false);
-            }}
-          >
-            Quick login
-          </Menu.Item>
+          {user?.quickLoginEnabled && (
+            <Menu.Item
+              icon={<HiQrcode />}
+              onClick={() => {
+                setQuickLoginOpened(true);
+                setSidebarOpened(false);
+                setUpdateDrawerOpened(false);
+              }}
+            >
+              Quick login
+            </Menu.Item>
+          )}
           <Menu.Item
             sx={{ fontWeight: 500 }}
             color="red"

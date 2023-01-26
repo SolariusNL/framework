@@ -596,6 +596,13 @@ class UserRouter {
         },
         error: "You must verify your email before modifying this setting",
       },
+      {
+        name: "quickLoginEnabled",
+        verify: async (value: any) => {
+          if (typeof value !== "boolean") return false;
+          return true;
+        },
+      },
     ];
 
     for (const field of updatable) {
