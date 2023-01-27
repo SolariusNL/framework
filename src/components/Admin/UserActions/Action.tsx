@@ -5,7 +5,8 @@ const Action: React.FC<{
   description: string;
   onClick: () => void;
   icon: React.FC<{ className?: string }>;
-}> = ({ title, description, onClick, icon: Icon }) => {
+  condition?: boolean;
+}> = ({ title, description, onClick, icon: Icon, condition }) => {
   return (
     <div className="flex items-center justify-between gap-6">
       <Icon className="flex-shrink-0" />
@@ -15,7 +16,14 @@ const Action: React.FC<{
           {description}
         </Text>
       </div>
-      <Anchor onClick={onClick} className="flex-1 text-right">
+      <Anchor
+        onClick={() => {
+          if (!condition) onClick();
+        }}
+        className={`flex-1 text-right${
+          !condition ? "" : " opacity-30 cursor-not-allowed"
+        }`}
+      >
         Run
       </Anchor>
     </div>

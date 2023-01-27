@@ -12,6 +12,7 @@ interface ResetBioProps {
 const ResetBio: React.FC<ResetBioProps> & {
   title: string;
   description: string;
+  condition: (user: User) => boolean;
 } = ({ user }) => {
   return (
     <Action
@@ -41,5 +42,6 @@ const ResetBio: React.FC<ResetBioProps> & {
 
 ResetBio.title = "Reset bio";
 ResetBio.description = "Reset the user's bio";
+ResetBio.condition = (user) => true;
 
 export default ResetBio;

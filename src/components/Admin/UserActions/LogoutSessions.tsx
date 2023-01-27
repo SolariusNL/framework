@@ -12,6 +12,7 @@ interface LogoutSessionsProps {
 const LogoutSessions: React.FC<LogoutSessionsProps> & {
   title: string;
   description: string;
+  condition: (user: User) => boolean;
 } = ({ user }) => {
   return (
     <Action
@@ -41,5 +42,6 @@ const LogoutSessions: React.FC<LogoutSessionsProps> & {
 
 LogoutSessions.title = "Clear sessions";
 LogoutSessions.description = "Log the user out of all their sessions";
+LogoutSessions.condition = (user) => true;
 
 export default LogoutSessions;

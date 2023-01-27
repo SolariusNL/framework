@@ -12,6 +12,7 @@ interface ResetEmailProps {
 const ResetEmail: React.FC<ResetEmailProps> & {
   title: string;
   description: string;
+  condition: (user: User) => boolean;
 } = ({ user }) => {
   return (
     <Action
@@ -36,6 +37,7 @@ const ResetEmail: React.FC<ResetEmailProps> & {
       }}
       title="Reset email"
       description="Reset the user's email. They will be asked to add a new email on their visit."
+      condition={!user.emailResetRequired}
     />
   );
 };
@@ -43,5 +45,6 @@ const ResetEmail: React.FC<ResetEmailProps> & {
 ResetEmail.title = "Reset email";
 ResetEmail.description =
   "Reset the user's email. They will be asked to add a new email on their visit.";
+ResetEmail.condition = (user) => !user.emailResetRequired;
 
 export default ResetEmail;
