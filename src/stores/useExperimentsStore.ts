@@ -14,7 +14,7 @@ export const EXPERIMENTS = [
   {
     name: "Live Chat",
     description: "A live chat based on websockets",
-    stage: ExperimentStage.Alpha,
+    stage: ExperimentStage.Candidate,
     id: ExperimentId.LiveChat,
   },
 ];
