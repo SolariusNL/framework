@@ -11,6 +11,8 @@ export enum AdminAction {
   RESET_BIO = "reset-bio",
   EDIT_EMPLOYEE = "edit-employee",
   ADJUST_SUBSCRIPTION = "adjust-subscription",
+  UNBAN = "unban",
+  UNWARN = "unwarn",
 }
 
 async function performAdminAction(action: AdminAction, data: any, uid: number) {

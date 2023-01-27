@@ -14,6 +14,8 @@ import ResetBio from "./UserActions/ResetBio";
 import ResetEmail from "./UserActions/ResetEmail";
 import ResetPassword from "./UserActions/ResetPassword";
 import ResetUsername from "./UserActions/ResetUsername";
+import Unban from "./UserActions/Unban";
+import Unwarn from "./UserActions/Unwarn";
 
 const actions = [
   AdjustTickets,
@@ -24,6 +26,8 @@ const actions = [
   ResetBio,
   AdjustEmployee,
   AdjustSubscription,
+  Unban,
+  Unwarn,
 ];
 
 const ActionList: React.FC<{

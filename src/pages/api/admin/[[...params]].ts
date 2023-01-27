@@ -980,6 +980,38 @@ class AdminRouter {
           await createActionLog(`Adjusted ${user.username}'s subscription`, 3);
         },
       },
+      {
+        name: AdminAction.UNBAN,
+        action: async () => {
+          await prisma.user.update({
+            where: {
+              id: user.id,
+            },
+            data: {
+              banned: false,
+              banReason: "",
+            },
+          });
+
+          await createActionLog(`Unbanned ${user.username}`, 3);
+        },
+      },
+      {
+        name: AdminAction.UNWARN,
+        action: async () => {
+          await prisma.user.update({
+            where: {
+              id: user.id,
+            },
+            data: {
+              warningViewed: false,
+              warning: "",
+            },
+          });
+
+          await createActionLog(`Unwarned ${user.username}`, 2);
+        },
+      },
     ];
 
     const foundAction = actions.find((a) => a.name === (action as AdminAction));
