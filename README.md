@@ -2,7 +2,7 @@
   <img src="https://invent.soodam.rocks/Soodam.re/framework/-/raw/main/public/logo-dark.png" />
   <h1>Framework</h1>
   
-  Framework is an online platform that empowers imagination and innovation. This repository is the home to the Framework web application.
+  Framework is a free and open-source decentralized and federated alternative to Roblox. Our goal is to provide users with a platform that prioritizes privacy and freedom of expression while still allowing for the creation and sharing of user-generated content.
   
 </div>
 
@@ -10,18 +10,23 @@
 
 Framework is built on the following technologies:
 
-- [TypeScript](https://www.typescriptlang.org) - A typed superset of JavaScript that compiles to plain JavaScript
-  - [Next.js](https://nextjs.org) - A server-side framework for building blazing fast websites and apps
-  - [React](https://reactjs.org) - A declarative, efficient, and flexible JavaScript library for building user interfaces
-    - [Mantine](https://mantine.dev) - A modern, flexible, and extensible framework for building websites and apps
-- [Postgres](https://www.postgresql.org) - A powerful, open source object-relational database system
-  - [Prisma](https://www.prisma.io) - A open source, distributed database layer for modern applications
+- **Next.js**: Framework is built using Next.js, a framework for building server-rendered React applications. Next.js provides a powerful set of features out of the box, including automatic code splitting, static site generation, and easy development with hot reloading.
+
+- **react-email**: react-email is used for creating responsive and accessible email templates with React.
+
+- **Prisma & Postgres**: Prisma is an ORM (Object-Relational Mapping) tool that allows for easy communication between the application and the database. We are using Postgres as our database management system.
+
+- **Zustand**: Zustand is a lightweight state management library for React that allows for easy and efficient state management in the application.
+
+- **Socket.io**: Socket.io is used for real-time communication between clients and the server. This allows for real-time updates, such as chat and multiplayer functionality, to be implemented easily.
+
+- ...and more
 
 ## Components
 
-Framework has a pretty large, distributed codebase consisting of what we call 'components'. Check them out, and freely research the workings of our platform.
+Framework has a pretty large, distributed codebase. Check out these other projects that integrate with the platform.
 
-- [framework-flags](https://invent.soodam.rocks/Soodam.re/framework-flags) - **ℹ️ Under Development** Our own feature flag implementation, soon to replace HappyKit
+- [framework-flags](https://invent.soodam.rocks/Soodam.re/framework-flags) - **ℹ️ Under development** Our own feature flag implementation, soon to replace HappyKit
 - [framework-persistent-file-storage](https://invent.soodam.rocks/Soodam.re/framework-persistent-file-storage) - Serve images from static Next.js directories
 - [framework-discord](https://invent.soodam.rocks/Soodam.re/framework-discord) - Source code of Framework's Discord bot
 - [framework-desktop](https://invent.soodam.rocks/Soodam.re/framework-desktop) - Framework desktop client
@@ -48,31 +53,46 @@ Framework has a pretty large, distributed codebase consisting of what we call 'c
 
 ## Installation
 
-Framework is very easy to set up and deploy.
+### Clone the repository: 
+Start by cloning the Framework repository from the link provided https://invent.soodam.rocks/Soodam.re/framework.git onto your local machine:
 
-- **Set up** PostgreSQL
-  - Go to the [PostgreSQL website](https://www.postgresql.org/download/) and download the latest version for your operating system.
-  - Install PostgreSQL.
-- **Clone** the repository
-  - Run `git clone https://github.com/Tsodinq/framework.git` to clone the repository to your local machine.
-- **Install** the dependencies
-  - Run `yarn setup-projects` to install dependencies for all the projects.
-- **Seed** the database
-  - Run `yarn run seed` to generate Prisma types and seed the database with initial data.
-- **Generate** config schema
-  - Run `yarn run create-config-schema` to generate the config schema for intellisense support in the `framework.yml` file.
-- **Configure** your `.env` file, some important things may be the database connection url, or optional API keys for extended functionality.
-- **Configure** your `framework.yml` file, this is where you can configure the application to your liking, such as editing footer links, enabling or disabling features, and more.
-- **Build** the application
-  - Run `yarn build` to build the application. This will create a `dist` directory with the compiled application.
-- **Deploy** the application
-  - Run `yarn run start` to start the application. This will start the application on port 3000.
+`git clone https://invent.soodam.rocks/Soodam.re/framework.git`
 
-If you're wanting to set up a development environment, you can run `yarn dev` to start the development server.
+### Requirements: 
+Make sure you have the following installed on your machine:
+
+- Node.js
+- Yarn package manager
+- Postgres
+
+### Setup the project: 
+In the root directory of the cloned repository, run the command `yarn run setup-projects` to install all of the necessary dependencies and set up the project.
+
+### Migrate the database: 
+After the project is set up, run the command yarn run migrate to create the necessary database tables for the application.
+
+### Seed the database: 
+Run the command `yarn run seed` to seed the database with initial data.
+
+### Edit the `.env` file: 
+In the root directory of the cloned repository, you will find a file called `.env`. Edit this file to fill in the connection URL for your Postgres database, email delivery settings, and configure other optional integrations.
+
+Each property is documented to assist you.
+
+### Edit the `framework.yml` file: 
+In the root directory of the cloned repository, you will find a file called `framework.yml`. Edit this file to configure the installation.
+
+### Set the admin user's password: 
+Run the command `yarn run ctl --set-pwd {password}` to set the admin user's (username is **Framework**) password.
+
+### Build and start the application: 
+Run the command yarn run build to build the application, and then `yarn run start` to start the application. The application should now be running on your local machine and can be accessed at http://localhost:3000
+
+**Note:** Make sure to update the .env and framework.yml file to match your environment.
 
 ## Contributing
 
-All contributions are welcome. Please feel free to open an issue or pull request if you have any questions or suggestions. Thanks!
+We welcome contributions of all forms, including bug reports, feature requests, and code contributions. Please feel free to open an issue or pull request if you have any questions or suggestions. Thanks!
 
 ## License
 
