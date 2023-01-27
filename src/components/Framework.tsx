@@ -29,6 +29,7 @@ import { useRouter } from "next/router";
 import React, { useContext, useEffect, useState } from "react";
 import {
   HiArrowLeft,
+  HiChat,
   HiCheckCircle,
   HiCode,
   HiCog,
@@ -76,6 +77,7 @@ interface FrameworkProps {
     | "games"
     | "catalog"
     | "invent"
+    | "chat"
     | "avatar"
     | "settings"
     | "messages"
@@ -91,7 +93,10 @@ interface FrameworkProps {
     label: string;
     href: string;
   };
-  actions?: [string, () => void][];
+  actions?: [
+    string | React.ReactNode,
+    () => void
+  ][];
 }
 
 export const frameworkStyles = createStyles((theme) => ({
@@ -207,11 +212,11 @@ const Framework = ({
       description: "Where imagination comes to life",
     },
     {
-      label: "Messages",
-      href: "/messages",
-      icon: <HiMail />,
+      label: "Chat",
+      href: "/chat",
+      icon: <HiChat />,
       color: "green",
-      description: "Chat with friends and other players",
+      description: "Chat with friends in real time",
     },
     {
       label: "Avatar",
@@ -256,10 +261,10 @@ const Framework = ({
       onTrigger: () => router.push("/invent"),
     },
     {
-      title: "Messages",
+      title: "Chat",
       icon: <HiMail />,
-      description: "Chat with your friends, or collaborate with others.",
-      onTrigger: () => router.push("/messages"),
+      description: "Chat with your friends in real time.",
+      onTrigger: () => router.push("/chat"),
     },
     {
       title: "Avatar",
@@ -575,7 +580,7 @@ const Framework = ({
                 </Link>
               ))}
             </Stack>
-            
+
             {!user && (
               <Group grow>
                 <Link href="/login" passHref>
