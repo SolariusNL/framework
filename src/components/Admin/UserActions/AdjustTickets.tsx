@@ -13,6 +13,7 @@ interface AdjustTicketsProps {
 const AdjustTickets: React.FC<AdjustTicketsProps> & {
   title: string;
   description: string;
+  condition: (user: User) => boolean;
 } = ({ user }) => {
   const [tickets, setTickets] = React.useState(0);
   return (
@@ -66,5 +67,6 @@ const AdjustTickets: React.FC<AdjustTicketsProps> & {
 
 AdjustTickets.title = "Adjust tickets";
 AdjustTickets.description = "Adjust user's ticket balance (override)";
+AdjustTickets.condition = (user) => true;
 
 export default AdjustTickets;

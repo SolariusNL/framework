@@ -16,6 +16,7 @@ interface AdjustSubscriptionProps {
 const AdjustSubscription: React.FC<AdjustSubscriptionProps> & {
   title: string;
   description: string;
+  condition: (user: User) => boolean;
 } = ({ user }) => {
   const form = useForm<{
     type: PremiumSubscriptionType | null;
@@ -104,5 +105,6 @@ const AdjustSubscription: React.FC<AdjustSubscriptionProps> & {
 
 AdjustSubscription.title = "Adjust subscription";
 AdjustSubscription.description = "Adjust user's Premium subscription";
+AdjustSubscription.condition = () => true;
 
 export default AdjustSubscription;

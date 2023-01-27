@@ -8,7 +8,7 @@ import {
 } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
 import { useForm } from "@mantine/form";
-import { EmployeeRole } from "@prisma/client";
+import { EmployeeRole, Role } from "@prisma/client";
 import dayjs from "dayjs";
 import React, { useEffect } from "react";
 import { HiUser } from "react-icons/hi";
@@ -32,6 +32,7 @@ interface FormValues {
 const AdjustEmployee: React.FC<AdjustEmployeeProps> & {
   title: string;
   description: string;
+  condition: (user: User) => boolean;
 } = ({ user }) => {
   const form = useForm<FormValues>({
     initialValues: {
@@ -95,6 +96,7 @@ const AdjustEmployee: React.FC<AdjustEmployeeProps> & {
             description="Adjust employee information"
             onClick={() => setOpen(true)}
             icon={HiUser}
+            condition={user.role !== Role.ADMIN}
           />
           <Modal
             title="Modify employee information"
@@ -173,5 +175,7 @@ const AdjustEmployee: React.FC<AdjustEmployeeProps> & {
 
 AdjustEmployee.title = "Adjust employee";
 AdjustEmployee.description = "Adjust employee information";
+AdjustEmployee.condition = (user) =>
+  user.employee !== null && user.role === Role.ADMIN;
 
 export default AdjustEmployee;

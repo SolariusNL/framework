@@ -12,6 +12,7 @@ interface ResetPasswordProps {
 const ResetPassword: React.FC<ResetPasswordProps> & {
   title: string;
   description: string;
+  condition: (user: User) => boolean;
 } = ({ user }) => {
   return (
     <Action
@@ -36,6 +37,7 @@ const ResetPassword: React.FC<ResetPasswordProps> & {
       }}
       title="Reset password"
       description="Reset the user's password. They will be asked to add a new password on their visit."
+      condition={!user.passwordResetRequired}
     />
   );
 };
@@ -43,5 +45,6 @@ const ResetPassword: React.FC<ResetPasswordProps> & {
 ResetPassword.title = "Reset password";
 ResetPassword.description =
   "Reset the user's password. They will be asked to add a new password on their visit.";
+ResetPassword.condition = (user) => !user.passwordResetRequired;
 
 export default ResetPassword;
