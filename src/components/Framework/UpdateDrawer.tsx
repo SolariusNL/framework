@@ -20,6 +20,13 @@ const UpdateDrawer: React.FC = () => {
     href?: string;
   }> = [
     {
+      title: "Chat Release Candidate",
+      description: "The new Chat feature has entered release candidate status, as it replaces the old Messages feature. We thank you for your feedback during it's early stages.",
+      badge: BadgeType.NEW,
+      href: "/chat",
+      date: new Date("2023-01-26"),
+    }
+    {
       title: "Dashboard Redesign",
       description:
         "We've redesigned the Dashboard to streamline the UX. More features to come!",
