@@ -25,7 +25,7 @@ const UpdateDrawer: React.FC = () => {
       badge: BadgeType.NEW,
       href: "/chat",
       date: new Date("2023-01-26"),
-    }
+    },
     {
       title: "Dashboard Redesign",
       description:
