@@ -90,18 +90,6 @@ const ImageUploader = ({
     }
   };
 
-  const getInitialImage = () => {
-    const fileReader = new FileReader();
-
-    fileReader.onload = () => {
-      if (imgRef && imgRef.current) {
-        imgRef.current!.src = fileReader.result as string;
-      }
-    };
-
-    fileReader.readAsDataURL(img!);
-  };
-
   return (
     <Stateful>
       {(cropOpen, setCropOpen) => (
@@ -119,7 +107,7 @@ const ImageUploader = ({
             >
               <img
                 ref={imgRef as any}
-                src={String(img ? getInitialImage() : croppedImg)}
+                src={String(img ? URL.createObjectURL(img) : croppedImg)}
                 alt="avatar"
               />
             </Cropper>
