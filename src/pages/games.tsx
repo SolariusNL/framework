@@ -1,17 +1,14 @@
 import {
-  Button,
   Divider,
-  Drawer,
   NavLink,
   RangeSlider,
   Select,
-  Skeleton,
   TextInput,
 } from "@mantine/core";
 import { GameGenre } from "@prisma/client";
 import { GetServerSidePropsContext, NextPage } from "next";
 import React, { useEffect } from "react";
-import { HiFilter, HiFire, HiGift, HiSearch, HiSparkles } from "react-icons/hi";
+import { HiFire, HiGift, HiSearch, HiSparkles } from "react-icons/hi";
 import InfiniteScroll from "react-infinite-scroller";
 import Descriptive from "../components/Descriptive";
 import Framework from "../components/Framework";
@@ -218,13 +215,6 @@ const Games: NextPage<GamesProps> = ({ user }) => {
                 mb="lg"
               />
               <InfiniteScroll
-                loader={
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-8">
-                    {[...Array(16)].map((_, i) => (
-                      <Skeleton height={160} key={i} />
-                    ))}
-                  </div>
-                }
                 pageStart={1}
                 loadMore={(p) => {
                   fetch(`/api/games/${p}`, {
