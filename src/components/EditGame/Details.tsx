@@ -65,6 +65,8 @@ const Details = ({ game }: DetailsProps) => {
   const [editing, setEditing] = React.useState(false);
   const [editingMetadata, setEditingMetadata] =
     React.useState<CopyrightMetadata>();
+  const iconRef = React.useRef<HTMLImageElement>(null);
+  const thumbnailRef = React.useRef<HTMLImageElement>(null);
 
   const editable = [
     {
@@ -512,6 +514,7 @@ const Details = ({ game }: DetailsProps) => {
                       alt={`No icon uploaded for ${game.name}`}
                       height={128}
                       width={128}
+                      ref={iconRef}
                     />
                   </Paper>
                 </>
@@ -519,6 +522,9 @@ const Details = ({ game }: DetailsProps) => {
               actions={
                 <ImageUploader
                   onFinished={(imgStr) => setUploadedIcon(imgStr)}
+                  crop
+                  ratio={1}
+                  imgRef={iconRef}
                 />
               }
             />
@@ -535,6 +541,7 @@ const Details = ({ game }: DetailsProps) => {
                       alt={`No thumbnail uploaded for ${game.name}`}
                       width="100%"
                       height="100%"
+                      ref={thumbnailRef}
                     />
                   </AspectRatio>
                 </>
@@ -542,6 +549,9 @@ const Details = ({ game }: DetailsProps) => {
               actions={
                 <ImageUploader
                   onFinished={(imgStr) => setUploadedThumbnail(imgStr)}
+                  crop
+                  ratio={16 / 9}
+                  imgRef={thumbnailRef}
                 />
               }
             />

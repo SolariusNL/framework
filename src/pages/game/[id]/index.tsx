@@ -145,13 +145,7 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
               slides={
                 game.gallery.length > 0
                   ? game.gallery.map((image, i) => (
-                      <AspectRatio ratio={16 / 9} key={i}>
-                        <Image
-                          src={getMediaUrl(image)}
-                          key={i}
-                          alt={game.name}
-                        />
-                      </AspectRatio>
+                      <Image src={getMediaUrl(image)} key={i} alt={game.name} />
                     ))
                   : Array(3)
                       .fill(0)
