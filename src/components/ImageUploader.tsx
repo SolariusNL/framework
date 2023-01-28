@@ -107,6 +107,7 @@ const ImageUploader = ({
               onComplete={onCropComplete}
               crop={cropData}
               aspect={ratio}
+              className="w-full flex justify-center"
             >
               <img
                 ref={imgRef as any}
