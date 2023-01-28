@@ -342,7 +342,7 @@ const Games = ({ user }: GamesProps) => {
                       <Menu.Dropdown>
                         <Menu.Item
                           icon={<HiPencil />}
-                          onClick={() => router.push(`/game/${game.id}/edit`)}
+                          onClick={() => router.push(`/game/${game.id}/edit/details`)}
                         >
                           Edit
                         </Menu.Item>

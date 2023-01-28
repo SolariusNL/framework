@@ -680,6 +680,9 @@ class GameRouter {
       "genre",
       "maxPlayersPerSession",
       "private",
+      "paywall",
+      "paywallPrice",
+      "privateAccess",
     ];
     const updatableData = [
       {
@@ -731,6 +734,19 @@ class GameRouter {
         regex: /^true|false$/,
         error: "Invalid private value",
       },
+      {
+        property: "paywall",
+        regex: /^true|false$/,
+        error: "Invalid paywall value",
+      },
+      {
+        property: "paywallPrice",
+        regex: undefined,
+        error: "Invalid paywall price",
+        validation: (value: any) => {
+          return value >= 1 && value <= 100000;
+        },
+      },
     ];
 
     const errors = [];
@@ -763,6 +779,25 @@ class GameRouter {
       });
     }
 
+    if (body.privateAccess) {
+      body.privateAccess.forEach(async (user: any) => {
+        if (!user.id || !user.username) {
+          return false;
+        }
+
+        const userExists = await prisma.user.findFirst({
+          where: {
+            id: user.id,
+            username: user.username,
+          },
+        });
+
+        if (!userExists) {
+          return false;
+        }
+      });
+    }
+
     await prisma.game.update({
       where: {
         id: Number(id),
@@ -780,12 +815,26 @@ class GameRouter {
               private: body.private,
             }
           : {}),
+        ...(body.paywall !== undefined
+          ? {
+              paywall: body.paywall,
+            }
+          : {}),
         ...(body.copyrightMetadata
           ? {
               copyrightMetadata: {
                 create: body.copyrightMetadata.map((metadata: any) => ({
                   title: metadata.title,
                   description: metadata.description,
+                })),
+              },
+            }
+          : {}),
+        ...(body.privateAccess
+          ? {
+              privateAccess: {
+                set: body.privateAccess.map((user: any) => ({
+                  id: user.id,
                 })),
               },
             }

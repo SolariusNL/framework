@@ -70,7 +70,7 @@ const ConnectionTab = ({ game }: ConnectionTabProps) => {
             variant="subtle"
             size="xs"
             leftIcon={<HiViewList />}
-            onClick={() => router.push(`/game/${game.id}/edit?view=servers`)}
+            onClick={() => router.push(`/game/${game.id}/edit/servers`)}
           >
             Manage servers
           </Button>

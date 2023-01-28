@@ -83,8 +83,10 @@ const UserSelect: React.FC<UserSelectProps & Omit<SelectProps, "data">> = ({
             }))
           : []
       }
-      onChange={(user: NonUser) => {
-        onUserSelect(user);
+      onChange={(id: number) => {
+        onUserSelect(
+          userAutoComplete.find((user) => user.id === id) as NonUser
+        );
       }}
       {...exclude(props, ["data"])}
     />

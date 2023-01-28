@@ -1,5 +1,6 @@
 import {
   ActionIcon,
+  Anchor,
   Button,
   Modal,
   Table,
@@ -12,7 +13,7 @@ import { useForm } from "@mantine/form";
 import { getCookie } from "cookies-next";
 import React from "react";
 import { HiPlus, HiTrash } from "react-icons/hi";
-import { GameWithDatastore } from "../../pages/game/[id]/edit";
+import { GameWithDatastore } from "../../pages/game/[id]/edit/[edit]";
 import Copy from "../Copy";
 import ModernEmptyState from "../ModernEmptyState";
 import Stateful from "../Stateful";
@@ -52,6 +53,19 @@ const Datastores = ({ game }: DatastoreProps) => {
   return (
     <>
       <EditGameTab value="datastores">
+        <Text mb="md">
+          Datastores are used to store data for your game. You can use them to
+          store player data, leaderboards, and more. You can read more about
+          datastores in our{" "}
+          <Anchor
+            href="https://wiki.soodam.rocks/docs/cosmic/datastores"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Cosmic documentation
+          </Anchor>
+          .
+        </Text>
         <Stateful>
           {(opened, setOpened) => (
             <>

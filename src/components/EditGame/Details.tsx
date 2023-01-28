@@ -120,15 +120,6 @@ const Details = ({ game }: DetailsProps) => {
       title: "Players per server",
     },
     {
-      property: game.private,
-      label: "Private game",
-      description:
-        "Private games are only visible to you and other users you whitelist. Your game will not appear in the public game directory.",
-      type: EditableType.Bool,
-      pointer: "private",
-      title: "Private game",
-    },
-    {
       property: copyrightMetadata,
       label: "Copyright metadata",
       description:

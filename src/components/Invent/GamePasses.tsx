@@ -87,7 +87,7 @@ const GamePasses = ({ user }: GamePassesProps) => {
                       <td>{gp?.owners.length}</td>
                       <td>T${gp?.owners?.length! * (gp?.price || 0)}</td>
                       <td>
-                        <Link href={`/game/${g.id}/edit?view=store`} passHref>
+                        <Link href={`/game/${g.id}/edit/store`} passHref>
                           <ActionIcon variant="light">
                             <HiPencil />
                           </ActionIcon>
