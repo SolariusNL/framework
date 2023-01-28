@@ -11,6 +11,7 @@ interface ImageUploaderProps {
   imgRef?: React.RefObject<HTMLImageElement>;
   onFinished?: (img: string) => void;
   ratio?: number;
+  modalSize?: "sm" | "md" | "lg" | "xl";
 }
 
 const Cropper = dynamic(() => import("react-image-crop"), {
@@ -23,6 +24,7 @@ const ImageUploader = ({
   imgRef,
   onFinished,
   ratio,
+  modalSize,
 }: ImageUploaderProps) => {
   const [img, setImg] = useState<File | null>(null);
   const [croppedImg, setCroppedImg] = useState<string | null>(null);
@@ -98,6 +100,7 @@ const ImageUploader = ({
             title="Crop image"
             opened={cropOpen}
             onClose={() => setCropOpen(false)}
+            size={modalSize || "lg"}
           >
             <Cropper
               onChange={(newCrop: Crop) => setCropData(newCrop)}
@@ -121,7 +124,7 @@ const ImageUploader = ({
                 if (onFinished) onFinished(croppedImg as string);
               }}
             >
-              Crop
+              Finish
             </Button>
           </Modal>
           <FileButton
