@@ -5,6 +5,7 @@ interface DescriptiveProps {
   title: string;
   description: string;
   required?: boolean;
+  className?: string;
 }
 
 const Descriptive = ({
@@ -12,9 +13,10 @@ const Descriptive = ({
   title,
   description,
   required = false,
+  className,
 }: DescriptiveProps) => {
   return (
-    <Stack spacing={7}>
+    <Stack spacing={7} className={className}>
       <Stack spacing={0}>
         <Group spacing={3}>
           <Text size="sm" weight={500}>
