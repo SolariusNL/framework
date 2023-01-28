@@ -423,8 +423,22 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
           },
         },
       },
+      privateAccess: { select: { id: true } },
+      private: true,
     },
   });
+
+  if (
+    game?.private &&
+    !game.privateAccess.some((u) => u.id === auth.props.user?.id)
+  ) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
 
   return {
     props: {

@@ -277,6 +277,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     ],
     select: exclude(gameSelect, "comments"),
     take: 25,
+    where: {
+      private: false,
+    }
   });
 
   if (auth.redirect) {

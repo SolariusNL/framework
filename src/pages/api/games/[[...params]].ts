@@ -335,6 +335,7 @@ class GameRouter {
           contains: String(q),
           mode: "insensitive",
         },
+        private: false,
       },
       select: gameSelect,
       take: 25,
@@ -603,6 +604,7 @@ class GameRouter {
         name: {
           contains: q,
         },
+        private: false,
       },
       select: gameSelect,
     });
@@ -625,6 +627,7 @@ class GameRouter {
       where: {
         name: search ? { contains: search, mode: "insensitive" } : {},
         genre: genre ? { equals: genre as GameGenre } : {},
+        private: false,
       },
       orderBy: [
         {
@@ -671,7 +674,13 @@ class GameRouter {
       };
     }
 
-    const updatable = ["name", "description", "genre", "maxPlayersPerSession"];
+    const updatable = [
+      "name",
+      "description",
+      "genre",
+      "maxPlayersPerSession",
+      "private",
+    ];
     const updatableData = [
       {
         property: "name",
@@ -717,6 +726,11 @@ class GameRouter {
         },
         relation: true,
       },
+      {
+        property: "private",
+        regex: /^true|false$/,
+        error: "Invalid private value",
+      },
     ];
 
     const errors = [];
@@ -754,12 +768,18 @@ class GameRouter {
         id: Number(id),
       },
       data: {
-        ...updatable
-          .filter((field) => body[field])
-          .reduce((acc: any, field) => {
-            acc[field] = body[field];
-            return acc;
-          }, {}),
+        ...updatable.reduce((acc, field) => {
+          if (body[field]) {
+            (acc as any)[field] = body[field];
+          }
+
+          return acc;
+        }, {}),
+        ...(body.private !== undefined
+          ? {
+              private: body.private,
+            }
+          : {}),
         ...(body.copyrightMetadata
           ? {
               copyrightMetadata: {
@@ -944,6 +964,7 @@ class GameRouter {
     const games = await prisma.game.findMany({
       where: {
         genre: genre as GameGenre,
+        private: false,
       },
       select: gameSelect,
       take: 10,

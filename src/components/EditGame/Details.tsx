@@ -10,6 +10,7 @@ import {
   Paper,
   Select,
   Stack,
+  Switch,
   Text,
   TextInput,
 } from "@mantine/core";
@@ -42,6 +43,7 @@ enum EditableType {
   Numeric,
   RichText,
   ListTitleDescriptionPair,
+  Bool,
 }
 
 type CopyrightMetadata = {
@@ -116,6 +118,15 @@ const Details = ({ game }: DetailsProps) => {
       type: EditableType.Numeric,
       pointer: "maxPlayersPerSession",
       title: "Players per server",
+    },
+    {
+      property: game.private,
+      label: "Private game",
+      description:
+        "Private games are only visible to you and other users you whitelist. Your game will not appear in the public game directory.",
+      type: EditableType.Bool,
+      pointer: "private",
+      title: "Private game",
     },
     {
       property: copyrightMetadata,
@@ -366,11 +377,27 @@ const Details = ({ game }: DetailsProps) => {
                           label={label}
                           description={description}
                           defaultValue={String(property)}
-                          data={options ?? []}
+                          data={
+                            options ?? ([] as { label: string; value: any }[])
+                          }
                           onChange={(s) => {
                             setUpdated({ ...updated, [value.pointer]: s });
                           }}
                         />
+                      )}
+
+                      {type == EditableType.Bool && (
+                        <Descriptive title={label} description={description}>
+                          <Switch
+                            onChange={(e) => {
+                              setUpdated({
+                                ...updated,
+                                [value.pointer]: e.currentTarget.checked,
+                              });
+                            }}
+                            defaultChecked={Boolean(property)}
+                          />
+                        </Descriptive>
                       )}
 
                       {type == EditableType.Numeric && (

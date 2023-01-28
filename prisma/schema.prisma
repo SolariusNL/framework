@@ -144,6 +144,7 @@ model User {
   usedReferralId             String?
   loginQR                    LoginQR?              @relation("loginQRs")
   quickLoginEnabled          Boolean               @default(true)
+  privateGameAccess          Game[]                @relation("privateGameAccess")
 }
 
 model ConnectedAccount {
@@ -322,6 +323,8 @@ model Game {
   gamepasses           Gamepass[]              @relation("gamepasses")
   copyrightMetadata    GameCopyrightMetadata[] @relation("gameCopyrightMetadata")
   gameReports          UserReport[]            @relation("gameReport")
+  private              Boolean                 @default(false)
+  privateAccess        User[]                  @relation("privateGameAccess")
 }
 
 model GameComment {

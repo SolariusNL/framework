@@ -327,6 +327,15 @@ export const gameSelect: Prisma.GameSelect = {
     },
   },
   copyrightMetadata: true,
+  private: true,
+  privateAccess: {
+    select: {
+      id: true,
+      username: true,
+      avatarUri: true,
+      alias: true,
+    }
+  }
 };
 
 export const snippetSelect: Prisma.CodeSnippetSelect = {
