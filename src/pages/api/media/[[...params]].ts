@@ -20,7 +20,7 @@ export const config = {
 
 const convertToWebp = (file: any) => {
   return sharp(file)
-    .webp({ quality: 95 })
+    .webp({ quality: 100 })
     .toBuffer()
     .then((data) => data)
     .catch((err) => {
