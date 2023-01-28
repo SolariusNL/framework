@@ -288,7 +288,7 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                       <Menu.Item
                         disabled={game.author.id !== user.id}
                         onClick={() => {
-                          router.push(`/game/${game.id}/edit`);
+                          router.push(`/game/${game.id}/edit/details`);
                         }}
                         icon={<HiPencil />}
                       >
@@ -423,8 +423,22 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
           },
         },
       },
+      privateAccess: { select: { id: true } },
+      private: true,
+      authorId: true,
     },
   });
+
+  if (game?.private && game.authorId !== auth?.props?.user?.id) {
+    if (!game.privateAccess.find((user) => user.id === auth?.props?.user?.id)) {
+      return {
+        redirect: {
+          destination: "/",
+          permanent: false,
+        },
+      };
+    }
+  }
 
   return {
     props: {

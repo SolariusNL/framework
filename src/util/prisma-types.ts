@@ -327,6 +327,16 @@ export const gameSelect: Prisma.GameSelect = {
     },
   },
   copyrightMetadata: true,
+  private: true,
+  privateAccess: {
+    select: {
+      id: true,
+      username: true,
+      avatarUri: true,
+    },
+  },
+  paywall: true,
+  paywallPrice: true,
 };
 
 export const snippetSelect: Prisma.CodeSnippetSelect = {
@@ -412,6 +422,13 @@ const game = Prisma.validator<Prisma.GameArgs>()({
       },
     },
     copyrightMetadata: true,
+    privateAccess: {
+      select: {
+        id: true,
+        username: true,
+        avatarUri: true,
+      },
+    },
   },
 });
 

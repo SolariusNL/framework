@@ -10,6 +10,7 @@ import {
   Paper,
   Select,
   Stack,
+  Switch,
   Text,
   TextInput,
 } from "@mantine/core";
@@ -42,6 +43,7 @@ enum EditableType {
   Numeric,
   RichText,
   ListTitleDescriptionPair,
+  Bool,
 }
 
 type CopyrightMetadata = {
@@ -366,11 +368,27 @@ const Details = ({ game }: DetailsProps) => {
                           label={label}
                           description={description}
                           defaultValue={String(property)}
-                          data={options ?? []}
+                          data={
+                            options ?? ([] as { label: string; value: any }[])
+                          }
                           onChange={(s) => {
                             setUpdated({ ...updated, [value.pointer]: s });
                           }}
                         />
+                      )}
+
+                      {type == EditableType.Bool && (
+                        <Descriptive title={label} description={description}>
+                          <Switch
+                            onChange={(e) => {
+                              setUpdated({
+                                ...updated,
+                                [value.pointer]: e.currentTarget.checked,
+                              });
+                            }}
+                            defaultChecked={Boolean(property)}
+                          />
+                        </Descriptive>
                       )}
 
                       {type == EditableType.Numeric && (

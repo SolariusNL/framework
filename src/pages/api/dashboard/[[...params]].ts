@@ -41,6 +41,9 @@ class DashboardRouter {
       orderBy: {
         id: "desc",
       },
+      where: {
+        private: false,
+      },
       select: {
         id: true,
         name: true,

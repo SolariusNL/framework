@@ -335,6 +335,7 @@ class GameRouter {
           contains: String(q),
           mode: "insensitive",
         },
+        private: false,
       },
       select: gameSelect,
       take: 25,
@@ -603,6 +604,7 @@ class GameRouter {
         name: {
           contains: q,
         },
+        private: false,
       },
       select: gameSelect,
     });
@@ -625,6 +627,7 @@ class GameRouter {
       where: {
         name: search ? { contains: search, mode: "insensitive" } : {},
         genre: genre ? { equals: genre as GameGenre } : {},
+        private: false,
       },
       orderBy: [
         {
@@ -671,7 +674,16 @@ class GameRouter {
       };
     }
 
-    const updatable = ["name", "description", "genre", "maxPlayersPerSession"];
+    const updatable = [
+      "name",
+      "description",
+      "genre",
+      "maxPlayersPerSession",
+      "private",
+      "paywall",
+      "paywallPrice",
+      "privateAccess",
+    ];
     const updatableData = [
       {
         property: "name",
@@ -717,6 +729,24 @@ class GameRouter {
         },
         relation: true,
       },
+      {
+        property: "private",
+        regex: /^true|false$/,
+        error: "Invalid private value",
+      },
+      {
+        property: "paywall",
+        regex: /^true|false$/,
+        error: "Invalid paywall value",
+      },
+      {
+        property: "paywallPrice",
+        regex: undefined,
+        error: "Invalid paywall price",
+        validation: (value: any) => {
+          return value >= 1 && value <= 100000;
+        },
+      },
     ];
 
     const errors = [];
@@ -749,23 +779,62 @@ class GameRouter {
       });
     }
 
+    if (body.privateAccess) {
+      body.privateAccess.forEach(async (user: any) => {
+        if (!user.id || !user.username) {
+          return false;
+        }
+
+        const userExists = await prisma.user.findFirst({
+          where: {
+            id: user.id,
+            username: user.username,
+          },
+        });
+
+        if (!userExists) {
+          return false;
+        }
+      });
+    }
+
     await prisma.game.update({
       where: {
         id: Number(id),
       },
       data: {
-        ...updatable
-          .filter((field) => body[field])
-          .reduce((acc: any, field) => {
-            acc[field] = body[field];
-            return acc;
-          }, {}),
+        ...updatable.reduce((acc, field) => {
+          if (body[field]) {
+            (acc as any)[field] = body[field];
+          }
+
+          return acc;
+        }, {}),
+        ...(body.private !== undefined
+          ? {
+              private: body.private,
+            }
+          : {}),
+        ...(body.paywall !== undefined
+          ? {
+              paywall: body.paywall,
+            }
+          : {}),
         ...(body.copyrightMetadata
           ? {
               copyrightMetadata: {
                 create: body.copyrightMetadata.map((metadata: any) => ({
                   title: metadata.title,
                   description: metadata.description,
+                })),
+              },
+            }
+          : {}),
+        ...(body.privateAccess
+          ? {
+              privateAccess: {
+                set: body.privateAccess.map((user: any) => ({
+                  id: user.id,
                 })),
               },
             }
@@ -944,6 +1013,7 @@ class GameRouter {
     const games = await prisma.game.findMany({
       where: {
         genre: genre as GameGenre,
+        private: false,
       },
       select: gameSelect,
       take: 10,
