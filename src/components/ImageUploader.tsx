@@ -51,9 +51,9 @@ const ImageUploader = ({
   const makeClientCrop = async (crop: Crop) => {
     if (crop.width && crop.height) {
       const croppedImg = await getCroppedImg(
-        imgRef?.current,
+        imgRef!.current!,
         crop,
-        "cropped.jpeg"
+        "newFile.png"
       );
       setCroppedImg(String(croppedImg));
     }
@@ -82,12 +82,24 @@ const ImageUploader = ({
 
       try {
         return new Promise((resolve, reject) => {
-          resolve(canvas.toDataURL("image/jpeg"));
+          resolve(canvas.toDataURL("image/png", 1));
         });
       } catch (e) {
         console.error(e);
       }
     }
+  };
+
+  const getInitialImage = () => {
+    const fileReader = new FileReader();
+
+    fileReader.onload = () => {
+      if (imgRef && imgRef.current) {
+        imgRef.current!.src = fileReader.result as string;
+      }
+    };
+
+    fileReader.readAsDataURL(img!);
   };
 
   return (
@@ -107,7 +119,7 @@ const ImageUploader = ({
             >
               <img
                 ref={imgRef as any}
-                src={String(img ? URL.createObjectURL(img) : croppedImg)}
+                src={String(img ? getInitialImage() : croppedImg)}
                 alt="avatar"
               />
             </Cropper>
@@ -120,7 +132,6 @@ const ImageUploader = ({
                 setImg(null);
                 if (onFinished) onFinished(croppedImg as string);
               }}
-              disabled={!cropData}
             >
               Crop
             </Button>

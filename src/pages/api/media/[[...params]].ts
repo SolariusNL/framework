@@ -2,15 +2,15 @@ import {
   createHandler,
   Param,
   Post,
-  UseMiddleware,
+  UseMiddleware
 } from "@storyofams/next-api-decorators";
 import multer from "multer";
 import path from "path";
+import sharp from "sharp";
 import Authorized, { Account } from "../../../util/api/authorized";
 import { getAccountFromSession } from "../../../util/authorizedRoute";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
-import sharp from "sharp";
 
 export const config = {
   api: {
@@ -20,7 +20,7 @@ export const config = {
 
 const convertToWebp = (file: any) => {
   return sharp(file)
-    .webp({ quality: 100 })
+    .webp({ quality: 95, alphaQuality: 95, lossless: true })
     .toBuffer()
     .then((data) => data)
     .catch((err) => {
@@ -60,7 +60,7 @@ const avatars = multer({
           avatarUri: `/avatars/${String(user?.username)}.webp`,
         },
       });
-      
+
       cb(null, user?.username + ".webp");
     },
   }),
