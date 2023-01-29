@@ -1,0 +1,30 @@
+default:
+  image: node:latest
+
+cache:
+  paths:
+    - node_modules
+    - .yarn
+
+stages:
+  - lint
+  - build-status
+
+before_script:
+  - yarn config set cache-folder .yarn
+  - yarn install --cache-folder .yarn
+
+lint:
+  stage: lint
+  script:
+    - yarn lint
+
+build status:
+  stage: build-status
+
+  script:
+    - yarn build
+  cache:
+    paths:
+      - .next/cache/
+    key: ${CI_COMMIT_REF_SLUG}
