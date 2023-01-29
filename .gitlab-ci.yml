@@ -15,6 +15,7 @@ before_script:
   - yarn install --cache-folder "$(pwd)/.yarn"
   - cd email
   - yarn install --cache-folder "$(pwd)/.yarn"
+  - cd ..
 
 lint:
   stage: lint
