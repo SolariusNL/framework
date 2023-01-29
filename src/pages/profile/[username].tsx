@@ -612,7 +612,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
         },
         where: {
           private: false,
-        }
+        },
       },
       avatarUri: true,
       premium: true,
