@@ -610,6 +610,9 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
           likedBy: { select: { id: true } },
           dislikedBy: { select: { id: true } },
         },
+        where: {
+          private: false,
+        },
       },
       avatarUri: true,
       premium: true,
