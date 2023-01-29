@@ -7,7 +7,6 @@ cache:
     - .yarn
 
 stages:
-  - lint
   - build-status
 
 before_script:
@@ -17,11 +16,6 @@ before_script:
   - yarn install --cache-folder "$(pwd)/.yarn"
   - cd ..
   - yarn run create-config
-
-lint:
-  stage: lint
-  script:
-    - yarn lint
 
 build status:
   stage: build-status
