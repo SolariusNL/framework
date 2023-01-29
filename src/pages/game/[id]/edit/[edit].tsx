@@ -3,6 +3,7 @@ import { GetServerSidePropsContext, NextPage } from "next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
+  HiCloud,
   HiCurrencyDollar,
   HiDatabase,
   HiExclamationCircle,
@@ -19,6 +20,7 @@ import Details from "../../../../components/EditGame/Details";
 import Funding from "../../../../components/EditGame/Funding";
 import Servers from "../../../../components/EditGame/Servers";
 import Store from "../../../../components/EditGame/Store";
+import Updates from "../../../../components/EditGame/Updates";
 import Framework from "../../../../components/Framework";
 import authorizedRoute from "../../../../util/authorizedRoute";
 import prisma from "../../../../util/prisma";
@@ -82,6 +84,12 @@ const tabs = [
     desc: "Configure your games access.",
     icon: <HiLockClosed />,
     component: Access,
+  },
+  {
+    title: "Updates",
+    desc: "Configure update logs for your game.",
+    icon: <HiCloud />,
+    component: Updates,
   },
 ];
 

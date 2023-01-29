@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import {
   HiBell,
   HiChat,
+  HiCloud,
   HiLink,
   HiSearch,
   HiSparkles,
@@ -16,6 +17,7 @@ import FriendsWidget from "../components/Home/FriendsWidget";
 import NotificationsWidget from "../components/Home/NotificationsWidget";
 import QuickLinksWidget from "../components/Home/QuickLinksWidget";
 import SubscriptionWidget from "../components/Home/SubscriptionWidget";
+import UpdatesWidget from "../components/Home/UpdatesWidget";
 import authorizedRoute from "../util/authorizedRoute";
 import { User } from "../util/prisma-types";
 import useMediaQuery from "../util/useMediaQuery";
@@ -59,6 +61,14 @@ const Home: NextPage<HomeProps> = ({ user }) => {
       component: <FeedWidget />,
       side: "right",
       icon: <HiChat />,
+    },
+    {
+      title: "Updates",
+      description: "See updates from games you follow.",
+      id: "updates",
+      component: <UpdatesWidget />,
+      side: "right",
+      icon: <HiCloud />,
     },
     {
       title: "Notifications",

@@ -337,6 +337,12 @@ export const gameSelect: Prisma.GameSelect = {
   },
   paywall: true,
   paywallPrice: true,
+  updateLogs: {
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: 1,
+  },
 };
 
 export const snippetSelect: Prisma.CodeSnippetSelect = {
@@ -428,6 +434,12 @@ const game = Prisma.validator<Prisma.GameArgs>()({
         username: true,
         avatarUri: true,
       },
+    },
+    updateLogs: {
+      orderBy: {
+        createdAt: "desc",
+      },
+      take: 1,
     },
   },
 });

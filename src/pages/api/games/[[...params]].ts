@@ -1,5 +1,6 @@
 import {
   GameGenre,
+  GameUpdateLogType,
   RatingCategory,
   RatingCategoryScore,
   RatingType,
@@ -16,6 +17,7 @@ import {
 import * as Validate from "class-validator";
 import fetch from "node-fetch";
 import sanitizeHtml from "sanitize-html";
+import { z } from "zod";
 import { scoreDescriptions } from "../../../components/EditGame/AgeRating";
 import Authorized, { Account } from "../../../util/api/authorized";
 import logger from "../../../util/logger";
@@ -1373,6 +1375,232 @@ class GameRouter {
               },
             },
           },
+        },
+      },
+    });
+
+    return games;
+  }
+
+  @Get("/following/:gid/status")
+  @Authorized()
+  async getFollowingStatus(@Account() user: User, @Param("gid") gid: string) {
+    const game = await prisma.game.findFirst({
+      where: {
+        id: Number(gid),
+        followers: {
+          some: {
+            id: user.id,
+          },
+        },
+      },
+    });
+
+    return {
+      following: !!game,
+    };
+  }
+
+  @Post("/following/:gid/follow")
+  @Authorized()
+  async followGame(@Account() user: User, @Param("gid") gid: string) {
+    const game = await prisma.game.findFirst({
+      where: {
+        id: Number(gid),
+        followers: {
+          some: {
+            id: user.id,
+          },
+        },
+      },
+    });
+
+    if (game) {
+      await prisma.game.update({
+        where: {
+          id: Number(gid),
+        },
+        data: {
+          followers: {
+            disconnect: {
+              id: user.id,
+            },
+          },
+        },
+      });
+    } else {
+      await prisma.game.update({
+        where: {
+          id: Number(gid),
+        },
+        data: {
+          followers: {
+            connect: {
+              id: user.id,
+            },
+          },
+        },
+      });
+    }
+
+    return {
+      success: true,
+    };
+  }
+
+  @Get("/updates/:gid/:page")
+  @Authorized()
+  async getUpdates(
+    @Account() user: User,
+    @Param("gid") gid: string,
+    @Param("page") page: number
+  ) {
+    const game = await prisma.game.findFirst({
+      where: {
+        id: Number(gid),
+      },
+    });
+    const count = await prisma.gameUpdateLog.count({
+      where: {
+        gameId: Number(gid),
+      },
+    });
+
+    if (!game) {
+      return {
+        success: false,
+        error: "Game not found",
+      };
+    }
+
+    const updates = await prisma.gameUpdateLog.findMany({
+      where: {
+        gameId: Number(gid),
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      skip: (page - 1) * 10,
+      take: 10,
+    });
+
+    return {
+      success: true,
+      updates,
+      pages: Math.ceil(count / 10),
+    };
+  }
+
+  @Get("/updates/:gid/latest/tag")
+  @Authorized()
+  async getLatestUpdateTag(@Account() user: User, @Param("gid") gid: string) {
+    const latest = await prisma.gameUpdateLog.findFirst({
+      orderBy: {
+        createdAt: "desc",
+      },
+      where: {
+        gameId: Number(gid),
+      },
+    });
+
+    return {
+      tag: latest?.tag,
+    };
+  }
+
+  @Post("/updates/:gid/create")
+  @Authorized()
+  async createUpdate(
+    @Account() user: User,
+    @Param("gid") gid: string,
+    @Body() body: unknown
+  ) {
+    const schema = z.object({
+      title: z.string().min(3).max(75),
+      content: z.string().min(3).max(5000),
+      tag: z
+        .string()
+        .regex(
+          /^v?(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/,
+          "Invalid tag"
+        ),
+      type: z.nativeEnum(GameUpdateLogType),
+    });
+
+    const data = schema.parse(body);
+
+    const game = await prisma.game.findFirst({
+      where: {
+        id: Number(gid),
+        authorId: user.id,
+      },
+    });
+
+    if (!game) {
+      return {
+        success: false,
+        error: "Game not found",
+      };
+    }
+
+    const tags = await prisma.gameUpdateLog.findMany({
+      where: {
+        gameId: Number(gid),
+      },
+      select: {
+        tag: true,
+      },
+    });
+
+    if (tags.some((t) => t.tag === data.tag)) {
+      return {
+        success: false,
+        error: "Tag already exists",
+      };
+    }
+
+    await prisma.gameUpdateLog.create({
+      data: {
+        gameId: Number(gid),
+        title: data.title,
+        content: data.content,
+        tag: data.tag,
+        type: data.type,
+      },
+    });
+
+    return {
+      success: true,
+    };
+  }
+
+  @Get("/updates/following")
+  @Authorized()
+  async getFollowingUpdates(@Account() user: User) {
+    const games = await prisma.game.findMany({
+      where: {
+        followers: {
+          some: {
+            id: user.id,
+          },
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        updateLogs: {
+          select: {
+            id: true,
+            title: true,
+            content: true,
+            tag: true,
+            type: true,
+            createdAt: true,
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+          take: 1,
         },
       },
     });

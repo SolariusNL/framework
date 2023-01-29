@@ -17,7 +17,9 @@ import {
   Title,
   Tooltip,
 } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import { Gamepass } from "@prisma/client";
+import { getCookie } from "cookies-next";
 import isElectron from "is-electron";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { NextSeo } from "next-seo";
@@ -25,6 +27,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import {
+  HiCheckCircle,
   HiCurrencyDollar,
   HiDotsVertical,
   HiFlag,
@@ -33,6 +36,7 @@ import {
   HiLockClosed,
   HiPencil,
   HiPlay,
+  HiPlus,
   HiServer,
   HiShoppingBag,
 } from "react-icons/hi";
@@ -77,6 +81,7 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
   const [launchingOpen, setLaunchingOpen] = useState(false);
   const [similarGames, setSimilarGames] = useState<Game[] | null>(null);
   const [report, setReport] = useState(false);
+  const [following, setFollowing] = useState<boolean | null>(null);
 
   const getSimilarGames = async () => {
     await fetch(`/api/games/by/genre/${game.genre}`, {
@@ -91,8 +96,43 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
       });
   };
 
+  const queryFollowing = async () => {
+    await fetch(`/api/games/following/${game.id}/status`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: String(getCookie(".frameworksession")),
+      },
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        setFollowing(res.following);
+      });
+  };
+
+  const followGame = async () => {
+    setFollowing(!following);
+
+    await fetch(`/api/games/following/${game.id}/follow`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: String(getCookie(".frameworksession")),
+      },
+    }).finally(() =>
+      showNotification({
+        title: (following ? "Unfollowed" : "Followed") + " game",
+        message: `You have ${following ? "unfollowed" : "followed"} ${
+          game.name
+        }.`,
+        icon: <HiCheckCircle />,
+      })
+    );
+  };
+
   useEffect(() => {
     getSimilarGames();
+    queryFollowing();
   }, []);
 
   return (
@@ -326,7 +366,7 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
               leftIcon={<HiLockClosed />}
               fullWidth
               size="lg"
-              mb={32}
+              mb={"xs"}
               disabled={game.connection.length == 0}
               onClick={() => {
                 if (isElectron()) {
@@ -337,6 +377,16 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
               }}
             >
               Play in Private Server
+            </Button>
+
+            <Button
+              leftIcon={<HiPlus />}
+              fullWidth
+              size="lg"
+              mb={32}
+              onClick={async () => await followGame()}
+            >
+              {following === null ? "..." : following ? "Unfollow" : "Follow"}
             </Button>
 
             <ReactNoSSR>

@@ -146,6 +146,7 @@ model User {
   quickLoginEnabled          Boolean               @default(true)
   privateGameAccess          Game[]                @relation("privateGameAccess")
   purchasedGames             Game[]                @relation("purchasedGames")
+  followedGames              Game[]                @relation("gameFollowers")
 }
 
 model ConnectedAccount {
@@ -329,6 +330,8 @@ model Game {
   paywall              Boolean                 @default(false)
   paywallAccess        User[]                  @relation("purchasedGames")
   paywallPrice         Int                     @default(1)
+  followers            User[]                  @relation("gameFollowers")
+  updateLogs           GameUpdateLog[]         @relation("gameUpdateLogs")
 }
 
 model GameComment {
@@ -809,4 +812,21 @@ model LoginQR {
   userId    Int?     @unique
   createdAt DateTime @default(now())
   code      String   @unique @default(uuid())
+}
+
+model GameUpdateLog {
+  id        String            @id @default(uuid())
+  game      Game              @relation("gameUpdateLogs", fields: [gameId], references: [id])
+  gameId    Int
+  createdAt DateTime          @default(now())
+  content   String
+  title     String
+  tag       String
+  type      GameUpdateLogType
+}
+
+enum GameUpdateLogType {
+  PATCH
+  MINOR
+  MAJOR
 }
