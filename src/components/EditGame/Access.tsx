@@ -6,13 +6,21 @@ import {
   Select,
   Stack,
   Text,
+  TextInput,
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { getCookie } from "cookies-next";
 import React from "react";
-import { HiCheckCircle, HiLockClosed, HiTicket, HiUsers } from "react-icons/hi";
+import {
+  HiCheckCircle,
+  HiLockClosed,
+  HiShare,
+  HiTicket,
+  HiUsers,
+} from "react-icons/hi";
 import getMediaUrl from "../../util/getMedia";
 import { Game } from "../../util/prisma-types";
+import Copy from "../Copy";
 import SideBySide from "../Settings/SideBySide";
 import UserSelect from "../UserSelect";
 import EditGameTab from "./EditGameTab";
@@ -105,86 +113,88 @@ const Access = ({ game }: AccessProps) => {
           }
         />
         {gameData.private && (
-          <SideBySide
-            title="Members"
-            description="Manage users who've been whitelisted to access your game."
-            icon={<HiUsers />}
-            shaded
-            right={
-              <div className="flex flex-col gap-2">
-                <UserSelect
-                  label="Add user"
-                  description="Add a user to your game's whitelist."
-                  onUserSelect={(user) => {
-                    if (gameData.privateAccess.find((u) => u.id === user.id))
-                      return;
-                    setGameData({
-                      ...gameData,
-                      privateAccess: [
-                        ...gameData.privateAccess,
-                        {
-                          id: user.id,
-                          username: user.username,
-                          avatarUri: user.avatarUri,
-                        },
-                      ],
-                    });
-                    setUpdated({
-                      ...updated,
-                      privateAccess: [
-                        ...gameData.privateAccess,
-                        {
-                          id: user.id,
-                          username: user.username,
-                          avatarUri: user.avatarUri,
-                        },
-                      ],
-                    });
-                  }}
-                  filter={(_, user) =>
-                    !gameData.privateAccess.find((u) => u.id === user.id)
-                  }
-                />
-                <Stack spacing={2} mt="sm">
-                  {gameData.privateAccess.map((user) => (
-                    <div
-                      key={user.id}
-                      className="flex justify-between items-center"
-                    >
-                      <div className="flex items-center gap-2">
-                        <Avatar
-                          src={getMediaUrl(user.avatarUri)}
-                          size={20}
-                          radius={999}
+          <>
+            <SideBySide
+              title="Members"
+              description="Manage users who've been whitelisted to access your game."
+              icon={<HiUsers />}
+              shaded
+              right={
+                <div className="flex flex-col gap-2">
+                  <UserSelect
+                    label="Add user"
+                    description="Add a user to your game's whitelist."
+                    onUserSelect={(user) => {
+                      if (gameData.privateAccess.find((u) => u.id === user.id))
+                        return;
+                      setGameData({
+                        ...gameData,
+                        privateAccess: [
+                          ...gameData.privateAccess,
+                          {
+                            id: user.id,
+                            username: user.username,
+                            avatarUri: user.avatarUri,
+                          },
+                        ],
+                      });
+                      setUpdated({
+                        ...updated,
+                        privateAccess: [
+                          ...gameData.privateAccess,
+                          {
+                            id: user.id,
+                            username: user.username,
+                            avatarUri: user.avatarUri,
+                          },
+                        ],
+                      });
+                    }}
+                    filter={(_, user) =>
+                      !gameData.privateAccess.find((u) => u.id === user.id)
+                    }
+                  />
+                  <Stack spacing={2} mt="sm">
+                    {gameData.privateAccess.map((user) => (
+                      <div
+                        key={user.id}
+                        className="flex justify-between items-center"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Avatar
+                            src={getMediaUrl(user.avatarUri)}
+                            size={20}
+                            radius={999}
+                          />
+                          <Text size="sm" color="dimmed">
+                            {user.username}
+                          </Text>
+                        </div>
+                        <CloseButton
+                          size="xs"
+                          onClick={() => {
+                            setGameData({
+                              ...gameData,
+                              privateAccess: gameData.privateAccess.filter(
+                                (u) => u.id !== user.id
+                              ),
+                            });
+                            setUpdated({
+                              ...updated,
+                              privateAccess: gameData.privateAccess.filter(
+                                (u) => u.id !== user.id
+                              ),
+                            });
+                          }}
                         />
-                        <Text size="sm" color="dimmed">
-                          {user.username}
-                        </Text>
                       </div>
-                      <CloseButton
-                        size="xs"
-                        onClick={() => {
-                          setGameData({
-                            ...gameData,
-                            privateAccess: gameData.privateAccess.filter(
-                              (u) => u.id !== user.id
-                            ),
-                          });
-                          setUpdated({
-                            ...updated,
-                            privateAccess: gameData.privateAccess.filter(
-                              (u) => u.id !== user.id
-                            ),
-                          });
-                        }}
-                      />
-                    </div>
-                  ))}
-                </Stack>
-              </div>
-            }
-            noUpperBorder
-          />
+                    ))}
+                  </Stack>
+                </div>
+              }
+              noUpperBorder
+            />
+          </>
         )}
         {gameData.paywall && (
           <SideBySide
@@ -204,6 +214,27 @@ const Access = ({ game }: AccessProps) => {
                 min={1}
                 max={100000}
               />
+            }
+            noUpperBorder
+          />
+        )}
+        {typeof window !== "undefined" && (
+          <SideBySide
+            title="Share"
+            description="Share your game with others."
+            icon={<HiShare />}
+            shaded
+            right={
+              <div className="flex items-center gap-2 w-full">
+                <Copy
+                  value={`${window.location.protocol}//${window.location.host}/game/${game.id}`}
+                />
+                <TextInput
+                  readOnly
+                  value={`${window.location.protocol}//${window.location.host}/game/${game.id}`}
+                  className="w-full"
+                />
+              </div>
             }
             noUpperBorder
           />
