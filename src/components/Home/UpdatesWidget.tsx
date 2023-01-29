@@ -4,6 +4,7 @@ import { getCookie } from "cookies-next";
 import Link from "next/link";
 import React from "react";
 import { Game } from "../../util/prisma-types";
+import ModernEmptyState from "../ModernEmptyState";
 import ShadedCard from "../ShadedCard";
 import UpdateCard from "../UpdateCard";
 import { Section } from "./FriendsWidget";
@@ -46,6 +47,11 @@ const UpdatesWidget: React.FC = () => {
             <UpdateCard update={game.updateLogs[0]} light />
           </div>
         ))}
+        {gameUpdates.length === 0 && (
+          <div className="w-full flex justify-center items-center">
+            <ModernEmptyState title="No updates" body="No updates to show." />
+          </div>
+        )}
       </ShadedCard>
     </>
   );
