@@ -788,43 +788,43 @@ class UserRouter {
       };
     }
 
-    [
-      prisma.game,
-      prisma.session,
-      prisma.profileLink,
-      prisma.message,
-      prisma.checklist,
-      prisma.avatar,
-      prisma.gameComment,
-      prisma.codeSnippet,
-      prisma.emailVerification,
-      prisma.nucleusAuthTicket,
-      prisma.userReport,
-      prisma.transaction,
-      prisma.notification,
-      prisma.premiumSubscription,
-      prisma.secret,
-      prisma.emailLoginRequest,
-      prisma.statusPosts,
-      prisma.userAdminNotes,
-      prisma.adminActivityLog,
-    ].forEach(async (model) => {
-      await (model.deleteMany as any)({
-        where: {
-          userId: user.id,
-        },
-      });
-    });
+    // [
+    //   prisma.game,
+    //   prisma.session,
+    //   prisma.profileLink,
+    //   prisma.message,
+    //   prisma.checklist,
+    //   prisma.avatar,
+    //   prisma.gameComment,
+    //   prisma.codeSnippet,
+    //   prisma.emailVerification,
+    //   prisma.nucleusAuthTicket,
+    //   prisma.userReport,
+    //   prisma.transaction,
+    //   prisma.notification,
+    //   prisma.premiumSubscription,
+    //   prisma.secret,
+    //   prisma.emailLoginRequest,
+    //   prisma.statusPosts,
+    //   prisma.userAdminNotes,
+    //   prisma.adminActivityLog,
+    // ].forEach(async (model) => {
+    //   await (model.deleteMany as any)({
+    //     where: {
+    //       userId: user.id,
+    //     },
+    //   });
+    // });
 
-    await prisma.user.delete({
-      where: {
-        id: user.id,
-      },
-    });
+    // await prisma.user.delete({
+    //   where: {
+    //     id: user.id,
+    //   },
+    // });
 
     return {
-      success: true,
-      message: "User deleted successfully.",
+      success: false,
+      message: "This endpoint is currently disabled.",
     };
   }
 
