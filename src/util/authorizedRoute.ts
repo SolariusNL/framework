@@ -58,6 +58,15 @@ const authorizedRoute = async (
         },
       });
 
+      if (account?.banned && context.resolvedUrl !== "/punished") {
+        return {
+          redirect: {
+            destination: "/punished",
+            permanent: false,
+          },
+        };
+      }
+
       if (redirectIfAuthorized) {
         return {
           redirect: {
