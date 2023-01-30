@@ -378,7 +378,7 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
                                 ],
                               ].map(([title, value]) => (
                                 <div
-                                  className="flex justify-between items-start"
+                                  className="flex justify-between items-start gap-4"
                                   key={title}
                                 >
                                   <Text

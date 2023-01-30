@@ -1,4 +1,5 @@
 import { Game } from "../../util/prisma-types";
+import ModernEmptyState from "../ModernEmptyState";
 import UpdateCard from "../UpdateCard";
 import ViewGameTab from "./ViewGameTab";
 
@@ -11,7 +12,12 @@ const UpdateLogTab = ({ game }: UpdateLogTabProps) => {
     <ViewGameTab value="updatelog" title="Update Log">
       {game.updateLogs.length > 0 ? (
         <UpdateCard update={game.updateLogs[0]} light />
-      ) : null}
+      ) : (
+        <ModernEmptyState
+          title="No updates yet"
+          body="Updates will appear here when they are posted."
+        />
+      )}
     </ViewGameTab>
   );
 };
