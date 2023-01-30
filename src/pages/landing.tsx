@@ -139,12 +139,16 @@ const Landing: NextPage = () => {
             </Title>
 
             <Container p={0} size={600}>
-              <Text size="lg" color="dimmed" className={classes.description}>
-                Join our free, open-source federated network of what we call a{" "}
-                <span className="font-semibold">better Roblox</span>. Come and
-                explore the possibilities of limitless creativity and
-                self-expression in a decentralized, censorship-resistant, and
-                permissionless environment.
+              <Text
+                size="lg"
+                color="dimmed"
+                className={classes.description}
+                mb="md"
+              >
+                Join our free, open-source federated network to explore the
+                possibilities of limitless creativity and self-expression in a
+                decentralized, censorship-resistant, and permissionless
+                environment.
               </Text>
             </Container>
 
@@ -161,6 +165,13 @@ const Landing: NextPage = () => {
                 </Button>
               </Link>
             </div>
+
+            <Container p={0} size={600} mt="lg">
+              <Text size="sm" color="dimmed" className="text-left md:text-center">
+                Soodam.re B.V. is not affiliated with Roblox Corporation. All
+                trademarks are property of their respective owners.
+              </Text>
+            </Container>
           </div>
 
           {[Pros, Power, Features, Faq].map((Component, index) => (
