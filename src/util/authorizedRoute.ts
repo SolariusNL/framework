@@ -63,6 +63,7 @@ const authorizedRoute = async (
           redirect: {
             destination: "/punished",
             permanent: false,
+            banRedirect: true,
           },
         };
       }

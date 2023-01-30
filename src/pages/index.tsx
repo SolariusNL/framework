@@ -143,11 +143,18 @@ const Home: NextPage<HomeProps> = ({ user }) => {
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const auth = await authorizedRoute(ctx, true, false);
 
-  if (auth.redirect) return auth;
+  if (auth.redirect && !auth.redirect.banRedirect)
+    return {
+      redirect: {
+        destination: "/landing",
+        permanent: false,
+      },
+    };
+  else if (auth.redirect && auth.redirect.banRedirect) return auth;
 
   return {
     props: {
-      user: auth.props.user,
+      user: auth.props?.user,
     },
   };
 }
