@@ -37,7 +37,7 @@ const ResetEmail: React.FC<ResetEmailProps> & {
       }}
       title="Reset email"
       description="Reset the user's email. They will be asked to add a new email on their visit."
-      condition={!user.emailResetRequired}
+      condition={user.emailResetRequired}
     />
   );
 };

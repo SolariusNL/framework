@@ -41,6 +41,8 @@ import {
 import { RateLimitMiddleware } from "../../../util/rateLimit";
 import { getOperatingSystem } from "../../../util/ua";
 import SupportTicketClosed from "../../../../email/emails/support-ticket-closed";
+import AccountUpdate from "../../../../email/emails/account-update";
+import { hashPass } from "../../../util/hash/password";
 
 class AdminRouter {
   @Get("/reports")
@@ -613,6 +615,24 @@ class AdminRouter {
       );
     }
 
+    sendMail(
+      user.email,
+      "Enforcement Action Notice",
+      render(
+        AccountUpdate({
+          content: `Hello ${user.username},<br /><br />You have been ${
+            category === "ban" ? "banned" : "warned"
+          } on Framework.<br /><br />${
+            category === "ban"
+              ? `Expires: <b>${new Date(
+                  body.expires!
+                ).toLocaleString()}</b><br />Reason: <b>${body.reason}</b>`
+              : `Reason: ${body.reason}`
+          }<br /><br />If you believe this is a mistake, please contact us at our support portal.`,
+        }) as React.ReactElement
+      )
+    );
+
     return {
       success: true,
     };
@@ -818,6 +838,15 @@ class AdminRouter {
             `Reset ${user.username}'s username to ${username}`,
             3
           );
+          sendMail(
+            user.email,
+            "Username Reset",
+            render(
+              AccountUpdate({
+                content: `Our staff have reset your username to ${username}. Please use this username to login to your account, and if you wish to change it, you can do so in your account settings.`,
+              }) as React.ReactElement
+            )
+          );
         },
       },
       {
@@ -848,21 +877,48 @@ class AdminRouter {
           });
 
           await createActionLog(`Reset ${user.username}'s email address`, 3);
+          sendMail(
+            user.email,
+            "Email Reset",
+            render(
+              AccountUpdate({
+                content:
+                  "Our staff have reset your email address. You will be asked to enter a new email address when you access Framework.",
+              }) as React.ReactElement
+            )
+          );
         },
       },
       {
         name: AdminAction.RESET_PASSWORD,
         action: async () => {
+          const randomPassword =
+            Math.random().toString(36).substring(2, 15) +
+            Math.random().toString(36).substring(2, 15);
+          const salted = await hashPass(randomPassword);
+
           await prisma.user.update({
             where: {
               id: Number(uid),
             },
             data: {
-              passwordResetRequired: true,
+              password: salted,
+              sessions: {
+                deleteMany: {},
+              },
             },
           });
 
           await createActionLog(`Reset ${user.username}'s password`, 3);
+          sendMail(
+            user.email,
+            "Password Reset",
+            render(
+              AccountUpdate({
+                content: `Your password has been changed by a Framework staff member. See below for your new password:<br /><br />Password: <b>${randomPassword}</b><br /><br />As soon as you can, please change your password in your account settings.`,
+              }) as React.ReactElement
+            )
+          );
         },
       },
       {
@@ -994,6 +1050,16 @@ class AdminRouter {
           });
 
           await createActionLog(`Unbanned ${user.username}`, 3);
+          sendMail(
+            user.email,
+            "Unbanned",
+            render(
+              AccountUpdate({
+                content:
+                  "You've been unbanned from Framework. You can now access your account again.",
+              }) as React.ReactElement
+            )
+          );
         },
       },
       {

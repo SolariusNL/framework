@@ -20,8 +20,35 @@ const UpdateDrawer: React.FC = () => {
     href?: string;
   }> = [
     {
+      title: "Email Login",
+      description: "You can now login to Framework using your email.",
+      badge: BadgeType.NEW,
+      date: new Date("2023-01-29"),
+    },
+    {
+      title: "Game Update Logs",
+      description:
+        "We've added the ability to add update logs to games. These will help you keep your users up to date with your game's development and changes.",
+      badge: BadgeType.NEW,
+      date: new Date("2023-01-29"),
+    },
+    {
+      title: "Game Following",
+      description: "You can now follow games to receive updates on them.",
+      badge: BadgeType.NEW,
+      date: new Date("2023-01-29"),
+    },
+    {
+      title: "Game Privating",
+      description:
+        "You can now make your games private. This will hide them from the public, and only you and whitelisted users will be able to access them.",
+      badge: BadgeType.NEW,
+      date: new Date("2023-01-28"),
+    },
+    {
       title: "Chat Release Candidate",
-      description: "The new Chat feature has entered release candidate status, as it replaces the old Messages feature. We thank you for your feedback during it's early stages.",
+      description:
+        "The new Chat feature has entered release candidate status, as it replaces the old Messages feature. We thank you for your feedback during it's early stages.",
       badge: BadgeType.NEW,
       href: "/chat",
       date: new Date("2023-01-26"),
@@ -36,7 +63,8 @@ const UpdateDrawer: React.FC = () => {
     },
     {
       title: "Quick Login",
-      description: "Quick login allows you to quickly access your account using a QR code without needing to enter any credentials.",
+      description:
+        "Quick login allows you to quickly access your account using a QR code without needing to enter any credentials.",
       badge: BadgeType.NEW,
       date: new Date("2023-01-21"),
     },
@@ -114,6 +142,7 @@ const UpdateDrawer: React.FC = () => {
       >
         {newFeatures
           .sort((a, b) => b.date.getTime() - a.date.getTime())
+          .slice(0, 10)
           .map((feature) => (
             <Link key={feature.title} href={feature.href || {}}>
               <ShadedButton

@@ -36,8 +36,8 @@ const ResetPassword: React.FC<ResetPasswordProps> & {
         });
       }}
       title="Reset password"
-      description="Reset the user's password. They will be asked to add a new password on their visit."
-      condition={!user.passwordResetRequired}
+      description="Reset the user's password. They will be emailed a randomly generated password."
+      condition={user.passwordResetRequired}
     />
   );
 };
