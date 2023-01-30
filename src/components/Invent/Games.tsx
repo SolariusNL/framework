@@ -14,17 +14,14 @@ import {
   Title,
   Tooltip,
   useMantineColorScheme,
-  useMantineTheme,
+  useMantineTheme
 } from "@mantine/core";
-import { showNotification } from "@mantine/notifications";
-import { getCookie } from "cookies-next";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import {
   HiChartBar,
   HiCheckCircle,
-  HiDotsVertical,
-  HiExclamationCircle,
+  HiDotsVertical, HiExclamationCircle,
   HiExternalLink,
   HiPencil,
   HiPlus,
@@ -33,7 +30,7 @@ import {
   HiThumbUp,
   HiTrash,
   HiUsers,
-  HiXCircle,
+  HiXCircle
 } from "react-icons/hi";
 import abbreviateNumber from "../../util/abbreviate";
 import shutdownNucleus from "../../util/fetch/shutdownNucleus";
@@ -67,6 +64,11 @@ const Games = ({ user }: GamesProps) => {
           >
             Create a Game
           </Button>
+          {!user.emailVerified && (
+            <Text size="sm" color="dimmed">
+              Your email must be verified to create games on Framework.
+            </Text>
+          )}
         </>
       }
     >
@@ -76,10 +78,12 @@ const Games = ({ user }: GamesProps) => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {user.games.length == 0 && (
-          <ModernEmptyState
-            title="No games"
-            body="You don't have any games on your account."
-          />
+          <div className="col-span-full flex items-center justify-center">
+            <ModernEmptyState
+              title="No games"
+              body="You don't have any games on your account."
+            />
+          </div>
         )}
         {user.games.map((game) => {
           const warnings: Array<{
@@ -342,7 +346,9 @@ const Games = ({ user }: GamesProps) => {
                       <Menu.Dropdown>
                         <Menu.Item
                           icon={<HiPencil />}
-                          onClick={() => router.push(`/game/${game.id}/edit/details`)}
+                          onClick={() =>
+                            router.push(`/game/${game.id}/edit/details`)
+                          }
                         >
                           Edit
                         </Menu.Item>
