@@ -1,4 +1,4 @@
-import { Avatar, Divider, Indicator, Text, Title } from "@mantine/core";
+import { Avatar, Divider, Indicator, Loader, Text, Title } from "@mantine/core";
 import { getCookie } from "cookies-next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -78,8 +78,11 @@ const Friend: React.FC<{ friend: NonUser }> = ({ friend }) => {
 
 const FriendsWidget: React.FC = () => {
   const [allFriends, setAllFriends] = useState<NonUser[]>();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
+
     fetch("/api/dashboard/friends", {
       method: "GET",
       headers: {
@@ -90,7 +93,8 @@ const FriendsWidget: React.FC = () => {
       .then((res) => res.json())
       .then((res) => {
         setAllFriends(res);
-      });
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   return (
@@ -100,15 +104,23 @@ const FriendsWidget: React.FC = () => {
         description="A list for easy access to your friends"
       />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {allFriends &&
-          allFriends.map((friend, i) => <Friend friend={friend} key={i} />)}
-        {allFriends && allFriends.length === 0 && (
-          <ShadedCard className="col-span-2">
-            <ModernEmptyState
-              title="No friends"
-              body="You have no friends yet. Add some!"
-            />
+        {loading ? (
+          <ShadedCard className="col-span-2 flex items-center justify-center py-8">
+            <Loader />
           </ShadedCard>
+        ) : (
+          <>
+            {allFriends &&
+              allFriends.map((friend, i) => <Friend friend={friend} key={i} />)}
+            {allFriends && allFriends.length === 0 && (
+              <ShadedCard className="col-span-2">
+                <ModernEmptyState
+                  title="No friends"
+                  body="You have no friends yet. Add some!"
+                />
+              </ShadedCard>
+            )}
+          </>
         )}
       </div>
       <Divider mt="xl" mb="xl" />
@@ -116,34 +128,42 @@ const FriendsWidget: React.FC = () => {
         title="Online friends"
         description="Dive into a game with your friends"
       />
-      {allFriends &&
-      allFriends.filter(
-        (friend) =>
-          friend.lastSeen &&
-          new Date(friend.lastSeen) >
-            new Date(new Date().getTime() - 5 * 60 * 1000)
-      ).length > 0 ? (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {allFriends
-              .filter(
-                (friend) =>
-                  friend.lastSeen &&
-                  new Date(friend.lastSeen) >
-                    new Date(new Date().getTime() - 5 * 60 * 1000)
-              )
-              .map((friend, i) => (
-                <Friend friend={friend} key={i} />
-              ))}
-          </div>
-        </>
-      ) : (
-        <ShadedCard className="w-full flex justify-center">
-          <ModernEmptyState
-            title="No friends online"
-            body="Your friends are not online right now"
-          />
+      {loading ? (
+        <ShadedCard className="col-span-2 flex items-center justify-center py-8">
+          <Loader />
         </ShadedCard>
+      ) : (
+        <>
+          {allFriends &&
+          allFriends.filter(
+            (friend) =>
+              friend.lastSeen &&
+              new Date(friend.lastSeen) >
+                new Date(new Date().getTime() - 5 * 60 * 1000)
+          ).length > 0 ? (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {allFriends
+                  .filter(
+                    (friend) =>
+                      friend.lastSeen &&
+                      new Date(friend.lastSeen) >
+                        new Date(new Date().getTime() - 5 * 60 * 1000)
+                  )
+                  .map((friend, i) => (
+                    <Friend friend={friend} key={i} />
+                  ))}
+              </div>
+            </>
+          ) : (
+            <ShadedCard className="w-full flex justify-center">
+              <ModernEmptyState
+                title="No friends online"
+                body="Your friends are not online right now"
+              />
+            </ShadedCard>
+          )}
+        </>
       )}
     </>
   );
