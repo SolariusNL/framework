@@ -1584,6 +1584,9 @@ class GameRouter {
             id: user.id,
           },
         },
+        updateLogs: {
+          some: {},
+        },
       },
       select: {
         id: true,
