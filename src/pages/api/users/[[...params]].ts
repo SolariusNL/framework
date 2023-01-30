@@ -3,6 +3,7 @@ import {
   PrivacyPreferences,
   ReceiveNotification,
 } from "@prisma/client";
+import { render } from "@react-email/render";
 import {
   Body,
   createHandler,
@@ -12,12 +13,14 @@ import {
   Post,
   Query,
 } from "@storyofams/next-api-decorators";
+import AccountUpdate from "../../../../email/emails/account-update";
 import { category } from "../../../components/ReportUser";
 import countries from "../../../data/countries";
 import getTimezones from "../../../data/timezones";
 import Authorized, { Account } from "../../../util/api/authorized";
 import { exclude } from "../../../util/exclude";
 import { hashPass, isSamePass } from "../../../util/hash/password";
+import { sendMail } from "../../../util/mail";
 import createNotification from "../../../util/notifications";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
@@ -59,14 +62,7 @@ class UserRouter {
       };
     }
 
-    if (process.env.MAIL_ENABLED === "true") {
-      await verificationEmail(user.id, user.email);
-    } else {
-      return {
-        status: 400,
-        message: "Email verification is not enabled on this Framework instance",
-      };
-    }
+    await verificationEmail(user.id, user.email);
   }
 
   @Post("/@me/changepassword")
@@ -122,6 +118,17 @@ class UserRouter {
       where: { userId: user.id },
     });
 
+    sendMail(
+      user.email,
+      "Password changed",
+      render(
+        AccountUpdate({
+          content:
+            "Your Framework password has been changed. If you did not authorize this change, please contact support and immediately secure your account.",
+        }) as React.ReactElement
+      )
+    );
+
     return {
       success: true,
       message: "Password changed successfully",
@@ -171,9 +178,16 @@ class UserRouter {
       },
     });
 
-    if (process.env.MAIL_ENABLED === "true") {
-      await verificationEmail(user.id, newEmail);
-    }
+    await verificationEmail(user.id, newEmail);
+    sendMail(
+      user.email,
+      "Email changed",
+      render(
+        AccountUpdate({
+          content: `Your Framework email is being changed from <b>${user.email}</b> to <b>${newEmail}</b>. If you did not authorize this change, please contact support and immediately secure your account.`,
+        }) as React.ReactElement
+      )
+    );
 
     return {
       success: true,

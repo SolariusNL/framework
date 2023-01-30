@@ -1,4 +1,7 @@
+import { render } from "@react-email/render";
 import speakeasy from "speakeasy";
+import AccountUpdate from "../../email/emails/account-update";
+import { sendMail } from "./mail";
 import prisma from "./prisma";
 
 const generateOTP = async (uid: number) => {
@@ -51,6 +54,17 @@ const verifyOTP = async (uid: number, token: string) => {
       otpVerified: true,
     },
   });
+
+  sendMail(
+    user.email,
+    "Two-factor authentication enabled",
+    render(
+      AccountUpdate({
+        content:
+          "Two-factor authentication has been enabled on your account. If you did not enable this, please contact our support team immediately and secure your account.",
+      }) as React.ReactElement
+    )
+  );
 
   return true;
 };

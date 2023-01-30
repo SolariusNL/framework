@@ -12,6 +12,7 @@ import {
 import { setCookie } from "cookies-next";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getClientIp } from "request-ip";
+import AccountUpdate from "../../../../email/emails/account-update";
 import LoginCode from "../../../../email/emails/login-code";
 import Authorized, { Account } from "../../../util/api/authorized";
 import { hashPass, isSamePass } from "../../../util/hash/password";
@@ -397,6 +398,16 @@ class AuthRouter {
   @Authorized()
   public async disableTwofa(@Account() user: User) {
     await disableOTP(user.id);
+    sendMail(
+      user.email,
+      "Two-Factor Authentication Disabled",
+      render(
+        AccountUpdate({
+          content:
+            "Two-Factor Authentication has been disabled on your account. If this was not you, please contact support immediately, and attempt to secure your account while you wait for a response.",
+        }) as React.ReactElement
+      )
+    );
   }
 
   @Post("/@me/twofa/request")
