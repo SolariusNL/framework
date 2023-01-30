@@ -40,11 +40,10 @@ const Login: NextPage = () => {
     },
     validate: {
       username: (value) =>
-        value.length < 3 || value.length > 29
+        value.length < 3 ||
+        (value.length > 29
           ? "Username must be between 3 and 29 characters"
-          : value.match(/^[a-zA-Z0-9_]+$/)
-          ? undefined
-          : "Username must be alphanumeric and underscores only",
+          : undefined),
       password: (value) =>
         value.length < 6 ? "Password must be at least 6 characters" : undefined,
     },
@@ -147,7 +146,7 @@ const Login: NextPage = () => {
           styles={{
             input: {
               minHeight: "fit-content",
-            }
+            },
           }}
         />
         {twofaFailed && (
@@ -175,7 +174,7 @@ const Login: NextPage = () => {
           <form onSubmit={form.onSubmit((values) => handleLogin(values))}>
             <Stack spacing={12}>
               <TextInput
-                label="Username"
+                label="Username or email"
                 placeholder="Framework"
                 required
                 {...form.getInputProps("username")}

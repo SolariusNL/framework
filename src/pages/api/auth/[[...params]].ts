@@ -38,7 +38,7 @@ interface RegisterBody {
 
 class AuthRouter {
   @Post("/login")
-  @RateLimitMiddleware(2)()
+  @RateLimitMiddleware(10)()
   public async login(@Body() body: LoginBody, @Req() request: NextApiRequest) {
     const { username, password } = body;
     const ip = getClientIp(request);
@@ -51,23 +51,43 @@ class AuthRouter {
       };
     }
 
+    const isEmail = username.includes("@");
+    if (
+      isEmail &&
+      !/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.test(
+        username
+      )
+    ) {
+      return {
+        status: 400,
+        message: "Invalid email",
+      };
+    }
+
     const account = await prisma.user.findFirst({
       where: {
-        username: String(username),
+        OR: [
+          {
+            username: username,
+          },
+          {
+            email: username,
+          },
+        ],
       },
     });
 
     if (!account) {
       return {
         status: 400,
-        message: "Invalid username or password",
+        message: "Invalid credentials",
       };
     }
 
     if (!(await isSamePass(password, account.password))) {
       return {
         status: 400,
-        message: "Invalid username or password",
+        message: "Invalid credentials",
       };
     }
 
