@@ -1,4 +1,4 @@
-import { Anchor, Text } from "@mantine/core";
+import { Anchor, Stack, Text } from "@mantine/core";
 import { GameUpdateLog } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import Link from "next/link";
@@ -35,18 +35,20 @@ const UpdatesWidget: React.FC = () => {
     <>
       <Section title="Updates" description="Updates from games you follow." />
       <ShadedCard>
-        {gameUpdates.map((game) => (
-          <div key={game.id}>
-            <div className="flex items-center gap-2 mb-3">
-              <Link href={`/game/${game.id}`}>
-                <Anchor size="sm" color="dimmed">
-                  {game.name}
-                </Anchor>
-              </Link>
+        <Stack spacing={24}>
+          {gameUpdates.map((game) => (
+            <div key={game.id}>
+              <div className="flex items-center gap-2 mb-3">
+                <Link href={`/game/${game.id}`}>
+                  <Anchor size="sm" color="dimmed">
+                    {game.name}
+                  </Anchor>
+                </Link>
+              </div>
+              <UpdateCard update={game.updateLogs[0]} light />
             </div>
-            <UpdateCard update={game.updateLogs[0]} light />
-          </div>
-        ))}
+          ))}
+        </Stack>
         {gameUpdates.length === 0 && (
           <div className="w-full flex justify-center items-center">
             <ModernEmptyState title="No updates" body="No updates to show." />
