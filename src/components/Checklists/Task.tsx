@@ -62,6 +62,7 @@ const DueBy = ({
                   setEditing(false);
                 }}
                 fullWidth
+                size="lg"
               />
             </Modal>
             <Group
@@ -295,13 +296,12 @@ const ChecklistTask = ({
                     ? theme.colors.dark[6]
                     : theme.colors.gray[0],
               },
-              width: display === "cards" ? "33%" : "100%",
               padding: "12px",
               opacity: taskState.completed ? 0.5 : 1,
               display: "flex",
               flexDirection: "column",
-              height: "100%",
             })}
+            className="h-fit"
             key={taskState.id}
             onClick={() => {
               if (checkboxRef.current?.contains(document.activeElement)) {
@@ -347,6 +347,7 @@ const ChecklistTask = ({
               transition={{ duration: 0.2 }}
               style={{
                 marginTop: taskState.completed ? 12 : 0,
+                width: "100%",
               }}
             >
               <Button
@@ -354,6 +355,7 @@ const ChecklistTask = ({
                 color="red"
                 onClick={() => deleteTask(taskState.id)}
                 leftIcon={<HiTrash />}
+                className="opacity-100 z-50"
               >
                 Delete
               </Button>

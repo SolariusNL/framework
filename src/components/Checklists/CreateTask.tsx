@@ -9,7 +9,6 @@ import {
 import { DatePicker } from "@mantine/dates";
 import { useForm } from "@mantine/form";
 import { getCookie } from "cookies-next";
-import dayjs from "dayjs";
 import { useRouter } from "next/router";
 
 interface CreateTaskProps {
@@ -36,7 +35,7 @@ const CreateTask = ({
     initialValues: {
       name: "",
       description: "",
-      schedule: new Date(),
+      schedule: new Date(new Date().setDate(new Date().getDate() + 1)),
       tags: [],
     },
     validate: {
@@ -92,8 +91,6 @@ const CreateTask = ({
             {...createTaskForm.getInputProps("schedule")}
             description="When do you want this to be done by?"
             dropdownType="modal"
-            minDate={dayjs(new Date()).add(1, "day").toDate()}
-            defaultValue={dayjs(new Date()).add(1, "day").toDate()}
           />
           <MultiSelect
             label="Tags"
