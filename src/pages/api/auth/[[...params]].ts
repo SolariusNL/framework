@@ -485,7 +485,7 @@ class AuthRouter {
         });
       }
       sendMail(
-        user.email,	
+        session.user.email,	
         "Two-Factor Authentication Disabled",
         render(
           AccountUpdate({
