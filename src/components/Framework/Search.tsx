@@ -6,9 +6,11 @@ import { HiSearchCircle } from "react-icons/hi";
 const Search = ({
   opened,
   setOpened,
+  mobile,
 }: {
   opened?: boolean;
   setOpened?: (opened: boolean) => void;
+  mobile?: boolean;
 }) => {
   const [search, setSearch] = React.useState("");
   const router = useRouter();
@@ -50,6 +52,9 @@ const Search = ({
         router.push(`/search?query=${query}&category=${provider}`);
       }}
       ref={ref}
+      {...(mobile && {
+        size: "md",
+      })}
     />
   );
 };

@@ -62,6 +62,7 @@ import Chat from "./Chat";
 import EmailReminder from "./EmailReminder";
 import Footer from "./Footer";
 import CurrencyMenu from "./Framework/CurrencyMenu";
+import MobileSearchMenu from "./Framework/MobileSearchMenu";
 import NotificationFlyout from "./Framework/NotificationFlyout";
 import Search from "./Framework/Search";
 import UpdateDrawer from "./Framework/UpdateDrawer";
@@ -175,6 +176,7 @@ const Framework = ({
   const mobile = useMediaQuery("950");
   const oldCookie = getCookie(".frameworksession.old");
   const [impersonating, setImpersonating] = useState(false);
+  const [mobileSearchOpened, _setMobileSearchOpened] = useState(false);
 
   useEffect(() => {
     if (sidebarOpened) {
@@ -481,11 +483,12 @@ const Framework = ({
               <Link href="/" passHref>
                 <FrameworkLogo square={mobile} />
               </Link>
-              {process.env.NODE_ENV === "development" && <Badge>Preview</Badge>}
+              {process.env.NODE_ENV === "development" && <Badge>Dev</Badge>}
             </Group>
 
             {mobile && (
               <div className="flex items-center gap-1">
+                <MobileSearchMenu opened={mobileSearchOpened} />
                 <NotificationFlyout />
                 <CurrencyMenu currencyMenuOpened={currencyMenuOpened} minimal />
                 <UserMenu userMenuOpened={userMenuOpened} minimal />
