@@ -664,10 +664,10 @@ class GameRouter {
         createdAt: "desc",
       },
       most_visited: {
-        views: "desc",
+        visits: "desc",
       },
       least_visited: {
-        views: "asc",
+        visits: "asc",
       },
     };
 
