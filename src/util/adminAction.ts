@@ -13,6 +13,7 @@ export enum AdminAction {
   ADJUST_SUBSCRIPTION = "adjust-subscription",
   UNBAN = "unban",
   UNWARN = "unwarn",
+  SEND_EMAIL = "send-email",
 }
 
 async function performAdminAction(action: AdminAction, data: any, uid: number) {
