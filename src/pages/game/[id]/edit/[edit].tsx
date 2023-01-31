@@ -22,6 +22,7 @@ import Servers from "../../../../components/EditGame/Servers";
 import Store from "../../../../components/EditGame/Store";
 import Updates from "../../../../components/EditGame/Updates";
 import Framework from "../../../../components/Framework";
+import SidebarTabNavigation from "../../../../layouts/SidebarTabNavigation";
 import authorizedRoute from "../../../../util/authorizedRoute";
 import prisma from "../../../../util/prisma";
 import { Game, gameSelect, User } from "../../../../util/prisma-types";
@@ -114,11 +115,8 @@ const EditGame: NextPage<EditGameProps> = ({ game, user, activePage }) => {
       modernTitle={`Editing ${game.name}`}
       modernSubtitle="Configure your games details and other settings."
     >
-      <div className="flex flex-col md:flex-row gap-8">
-        <div
-          className="md:flex md:flex-col md:gap-2 flex-row grid grid-cols-2 gap-2 md:grid-cols-1 md:grid-rows-3"
-          {...(!mobile && { style: { width: 240 } })}
-        >
+      <SidebarTabNavigation>
+        <SidebarTabNavigation.Sidebar>
           {tabs.map((tab, index) => (
             <Link
               passHref
@@ -134,15 +132,15 @@ const EditGame: NextPage<EditGameProps> = ({ game, user, activePage }) => {
               />
             </Link>
           ))}
-        </div>
-        <div className="flex-1">
+        </SidebarTabNavigation.Sidebar>
+        <SidebarTabNavigation.Content>
           <ReactNoSSR>
             {page.component({
               game: game as any,
             })}
           </ReactNoSSR>
-        </div>
-      </div>
+        </SidebarTabNavigation.Content>
+      </SidebarTabNavigation>
     </Framework>
   );
 };

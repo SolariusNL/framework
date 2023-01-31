@@ -5,19 +5,17 @@ import { useEffect, useState } from "react";
 import {
   HiBell,
   HiChat,
-  HiCloud,
-  HiLink,
-  HiSearch,
+  HiCloud, HiSearch,
   HiSparkles,
-  HiUsers,
+  HiUsers
 } from "react-icons/hi";
 import Framework from "../components/Framework";
 import FeedWidget from "../components/Home/FeedWidget";
 import FriendsWidget from "../components/Home/FriendsWidget";
 import NotificationsWidget from "../components/Home/NotificationsWidget";
-import QuickLinksWidget from "../components/Home/QuickLinksWidget";
 import SubscriptionWidget from "../components/Home/SubscriptionWidget";
 import UpdatesWidget from "../components/Home/UpdatesWidget";
+import SidebarTabNavigation from "../layouts/SidebarTabNavigation";
 import authorizedRoute from "../util/authorizedRoute";
 import { User } from "../util/prisma-types";
 import useMediaQuery from "../util/useMediaQuery";
@@ -114,11 +112,8 @@ const Home: NextPage<HomeProps> = ({ user }) => {
       modernTitle={`${timeMessage}, ${user.username}!`}
       modernSubtitle="Your experience at a glance"
     >
-      <div className="flex flex-col md:flex-row gap-8">
-        <div
-          className="md:flex md:flex-col md:gap-2 flex-row grid grid-cols-2 gap-2 md:grid-cols-1 md:grid-rows-3"
-          {...(!mobile && { style: { width: 240 } })}
-        >
+      <SidebarTabNavigation>
+        <SidebarTabNavigation.Sidebar>
           {widgets.map((widget) => (
             <NavLink
               label={widget.title}
@@ -130,12 +125,14 @@ const Home: NextPage<HomeProps> = ({ user }) => {
                 if (widget.onClick) widget.onClick();
                 else setActiveIndex(widgets.indexOf(widget));
               }}
-              className="rounded-md"
+              className="rounded-md h-fit"
             />
           ))}
-        </div>
-        <div className="flex-1">{widgets[activeIndex].component}</div>
-      </div>
+        </SidebarTabNavigation.Sidebar>
+        <SidebarTabNavigation.Content>
+          {widgets[activeIndex].component}
+        </SidebarTabNavigation.Content>
+      </SidebarTabNavigation>
     </Framework>
   );
 };

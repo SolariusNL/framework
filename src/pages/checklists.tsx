@@ -33,7 +33,7 @@ import ChecklistTask from "../components/Checklists/Task";
 import Descriptive from "../components/Descriptive";
 import Framework from "../components/Framework";
 import ModernEmptyState from "../components/ModernEmptyState";
-import ShadedCard from "../components/ShadedCard";
+import SidebarTabNavigation from "../layouts/SidebarTabNavigation";
 import authorizedRoute from "../util/authorizedRoute";
 import prisma from "../util/prisma";
 import { User } from "../util/prisma-types";
@@ -168,11 +168,8 @@ const Checklists: NextPage<ChecklistsProps> = ({ user, checklistData }) => {
           href: "/invent",
         }}
       >
-        <div className="flex flex-col md:flex-row gap-8">
-          <div
-            className="md:flex md:flex-col md:gap-2 flex-row grid grid-cols-2 gap-2 md:grid-cols-1 md:grid-rows-3"
-            {...(!mobile && { style: { width: 240 } })}
-          >
+        <SidebarTabNavigation>
+          <SidebarTabNavigation.Sidebar>
             {loading ? (
               <div className="col-span-full flex justify-center items-center">
                 <Loader />
@@ -191,7 +188,7 @@ const Checklists: NextPage<ChecklistsProps> = ({ user, checklistData }) => {
                       }}
                       description={item.description.substring(0, 78) + "..."}
                       icon={<HiCheck />}
-                      className="rounded-md"
+                      className="rounded-md h-fit"
                     />
                   ))}
                 <NavLink
@@ -203,8 +200,8 @@ const Checklists: NextPage<ChecklistsProps> = ({ user, checklistData }) => {
                 />
               </>
             )}
-          </div>
-          <ShadedCard className="flex-1">
+          </SidebarTabNavigation.Sidebar>
+          <SidebarTabNavigation.Content>
             {loading ? (
               <div className="w-full flex items-center justify-center py-8">
                 <Loader />
@@ -420,8 +417,8 @@ const Checklists: NextPage<ChecklistsProps> = ({ user, checklistData }) => {
                 </div>
               </>
             )}
-          </ShadedCard>
-        </div>
+          </SidebarTabNavigation.Content>
+        </SidebarTabNavigation>
       </Framework>
     </>
   );

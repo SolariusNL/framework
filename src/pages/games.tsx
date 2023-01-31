@@ -3,7 +3,7 @@ import {
   NavLink,
   RangeSlider,
   Select,
-  TextInput,
+  TextInput
 } from "@mantine/core";
 import { GameGenre } from "@prisma/client";
 import { GetServerSidePropsContext, NextPage } from "next";

@@ -1,3 +1,4 @@
+import Picker from "@emoji-mart/react";
 import {
   ActionIcon,
   Avatar,
@@ -12,7 +13,6 @@ import {
   Text,
   TextInput,
 } from "@mantine/core";
-import Picker from "@emoji-mart/react";
 import { useForm } from "@mantine/form";
 import { useHotkeys } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
@@ -24,6 +24,7 @@ import Framework from "../components/Framework";
 import ModernEmptyState from "../components/ModernEmptyState";
 import ShadedCard from "../components/ShadedCard";
 import SocketContext from "../contexts/Socket";
+import SidebarTabNavigation from "../layouts/SidebarTabNavigation";
 import useChatStore from "../stores/useChatStore";
 import authorizedRoute from "../util/authorizedRoute";
 import getMediaUrl from "../util/getMedia";
@@ -300,16 +301,13 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
           ],
         })}
       >
-        <div className="flex flex-col md:flex-row gap-8">
+        <SidebarTabNavigation>
           {!mobile && (
-            <div
-              className="md:flex md:flex-col md:gap-2 flex-row grid grid-cols-2 gap-2 md:grid-cols-1 md:grid-rows-3"
-              {...(!mobile && { style: { width: 240 } })}
-            >
+            <SidebarTabNavigation.Sidebar>
               {friendsList}
-            </div>
+            </SidebarTabNavigation.Sidebar>
           )}
-          <div className="flex-1">
+          <SidebarTabNavigation.Content>
             {conversationOpen ? (
               <ShadedCard>
                 <div className="flex justify-between items-center">
@@ -385,7 +383,10 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
                         body="Send the first message to start a conversation."
                       />
                     )}
-                    <form onSubmit={messageForm.onSubmit(sendMessage)} className="mt-10">
+                    <form
+                      onSubmit={messageForm.onSubmit(sendMessage)}
+                      className="mt-10"
+                    >
                       <TextInput
                         placeholder="Type a message..."
                         className="flex-1"
@@ -462,8 +463,8 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
                 body="Select a conversation to start chatting."
               />
             )}
-          </div>
-        </div>
+          </SidebarTabNavigation.Content>
+        </SidebarTabNavigation>
       </Framework>
     </>
   );
