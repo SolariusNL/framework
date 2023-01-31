@@ -214,6 +214,7 @@ const BuyTickets: NextPage<BuyTicketsProps> = ({ user }) => {
             loading={loading}
             mt={24}
             leftIcon={<HiCheck />}
+            disabled
           >
             Purchase
           </Button>
