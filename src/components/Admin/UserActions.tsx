@@ -14,6 +14,7 @@ import ResetBio from "./UserActions/ResetBio";
 import ResetEmail from "./UserActions/ResetEmail";
 import ResetPassword from "./UserActions/ResetPassword";
 import ResetUsername from "./UserActions/ResetUsername";
+import SendEmail from "./UserActions/SendEmail";
 import Unban from "./UserActions/Unban";
 import Unwarn from "./UserActions/Unwarn";
 
@@ -28,6 +29,7 @@ const actions = [
   AdjustSubscription,
   Unban,
   Unwarn,
+  SendEmail,
 ];
 
 const ActionList: React.FC<{

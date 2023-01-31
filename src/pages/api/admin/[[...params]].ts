@@ -43,6 +43,7 @@ import { getOperatingSystem } from "../../../util/ua";
 import SupportTicketClosed from "../../../../email/emails/support-ticket-closed";
 import AccountUpdate from "../../../../email/emails/account-update";
 import { hashPass } from "../../../util/hash/password";
+import StaffEmail from "../../../../email/emails/staff-email";
 
 class AdminRouter {
   @Get("/reports")
@@ -1076,6 +1077,40 @@ class AdminRouter {
           });
 
           await createActionLog(`Unwarned ${user.username}`, 2);
+        },
+      },
+      {
+        name: AdminAction.SEND_EMAIL,
+        action: async () => {
+          const emailSchema = z.object({
+            subject: z.string(),
+            content: z.string(),
+          });
+
+          const email = emailSchema.parse(body);
+
+          if (!account.employee) {
+            return {
+              success: false,
+              error:
+                "User is not an employee, and lacks proper profile information to send emails",
+            };
+          }
+
+          sendMail(
+            user.email,
+            email.subject,
+            render(
+              StaffEmail({
+                subject: email.subject,
+                content: email.content,
+                contact: account.employee.contactEmail,
+                sender: account.employee.fullName,
+              }) as React.ReactElement
+            )
+          );
+
+          await createActionLog(`Sent email to ${user.username}`, 2);
         },
       },
     ];
