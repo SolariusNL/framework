@@ -484,6 +484,17 @@ class AuthRouter {
           },
         });
       }
+      sendMail(
+        user.email,	
+        "Two-Factor Authentication Disabled",
+        render(
+          AccountUpdate({
+            content:
+	            "Two-Factor Authentication has been disabled on your account. If this was not you, please contact support immediately, and attempt to secure your account while you wait for a response.",
+	
+          }) as React.ReactElement	
+        )
+      );
       return {
         success: true,
         ...(intent === "login" && { token: session?.token }),
