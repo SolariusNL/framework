@@ -487,11 +487,11 @@ class AuthRouter {
       if (intent !== "login") {
         sendMail(
           session?.user?.email!,	
-          "Two-Factor Authentication Disabled",
+          "Two-Factor Authentication Enabled",
           render(
             AccountUpdate({
               content:
-	              "Two-Factor Authentication has been disabled on your account. If this was not you, please contact support immediately, and attempt to secure your account while you wait for a response.",
+	              "Two-Factor Authentication has been enabled on your account. If this was not you, please contact support immediately, and attempt to secure your account while you wait for a response.",
             }) as React.ReactElement	
           )
         );
