@@ -1,6 +1,7 @@
 import {
   GameGenre,
   GameUpdateLogType,
+  Prisma,
   RatingCategory,
   RatingCategoryScore,
   RatingType,
@@ -619,31 +620,83 @@ class GameRouter {
   @Get("/:page")
   @Authorized()
   async getGames(
-    @Query("likes") likes: "asc" | "desc" = "desc",
-    @Query("visits") visits: "asc" | "desc" = "desc",
-    @Query("genre") genre: string = "",
-    @Param("page") page: number,
-    @Query("search") search: string = ""
+    @Query("filter") filterString: string = "",
+    @Param("page") page: number
   ) {
+    const parsed = JSON.parse(filterString);
+    const filter:
+      | "most_liked"
+      | "least_liked"
+      | "most_disliked"
+      | "least_disliked"
+      | "oldest"
+      | "newest"
+      | "most_visited"
+      | "least_visited" = parsed.filter;
+    const genre: GameGenre = parsed.genre;
+    const search: string = parsed.search;
+
+    const order = {
+      most_liked: {
+        likedBy: {
+          _count: "desc",
+        },
+      },
+      least_liked: {
+        likedBy: {
+          _count: "asc",
+        },
+      },
+      most_disliked: {
+        dislikedBy: {
+          _count: "desc",
+        },
+      },
+      least_disliked: {
+        dislikedBy: {
+          _count: "asc",
+        },
+      },
+      oldest: {
+        createdAt: "asc",
+      },
+      newest: {
+        createdAt: "desc",
+      },
+      most_visited: {
+        views: "desc",
+      },
+      least_visited: {
+        views: "asc",
+      },
+    };
+
+    const defaultOrder = {
+      likedBy: {
+        _count: "desc",
+      },
+    };
+
     const results = await prisma.game.findMany({
       where: {
         name: search ? { contains: search, mode: "insensitive" } : {},
         genre: genre ? { equals: genre as GameGenre } : {},
         private: false,
       },
-      orderBy: [
-        {
-          likedBy: {
-            _count: likes,
-          },
-        },
-        {
-          visits: visits,
-        },
-      ],
       select: gameSelect,
       take: Number(25),
       skip: 25 * (Number(page) - 1),
+      orderBy: [
+        ...((filter
+          ? [order[filter]]
+          : [
+              {
+                likedBy: {
+                  _count: "desc",
+                },
+              },
+            ]) as Prisma.GameOrderByWithRelationInput[]),
+      ],
     });
 
     return results || [];

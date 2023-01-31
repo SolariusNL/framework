@@ -8,7 +8,7 @@ import {
 import { GameGenre } from "@prisma/client";
 import { GetServerSidePropsContext, NextPage } from "next";
 import React, { useEffect } from "react";
-import { HiFire, HiGift, HiSearch, HiSparkles } from "react-icons/hi";
+import { HiClock, HiFire, HiGift, HiSearch, HiSparkles } from "react-icons/hi";
 import InfiniteScroll from "react-infinite-scroller";
 import Descriptive from "../components/Descriptive";
 import Framework from "../components/Framework";
@@ -29,10 +29,22 @@ interface GamesProps {
 }
 
 const Games: NextPage<GamesProps> = ({ user }) => {
-  const [filter, setFilter] = React.useState({
-    likes: "desc",
-    dislikes: "asc",
-    visits: "desc",
+  const [filter, setFilter] = React.useState<{
+    filter:
+      | "most_liked"
+      | "least_liked"
+      | "most_disliked"
+      | "least_disliked"
+      | "oldest"
+      | "newest"
+      | "most_visited"
+      | "least_visited"
+      | string;
+    genre: GameGenre | "";
+    search: string;
+    playerRange: [number, number];
+  }>({
+    filter: "most_liked",
     genre: "",
     search: "",
     playerRange: [0, 50] as [number, number],
@@ -41,15 +53,12 @@ const Games: NextPage<GamesProps> = ({ user }) => {
   const [loading, setLoading] = React.useState(false);
   const [page, setPage] = React.useState(1);
   const [canLoadMore, setCanLoadMore] = React.useState(true);
-  const [filterOpen, setFilterOpen] = React.useState(false);
   const filterPresets = [
     {
       label: "Most popular",
-      description: "Games filtered by most likes and most visits.",
+      description: "Games filtered by most likes.",
       filter: {
-        likes: "desc",
-        dislikes: "asc",
-        visits: "desc",
+        filter: "most_liked",
         genre: "",
         search: "",
         playerRange: [0, 50] as [number, number],
@@ -57,30 +66,37 @@ const Games: NextPage<GamesProps> = ({ user }) => {
       icon: <HiSparkles />,
     },
     {
-      label: "Trending",
-      description: "Games filtered by most activity.",
+      label: "Hot",
+      description: "Games filtered by most players.",
       filter: {
-        likes: "desc",
-        dislikes: "asc",
-        visits: "desc",
+        filter: "most_visited",
         genre: "",
         search: "",
-        playerRange: [30, 50] as [number, number],
+        playerRange: [20, 50] as [number, number],
       },
       icon: <HiFire />,
     },
     {
       label: "New",
-      description: "Games filtered by most recent.",
+      description: "Games filtered by their creation date.",
       filter: {
-        likes: "desc",
-        dislikes: "asc",
-        visits: "desc",
+        filter: "newest",
         genre: "",
         search: "",
         playerRange: [0, 50] as [number, number],
       },
       icon: <HiGift />,
+    },
+    {
+      label: "Throwback",
+      description: "Throwback to old experiences.",
+      filter: {
+        filter: "oldest",
+        genre: "",
+        search: "",
+        playerRange: [0, 50] as [number, number],
+      },
+      icon: <HiClock />,
     },
   ];
   const [activeFilterPresetIndex, setActiveFilterPresetIndex] =
@@ -89,11 +105,9 @@ const Games: NextPage<GamesProps> = ({ user }) => {
   const updateGames = async () => {
     setLoading(true);
     await fetch(
-      `/api/games/${page}?${new URLSearchParams(
-        Object.fromEntries(
-          Object.entries(filter).filter(([, value]) => value != null)
-        ) as Record<string, string>
-      ).toString()}`,
+      `/api/games/${page}?filter=${JSON.stringify(
+        exclude(filter, ["playerRange"])
+      )}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -105,9 +119,6 @@ const Games: NextPage<GamesProps> = ({ user }) => {
       .then((res) => {
         setGames(res);
         setLoading(false);
-      })
-      .catch((err) => {
-        alert(err + "\nPlease report this to Soodam.re");
       });
   };
 
@@ -137,47 +148,35 @@ const Games: NextPage<GamesProps> = ({ user }) => {
                   active={activeFilterPresetIndex === index}
                   onClick={() => {
                     setActiveFilterPresetIndex(index);
-                    setFilter(preset.filter);
+                    setFilter(preset.filter as any);
                   }}
                   className="rounded-md"
                 />
               ))}
             </div>
             <Divider mt="lg" mb="lg" />
-            {/**
-             * stack on desktop, 2 columns on mobile
-             */}
             <div>
               <ShadedCard mb="md">
                 <div className="flex items-center flex-col gap-4">
                   <Select
-                    label="Likes filter"
-                    description="Filter for games with the most likes or the least likes."
+                    label="Filter"
+                    description="Select a filter to sort games by, to find your next favorite game."
                     data={[
-                      { label: "Most liked", value: "desc" },
-                      { label: "Least liked", value: "asc" },
+                      { label: "Most liked", value: "most_liked" },
+                      { label: "Least liked", value: "least_liked" },
+                      { label: "Most disliked", value: "most_disliked" },
+                      { label: "Least disliked", value: "least_disliked" },
+                      { label: "Oldest", value: "oldest" },
+                      { label: "Newest", value: "newest" },
+                      { label: "Most visited", value: "most_visited" },
+                      { label: "Least visited", value: "least_visited" },
                     ]}
-                    value={filter.likes}
-                    onChange={(v) => setFilter({ ...filter, likes: String(v) })}
-                    className="w-full"
-                  />
-                  <Select
-                    label="Dislikes filter"
-                    description="Filter for games with the most dislikes or the least dislikes."
-                    data={[
-                      { label: "Most disliked", value: "desc" },
-                      { label: "Least disliked", value: "asc" },
-                    ]}
-                    value={filter.dislikes}
+                    value={filter.filter}
                     onChange={(v) =>
-                      setFilter({ ...filter, dislikes: String(v) })
+                      setFilter({ ...filter, filter: String(v) })
                     }
                     className="w-full"
                   />
-                </div>
-              </ShadedCard>
-              <ShadedCard>
-                <div className="flex items-center flex-col gap-4">
                   <Select
                     label="Genre"
                     description="Filter for games of a specific genre."
@@ -197,7 +196,13 @@ const Games: NextPage<GamesProps> = ({ user }) => {
                     description="Filter for games with a specific player range."
                     className="w-full"
                   >
-                    <RangeSlider min={0} max={50} />
+                    <RangeSlider
+                      min={0}
+                      max={50}
+                      step={1}
+                      value={filter.playerRange}
+                      onChange={(v) => setFilter({ ...filter, playerRange: v })}
+                    />
                   </Descriptive>
                 </div>
               </ShadedCard>
@@ -217,7 +222,7 @@ const Games: NextPage<GamesProps> = ({ user }) => {
               <InfiniteScroll
                 pageStart={1}
                 loadMore={(p) => {
-                  fetch(`/api/games/${p}`, {
+                  fetch(`/api/games/${p}?filter=${JSON.stringify(filter)}`, {
                     headers: {
                       "Content-Type": "application/json",
                       Authorization: `${getCookie(".frameworksession")}`,
@@ -234,9 +239,6 @@ const Games: NextPage<GamesProps> = ({ user }) => {
                       if (res === null) {
                         setCanLoadMore(false);
                       }
-                    })
-                    .catch((err) => {
-                      alert(err + "\nPlease report this to Soodam.re");
                     });
                 }}
                 hasMore={canLoadMore}
@@ -245,7 +247,7 @@ const Games: NextPage<GamesProps> = ({ user }) => {
                   {games &&
                     games.length > 0 &&
                     games.map((game) => <GameCard game={game} key={game.id} />)}
-                  {games && games.length == 0 && (
+                  {games && games.length === 0 && (
                     <div className="col-span-full">
                       <ModernEmptyState
                         title="No games found"
@@ -279,7 +281,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     take: 25,
     where: {
       private: false,
-    }
+    },
   });
 
   if (auth.redirect) {
