@@ -55,17 +55,6 @@ const verifyOTP = async (uid: number, token: string) => {
     },
   });
 
-  sendMail(
-    user.email,
-    "Two-factor authentication authorized",
-    render(
-      AccountUpdate({
-        content:
-          "Two-factor authentication has authorized for access to your account. If you did not authorize this, please contact our support team immediately and secure your account.",
-      }) as React.ReactElement
-    )
-  );
-
   return true;
 };
 
