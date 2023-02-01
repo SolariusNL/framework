@@ -108,12 +108,12 @@ const Checklists: NextPage<ChecklistsProps> = ({ user, checklistData }) => {
   };
 
   useEffect(() => {
-    if (checklists && checklists.length > 0) {
-      setActive(checklists[0].id);
-    }
-
     if (checklists) {
       setLoading(false);
+      if (checklists.length > 0) {
+        setActive(checklists[0].id);
+        setCurrentChecklist(checklists[0]);
+      }
     }
   }, []);
 
