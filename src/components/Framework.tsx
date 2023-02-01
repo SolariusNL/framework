@@ -94,10 +94,7 @@ interface FrameworkProps {
     label: string;
     href: string;
   };
-  actions?: [
-    string | React.ReactNode,
-    () => void
-  ][];
+  actions?: [string | React.ReactNode, () => void][];
 }
 
 export const frameworkStyles = createStyles((theme) => ({
@@ -488,16 +485,36 @@ const Framework = ({
 
             {mobile && (
               <div className="flex items-center gap-1">
-                <MobileSearchMenu opened={mobileSearchOpened} />
-                <NotificationFlyout />
-                <CurrencyMenu currencyMenuOpened={currencyMenuOpened} minimal />
-                <UserMenu userMenuOpened={userMenuOpened} minimal />
-                <Burger
-                  opened={sidebarOpened}
-                  onClick={() => setSidebarOpened(true)}
-                  size="sm"
-                  ml="sm"
-                />
+                {user ? (
+                  <>
+                    <MobileSearchMenu opened={mobileSearchOpened} />
+                    <NotificationFlyout />
+                    <CurrencyMenu
+                      currencyMenuOpened={currencyMenuOpened}
+                      minimal
+                    />
+                    <UserMenu userMenuOpened={userMenuOpened} minimal />
+                    <Burger
+                      opened={sidebarOpened}
+                      onClick={() => setSidebarOpened(true)}
+                      size="sm"
+                      ml="sm"
+                    />
+                  </>
+                ) : (
+                  <>
+                    <Link href="/register" passHref>
+                      <Button size="sm" component="a" mr={4} variant="default">
+                        Register
+                      </Button>
+                    </Link>
+                    <Link href="/login" passHref>
+                      <Button size="sm" component="a" variant="default">
+                        Login
+                      </Button>
+                    </Link>
+                  </>
+                )}
               </div>
             )}
             {!mobile && user && (
