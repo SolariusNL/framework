@@ -37,6 +37,7 @@ interface GameCreateBody {
   genre: GameGenre;
   maxPlayers: number;
   communityGuidelines: boolean;
+  access: "public" | "private" | "paid";
 }
 
 interface CreateConnectionBody {
@@ -96,8 +97,14 @@ class GameRouter {
     @Body() body: GameCreateBody,
     @Account() account: User
   ) {
-    const { gameName, description, genre, maxPlayers, communityGuidelines } =
-      body;
+    const {
+      gameName,
+      description,
+      genre,
+      maxPlayers,
+      communityGuidelines,
+      access,
+    } = body;
 
     if (
       !gameName ||
@@ -105,7 +112,8 @@ class GameRouter {
       !genre ||
       !maxPlayers ||
       !communityGuidelines ||
-      !Object.values(GameGenre).includes(genre)
+      !Object.values(GameGenre).includes(genre) ||
+      !Object.values(["public", "private", "paid"]).includes(access)
     ) {
       return {
         error: "Invalid game data",
@@ -162,6 +170,8 @@ class GameRouter {
           },
         },
         iconUri: "",
+        private: access === "private",
+        paywall: access === "paid",
       },
     });
 
