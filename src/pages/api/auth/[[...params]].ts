@@ -12,8 +12,10 @@ import {
 import { setCookie } from "cookies-next";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getClientIp } from "request-ip";
+import { z } from "zod";
 import AccountUpdate from "../../../../email/emails/account-update";
 import LoginCode from "../../../../email/emails/login-code";
+import ResetPassword from "../../../../email/emails/reset-password";
 import Authorized, { Account } from "../../../util/api/authorized";
 import { hashPass, isSamePass } from "../../../util/hash/password";
 import { sendMail } from "../../../util/mail";
@@ -486,13 +488,13 @@ class AuthRouter {
       }
       if (intent !== "login") {
         sendMail(
-          session?.user?.email!,	
+          session?.user?.email!,
           "Two-Factor Authentication Enabled",
           render(
             AccountUpdate({
               content:
-	              "Two-Factor Authentication has been enabled on your account. If this was not you, please contact support immediately, and attempt to secure your account while you wait for a response.",
-            }) as React.ReactElement	
+                "Two-Factor Authentication has been enabled on your account. If this was not you, please contact support immediately, and attempt to secure your account while you wait for a response.",
+            }) as React.ReactElement
           )
         );
       }
@@ -601,6 +603,119 @@ class AuthRouter {
 
     response.redirect("/");
     response.end();
+  }
+
+  @Post("/forgotpassword")
+  @RateLimitMiddleware(5)()
+  public async forgotPassword(@Body() body: unknown) {
+    const data = z
+      .object({
+        email: z.string().email(),
+      })
+      .parse(body);
+
+    const user = await prisma.user.findFirst({
+      where: {
+        email: data.email,
+      },
+    });
+
+    if (!user) {
+      return {
+        success: true,
+      };
+    }
+
+    const request = await prisma.passwordResetRequest.create({
+      data: {
+        user: {
+          connect: {
+            id: user.id,
+          },
+        },
+      },
+    });
+
+    const url =
+      process.env.NODE_ENV === "production"
+        ? "https://framework.soodam.rocks"
+        : "http://127.0.0.1:3000";
+    const endpoint = url + "/forgotpassword?token=" + request.id;
+
+    sendMail(
+      user.email,
+      "Password Reset Request",
+      render(
+        ResetPassword({
+          username: user.username,
+          url: endpoint,
+        }) as React.ReactElement
+      )
+    );
+
+    return {
+      success: true,
+    };
+  }
+
+  @Post("/forgotpassword/auth")
+  @RateLimitMiddleware(5)()
+  public async forgotPasswordAuth(@Body() body: unknown) {
+    const data = z
+      .object({
+        token: z.string(),
+        password: z.string(),
+      })
+      .parse(body);
+
+    const request = await prisma.passwordResetRequest.findFirst({
+      where: {
+        id: data.token,
+      },
+      include: {
+        user: true,
+      },
+    });
+
+    if (!request) {
+      return {
+        status: 400,
+        message: "Invalid token",
+        success: false,
+      };
+    }
+
+    await prisma.passwordResetRequest.delete({
+      where: {
+        id: data.token,
+      },
+    });
+
+    const hash = await hashPass(data.password);
+
+    await prisma.user.update({
+      where: {
+        id: request.user?.id,
+      },
+      data: {
+        password: hash,
+      },
+    });
+
+    sendMail(
+      request.user?.email!,
+      "Password Reset",
+      render(
+        AccountUpdate({
+          content:
+            "Your Framework password has been reset. If this was not you, please contact support immediately, and attempt to secure your account while you wait for a response.",
+        }) as React.ReactElement
+      )
+    );
+
+    return {
+      success: true,
+    };
   }
 }
 

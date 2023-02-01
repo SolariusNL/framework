@@ -12,6 +12,7 @@ import {
   Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { PinInput } from "@mantine/labs";
 import { showNotification } from "@mantine/notifications";
 import type { GetServerSidePropsContext, NextPage } from "next";
 import Link from "next/link";
@@ -21,7 +22,6 @@ import { HiExclamation, HiXCircle } from "react-icons/hi";
 import MinimalFooter from "../components/MinimalFooter";
 import authorizedRoute from "../util/authorizedRoute";
 import { setCookie } from "../util/cookies";
-import { PinInput } from "@mantine/labs";
 
 interface FormValues {
   username: string;
@@ -192,6 +192,9 @@ const Login: NextPage = () => {
                 label="Remember me"
                 {...form.getInputProps("rememberMe")}
               />
+              <Link passHref href="/forgotpassword">
+                <Anchor size="sm">Forgot your password?</Anchor>
+              </Link>
             </Group>
             <Button fullWidth mt="xl" type="submit" loading={loading}>
               Sign in
