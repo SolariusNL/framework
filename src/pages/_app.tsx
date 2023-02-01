@@ -117,10 +117,7 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
     <>
       <Head>
         <title>Framework</title>
-        <meta
-          name="viewport"
-          content="minimum-scale=1, initial-scale=1, width=device-width"
-        />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
       </Head>
 
       <DefaultSeo
@@ -131,11 +128,11 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
           siteName: "Framework",
           images: [
             {
-              secureUrl: "/logo-dark.png",
-              url: "/logo-dark.png",
+              secureUrl: "/brand/white.png",
+              url: "/brand/white.png",
               alt: "The Framework logo.",
-              width: 1920,
-              height: 1080,
+              width: 48,
+              height: 48,
             },
           ],
         }}
