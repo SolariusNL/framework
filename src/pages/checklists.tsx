@@ -33,6 +33,7 @@ import ChecklistTask from "../components/Checklists/Task";
 import Descriptive from "../components/Descriptive";
 import Framework from "../components/Framework";
 import ModernEmptyState from "../components/ModernEmptyState";
+import ShadedCard from "../components/ShadedCard";
 import SidebarTabNavigation from "../layouts/SidebarTabNavigation";
 import authorizedRoute from "../util/authorizedRoute";
 import prisma from "../util/prisma";
@@ -202,221 +203,230 @@ const Checklists: NextPage<ChecklistsProps> = ({ user, checklistData }) => {
             )}
           </SidebarTabNavigation.Sidebar>
           <SidebarTabNavigation.Content>
-            {loading ? (
-              <div className="w-full flex items-center justify-center py-8">
-                <Loader />
-              </div>
-            ) : active === "" ? (
-              <ModernEmptyState
-                title="No active checklist"
-                body="You don't have any checklist selected."
-              />
-            ) : (
-              <>
-                <Title order={3} mb={16}>
-                  {currentChecklist?.name}
-                </Title>
-                <Text mb={24}>{currentChecklist?.description}</Text>
-                <div
-                  style={{
-                    marginBottom: 24,
-                    display: "flex",
-                  }}
-                >
-                  {[
-                    {
-                      label: "Created",
-                      value: new Date(
-                        currentChecklist?.createdAt as Date
-                      ).toLocaleDateString(),
-                      icon: HiClock,
-                    },
-                    {
-                      label: "Tasks",
-                      value: currentChecklist?.items.length,
-                      icon: HiCheckCircle,
-                    },
-                    {
-                      label: "Completed",
-                      value: currentChecklist?.items.filter(
-                        (item) => item.completed
-                      ).length,
-                      icon: HiClipboardCheck,
-                    },
-                    {
-                      label: "Incomplete",
-                      value: currentChecklist?.items.filter(
-                        (item) => !item.completed
-                      ).length,
-                      icon: HiClipboardList,
-                    },
-                  ].map((item) => (
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        textAlign: "center",
-                        flex: 1,
-                        gap: 8,
-                      }}
-                      key={item.label}
-                    >
-                      <>
-                        <item.icon size={20} />
-                        <Tooltip label={item.label}>
-                          <Text color="dimmed">{item.value}</Text>
-                        </Tooltip>
-                      </>
-                    </div>
-                  ))}
+            <ShadedCard>
+              {loading ? (
+                <div className="w-full flex items-center justify-center py-8">
+                  <Loader />
                 </div>
+              ) : active === "" ? (
+                <ModernEmptyState
+                  title="No active checklist"
+                  body="You don't have any checklist selected."
+                />
+              ) : (
+                <>
+                  <Title order={3} mb={16}>
+                    {currentChecklist?.name}
+                  </Title>
+                  <Text mb={24}>{currentChecklist?.description}</Text>
+                  <div
+                    style={{
+                      marginBottom: 24,
+                      display: "flex",
+                    }}
+                  >
+                    {[
+                      {
+                        label: "Created",
+                        value: new Date(
+                          currentChecklist?.createdAt as Date
+                        ).toLocaleDateString(),
+                        icon: HiClock,
+                      },
+                      {
+                        label: "Tasks",
+                        value: currentChecklist?.items.length,
+                        icon: HiCheckCircle,
+                      },
+                      {
+                        label: "Completed",
+                        value: currentChecklist?.items.filter(
+                          (item) => item.completed
+                        ).length,
+                        icon: HiClipboardCheck,
+                      },
+                      {
+                        label: "Incomplete",
+                        value: currentChecklist?.items.filter(
+                          (item) => !item.completed
+                        ).length,
+                        icon: HiClipboardList,
+                      },
+                    ].map((item) => (
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          textAlign: "center",
+                          flex: 1,
+                          gap: 8,
+                        }}
+                        key={item.label}
+                      >
+                        <>
+                          <item.icon size={20} />
+                          <Tooltip label={item.label}>
+                            <Text color="dimmed">{item.value}</Text>
+                          </Tooltip>
+                        </>
+                      </div>
+                    ))}
+                  </div>
 
-                <Group mb={24}>
-                  <Button.Group>
-                    <Menu width={270}>
-                      <Menu.Target>
-                        <Button size="xs" leftIcon={<HiFilter />}>
-                          Filter by...
-                        </Button>
-                      </Menu.Target>
-                      <Menu.Dropdown>
-                        <Menu.Item
-                          closeMenuOnClick={false}
-                          rightSection={
-                            <MultiSelect
-                              label="Tags"
-                              description="Filter by tags"
-                              placeholder="Create tags for this task"
-                              searchable
-                              data={
-                                currentChecklist?.items
-                                  .map((item) => item.tags)
-                                  .flat()
-                                  .filter((tag, index, self) => {
-                                    return self.indexOf(tag) === index;
-                                  }) ?? []
-                              }
-                              value={tagFilter}
-                              onChange={(value) => setTagFilter(value)}
-                            />
-                          }
-                        ></Menu.Item>
-
-                        <Menu.Item closeMenuOnClick={false}>
-                          <Descriptive
-                            title="Overdue"
-                            description="Show only overdue tasks"
-                          >
-                            <Checkbox
-                              label="Show overdue"
-                              checked={showOverdue}
-                              onChange={(e) => setShowOverdue(e.target.checked)}
-                            />
-                          </Descriptive>
-                        </Menu.Item>
-                      </Menu.Dropdown>
-                    </Menu>
-                    <Menu>
-                      <Menu.Target>
-                        <Button size="xs" leftIcon={<HiViewGrid />}>
-                          View...
-                        </Button>
-                      </Menu.Target>
-                      <Menu.Dropdown>
-                        {[
-                          ["cards", "Display as cards"],
-                          ["list", "Display as list"],
-                        ].map((item) => (
+                  <Group mb={24}>
+                    <Button.Group>
+                      <Menu width={270}>
+                        <Menu.Target>
+                          <Button size="xs" leftIcon={<HiFilter />}>
+                            Filter by...
+                          </Button>
+                        </Menu.Target>
+                        <Menu.Dropdown>
                           <Menu.Item
-                            key={item[0]}
-                            onClick={() => {
-                              setDisplay(item[0] as "cards" | "list");
-                            }}
-                          >
-                            {display === item[0] && (
-                              <HiCheck size={12} style={{ marginRight: 12 }} />
-                            )}
-                            {item[1]}
-                          </Menu.Item>
-                        ))}
-                      </Menu.Dropdown>
-                    </Menu>
-                    <Menu>
-                      <Menu.Target>
-                        <Button size="xs" leftIcon={<HiSortAscending />}>
-                          Sort by...
-                        </Button>
-                      </Menu.Target>
-                      <Menu.Dropdown>
-                        {Object.keys(SortBy).map((item) => {
-                          const sort = SortBy[item as keyof typeof SortBy];
+                            closeMenuOnClick={false}
+                            rightSection={
+                              <MultiSelect
+                                label="Tags"
+                                description="Filter by tags"
+                                placeholder="Create tags for this task"
+                                searchable
+                                data={
+                                  currentChecklist?.items
+                                    .map((item) => item.tags)
+                                    .flat()
+                                    .filter((tag, index, self) => {
+                                      return self.indexOf(tag) === index;
+                                    }) ?? []
+                                }
+                                value={tagFilter}
+                                onChange={(value) => setTagFilter(value)}
+                              />
+                            }
+                          ></Menu.Item>
 
-                          return (
+                          <Menu.Item closeMenuOnClick={false}>
+                            <Descriptive
+                              title="Overdue"
+                              description="Show only overdue tasks"
+                            >
+                              <Checkbox
+                                label="Show overdue"
+                                checked={showOverdue}
+                                onChange={(e) =>
+                                  setShowOverdue(e.target.checked)
+                                }
+                              />
+                            </Descriptive>
+                          </Menu.Item>
+                        </Menu.Dropdown>
+                      </Menu>
+                      <Menu>
+                        <Menu.Target>
+                          <Button size="xs" leftIcon={<HiViewGrid />}>
+                            View...
+                          </Button>
+                        </Menu.Target>
+                        <Menu.Dropdown>
+                          {[
+                            ["cards", "Display as cards"],
+                            ["list", "Display as list"],
+                          ].map((item) => (
                             <Menu.Item
-                              key={item}
+                              key={item[0]}
                               onClick={() => {
-                                setSortBy(sort);
+                                setDisplay(item[0] as "cards" | "list");
                               }}
                             >
-                              {sortBy == sort && (
+                              {display === item[0] && (
                                 <HiCheck
                                   size={12}
                                   style={{ marginRight: 12 }}
                                 />
                               )}
-                              {sortByLabel(sort)}
+                              {item[1]}
                             </Menu.Item>
-                          );
-                        })}
-                      </Menu.Dropdown>
-                    </Menu>
-                  </Button.Group>
-                  <Button
-                    size="xs"
-                    leftIcon={<HiPlusCircle />}
-                    onClick={() => setCreateTaskOpen(true)}
-                  >
-                    Create task
-                  </Button>
-                </Group>
+                          ))}
+                        </Menu.Dropdown>
+                      </Menu>
+                      <Menu>
+                        <Menu.Target>
+                          <Button size="xs" leftIcon={<HiSortAscending />}>
+                            Sort by...
+                          </Button>
+                        </Menu.Target>
+                        <Menu.Dropdown>
+                          {Object.keys(SortBy).map((item) => {
+                            const sort = SortBy[item as keyof typeof SortBy];
 
-                {currentChecklist?.items.length === 0 && (
-                  <Center mt={24}>
-                    <ModernEmptyState
-                      title="No tasks"
-                      body="You have no tasks. Create one by clicking the 'Create task' button."
-                    />
-                  </Center>
-                )}
+                            return (
+                              <Menu.Item
+                                key={item}
+                                onClick={() => {
+                                  setSortBy(sort);
+                                }}
+                              >
+                                {sortBy == sort && (
+                                  <HiCheck
+                                    size={12}
+                                    style={{ marginRight: 12 }}
+                                  />
+                                )}
+                                {sortByLabel(sort)}
+                              </Menu.Item>
+                            );
+                          })}
+                        </Menu.Dropdown>
+                      </Menu>
+                    </Button.Group>
+                    <Button
+                      size="xs"
+                      leftIcon={<HiPlusCircle />}
+                      onClick={() => setCreateTaskOpen(true)}
+                    >
+                      Create task
+                    </Button>
+                  </Group>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 w-full flex-wrap">
-                  {currentChecklist?.items
-                    .filter((item) => {
-                      if (tagFilter.length === 0) return true;
-                      return tagFilter.every((tag) => item.tags.includes(tag));
-                    })
-                    .filter((item) => {
-                      if (!showOverdue) return true;
-                      return (
-                        new Date(item.scheduled as Date).getTime() <
-                        new Date().getTime()
-                      );
-                    })
-                    .map((task) => (
-                      <ChecklistTask
-                        key={task.id}
-                        task={task}
-                        setCurrentChecklist={setCurrentChecklist}
-                        currentChecklist={currentChecklist}
-                        fetchChecklists={fetchChecklists}
-                        display={display}
+                  {currentChecklist?.items.length === 0 && (
+                    <Center mt={24}>
+                      <ModernEmptyState
+                        title="No tasks"
+                        body="You have no tasks. Create one by clicking the 'Create task' button."
                       />
-                    ))}
-                </div>
-              </>
-            )}
+                    </Center>
+                  )}
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 w-full flex-wrap">
+                    {currentChecklist?.items
+                      .filter((item) => {
+                        if (tagFilter.length === 0) return true;
+                        return tagFilter.every((tag) =>
+                          item.tags.includes(tag)
+                        );
+                      })
+                      .filter((item) => {
+                        if (!showOverdue) return true;
+                        return (
+                          new Date(item.scheduled as Date).getTime() <
+                          new Date().getTime()
+                        );
+                      })
+                      .map((task) => (
+                        <ChecklistTask
+                          key={task.id}
+                          task={task}
+                          setCurrentChecklist={setCurrentChecklist}
+                          currentChecklist={currentChecklist}
+                          fetchChecklists={fetchChecklists}
+                          display={display}
+                        />
+                      ))}
+                  </div>
+                </>
+              )}
+            </ShadedCard>
           </SidebarTabNavigation.Content>
         </SidebarTabNavigation>
       </Framework>
