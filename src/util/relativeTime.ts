@@ -1,29 +1,36 @@
-function getRelativeTime(date: Date): string {
-  var msPerMinute = 60 * 1000;
-  var msPerHour = msPerMinute * 60;
-  var msPerDay = msPerHour * 24;
-  var msPerMonth = msPerDay * 30;
-  var msPerYear = msPerDay * 365;
+const getRelativeTime = (date: Date): string => {
+  const now = new Date();
+  const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+  const generateTimeString = (value: number, unit: string) => {
+    return `${value} ${unit}${value === 1 ? "" : "s"} ago`;
+  };
 
-  var elapsed = new Date().getTime() - date.getTime();
-
-  if (elapsed < msPerMinute) {
-    if (elapsed / 1000 < 30) {
-      return "just now";
-    }
-
-    return Math.round(elapsed / 1000) + " seconds ago";
-  } else if (elapsed < msPerHour) {
-    return Math.round(elapsed / msPerMinute) + " minutes ago";
-  } else if (elapsed < msPerDay) {
-    return Math.round(elapsed / msPerHour) + " hours ago";
-  } else if (elapsed < msPerMonth) {
-    return "approximately " + Math.round(elapsed / msPerDay) + " days ago";
-  } else if (elapsed < msPerYear) {
-    return "approximately " + Math.round(elapsed / msPerMonth) + " months ago";
-  } else {
-    return "approximately " + Math.round(elapsed / msPerYear) + " years ago";
+  if (seconds < 60) {
+    return "just now";
   }
-}
+
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) {
+    return generateTimeString(minutes, "minute");
+  }
+
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) {
+    return generateTimeString(hours, "hour");
+  }
+
+  const days = Math.floor(hours / 24);
+  if (days < 30) {
+    return generateTimeString(days, "day");
+  }
+
+  const months = Math.floor(days / 30);
+  if (months < 12) {
+    return generateTimeString(months, "month");
+  }
+
+  const years = Math.floor(months / 12);
+  return generateTimeString(years, "year");
+};
 
 export { getRelativeTime };
