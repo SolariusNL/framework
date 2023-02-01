@@ -1,10 +1,10 @@
 import {
   Button,
   Checkbox,
-  NumberInput,
-  Select,
+  NumberInput, Select,
+  Stack,
   Text,
-  TextInput,
+  TextInput
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { GameGenre } from "@prisma/client";
@@ -12,6 +12,7 @@ import { GetServerSidePropsContext, NextPage } from "next";
 import { useRouter } from "next/router";
 import ReactNoSSR from "react-no-ssr";
 import Framework from "../../components/Framework";
+import LabelledRadio from "../../components/LabelledRadio";
 import RichText from "../../components/RichText";
 import ShadedCard from "../../components/ShadedCard";
 import authorizedRoute from "../../util/authorizedRoute";
@@ -222,20 +223,44 @@ const CreateGame: NextPage<CreateGameProps> = ({ user }) => {
                 Access
               </InlineInput.Label>
               <InlineInput.Input>
-                <Select
-                  data={[
-                    { value: "public", label: "Public - Anyone can join" },
+                <Stack spacing={8}>
+                  {[
                     {
+                      label: "Public",
+                      description:
+                        "Anyone can join and discover your game. This is the default access level.",
+                      value: "public",
+                    },
+                    {
+                      label: "Private",
+                      description:
+                        "Only you and invited users can join your game. Recommended for games that are still in development.",
                       value: "private",
-                      label: "Private - Only you and invited users can join",
                     },
                     {
+                      label: "Paid",
+                      description:
+                        "Only users who pay can join your game. This is not yet supported.",
                       value: "paid",
-                      label: "Paid - Only users who pay can join",
+                      disabled: true,
                     },
-                  ]}
-                  {...form.getInputProps("access")}
-                />
+                  ].map((option) => (
+                    <LabelledRadio
+                      label={option.label}
+                      description={option.description}
+                      value={option.value}
+                      disabled={option.disabled}
+                      key={option.value}
+                      checked={form.values.access === option.value}
+                      onChange={(e) =>
+                        form.setFieldValue(
+                          "access",
+                          option.value as "public" | "private" | "paid"
+                        )
+                      }
+                    />
+                  ))}
+                </Stack>
               </InlineInput.Input>
             </InlineInput>
           </ShadedCard>
