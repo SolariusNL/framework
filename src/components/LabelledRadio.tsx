@@ -1,4 +1,5 @@
 import { Radio, RadioProps, Text } from "@mantine/core";
+import { ChangeEvent } from "react";
 
 interface LabelledRadioProps {
   label: string;
@@ -19,7 +20,10 @@ const LabelledRadio: React.FC<LabelledRadioProps & RadioProps> = ({
           weight={500}
           onClick={() => {
             if (props.onChange) {
-              props.onChange(!props.checked as any);
+              if (props.disabled) return;
+              props.onChange(
+                !props.checked as unknown as ChangeEvent<HTMLInputElement>
+              );
             }
           }}
           className="cursor-default"
