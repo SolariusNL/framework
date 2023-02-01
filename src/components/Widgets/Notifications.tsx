@@ -1,6 +1,15 @@
-import { Anchor, Pagination, Spoiler, Text, Timeline } from "@mantine/core";
+import {
+  Anchor,
+  Pagination,
+  Spoiler,
+  Text,
+  Timeline,
+  TypographyStylesProvider,
+  useMantineTheme,
+} from "@mantine/core";
 import { Notification, NotificationType } from "@prisma/client";
 import { getCookie } from "cookies-next";
+import { marked } from "marked";
 import { useState } from "react";
 import {
   HiCheckCircle,
@@ -8,6 +17,7 @@ import {
   HiExclamationCircle,
   HiInformationCircle,
 } from "react-icons/hi";
+import sanitize from "sanitize-html";
 import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
 import { getRelativeTime } from "../../util/relativeTime";
 import useMediaQuery from "../../util/useMediaQuery";
@@ -48,6 +58,7 @@ const Notifications: React.FC = () => {
     }).catch(() => alert("Error marking notification as read"));
   };
 
+  const theme = useMantineTheme();
   const mobile = useMediaQuery("768");
 
   return (
@@ -55,9 +66,9 @@ const Notifications: React.FC = () => {
       <div className="w-full flex justify-center mb-4">
         <Pagination
           size="sm"
-          radius="xl"
+          radius="md"
           withEdges
-          total={Math.ceil(user?.notifications?.length! / (mobile ? 3 : 5))}
+          total={Math.ceil(user?.notifications?.length! / 3)}
           page={activePage}
           onChange={setActivePage}
           align="center"
@@ -75,19 +86,42 @@ const Notifications: React.FC = () => {
             (a, b) =>
               new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
           )
-          .slice((activePage - 1) * (mobile ? 3 : 5), activePage * 5)
+          .slice((activePage - 1) * 3, activePage * 3)
           .map((notification) => (
             <Timeline.Item
               key={notification.id}
               bullet={typeIcon(notification.type)}
               title={notification.title}
             >
-              <Spoiler maxHeight={40} showLabel="See more" hideLabel="Collapse">
-                <Text color="dimmed" size="sm">
-                  {notification.message}
-                </Text>
+              <Spoiler
+                showLabel="See more"
+                hideLabel="Collapse"
+                maxHeight={43}
+              >
+                <TypographyStylesProvider
+                  sx={{
+                    p: {
+                      marginBottom: 4,
+                    },
+                  }}
+                >
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: sanitize(
+                        marked.parse(notification.message, {
+                          gfm: true,
+                        })
+                      ),
+                    }}
+                    style={{
+                      fontSize: 14,
+                      color:
+                        theme.colorScheme === "dark" ? "#909296" : "#868e96",
+                    }}
+                  />
+                </TypographyStylesProvider>
               </Spoiler>
-              <Text size="xs" mt={4}>
+              <Text size="xs" mt={4} color="dimmed">
                 {getRelativeTime(new Date(notification.createdAt))}
                 {" - "}
                 <Anchor onClick={() => handleReadNotification(notification)}>
