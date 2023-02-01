@@ -19,6 +19,7 @@ import {
   Stack,
   Text,
   TextInput,
+  TooltipStylesParams,
 } from "@mantine/core";
 import { useLocalStorage } from "@mantine/hooks";
 import { ModalsProvider } from "@mantine/modals";
@@ -267,6 +268,20 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
                 styles: (theme: MantineTheme) => ({
                   item: {
                     borderRadius: theme.defaultRadius + " !important",
+                  },
+                }),
+              },
+              Tooltip: {
+                styles: (theme: MantineTheme, params: TooltipStylesParams) => ({
+                  tooltip: {
+                    backgroundColor:
+                      theme.colorScheme === "dark"
+                        ? theme.colors.gray[3]
+                        : theme.colors.dark[8],
+                    color:
+                      theme.colorScheme === "dark"
+                        ? theme.colors.dark[8]
+                        : theme.colors.gray[3],
                   },
                 }),
               },
