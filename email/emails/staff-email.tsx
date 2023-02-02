@@ -11,9 +11,8 @@ import EmailLayout from "./layout";
 interface StaffEmailProps {
   subject: string;
   content: string;
-  sender?: string;
-  contact?: string;
-  includeStaffSignature?: boolean;
+  sender: string;
+  contact: string;
 }
 
 const StaffEmail: React.FC<StaffEmailProps> = ({
@@ -21,7 +20,6 @@ const StaffEmail: React.FC<StaffEmailProps> = ({
   content = "Hey, we received your message and since it's been a while, we thought we'd check in to see if you still need help.",
   sender = "Emil Osmicevic",
   contact = "emil@soodam.rocks",
-  includeStaffSignature = true,
 }) => {
   return (
     <Html>
@@ -44,15 +42,11 @@ const StaffEmail: React.FC<StaffEmailProps> = ({
           style={styles.text}
           dangerouslySetInnerHTML={{ __html: content }}
         />
-        {includeStaffSignature && (
-          <>
-            <Hr style={styles.spacing} />
-            <Text style={styles.text}>
-              From: <b>{sender}</b> -{" "}
-              <Link href={`mailto:${contact}`}>{contact}</Link>
-            </Text>
-          </>
-        )}
+        <Hr style={styles.spacing} />
+        <Text style={styles.text}>
+          From: <b>{sender}</b> -{" "}
+          <Link href={`mailto:${contact}`}>{contact}</Link>
+        </Text>
       </EmailLayout>
     </Html>
   );

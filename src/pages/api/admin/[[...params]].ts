@@ -552,14 +552,7 @@ class AdminRouter {
               id: Number(admin.id),
             },
           },
-          activity: `Banned user [@${user.username}](/profile/${
-            user.username
-          }) until ${new Date(
-            body.expires || "9999-12-31T23:59:59.999Z"
-          ).toLocaleString()}.\nReason: **${body.reason}**`.replace(
-            /\n/g,
-            "<br><br>"
-          ),
+          activity: `Banned user #${user.id} for ${body.reason}`,
           importance: 5,
         },
       });
@@ -581,11 +574,7 @@ class AdminRouter {
               id: Number(admin.id),
             },
           },
-          activity:
-            `Warned user [@${user.username}](/profile/${user.username})\nReason: **${body.reason}**`.replace(
-              /\n/g,
-              "<br><br>"
-            ),
+          activity: `Warned user #${user.id} for ${body.reason}`,
           importance: 4,
         },
       });
@@ -747,29 +736,10 @@ class AdminRouter {
       take: 50,
       ...(page ? { skip: (page - 1) * 50 } : {}),
     });
-    const count = await prisma.adminActivityLog.count({
-      where: {
-        ...(importance
-          ? {
-              importance: {
-                gte: Number(importance),
-              },
-            }
-          : {}),
-        ...(userId
-          ? {
-              user: {
-                id: Number(userId),
-              },
-            }
-          : {}),
-      },
-    });
 
     return {
       success: true,
       activity,
-      pages: Math.ceil(count / 15),
     };
   }
 
@@ -844,7 +814,7 @@ class AdminRouter {
           });
 
           await createActionLog(
-            `Adjusted [@${user.username}](/profile/${user.username})'s ticket balance to **${body.amount}**`,
+            `Adjusted ${user.username}'s tickets to ${body.amount}`,
             3
           );
         },
@@ -866,7 +836,7 @@ class AdminRouter {
           });
 
           await createActionLog(
-            `Reset [@${user.username}](/profile/${user.username})'s username to **${username}**`,
+            `Reset ${user.username}'s username to ${username}`,
             3
           );
           sendMail(
@@ -890,7 +860,7 @@ class AdminRouter {
           });
 
           await createActionLog(
-            `Logged out all sessions for [@${user.username}](/profile/${user.username})`,
+            `Logged out all sessions for ${user.username}`,
             2
           );
         },
@@ -907,10 +877,7 @@ class AdminRouter {
             },
           });
 
-          await createActionLog(
-            `Reset [@${user.username}](/profile/${user.username})'s email address`,
-            3
-          );
+          await createActionLog(`Reset ${user.username}'s email address`, 3);
           sendMail(
             user.email,
             "Email Reset",
@@ -943,10 +910,7 @@ class AdminRouter {
             },
           });
 
-          await createActionLog(
-            `Reset [@${user.username}](/profile/${user.username})'s password`,
-            3
-          );
+          await createActionLog(`Reset ${user.username}'s password`, 3);
           sendMail(
             user.email,
             "Password Reset",
@@ -970,10 +934,7 @@ class AdminRouter {
             },
           });
 
-          await createActionLog(
-            `Reset [@${user.username}](/profile/${user.username})'s bio`,
-            3
-          );
+          await createActionLog(`Reset ${user.username}'s bio`, 3);
         },
       },
       {
@@ -1030,10 +991,7 @@ class AdminRouter {
           }
 
           await createActionLog(
-            `Edited [@${user.username}](/profile/${user.username})'s employee details.\n\n**Role:** ${form.role}\n**Full Name:** ${form.fullName}\n**Contract Expires At:** ${form.contractExpiresAt}\n**Contact Email:** ${form.contactEmail}\n**Probationary:** ${form.probationary}`.replace(
-              /\n/g,
-              "<br />"
-            ),
+            `Edited ${user.username}'s employee details`,
             3
           );
         },
@@ -1076,13 +1034,7 @@ class AdminRouter {
             },
           });
 
-          await createActionLog(
-            `Adjusted [@${user.username}](/profile/${user.username})'s subscription\n\n**Type:** ${subscription.type}\n**Renew:** ${subscription.renew}`.replace(
-              /\n/g,
-              "<br />"
-            ),
-            3
-          );
+          await createActionLog(`Adjusted ${user.username}'s subscription`, 3);
         },
       },
       {
@@ -1098,10 +1050,7 @@ class AdminRouter {
             },
           });
 
-          await createActionLog(
-            `Unbanned [@${user.username}](/profile/${user.username})`,
-            2
-          );
+          await createActionLog(`Unbanned ${user.username}`, 3);
           sendMail(
             user.email,
             "Unbanned",
@@ -1127,10 +1076,7 @@ class AdminRouter {
             },
           });
 
-          await createActionLog(
-            `Unwarned [@${user.username}](/profile/${user.username})`,
-            2
-          );
+          await createActionLog(`Unwarned ${user.username}`, 2);
         },
       },
       {
@@ -1164,13 +1110,7 @@ class AdminRouter {
             )
           );
 
-          await createActionLog(
-            `Sent email to [@${user.username}](/profile/${user.username}) with subject "${email.subject}":\n\n${email.content}`.replace(
-              /\n/g,
-              "<br />"
-            ),
-            3
-          );
+          await createActionLog(`Sent email to ${user.username}`, 2);
         },
       },
     ];
@@ -1524,7 +1464,7 @@ class AdminRouter {
             id: user.id,
           },
         },
-        activity: `Impersonated user [${targetUser?.username}](/users/${targetUser?.id}) for ${reason}`,
+        activity: `Impersonated user ${userId} (${targetUser?.username}) for ${reason}`,
         importance: 4,
       },
     });
