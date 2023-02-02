@@ -72,20 +72,6 @@ const Activity: React.FC = () => {
   }, [page]);
 
   useEffect(() => {
-    fetch("/api/admin/activitypages", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: String(getCookie(".frameworksession")),
-      },
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        setTotalPages(res.pages);
-      });
-  }, []);
-
-  useEffect(() => {
     retrieveActivities();
   }, [filter]);
 
