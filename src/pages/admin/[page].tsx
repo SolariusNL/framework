@@ -450,9 +450,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
         },
       },
       importance: 1,
-      activity: `Viewed the ${
+      activity: `Viewed the [${
         data.find((item) => item.label.toLowerCase() === pageStr)?.label
-      } page`,
+      }](/admin/${pageStr}) page.`,
     },
   });
 
