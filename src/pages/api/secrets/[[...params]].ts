@@ -27,6 +27,19 @@ class SecretsRouter {
       };
     }
 
+    const existingName = await prisma.secret.findFirst({
+      where: {
+        name,
+        userId: user.id,
+      },
+    });
+
+    if (existingName) {
+      return {
+        error: "Secret name already exists",
+      };
+    }
+
     const secret = await prisma.secret.create({
       data: {
         name,
