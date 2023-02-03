@@ -31,7 +31,7 @@ const SubscriptionTab = ({ user: _user }: SubscriptionTabProps) => {
     <SettingsTab tabValue="subscriptions" tabTitle="Billing">
       <Text mb={16}>Manage your subscriptions and billing information.</Text>
 
-      <Grouped title="Plans">
+      <Grouped title="Plans" dark>
         <SideBySide
           title="Framework Premium"
           description="Support the development of Framework and get access to exclusive features."

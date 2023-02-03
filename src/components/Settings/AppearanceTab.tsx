@@ -22,7 +22,7 @@ const AppearanceTab = ({ user }: AppearanceTabProps) => {
 
   return (
     <SettingsTab tabValue="appearance" tabTitle="Appearance">
-      <Grouped title="Color Scheme">
+      <Grouped title="Color Scheme" dark>
         <div style={{ display: "flex", gap: 16 }}>
           {["Dark", "Light"].map((color) => (
             <Card

@@ -36,7 +36,7 @@ const DeleteAccountTab = ({ user }: DeleteAccountTabProps) => {
   return (
     <>
       <SettingsTab tabValue="deleteaccount" tabTitle="Delete Account">
-        <Grouped title="Delete Account">
+        <Grouped title="Delete Account" dark>
           <SideBySide
             title="Delete your account"
             description="This will delete your account and all of your data. This action cannot be undone."

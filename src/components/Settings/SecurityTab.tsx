@@ -309,7 +309,7 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
         success={success}
       >
         <Stack spacing={32}>
-          <Grouped title="Credentials">
+          <Grouped title="Credentials" dark>
             <Stack>
               <SideBySide
                 title="Password"
@@ -393,7 +393,7 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
               />
             </Stack>
           </Grouped>
-          <Grouped title="Login">
+          <Grouped title="Login" dark>
             <SideBySide
               title="Email Verification"
               description="Require email verification before logging into your account."

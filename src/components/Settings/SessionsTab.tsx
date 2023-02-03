@@ -60,7 +60,7 @@ const SessionsTab: React.FC<SessionsTabProps> = ({ user }) => {
       </Text>
       <Divider mt={32} mb={32} />
       <Stack>
-        <Grouped title="Session actions">
+        <Grouped title="Session actions" dark>
           <SideBySide
             title="Log out all sessions"
             description="Log out of all sessions on all devices. This will log you out of this device as well."
@@ -91,11 +91,17 @@ const SessionsTab: React.FC<SessionsTabProps> = ({ user }) => {
             shaded
           />
         </Grouped>
-        <Grouped title="Sessions">
+        <Grouped title="Sessions" dark>
           {sessions.map((session) => (
             <ShadedCard
               key={session.id}
               className="flex items-center justify-between"
+              sx={(theme) => ({
+                backgroundColor:
+                  theme.colorScheme === "dark"
+                    ? theme.colors.dark[8]
+                    : theme.colors.gray[1],
+              })}
             >
               <div className="flex flex-col md:flex-row">
                 <Badge
@@ -136,8 +142,8 @@ const SessionsTab: React.FC<SessionsTabProps> = ({ user }) => {
                   </Text>
                   {session.impersonation && (
                     <Text mt="md" color="dimmed" size="sm">
-                      Your account is being accessed by a staff member
-                      using this session.
+                      Your account is being accessed by a staff member using
+                      this session.
                     </Text>
                   )}
                 </div>

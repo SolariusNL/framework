@@ -111,7 +111,7 @@ const VoiceTab: React.FC<VoiceTabProps> = ({ user }) => {
 
   return (
     <SettingsTab tabTitle="Voice" tabValue="voice">
-      <Grouped title="Devices">
+      <Grouped title="Devices" dark>
         <SideBySide
           icon={<HiMicrophone />}
           title="Microphone"

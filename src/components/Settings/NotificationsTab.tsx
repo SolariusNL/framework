@@ -63,6 +63,7 @@ const NotificationsTab = ({ user }: NotificationsTabProps) => {
   const categoryDescriptions = {
     SECURITY: "Receive notifications about your account's security",
     DONATIONS: "Receive notifications about donations",
+    EMAILS: "Receive emails for important actions"
   };
 
   return (
@@ -91,6 +92,7 @@ const NotificationsTab = ({ user }: NotificationsTabProps) => {
                   category as keyof typeof categoryDescriptions
                 ]
               }
+              dark
               key={category}
               data={Object.keys(notificationDescriptions[category]).map(
                 (key) => {

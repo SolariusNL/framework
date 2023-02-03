@@ -251,7 +251,7 @@ const AccountTab = ({ user }: AccountTabProps) => {
             </Group>
           </div>
           <Stack spacing={12}>
-            <Grouped title="Identity">
+            <Grouped title="Identity" dark>
               <div>
                 <SideBySide
                   title="Username"
@@ -344,7 +344,7 @@ const AccountTab = ({ user }: AccountTabProps) => {
                 />
               </div>
             </Grouped>
-            <Grouped title="Location & Status">
+            <Grouped title="Location & Status" dark>
               <div>
                 <SideBySide
                   title="Country"
@@ -415,7 +415,7 @@ const AccountTab = ({ user }: AccountTabProps) => {
                 />
               </div>
             </Grouped>
-            <Grouped title="Contact">
+            <Grouped title="Contact" dark>
               <div>
                 <SideBySide
                   title="Profile Links"

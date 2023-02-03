@@ -81,7 +81,7 @@ const ReferralsTab: React.FC<ReferralsTabProps> = ({ user: _user }) => {
 
   return (
     <SettingsTab tabTitle="Referrals" tabValue="referrals">
-      <Grouped title="Referral code">
+      <Grouped title="Referral code" dark>
         {user?.referral ? (
           <>
             <SideBySide

@@ -113,6 +113,7 @@ const PrivacyTab = ({ user }: PrivacyTabProps) => {
         {Object.keys(privacyDescriptions).map((category) => {
           return (
             <SwitchCard
+              dark
               title={category.charAt(0) + category.slice(1).toLowerCase()}
               description={
                 categoryDescriptions[
