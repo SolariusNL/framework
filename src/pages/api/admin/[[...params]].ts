@@ -804,17 +804,17 @@ class AdminRouter {
 
           await prisma.user.update({
             where: {
-              id: Number(uid),
+              id: Number(user.id),
             },
             data: {
               tickets: {
-                set: Number(body.amount),
+                [body.type]: body.amount,
               },
             },
           });
 
           await createActionLog(
-            `Adjusted ${user.username}'s tickets to ${body.amount}`,
+            `Adjusted ${user.username}'s tickets to ${body.amount} by type ${body.type}`,
             3
           );
         },
