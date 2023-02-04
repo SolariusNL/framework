@@ -1,9 +1,8 @@
-import { Text } from "@mantine/core";
+import { Image, Text } from "@mantine/core";
 import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import { Gamepass } from "@prisma/client";
 import { getCookie } from "cookies-next";
-import Image from "next/image";
 import { useState } from "react";
 import { HiCheck, HiCheckCircle, HiTicket } from "react-icons/hi";
 import { useFrameworkUser } from "../../contexts/FrameworkUser";
