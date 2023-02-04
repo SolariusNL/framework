@@ -37,6 +37,7 @@ yarn-error.log*
 /public/thumbnails
 /docs/site
 /public/icons
+/public/gamepass
 
 framework.yml
 framework.schema.json
