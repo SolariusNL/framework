@@ -1404,7 +1404,7 @@ class GameRouter {
       },
       data: {
         tickets: {
-          increment: gamepass.price * 0.9,
+          increment: gamepass.price,
         },
       },
     });
