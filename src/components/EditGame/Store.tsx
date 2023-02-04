@@ -1,6 +1,7 @@
 import {
   ActionIcon,
   Button,
+  Image,
   Modal,
   NumberInput,
   Table,
@@ -14,9 +15,11 @@ import { showNotification } from "@mantine/notifications";
 import { Gamepass } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import React from "react";
-import { HiCheckCircle, HiPlus, HiTrash } from "react-icons/hi";
+import { HiCheckCircle, HiPlus, HiTrash, HiXCircle } from "react-icons/hi";
 import abbreviateNumber from "../../util/abbreviate";
 import { Game } from "../../util/prisma-types";
+import Descriptive from "../Descriptive";
+import ImageUploader from "../ImageUploader";
 import ModernEmptyState from "../ModernEmptyState";
 import Stateful from "../Stateful";
 import EditGameTab from "./EditGameTab";
@@ -35,6 +38,7 @@ interface GamepassForm {
   name: string;
   description: string;
   price: number;
+  icon: string;
 }
 
 const Store: React.FC<StoreProps> = ({ game }) => {
@@ -43,6 +47,7 @@ const Store: React.FC<StoreProps> = ({ game }) => {
       name: "",
       description: "",
       price: 0,
+      icon: "",
     },
     validate: {
       name: (value) => {
@@ -58,9 +63,13 @@ const Store: React.FC<StoreProps> = ({ game }) => {
         if (value < 0) return "Price must be greater than 0";
         if (value > 1000000) return "Price must be less than 1 million";
       },
+      icon: (value) => {
+        if (!value) return "Icon is required";
+      },
     },
   });
   const [gamepasses, setGamepasses] = React.useState(game.gamepasses);
+  const imgRef = React.useRef<HTMLImageElement | null>(null);
 
   return (
     <>
@@ -120,9 +129,7 @@ const Store: React.FC<StoreProps> = ({ game }) => {
                   </td>
                   <td>{gamepass.price}</td>
                   <td>{gamepass.owners.length}</td>
-                  <td>
-                    {abbreviateNumber(gamepass.owners.length * gamepass.price)}
-                  </td>
+                  <td>{abbreviateNumber(gamepass.totalRevenue)}</td>
                   <td>
                     <Tooltip label="Delete this gamepass">
                       <ActionIcon
@@ -186,8 +193,8 @@ const Store: React.FC<StoreProps> = ({ game }) => {
                         Authorization: String(getCookie(".frameworksession")),
                       },
                     })
-                      .then((res) => res.json())
-                      .then((res) => {
+                      .then(async (res) => res.json())
+                      .then(async (res) => {
                         if (res.success) {
                           showNotification({
                             title: "Created gamepass",
@@ -200,7 +207,49 @@ const Store: React.FC<StoreProps> = ({ game }) => {
                             ...prev,
                             res.gamepass as Gamepass,
                           ]);
+
+                          const formData = new FormData();
+                          const file = new File(
+                            [
+                              Buffer.from(
+                                values.icon.replace(
+                                  /^data:image\/\w+;base64,/,
+                                  ""
+                                ),
+                                "base64"
+                              ),
+                            ],
+                            "gamepass.jpeg",
+                            {
+                              type: "image/jpeg",
+                            }
+                          );
+
+                          formData.append("gamepass", file);
+
+                          await fetch(
+                            `/api/media/upload/gamepass/${res.gamepass.id}`,
+                            {
+                              method: "POST",
+                              headers: {
+                                authorization: String(
+                                  getCookie(".frameworksession")
+                                ),
+                              },
+                              body: formData,
+                            }
+                          ).catch((err) => {
+                            showNotification({
+                              title: "Failed to upload icon",
+                              message:
+                                "Failed to upload icon. Please try again.",
+                              icon: <HiXCircle />,
+                            });
+                          });
                         }
+                      })
+                      .finally(() => {
+                        form.reset();
                       });
                   })}
                 >
@@ -208,22 +257,50 @@ const Store: React.FC<StoreProps> = ({ game }) => {
                     label="Name"
                     description="The name of the gamepass"
                     required
-                    mb={8}
+                    mb="md"
                     {...form.getInputProps("name")}
                   />
                   <Textarea
                     label="Description"
                     description="The description of the gamepass, what it grants the user, etc."
                     required
-                    mb={8}
+                    mb="md"
                     {...form.getInputProps("description")}
                   />
                   <NumberInput
                     label="Price"
                     description="The price of the gamepass in Tickets"
                     required
+                    mb="md"
                     {...form.getInputProps("price")}
                   />
+                  <Descriptive
+                    title="Icon"
+                    description="The icon of the gamepass"
+                    required
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      {form.values.icon ? (
+                        <Image
+                          src={form.values.icon}
+                          width={64}
+                          height={64}
+                          radius="md"
+                          ref={imgRef}
+                        />
+                      ) : (
+                        <div className="w-16 h-16 rounded-md bg-zinc-800" />
+                      )}
+                      <ImageUploader
+                        crop
+                        ratio={1}
+                        imgRef={imgRef}
+                        onFinished={(img) => {
+                          form.setFieldValue("icon", img);
+                        }}
+                      />
+                    </div>
+                  </Descriptive>
                   <Button type="submit" mt={16}>
                     Create gamepass
                   </Button>

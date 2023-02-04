@@ -2,7 +2,7 @@ import {
   createHandler,
   Param,
   Post,
-  UseMiddleware
+  UseMiddleware,
 } from "@storyofams/next-api-decorators";
 import multer from "multer";
 import path from "path";
@@ -43,114 +43,132 @@ const imageOnly = (req: any, file: any, callback: any) => {
   callback(null, true);
 };
 
-const avatars = multer({
-  limits: {
-    fileSize: 8 * 1024 * 1024,
-  },
-  storage: multer.diskStorage({
-    destination: "./public/avatars",
-    filename: async (req, file, cb) => {
-      const user = await getAccountFromSession(
-        String(req.headers["authorization"])
-      );
-
-      await prisma.user.update({
-        where: { id: user?.id },
-        data: {
-          avatarUri: `/avatars/${String(user?.username)}.webp`,
-        },
-      });
-
-      cb(null, user?.username + ".webp");
+const createMulter = (
+  destination: string,
+  nameFunction: (req: any, file: any, cb: any) => any
+) =>
+  multer({
+    limits: {
+      fileSize: 12 * 1024 * 1024,
     },
-  }),
-  fileFilter: imageOnly,
-}).single("avatar");
+    storage: multer.diskStorage({
+      destination: `./public/${destination}`,
+      filename: nameFunction,
+    }),
+    fileFilter: imageOnly,
+  });
 
-const gameThumbnails = multer({
-  limits: {
-    fileSize: 12 * 1024 * 1024,
-  },
-  storage: multer.diskStorage({
-    destination: "./public/thumbnails",
-    filename: async (req, file, cb) => {
-      const user = await getAccountFromSession(
-        String(req.headers["authorization"])
-      );
+const avatars = createMulter("avatars", async (req, file, cb) => {
+  const user = await getAccountFromSession(
+    String(req.headers["authorization"])
+  );
 
-      if (!req.params.gameId) return cb(new Error("No game id provided"), "");
-
-      const game = await prisma.game.findFirst({
-        where: {
-          id: Number(req.params.gameId),
-          authorId: user?.id,
-        },
-      });
-
-      if (!game) return cb(new Error("Game not found"), "");
-      if (!Number.isInteger(Number(req.params.gameId)))
-        return cb(new Error("Invalid game id"), "");
-
-      await prisma.game.update({
-        where: {
-          id: Number.parseInt(req.params.gameId),
-        },
-        data: {
-          gallery: {
-            set: [`/thumbnails/${game.id}.webp`],
-          },
-        },
-      });
-
-      cb(null, game.id + ".webp");
+  await prisma.user.update({
+    where: { id: user?.id },
+    data: {
+      avatarUri: `/avatars/${String(user?.username)}.webp`,
     },
-  }),
-  fileFilter: imageOnly,
-}).single("thumbnail");
+  });
 
-const gameIcon = multer({
-  limits: {
-    fileSize: 12 * 1024 * 1024,
-  },
-  storage: multer.diskStorage({
-    destination: "./public/icons",
-    filename: async (req, file, cb) => {
-      const user = await getAccountFromSession(
-        String(req.headers["authorization"])
-      );
+  cb(null, user?.username + ".webp");
+});
 
-      if (!req.params.gameId) return cb(new Error("No game id provided"), "");
+const gameThumbnails = createMulter("thumbnails", async (req, file, cb) => {
+  const user = await getAccountFromSession(
+    String(req.headers["authorization"])
+  );
 
-      const game = await prisma.game.findFirst({
-        where: {
-          id: Number(req.params.gameId),
-          authorId: user?.id,
-        },
-      });
+  if (!req.params.gameId) return cb(new Error("No game id provided"), "");
 
-      if (!game) return cb(new Error("Game not found"), "");
-      if (!Number.isInteger(Number(req.params.gameId)))
-        return cb(new Error("Invalid game id"), "");
-
-      await prisma.game.update({
-        where: {
-          id: Number.parseInt(req.params.gameId),
-        },
-        data: {
-          iconUri: `/icons/${game.id}.webp`,
-        },
-      });
-
-      cb(null, game.id + ".webp");
+  const game = await prisma.game.findFirst({
+    where: {
+      id: Number(req.params.gameId),
+      authorId: user?.id,
     },
-  }),
-  fileFilter: imageOnly,
-}).single("icon");
+  });
+
+  if (!game) return cb(new Error("Game not found"), "");
+  if (!Number.isInteger(Number(req.params.gameId)))
+    return cb(new Error("Invalid game id"), "");
+
+  await prisma.game.update({
+    where: { id: Number(req.params.gameId) },
+    data: {
+      gallery: {
+        set: [`/thumbnails/${req.params.gameId}.webp`],
+      },
+    },
+  });
+
+  cb(null, `${req.params.gameId}.webp`);
+});
+
+const gameIcons = createMulter("icons", async (req, file, cb) => {
+  const user = await getAccountFromSession(
+    String(req.headers["authorization"])
+  );
+
+  if (!req.params.gameId) return cb(new Error("No game id provided"), "");
+
+  const game = await prisma.game.findFirst({
+    where: {
+      id: Number(req.params.gameId),
+      authorId: user?.id,
+    },
+  });
+
+  if (!game) return cb(new Error("Game not found"), "");
+  if (!Number.isInteger(Number(req.params.gameId)))
+    return cb(new Error("Invalid game id"), "");
+
+  await prisma.game.update({
+    where: {
+      id: Number.parseInt(req.params.gameId),
+    },
+    data: {
+      iconUri: `/icons/${game.id}.webp`,
+    },
+  });
+
+  cb(null, game.id + ".webp");
+});
+
+const gamepassIcons = createMulter("gamepass", async (req, file, cb) => {
+  const user = await getAccountFromSession(
+    String(req.headers["authorization"])
+  );
+
+  if (!req.params.gamepassId) return cb(new Error("No game id provided"), "");
+
+  const gamepass = await prisma.gamepass.findFirst({
+    where: {
+      id: String(req.params.gamepassId),
+      game: {
+        authorId: user?.id,
+      },
+    },
+  });
+
+  if (!gamepass) return cb(new Error("Gamepass not found"), "");
+  if (!String(req.params.gamepassId))
+    return cb(new Error("Invalid gamepass id"), "");
+
+  await prisma.gamepass.update({
+    where: {
+      id: String(req.params.gamepassId),
+    },
+    data: {
+      iconUri: `/gamepass/${gamepass.id}.webp`,
+    },
+  });
+
+  cb(null, gamepass.id + ".webp");
+});
 
 class MediaRouter {
   @Post("/upload/avatar")
   @Authorized()
-  @UseMiddleware(avatars)
+  @UseMiddleware(avatars.single("avatar"))
   async uploadAvatar(@Account() account: User) {
     return {
       avatar: `/avatars/${account.username}.webp`,
@@ -160,7 +178,7 @@ class MediaRouter {
 
   @Post("/upload/thumbnail/:gameId")
   @Authorized()
-  @UseMiddleware(gameThumbnails)
+  @UseMiddleware(gameThumbnails.single("thumbnail"))
   async uploadThumbnail(
     @Account() account: User,
     @Param("gameId") gameId: number
@@ -173,10 +191,23 @@ class MediaRouter {
 
   @Post("/upload/icon/:gameId")
   @Authorized()
-  @UseMiddleware(gameIcon)
+  @UseMiddleware(gameIcons.single("icon"))
   async uploadIcon(@Account() account: User, @Param("gameId") gameId: number) {
     return {
-      icon: `/icons/${account.username}.webp`,
+      icon: `/icons/${gameId}.webp`,
+      success: true,
+    };
+  }
+
+  @Post("/upload/gamepass/:gamepassId")
+  @Authorized()
+  @UseMiddleware(gamepassIcons.single("gamepass"))
+  async uploadGamepassIcon(
+    @Account() account: User,
+    @Param("gamepassId") gamepassId: string
+  ) {
+    return {
+      icon: `/gamepass/${gamepassId}.webp`,
       success: true,
     };
   }

@@ -1,12 +1,17 @@
-import { Badge, Button, Text, Title, Tooltip } from "@mantine/core";
+import { Text } from "@mantine/core";
+import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import { Gamepass } from "@prisma/client";
 import { getCookie } from "cookies-next";
-import { HiCheckCircle } from "react-icons/hi";
+import Image from "next/image";
+import { useState } from "react";
+import { HiCheck, HiCheckCircle, HiTicket } from "react-icons/hi";
 import { useFrameworkUser } from "../../contexts/FrameworkUser";
+import getMediaUrl from "../../util/getMedia";
 import { Game } from "../../util/prisma-types";
 import ModernEmptyState from "../ModernEmptyState";
 import PurchaseConfirmation from "../PurchaseConfirmation";
+import ShadedButton from "../ShadedButton";
 import ShadedCard from "../ShadedCard";
 import Stateful from "../Stateful";
 import ViewGameTab from "./ViewGameTab";
@@ -19,14 +24,12 @@ interface StoreProps {
 
 const Store: React.FC<StoreProps> = ({ game }) => {
   const user = useFrameworkUser()!;
+  const [gamepasses, setGamepasses] = useState(game.gamepasses);
 
   return (
     <ViewGameTab value="store" title="Store">
-      <Title order={4} mb={8}>
-        Gamepasses
-      </Title>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {game.gamepasses.length === 0 ? (
+        {gamepasses.length === 0 ? (
           <div className="col-span-2">
             <ModernEmptyState
               title="No gamepasses"
@@ -34,7 +37,7 @@ const Store: React.FC<StoreProps> = ({ game }) => {
             />
           </div>
         ) : (
-          game.gamepasses.map((gamepass) => (
+          gamepasses.map((gamepass) => (
             <Stateful key={gamepass.id}>
               {(opened, setOpened) => (
                 <>
@@ -65,41 +68,107 @@ const Store: React.FC<StoreProps> = ({ game }) => {
                               message: `You have successfully purchased ${gamepass.name} for ${gamepass.price}T$.`,
                               icon: <HiCheckCircle />,
                             });
+                            setGamepasses(
+                              gamepasses.map((gp) => {
+                                if (gp.id === gamepass.id) {
+                                  return {
+                                    ...gp,
+                                    owners: [...gp.owners, { id: user.id }],
+                                  };
+                                }
+                                return gp;
+                              })
+                            );
                           }
                         });
                     }}
                     price={gamepass.price}
                   />
-                  <ShadedCard className="text-center" withBorder>
-                    <Tooltip
-                      label={`This gamepass costs ${gamepass.price} tickets.`}
-                    >
-                      <Badge mb={12} color="green">
-                        {gamepass.price}T$
-                      </Badge>
-                    </Tooltip>
-                    <Text weight={700} size="lg" mb={8}>
-                      {gamepass.name}
-                    </Text>
-                    <Text color="dimmed" lineClamp={2} mb={12}>
-                      {gamepass.description}
-                    </Text>
-                    <Button
-                      fullWidth
-                      variant="gradient"
-                      gradient={{ from: "teal", to: "lime", deg: 105 }}
-                      onClick={() => setOpened(true)}
-                      disabled={
-                        user.tickets < gamepass.price ||
-                        game.authorId === user.id ||
-                        gamepass.owners.some((owner) => owner.id === user.id)
-                      }
-                    >
-                      {gamepass.owners.some((owner) => owner.id === user.id)
-                        ? "Already owned"
-                        : "Purchase"}
-                    </Button>
-                  </ShadedCard>
+                  <ShadedButton
+                    className="w-full flex flex-col"
+                    onClick={() => {
+                      openConfirmModal({
+                        title: gamepass.name,
+                        children: (
+                          <>
+                            <Text mb={4}>Description</Text>
+                            <Text size="sm" color="dimmed" mb="md">
+                              {gamepass.description}
+                            </Text>
+                            <Text mb={4}>Price</Text>
+                            <Text
+                              size="sm"
+                              color="dimmed"
+                              className="flex items-center gap-2"
+                              mb="md"
+                            >
+                              <HiTicket />
+                              {gamepass.price}T$
+                            </Text>
+                          </>
+                        ),
+                        labels: {
+                          confirm: gamepass.owners.some(
+                            (owner) => owner.id === user.id
+                          )
+                            ? "Already owned"
+                            : "Purchase",
+                          cancel: "Nevermind",
+                        },
+                        confirmProps: {
+                          leftIcon: <HiTicket />,
+                          disabled:
+                            gamepass.owners.some(
+                              (owner) => owner.id === user.id
+                            ) || user.tickets < gamepass.price,
+                        },
+                        onConfirm: () => {
+                          setOpened(true);
+                        },
+                      });
+                    }}
+                  >
+                    <div className="flex gap-4">
+                      {gamepass.iconUri ? (
+                        <Image
+                          className="rounded-md"
+                          src={getMediaUrl(gamepass.iconUri)}
+                          width={64}
+                          height={64}
+                          alt={gamepass.name}
+                        />
+                      ) : (
+                        <ShadedCard
+                          sx={(theme) => ({
+                            width: 64,
+                            height: 64,
+                            backgroundColor:
+                              theme.colorScheme === "dark"
+                                ? theme.colors.dark[8]
+                                : theme.colors.gray[2],
+                          })}
+                        >
+                          <></>
+                        </ShadedCard>
+                      )}
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <Text size="lg">{gamepass.name}</Text>
+                          {gamepass.owners.some(
+                            (owner) => owner.id === user.id
+                          ) && <HiCheck className="text-green-500" />}
+                        </div>
+                        <Text
+                          size="sm"
+                          color="dimmed"
+                          className="flex items-center gap-2"
+                        >
+                          <HiTicket />
+                          {gamepass.price}T$
+                        </Text>
+                      </div>
+                    </div>
+                  </ShadedButton>
                 </>
               )}
             </Stateful>

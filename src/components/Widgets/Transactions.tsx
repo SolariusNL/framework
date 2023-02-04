@@ -75,7 +75,7 @@ const TransactionsWidget = ({
               </div>
               <div className="text-right">
                 <Text size="lg" weight={600} color="#FF6B6B">
-                  -T${t.tickets}
+                  -{t.tickets}T$
                 </Text>
                 <Text color="dimmed">
                   {new Date(t.createdAt).toLocaleDateString("en-US", {

@@ -25,7 +25,7 @@ const Donate = ({ user }: DonateProps) => {
     }).then(() => {
       showNotification({
         title: "Donation Successful",
-        message: `You have donated T$${amt} to ${user.username}`,
+        message: `You have donated ${amt}T$ to ${user.username}`,
         icon: <HiReceiptTax />,
       });
       setUser({
