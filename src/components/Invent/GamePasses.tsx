@@ -4,6 +4,7 @@ import { getCookie } from "cookies-next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { HiExternalLink, HiPencil } from "react-icons/hi";
+import abbreviateNumber from "../../util/abbreviate";
 import { User } from "../../util/prisma-types";
 import ModernEmptyState from "../ModernEmptyState";
 import InventTab from "./InventTab";
@@ -85,7 +86,7 @@ const GamePasses = ({ user }: GamePassesProps) => {
                       </td>
                       <td>{gp?.price}T$</td>
                       <td>{gp?.owners.length}</td>
-                      <td>{gp?.owners?.length! * (gp?.price || 0)}T$</td>
+                      <td>{abbreviateNumber(gp?.totalRevenue)}T$</td>
                       <td>
                         <Link href={`/game/${g.id}/edit/store`} passHref>
                           <ActionIcon variant="light">
