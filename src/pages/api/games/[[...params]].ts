@@ -1387,13 +1387,24 @@ class GameRouter {
       },
     });
 
+    await prisma.gamepass.update({
+      where: {
+        id: String(gamepassId),
+      },
+      data: {
+        totalRevenue: {
+          increment: gamepass.price,
+        },
+      },
+    });
+
     await prisma.user.update({
       where: {
         id: game.author.id,
       },
       data: {
         tickets: {
-          increment: gamepass.price,
+          increment: gamepass.price * 0.9,
         },
       },
     });
@@ -1437,6 +1448,8 @@ class GameRouter {
                 id: true,
               },
             },
+            totalRevenue: true,
+            iconUri: true,
           },
         },
       },

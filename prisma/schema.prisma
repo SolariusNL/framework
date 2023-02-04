@@ -600,14 +600,16 @@ model AdminActivityLog {
 }
 
 model Gamepass {
-  id          String   @id @default(uuid())
-  game        Game     @relation("gamepasses", fields: [gameId], references: [id])
-  gameId      Int
-  name        String
-  description String
-  price       Int
-  createdAt   DateTime @default(now())
-  owners      User[]   @relation("userGamepasses")
+  id           String   @id @default(uuid())
+  game         Game     @relation("gamepasses", fields: [gameId], references: [id])
+  gameId       Int
+  name         String
+  description  String
+  price        Int
+  iconUri      String   @default("")
+  createdAt    DateTime @default(now())
+  owners       User[]   @relation("userGamepasses")
+  totalRevenue Int      @default(0)
 }
 
 model CosmicWebhookSignature {

@@ -42,6 +42,7 @@ const PurchaseConfirmation: React.FC<PurchaseConfirmationProps> = ({
           onPurchaseComplete();
           setOpened(false);
         }}
+        size="lg"
       >
         Purchase for {price}T$
       </Button>
@@ -50,7 +51,7 @@ const PurchaseConfirmation: React.FC<PurchaseConfirmationProps> = ({
         leftIcon={<HiStop />}
         onClick={() => setOpened(false)}
         variant="subtle"
-        color="orange"
+        color="gray"
         mb={16}
       >
         Cancel
