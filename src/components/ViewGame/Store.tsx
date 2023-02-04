@@ -135,6 +135,7 @@ const Store: React.FC<StoreProps> = ({ game }) => {
                           width={64}
                           height={64}
                           alt={gamepass.name}
+                          radius="md"
                         />
                       ) : (
                         <ShadedCard
