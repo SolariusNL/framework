@@ -1639,7 +1639,10 @@ class GameRouter {
       data: {
         gameId: Number(gid),
         title: data.title,
-        content: data.content,
+        content: sanitizeHtml(data.content, {
+          allowedTags: ["b", "i", "u", "ul", "ol", "li", "h4", "h5", "h6"],
+          allowedAttributes: {},
+        }),
         tag: data.tag,
         type: data.type,
       },
