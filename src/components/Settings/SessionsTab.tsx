@@ -5,20 +5,22 @@ import {
   Divider,
   Stack,
   Text,
-  Tooltip,
+  Tooltip
 } from "@mantine/core";
 import { Session } from "@prisma/client";
 import { deleteCookie, getCookie } from "cookies-next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { HiDesktopComputer, HiDeviceMobile, HiLogout } from "react-icons/hi";
+import {
+  HiLogout, HiOutlineDesktopComputer, HiOutlineDeviceMobile
+} from "react-icons/hi";
 import logout from "../../util/api/logout";
 import { User } from "../../util/prisma-types";
 import {
   Device,
   getOperatingSystemDevice,
   getOperatingSystemEnumFromString,
-  getOperatingSystemString,
+  getOperatingSystemString
 } from "../../util/ua";
 import ShadedCard from "../ShadedCard";
 import Grouped from "./Grouped";
@@ -108,17 +110,21 @@ const SessionsTab: React.FC<SessionsTabProps> = ({ user }) => {
                   sx={{
                     width: 48,
                     height: 48,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
                   }}
+                  className="flex items-center justify-center"
                 >
                   {getOperatingSystemDevice(
                     getOperatingSystemEnumFromString(session.os)
                   ) === Device.Desktop ? (
-                    <HiDesktopComputer size={20} />
+                    <HiOutlineDesktopComputer
+                      size={20}
+                      className="flex items-center justify-center"
+                    />
                   ) : (
-                    <HiDeviceMobile size={20} />
+                    <HiOutlineDeviceMobile
+                      size={20}
+                      className="flex items-center justify-center"
+                    />
                   )}
                 </Badge>
                 <div className="flex flex-col md:ml-4 mt-4 md:mt-0">
