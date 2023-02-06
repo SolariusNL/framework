@@ -22,6 +22,10 @@ import { promises as fs, readFileSync } from "fs";
 import type { NextApiRequest } from "next";
 import { join } from "path";
 import { z } from "zod";
+import AccountUpdate from "../../../../email/emails/account-update";
+import JoinFramework from "../../../../email/emails/join-framework";
+import StaffEmail from "../../../../email/emails/staff-email";
+import SupportTicketClosed from "../../../../email/emails/support-ticket-closed";
 import { PrefCategory } from "../../../components/Admin/Pages/Instance";
 import type { ReportCategory } from "../../../components/ReportUser";
 import { AdminAction } from "../../../util/adminAction";
@@ -29,6 +33,7 @@ import Authorized, {
   Account,
   AdminAuthorized,
 } from "../../../util/api/authorized";
+import { hashPass } from "../../../util/hash/password";
 import { sendMail } from "../../../util/mail";
 import createNotification from "../../../util/notifications";
 import prisma from "../../../util/prisma";
@@ -40,10 +45,6 @@ import {
 } from "../../../util/prisma-types";
 import { RateLimitMiddleware } from "../../../util/rateLimit";
 import { getOperatingSystem } from "../../../util/ua";
-import SupportTicketClosed from "../../../../email/emails/support-ticket-closed";
-import AccountUpdate from "../../../../email/emails/account-update";
-import { hashPass } from "../../../util/hash/password";
-import StaffEmail from "../../../../email/emails/staff-email";
 
 class AdminRouter {
   @Get("/reports")
@@ -170,19 +171,33 @@ class AdminRouter {
   @Get("/invites")
   @AdminAuthorized()
   public async getInvites() {
-    const invites = await prisma.invite.findMany();
+    const invites = await prisma.invite.findMany({
+      include: {
+        createdBy: nonCurrentUserSelect,
+      },
+    });
     return invites;
   }
 
   @Post("/invites/new/:amount")
   @AdminAuthorized()
-  public async createInvite(@Param("amount") amount: number) {
+  public async createInvite(
+    @Param("amount") amount: number,
+    @Body() body: unknown,
+    @Account() user: User
+  ) {
     if (amount < 1 || amount > 500) {
       return {
         success: false,
         error: "Amount must be between 1 and 500",
       };
     }
+
+    const bodySchema = z.object({
+      email: z.string().optional(),
+    });
+
+    const req = bodySchema.parse(body);
 
     function createKey() {
       const key = Array.from({ length: 4 })
@@ -201,8 +216,22 @@ class AdminRouter {
     await prisma.invite.createMany({
       data: keys.map((key) => ({
         code: key,
+        ...(req.email ? { sentToEmail: req.email } : {}),
+        createdById: user.id,
       })),
     });
+
+    if (req.email) {
+      sendMail(
+        req.email,
+        "Join Framework",
+        render(
+          JoinFramework({
+            code: keys[0],
+          }) as React.ReactElement
+        )
+      );
+    }
 
     return keys;
   }

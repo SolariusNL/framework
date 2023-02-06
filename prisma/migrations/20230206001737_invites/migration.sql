@@ -1,0 +1,7 @@
+-- AlterTable
+ALTER TABLE "Invite" ADD COLUMN     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN     "createdById" INTEGER,
+ADD COLUMN     "sentToEmail" TEXT;
+
+-- AddForeignKey
+ALTER TABLE "Invite" ADD CONSTRAINT "Invite_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;

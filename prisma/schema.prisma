@@ -148,6 +148,7 @@ model User {
   purchasedGames             Game[]                 @relation("purchasedGames")
   followedGames              Game[]                 @relation("gameFollowers")
   passwordResetRequests      PasswordResetRequest[] @relation("passwordResetRequests")
+  createdInvites             Invite[]               @relation("userInvites")
 }
 
 model ConnectedAccount {
@@ -243,9 +244,13 @@ model CodeSnippet {
 }
 
 model Invite {
-  id   String  @id @default(uuid())
-  code String
-  used Boolean @default(false)
+  id          String   @id @default(uuid())
+  code        String
+  used        Boolean  @default(false)
+  createdBy   User?    @relation("userInvites", references: [id], fields: [createdById])
+  createdById Int?
+  createdAt   DateTime @default(now())
+  sentToEmail String?
 }
 
 model Session {
