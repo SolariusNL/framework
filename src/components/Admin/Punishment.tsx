@@ -199,6 +199,12 @@ const Punishment: React.FC<PunishmentProps> = ({
               disabled={punishmentForm.values.category === "warning"}
               data={[
                 {
+                  label: "1 day",
+                  value: new Date(
+                    Date.now() + 1 * 24 * 60 * 60 * 1000
+                  ).toDateString(),
+                },
+                {
                   label: "3 days",
                   value: new Date(
                     Date.now() + 3 * 24 * 60 * 60 * 1000
