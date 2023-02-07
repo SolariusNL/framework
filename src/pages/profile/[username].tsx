@@ -37,6 +37,7 @@ import {
   HiOfficeBuilding,
   HiUser,
   HiUsers,
+  HiXCircle,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import AdminBadge from "../../components/Badges/Admin";
@@ -357,235 +358,269 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
           })}
           p={16}
           mt={50}
+          {...(viewing.banned && {
+            className: "flex items-center justify-center py-16",
+          })}
         >
-          <Grid columns={24}>
-            <Grid.Col span={mobile ? 24 : 14}>
-              <Text weight={550} mb={10} color="dimmed">
-                About {viewing.username}
-              </Text>
-              <Text mb={16}>
-                <ReactNoSSR>
-                  {viewing.bio
-                    ? viewing.bio.split("\n").map((line, i) => (
-                        <React.Fragment key={i}>
-                          {line}
-                          <br />
-                        </React.Fragment>
-                      ))
-                    : "No bio"}
-                </ReactNoSSR>
-              </Text>
-              <ReactNoSSR>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <ShadedCard withBorder shadow="md" className="h-fit">
-                    <Stack spacing={6}>
-                      {[
-                        [HiClock, viewing.timeZone, "Timezone"],
-                        [
-                          HiGlobe,
-                          countries.find((c) => c.code == viewing.country)
-                            ?.name,
-                          "Country",
-                        ],
-                        [
-                          HiOfficeBuilding,
-                          viewing.busy ? "Busy" : "Available" || "Available",
-                          "Status",
-                        ],
-                        [
-                          HiDesktopComputer,
-                          new Date(viewing.lastSeen).toLocaleString(),
-                          "Last seen",
-                        ],
-                      ]
-                        .filter(([, value]) => value)
-                        .map(([Icon, value, label]: any) => (
-                          <Group spacing={3} key={label}>
-                            <Tooltip label={label} key={value}>
-                              <ThemeIcon color="transparent">
-                                <Icon
-                                  color="#868e96"
-                                  style={{ marginRight: 5 }}
-                                />
-                              </ThemeIcon>
-                            </Tooltip>
-                            <Text color="dimmed" mr={5}>
-                              {String(value)}
-                            </Text>
-                          </Group>
-                        ))}
-                    </Stack>
-                  </ShadedCard>
-                  <ShadedCard withBorder shadow="md" className="h-fit">
-                    <Stack spacing={12}>
-                      {[
-                        {
-                          icon: HiClock,
-                          label: "Member since",
-                          value: new Date(
-                            viewing.createdAt
-                          ).toLocaleDateString(),
-                        },
-                        {
-                          icon: HiUsers,
-                          label: "Place visits",
-                          value: viewing.games
-                            .map((g) => g.visits)
-                            .reduce((a, b) => a + b, 0),
-                        },
-                        {
-                          icon: HiClock,
-                          label: "Hours played",
-                          value: 0,
-                        },
-                      ].map(({ icon: Icon, label, value }) => (
-                        <Group key={String(value)} spacing={3}>
-                          <Icon color="#868e96" style={{ marginRight: 12 }} />
-                          <div className="items-start">
-                            <Text color="dimmed" weight={600}>
-                              {label}
-                            </Text>
-                            <Text color="dimmed">{String(value)}</Text>
-                          </div>
-                        </Group>
-                      ))}
-                    </Stack>
-                  </ShadedCard>
-                </div>
-              </ReactNoSSR>
-              <Text weight={550} mb={10} color="dimmed" mt={50}>
-                Contacts
-              </Text>
-              <Links
-                user={viewing}
-                mb={16}
-                sx={(theme) => ({
-                  backgroundColor:
-                    theme.colorScheme == "dark" ? theme.colors.dark[9] : "#FFF",
-                })}
-                shadow="md"
+          {viewing.banned ? (
+            <div className="flex gap-4 max-w-sm">
+              <HiXCircle
+                size={24}
+                className="whitespace-nowrap flex-shrink-0 text-red-400"
               />
-
-              <Text weight={550} mb={10} color="dimmed" mt={50}>
-                Badges
-              </Text>
-
-              <ReactNoSSR>
-                <div
-                  style={{
-                    display: "grid",
-                    gridColumnGap: "12px",
-                    gridTemplateColumns: `repeat(${mobile ? 1 : 2}, 1fr)`,
-                    gridRowGap: "12px",
-                  }}
-                >
-                  {[
-                    [<AlphaBadge user={viewing} key="alpha" />, true],
-                    [
-                      <PremiumBadge user={viewing} key="premium" />,
-                      viewing.premium,
-                    ],
-                    [
-                      <AdminBadge user={viewing} key="admin" />,
-                      viewing.role == "ADMIN",
-                    ],
-                    [
-                      <EmailBadge user={viewing} key="email" />,
-                      viewing.emailVerified,
-                    ],
-                    [
-                      <TOTPBadge user={viewing} key="totp" />,
-                      viewing.otpEnabled,
-                    ],
-                  ].map(
-                    ([badge, condition]) => condition && <div>{badge}</div>
-                  )}
-                </div>
-              </ReactNoSSR>
-            </Grid.Col>
-
-            <Grid.Col span={mobile ? 24 : 10}>
-              {viewing.games.length == 0 && (
-                <ModernEmptyState
-                  title="No games"
-                  body={`${viewing.username} has no games.`}
-                />
-              )}
-              <ReactNoSSR>
-                <ThumbnailCarousel
-                  p={8}
-                  slides={viewing.games.map((g, i) => (
-                    <Paper
-                      withBorder
-                      p="md"
-                      radius="md"
-                      key={i}
-                      shadow="md"
-                      sx={(theme) => ({
-                        marginRight: i != viewing.games.length - 1 ? 8 : 0,
-                        backgroundColor:
-                          theme.colorScheme == "dark"
-                            ? theme.colors.dark[9]
-                            : "#FFF",
-                      })}
-                    >
-                      <Container p={0} mb={16}>
-                        {g.gallery.length > 0 && (
-                          <ThumbnailCarousel
-                            slides={g.gallery.map((gal, j) => (
-                              <Image
-                                height={180}
-                                src={getMediaUrl(gal)}
-                                key={j}
-                                alt={g.name}
-                              />
+              <div>
+                <Text size="lg">
+                  <span className="font-semibold">{viewing.username}</span> has
+                  been banned.
+                </Text>
+                <Text size="sm" color="dimmed">
+                  Sorry. We cannot show you this user&apos;s profile, as
+                  they&apos;ve been banned.
+                </Text>
+              </div>
+            </div>
+          ) : (
+            <>
+              <Grid columns={24}>
+                <Grid.Col span={mobile ? 24 : 14}>
+                  <Text weight={550} mb={10} color="dimmed">
+                    About {viewing.username}
+                  </Text>
+                  <Text mb={16}>
+                    <ReactNoSSR>
+                      {viewing.bio
+                        ? viewing.bio.split("\n").map((line, i) => (
+                            <React.Fragment key={i}>
+                              {line}
+                              <br />
+                            </React.Fragment>
+                          ))
+                        : "No bio"}
+                    </ReactNoSSR>
+                  </Text>
+                  <ReactNoSSR>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <ShadedCard withBorder shadow="md" className="h-fit">
+                        <Stack spacing={6}>
+                          {[
+                            [HiClock, viewing.timeZone, "Timezone"],
+                            [
+                              HiGlobe,
+                              countries.find((c) => c.code == viewing.country)
+                                ?.name,
+                              "Country",
+                            ],
+                            [
+                              HiOfficeBuilding,
+                              viewing.busy
+                                ? "Busy"
+                                : "Available" || "Available",
+                              "Status",
+                            ],
+                            [
+                              HiDesktopComputer,
+                              new Date(viewing.lastSeen).toLocaleString(),
+                              "Last seen",
+                            ],
+                          ]
+                            .filter(([, value]) => value)
+                            .map(([Icon, value, label]: any) => (
+                              <Group spacing={3} key={label}>
+                                <Tooltip label={label} key={value}>
+                                  <ThemeIcon color="transparent">
+                                    <Icon
+                                      color="#868e96"
+                                      style={{ marginRight: 5 }}
+                                    />
+                                  </ThemeIcon>
+                                </Tooltip>
+                                <Text color="dimmed" mr={5}>
+                                  {String(value)}
+                                </Text>
+                              </Group>
                             ))}
+                        </Stack>
+                      </ShadedCard>
+                      <ShadedCard withBorder shadow="md" className="h-fit">
+                        <Stack spacing={12}>
+                          {[
+                            {
+                              icon: HiClock,
+                              label: "Member since",
+                              value: new Date(
+                                viewing.createdAt
+                              ).toLocaleDateString(),
+                            },
+                            {
+                              icon: HiUsers,
+                              label: "Place visits",
+                              value: viewing.games
+                                .map((g) => g.visits)
+                                .reduce((a, b) => a + b, 0),
+                            },
+                            {
+                              icon: HiClock,
+                              label: "Hours played",
+                              value: 0,
+                            },
+                          ].map(({ icon: Icon, label, value }) => (
+                            <Group key={String(value)} spacing={3}>
+                              <Icon
+                                color="#868e96"
+                                style={{ marginRight: 12 }}
+                              />
+                              <div className="items-start">
+                                <Text color="dimmed" weight={600}>
+                                  {label}
+                                </Text>
+                                <Text color="dimmed">{String(value)}</Text>
+                              </div>
+                            </Group>
+                          ))}
+                        </Stack>
+                      </ShadedCard>
+                    </div>
+                  </ReactNoSSR>
+                  <Text weight={550} mb={10} color="dimmed" mt={50}>
+                    Contacts
+                  </Text>
+                  <Links
+                    user={viewing}
+                    mb={16}
+                    sx={(theme) => ({
+                      backgroundColor:
+                        theme.colorScheme == "dark"
+                          ? theme.colors.dark[9]
+                          : "#FFF",
+                    })}
+                    shadow="md"
+                  />
+
+                  <Text weight={550} mb={10} color="dimmed" mt={50}>
+                    Badges
+                  </Text>
+
+                  <ReactNoSSR>
+                    <div
+                      style={{
+                        display: "grid",
+                        gridColumnGap: "12px",
+                        gridTemplateColumns: `repeat(${mobile ? 1 : 2}, 1fr)`,
+                        gridRowGap: "12px",
+                      }}
+                    >
+                      {[
+                        [<AlphaBadge user={viewing} key="alpha" />, true],
+                        [
+                          <PremiumBadge user={viewing} key="premium" />,
+                          viewing.premium,
+                        ],
+                        [
+                          <AdminBadge user={viewing} key="admin" />,
+                          viewing.role == "ADMIN",
+                        ],
+                        [
+                          <EmailBadge user={viewing} key="email" />,
+                          viewing.emailVerified,
+                        ],
+                        [
+                          <TOTPBadge user={viewing} key="totp" />,
+                          viewing.otpEnabled,
+                        ],
+                      ].map(
+                        ([badge, condition]) => condition && <div>{badge}</div>
+                      )}
+                    </div>
+                  </ReactNoSSR>
+                </Grid.Col>
+
+                <Grid.Col span={mobile ? 24 : 10}>
+                  {viewing.games.length == 0 && (
+                    <ModernEmptyState
+                      title="No games"
+                      body={`${viewing.username} has no games.`}
+                    />
+                  )}
+                  <ReactNoSSR>
+                    <ThumbnailCarousel
+                      p={8}
+                      slides={viewing.games.map((g, i) => (
+                        <Paper
+                          withBorder
+                          p="md"
+                          radius="md"
+                          key={i}
+                          shadow="md"
+                          sx={(theme) => ({
+                            marginRight: i != viewing.games.length - 1 ? 8 : 0,
+                            backgroundColor:
+                              theme.colorScheme == "dark"
+                                ? theme.colors.dark[9]
+                                : "#FFF",
+                          })}
+                        >
+                          <Container p={0} mb={16}>
+                            {g.gallery.length > 0 && (
+                              <ThumbnailCarousel
+                                slides={g.gallery.map((gal, j) => (
+                                  <Image
+                                    height={180}
+                                    src={getMediaUrl(gal)}
+                                    key={j}
+                                    alt={g.name}
+                                  />
+                                ))}
+                              />
+                            )}
+
+                            {g.gallery.length == 0 && (
+                              <PlaceholderGameResource
+                                height={180}
+                                radius={6}
+                              />
+                            )}
+                          </Container>
+
+                          <Title order={3}>{g.name}</Title>
+                          <Text size="sm" color="dimmed" mb={16}>
+                            @{viewing.username}
+                          </Text>
+
+                          <Progress
+                            sections={[
+                              {
+                                value:
+                                  (g.likedBy.length / g.likedBy.length +
+                                    g.dislikedBy.length) *
+                                  100,
+                                color: "green",
+                              },
+                              {
+                                value:
+                                  (g.likedBy.length / g.likedBy.length +
+                                    g.dislikedBy.length) *
+                                  100,
+                                color: "red",
+                              },
+                            ]}
+                            mb="md"
                           />
-                        )}
 
-                        {g.gallery.length == 0 && (
-                          <PlaceholderGameResource height={180} radius={6} />
-                        )}
-                      </Container>
-
-                      <Title order={3}>{g.name}</Title>
-                      <Text size="sm" color="dimmed" mb={16}>
-                        @{viewing.username}
-                      </Text>
-
-                      <Progress
-                        sections={[
-                          {
-                            value:
-                              (g.likedBy.length / g.likedBy.length +
-                                g.dislikedBy.length) *
-                              100,
-                            color: "green",
-                          },
-                          {
-                            value:
-                              (g.likedBy.length / g.likedBy.length +
-                                g.dislikedBy.length) *
-                              100,
-                            color: "red",
-                          },
-                        ]}
-                        mb="md"
-                      />
-
-                      <Button
-                        fullWidth
-                        leftIcon={<HiArrowRight />}
-                        onClick={() => router.push(`/game/${g.id}`)}
-                      >
-                        View
-                      </Button>
-                    </Paper>
-                  ))}
-                />
-              </ReactNoSSR>
-            </Grid.Col>
-          </Grid>
+                          <Button
+                            fullWidth
+                            leftIcon={<HiArrowRight />}
+                            onClick={() => router.push(`/game/${g.id}`)}
+                          >
+                            View
+                          </Button>
+                        </Paper>
+                      ))}
+                    />
+                  </ReactNoSSR>
+                </Grid.Col>
+              </Grid>
+            </>
+          )}
         </Paper>
       </Framework>
     </>
@@ -624,6 +659,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       busy: true,
       country: true,
       timeZone: true,
+      banned: true,
       lastSeen: true,
       alias: true,
       previousUsernames: true,
