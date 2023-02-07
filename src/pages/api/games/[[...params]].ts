@@ -1074,11 +1074,17 @@ class GameRouter {
   }
 
   @Get("/by/genre/:genre")
-  async getGamesByGenre(@Param("genre") genre: string) {
+  async getGamesByGenre(
+    @Param("genre") genre: string,
+    @Query("exclude") gameId: number
+  ) {
     const games = await prisma.game.findMany({
       where: {
         genre: genre as GameGenre,
         private: false,
+        id: {
+          not: gameId,
+        },
       },
       select: gameSelect,
       take: 10,
