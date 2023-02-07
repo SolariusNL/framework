@@ -51,14 +51,6 @@ const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
               "You have been banned from Framework. Please review your notice and check your email for more information.",
             icon: <HiXCircle />,
           });
-        } else {
-          router.push("/");
-          showNotification({
-            title: "Unbanned",
-            message:
-              "You have been unbanned from Framework. You may now continue using the site. Thank you for your patience.",
-            icon: <HiCheck />,
-          });
         }
       });
 
