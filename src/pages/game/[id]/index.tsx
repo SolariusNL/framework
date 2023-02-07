@@ -84,7 +84,7 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
   const [following, setFollowing] = useState<boolean | null>(null);
 
   const getSimilarGames = async () => {
-    await fetch(`/api/games/by/genre/${game.genre}`, {
+    await fetch(`/api/games/by/genre/${game.genre}?exclude=${game.id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -410,10 +410,9 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                           <Group spacing={12}>
                             <Image
                               src={getMediaUrl(game.iconUri)}
-                              alt={game.name}
                               width={50}
                               height={50}
-                              radius={8}
+                              className="rounded-md"
                               withPlaceholder
                             />
                             <Stack spacing={4}>
@@ -424,7 +423,7 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                                     src={getMediaUrl(game.author.avatarUri)}
                                     width={20}
                                     height={20}
-                                    radius="xl"
+                                    className="rounded-full"
                                     withPlaceholder
                                   />
                                 </UserContext>

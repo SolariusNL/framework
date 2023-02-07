@@ -1083,14 +1083,14 @@ class GameRouter {
         genre: genre as GameGenre,
         private: false,
         id: {
-          not: gameId,
+          not: Number(gameId),
         },
       },
       select: gameSelect,
       take: 10,
     });
 
-    return games;
+    return games || [];
   }
 
   @Post("/:id/rating/update")
