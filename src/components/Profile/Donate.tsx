@@ -46,7 +46,8 @@ const Donate = ({ user }: DonateProps) => {
     <>
       <Modal title="Donate" opened={opened} onClose={() => setOpened(false)}>
         <Text size="sm" color="dimmed" mb="md">
-          Please provide an amount of Tickets to send to this user.
+          Please provide an amount of Tickets to send to this user. Donations
+          are irreversible.
         </Text>
         <form
           onSubmit={form.onSubmit(async (values) => {
@@ -56,18 +57,21 @@ const Donate = ({ user }: DonateProps) => {
         >
           <NumberInput
             min={1}
-            max={currentUser?.tickets || 1000000}
+            max={currentUser?.tickets && 1000000}
             mb="md"
+            label="Ticket amount"
+            required
+            description="Please provide a ticket amount"
             {...form.getInputProps("tickets")}
           />
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-center gap-2 md:gap-0 mb-6 flex-wrap md:justify-between">
             {[50, 100, 500, 1000, 5000].map((n) => (
               <Chip
                 radius="md"
                 onClick={() => form.setFieldValue("tickets", n)}
                 checked={form.values.tickets === n}
                 key={n}
-                className="px-0"
+                disabled={currentUser?.tickets! < n}
               >
                 {n}
               </Chip>
