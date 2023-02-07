@@ -333,6 +333,7 @@ async function cli() {
     "--generate-invite": [Boolean, "Generates an invite code"],
     "--clear-admin-activity": [Boolean, "Clears the admin activity log"],
     "--give-all-tickets": [Boolean, "Give all users provided ticket amount"],
+    "--decrease-all-tickets": [Boolean, "Decrease all users provided ticket amount"],
   };
 
   let opts: { name: string; value: any }[] = [];
@@ -497,6 +498,30 @@ async function cli() {
           data: {
             tickets: {
               increment: Number(amount),
+            },
+          },
+        });
+      }
+    }
+
+    logger().info("All users have been given " + amount + " tickets");
+    prisma.$disconnect();
+  }
+
+  if (contains("--decrease-all-tickets")) {
+    const prisma = new PrismaClient();
+    const users = await prisma.user.findMany();
+    const amount = get("--decrease-all-tickets");
+    
+    if (typeof amount === "string") {
+      for (const user of users) {
+        await prisma.user.update({
+          where: {
+            id: user.id,
+          },
+          data: {
+            tickets: {
+              decrement: Number(amount),
             },
           },
         });
