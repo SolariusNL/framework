@@ -37,7 +37,7 @@ class DashboardRouter {
   @Authorized()
   public async getRecommendedGames(@Account() user: User) {
     const games = await prisma.game.findMany({
-      take: 5,
+      take: 6,
       orderBy: {
         id: "desc",
       },
