@@ -332,6 +332,7 @@ async function cli() {
     "--set-pwd": [Boolean, "Sets the password for the admin user"],
     "--generate-invite": [Boolean, "Generates an invite code"],
     "--clear-admin-activity": [Boolean, "Clears the admin activity log"],
+    "--give-all-tickets": [Boolean, "Give all users provided ticket amount"],
   };
 
   let opts: { name: string; value: any }[] = [];
@@ -479,6 +480,30 @@ async function cli() {
     const prisma = new PrismaClient();
     await prisma.adminActivityLog.deleteMany({});
     logger().info("Admin activity cleared");
+    prisma.$disconnect();
+  }
+
+  if (contains("--give-all-tickets")) {
+    const prisma = new PrismaClient();
+    const users = await prisma.user.findMany();
+    const amount = get("--give-all-tickets");
+
+    if (typeof amount === "string") {
+      for (const user of users) {
+        await prisma.user.update({
+          where: {
+            id: user.id,
+          },
+          data: {
+            tickets: {
+              increment: Number(amount),
+            },
+          },
+        });
+      }
+    }
+
+    logger().info("All users have been given " + amount + " tickets");
     prisma.$disconnect();
   }
 
