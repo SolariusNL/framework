@@ -25,7 +25,7 @@ export const verificationEmail = async (userId: number, email: string) => {
         username: token.user.username,
         apiLink:
           process.env.NODE_ENV === "production"
-            ? "https://framework.soodam.rocks"
+            ? "https://framework.soodam.rocks" + "/verifyemail/" + token.id
             : "http://localhost:3000" + "/verifyemail/" + token.id,
       }) as React.ReactElement
     )
