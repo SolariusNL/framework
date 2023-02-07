@@ -1,9 +1,9 @@
-import { Button, Menu } from "@mantine/core";
+import { Button, Chip, Modal, NumberInput, Text } from "@mantine/core";
+import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { getCookie } from "cookies-next";
-import { useRouter } from "next/router";
-import { HiOutlineShoppingBag, HiReceiptTax } from "react-icons/hi";
-import { useFrameworkUser } from "../../contexts/FrameworkUser";
+import { useState } from "react";
+import { HiReceiptTax, HiTicket } from "react-icons/hi";
 import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
 import { NonUser } from "../../util/prisma-types";
 
@@ -12,8 +12,15 @@ interface DonateProps {
 }
 
 const Donate = ({ user }: DonateProps) => {
-  const router = useRouter();
   const { user: currentUser, setUser } = useAuthorizedUserStore();
+  const form = useForm<{
+    tickets: number;
+  }>({
+    initialValues: {
+      tickets: 0,
+    },
+  });
+  const [opened, setOpened] = useState(false);
 
   const handleDonate = async (amt: number) => {
     await fetch(`/api/users/${user.id}/donate/${amt}`, {
@@ -36,28 +43,55 @@ const Donate = ({ user }: DonateProps) => {
   };
 
   return (
-    <Menu shadow="md" width={240}>
-      <Menu.Target>
-        <Button leftIcon={<HiReceiptTax />}>Donate</Button>
-      </Menu.Target>
-      <Menu.Dropdown>
-        {[100, 200, 500, 1000, 2500, 5000, 10000].map((amount) => (
-          <Menu.Item
-            key={amount}
-            icon={<HiOutlineShoppingBag />}
-            disabled={amount > Number(currentUser?.tickets)}
-            onClick={() => handleDonate(amount)}
-          >
-            Donate {amount} tickets
-          </Menu.Item>
-        ))}
-        <Menu.Divider />
-        <Menu.Label>
-          If you did not mean to donate, contact us and we will refund your
-          donation.
-        </Menu.Label>
-      </Menu.Dropdown>
-    </Menu>
+    <>
+      <Modal title="Donate" opened={opened} onClose={() => setOpened(false)}>
+        <Text size="sm" color="dimmed" mb="md">
+          Please provide an amount of Tickets to send to this user.
+        </Text>
+        <form
+          onSubmit={form.onSubmit(async (values) => {
+            setOpened(false);
+            await handleDonate(values.tickets);
+          })}
+        >
+          <NumberInput
+            min={1}
+            max={currentUser?.tickets || 1000000}
+            mb="md"
+            {...form.getInputProps("tickets")}
+          />
+          <div className="flex items-center justify-between mb-6">
+            {[50, 100, 500, 1000, 5000].map((n) => (
+              <Chip
+                radius="md"
+                onClick={() => form.setFieldValue("tickets", n)}
+                checked={form.values.tickets === n}
+                key={n}
+                className="px-0"
+              >
+                {n}
+              </Chip>
+            ))}
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button variant="default" onClick={() => setOpened(false)}>
+              Nevermind
+            </Button>
+            <Button leftIcon={<HiTicket />} type="submit">
+              Confirm
+            </Button>
+          </div>
+        </form>
+      </Modal>
+      <Button
+        leftIcon={<HiReceiptTax />}
+        onClick={() => {
+          setOpened(true);
+        }}
+      >
+        Donate
+      </Button>
+    </>
   );
 };
 
