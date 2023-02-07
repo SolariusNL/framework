@@ -1,4 +1,5 @@
 import {
+  Anchor,
   Avatar,
   Button,
   Group,
@@ -11,9 +12,12 @@ import {
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { getCookie } from "cookies-next";
+import { useState } from "react";
 import { HiCheckCircle, HiShieldCheck } from "react-icons/hi";
+import banPresets from "../../data/banPresets";
 import getMediaUrl from "../../util/getMedia";
 import { NonUser } from "../../util/prisma-types";
+import Stateful from "../Stateful";
 
 interface IPunishmentForm {
   category: "warning" | "ban";
@@ -36,6 +40,8 @@ const Punishment: React.FC<PunishmentProps> = ({
   onCompleted = () => {},
   reportAuthor,
 }) => {
+  const [presetOpened, setPresetsOpened] = useState(false);
+
   const submitPunishment = async (values: IPunishmentForm) => {
     await fetch(`/api/admin/users/${user?.id}/punish/${values.category}`, {
       method: "POST",
@@ -86,100 +92,163 @@ const Punishment: React.FC<PunishmentProps> = ({
   });
 
   return (
-    <Modal
-      title="Punishment"
-      opened={punishOpened}
-      onClose={() => setPunishOpened(false)}
-    >
-      <Group mb={24}>
-        <Group>
-          <Avatar
-            size={36}
-            src={user && getMediaUrl(user?.avatarUri)}
-            radius={99}
-          />
-          <Stack spacing={3}>
-            <Text size="sm" color="dimmed">
-              Receiving punishment
-            </Text>
-            <Text weight={650}>{user?.username}</Text>
-          </Stack>
+    <>
+      <Modal
+        title="Choose template"
+        opened={presetOpened}
+        onClose={() => {
+          setPresetsOpened(false);
+          setPunishOpened(true);
+        }}
+      >
+        <Stateful>
+          {(preset, setPreset) => (
+            <>
+              <Select
+                label="Reason templates"
+                description="Select a reason template"
+                data={banPresets.map((preset) => ({
+                  label: preset,
+                  value: preset,
+                }))}
+                onChange={(value) => {
+                  setPreset(value);
+                }}
+              />
+              <div className="flex justify-end mt-4 gap-2">
+                <Button
+                  variant="default"
+                  onClick={() => {
+                    setPresetsOpened(false);
+                    setPunishOpened(true);
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => {
+                    if (preset) {
+                      punishmentForm.setFieldValue("reason", preset);
+                      setPresetsOpened(false);
+                      setPunishOpened(true);
+                    }
+                  }}
+                >
+                  Select
+                </Button>
+              </div>
+            </>
+          )}
+        </Stateful>
+      </Modal>
+      <Modal
+        title="Punishment"
+        opened={punishOpened}
+        onClose={() => setPunishOpened(false)}
+      >
+        <Group mb={24}>
+          <Group>
+            <Avatar
+              size={36}
+              src={user && getMediaUrl(user?.avatarUri)}
+              radius={99}
+            />
+            <Stack spacing={3}>
+              <Text size="sm" color="dimmed">
+                Receiving punishment
+              </Text>
+              <Text weight={650}>{user?.username}</Text>
+            </Stack>
+          </Group>
         </Group>
-      </Group>
 
-      <form onSubmit={punishmentForm.onSubmit(submitPunishment)}>
-        <Stack spacing={8} mb={24}>
-          <Select
-            label="Category"
-            description="Select punishment category"
-            data={[
-              { label: "Warning", value: "warning" },
-              { label: "Ban", value: "ban" },
-            ]}
-            {...punishmentForm.getInputProps("category")}
-          />
+        <form onSubmit={punishmentForm.onSubmit(submitPunishment)}>
+          <Stack spacing={8} mb={24}>
+            <Select
+              label="Category"
+              description="Select punishment category"
+              data={[
+                { label: "Warning", value: "warning" },
+                { label: "Ban", value: "ban" },
+              ]}
+              {...punishmentForm.getInputProps("category")}
+            />
 
-          <Textarea
-            label="Reason"
-            description="Explain the punishment"
-            {...punishmentForm.getInputProps("reason")}
-          />
+            <div>
+              <Textarea
+                label="Reason"
+                description="Explain the punishment"
+                minRows={4}
+                mb={4}
+                {...punishmentForm.getInputProps("reason")}
+              />
+              <Anchor
+                onClick={() => {
+                  setPresetsOpened(true);
+                  setPunishOpened(false);
+                }}
+                size="sm"
+              >
+                Choose template
+              </Anchor>
+            </div>
 
-          <Select
-            label="Expires"
-            description="Select punishment expiration date"
-            disabled={punishmentForm.values.category === "warning"}
-            data={[
-              {
-                label: "3 days",
-                value: new Date(
-                  Date.now() + 3 * 24 * 60 * 60 * 1000
-                ).toDateString(),
-              },
-              {
-                label: "7 days",
-                value: new Date(
-                  Date.now() + 7 * 24 * 60 * 60 * 1000
-                ).toDateString(),
-              },
-              {
-                label: "14 days",
-                value: new Date(
-                  Date.now() + 14 * 24 * 60 * 60 * 1000
-                ).toDateString(),
-              },
-              {
-                label: "30 days",
-                value: new Date(
-                  Date.now() + 30 * 24 * 60 * 60 * 1000
-                ).toDateString(),
-              },
-              {
-                label: "120 days",
-                value: new Date(
-                  Date.now() + 120 * 24 * 60 * 60 * 1000
-                ).toDateString(),
-              },
-              {
-                label: "365 days",
-                value: new Date(
-                  Date.now() + 365 * 24 * 60 * 60 * 1000
-                ).toDateString(),
-              },
-              {
-                label: "Permanent",
-                value: new Date("9999-12-31T23:59:59.999Z").toDateString(),
-              },
-            ]}
-            {...punishmentForm.getInputProps("expires")}
-          />
-        </Stack>
+            <Select
+              label="Expires"
+              description="Select punishment expiration date"
+              disabled={punishmentForm.values.category === "warning"}
+              data={[
+                {
+                  label: "3 days",
+                  value: new Date(
+                    Date.now() + 3 * 24 * 60 * 60 * 1000
+                  ).toDateString(),
+                },
+                {
+                  label: "7 days",
+                  value: new Date(
+                    Date.now() + 7 * 24 * 60 * 60 * 1000
+                  ).toDateString(),
+                },
+                {
+                  label: "14 days",
+                  value: new Date(
+                    Date.now() + 14 * 24 * 60 * 60 * 1000
+                  ).toDateString(),
+                },
+                {
+                  label: "30 days",
+                  value: new Date(
+                    Date.now() + 30 * 24 * 60 * 60 * 1000
+                  ).toDateString(),
+                },
+                {
+                  label: "120 days",
+                  value: new Date(
+                    Date.now() + 120 * 24 * 60 * 60 * 1000
+                  ).toDateString(),
+                },
+                {
+                  label: "365 days",
+                  value: new Date(
+                    Date.now() + 365 * 24 * 60 * 60 * 1000
+                  ).toDateString(),
+                },
+                {
+                  label: "Permanent",
+                  value: new Date("9999-12-31T23:59:59.999Z").toDateString(),
+                },
+              ]}
+              {...punishmentForm.getInputProps("expires")}
+            />
+          </Stack>
 
-        <Button fullWidth type="submit" leftIcon={<HiShieldCheck />}>
-          Punish
-        </Button>
-      </form>
-    </Modal>
+          <Button fullWidth type="submit" leftIcon={<HiShieldCheck />}>
+            Punish
+          </Button>
+        </form>
+      </Modal>
+    </>
   );
 };
 
