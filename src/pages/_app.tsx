@@ -41,7 +41,7 @@ import { useEffect, useState } from "react";
 import { HiCheckCircle } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import "../../flags.config";
-import SocketProvider from "../components/ContextProvider";
+import SocketProvider from "../contexts/SocketContextProvider";
 import ElectronTitlebar from "../components/ElectronTitlebar";
 import Stateful from "../components/Stateful";
 import { FrameworkUserProvider } from "../contexts/FrameworkUser";

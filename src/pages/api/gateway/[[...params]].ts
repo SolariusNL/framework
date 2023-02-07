@@ -72,6 +72,15 @@ class GatewayRouter {
           ) {
             socket.emit("@user/chat", result);
           }
+          if (
+            params.model === "User" &&
+            params.action === "update" &&
+            result.id === socket.data.user.id
+          ) {
+            socket.emit("@user/ban", {
+              banned: result.banned,
+            });
+          }
           return result;
         });
       });
