@@ -61,6 +61,10 @@ const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
           });
         }
       });
+
+      socket.on("@user/warning", () => {
+        router.reload();
+      });
     }
 
     return () => {

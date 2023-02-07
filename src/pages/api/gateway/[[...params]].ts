@@ -80,6 +80,9 @@ class GatewayRouter {
             socket.emit("@user/ban", {
               banned: result.banned,
             });
+            if (result.warning && !result.warningViewed) {
+              socket.emit("@user/warning", {});
+            }
           }
           return result;
         });
