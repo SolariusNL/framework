@@ -41,7 +41,16 @@ const TransactionsWidget = ({
 
   return (
     <>
-      <Stack mb={16}>
+      <div className="w-full flex items-center justify-center">
+        <Pagination
+          total={Math.ceil((transactions?.length ?? 0) / 8)}
+          page={page}
+          onChange={setPage}
+          radius="md"
+          mb="md"
+        />
+      </div>
+      <Stack>
         {transactions !== null &&
           transactions.slice((page - 1) * 8, page * 8).map((t) => (
             <ShadedCard
@@ -59,7 +68,7 @@ const TransactionsWidget = ({
                   }}
                   color="green"
                 >
-                  <HiShoppingCart size={20} />
+                  <HiShoppingCart size={20} className="flex items-center justify-center" />
                 </Badge>
                 <div className="flex flex-col md:ml-4 mt-4 md:mt-0">
                   <div className="flex flex-row gap-2 items-center">
@@ -88,12 +97,6 @@ const TransactionsWidget = ({
             </ShadedCard>
           ))}
       </Stack>
-      <Pagination
-        total={Math.ceil((transactions?.length ?? 0) / 8)}
-        page={page}
-        onChange={setPage}
-        radius="xl"
-      />
     </>
   );
 };

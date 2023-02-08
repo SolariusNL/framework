@@ -1,11 +1,10 @@
 import {
   Button,
-  Card,
   Group,
   Tabs,
   Text,
   Title,
-  UnstyledButton,
+  UnstyledButton
 } from "@mantine/core";
 import { Transaction } from "@prisma/client";
 import {
@@ -16,7 +15,7 @@ import {
   LineElement,
   PointElement,
   Title as ChartTitle,
-  Tooltip,
+  Tooltip
 } from "chart.js";
 import { GetServerSidePropsContext, NextPage } from "next";
 import Link from "next/link";
@@ -68,12 +67,7 @@ const Tickets: NextPage<TicketsProps> = ({ user }) => {
             width: mobile ? "100%" : "30%",
           }}
         >
-          <ShadedCard withBorder shadow="md">
-            <Card.Section withBorder inheritPadding py="xs" mb={16}>
-              <Text weight={500} size="sm" color="dimmed">
-                Your Ticket Balance
-              </Text>
-            </Card.Section>
+          <ShadedCard shadow="md">
             <Link passHref href="/tickets/buy">
               <UnstyledButton
                 sx={(theme) => ({
@@ -105,7 +99,7 @@ const Tickets: NextPage<TicketsProps> = ({ user }) => {
             </Text>
 
             <Link passHref href="/tickets/buy">
-              <Button size="sm" variant="default" fullWidth>
+              <Button size="sm" variant="subtle" fullWidth color="gray">
                 Buy Tickets
               </Button>
             </Link>
@@ -132,7 +126,7 @@ const Tickets: NextPage<TicketsProps> = ({ user }) => {
               </TabNav.Tab>
             </TabNav.List>
             <Tabs.Panel value="general">
-              <ShadedCard shadow="sm" withBorder>
+              <ShadedCard shadow="sm">
                 <TransactionsWidget
                   onTransactionsLoaded={setTransactions}
                   user={user}
@@ -142,7 +136,7 @@ const Tickets: NextPage<TicketsProps> = ({ user }) => {
             <Tabs.Panel value="statistics">
               <div>
                 <div className="mb-6">
-                  <ShadedCard shadow="sm" withBorder>
+                  <ShadedCard shadow="sm">
                     <Line
                       data={{
                         labels: [
@@ -205,7 +199,7 @@ const Tickets: NextPage<TicketsProps> = ({ user }) => {
                   </ShadedCard>
                 </div>
                 <div>
-                  <ShadedCard shadow="sm" withBorder>
+                  <ShadedCard shadow="sm">
                     <Line
                       data={{
                         labels: [
