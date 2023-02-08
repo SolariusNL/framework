@@ -41,28 +41,6 @@ const SettingsTab = ({
       pl={!mobile ? "lg" : undefined}
       pt={mobile ? "lg" : undefined}
     >
-      <Group>
-        <Title
-          order={3}
-          mb={24}
-          sx={{
-            alignItems: "center",
-          }}
-        >
-          {tabTitle}{" "}
-          {unsaved && (
-            <Badge
-              sx={{
-                display: "inline-block",
-              }}
-              ml={12}
-            >
-              Unsaved Changes
-            </Badge>
-          )}
-        </Title>
-      </Group>
-
       {children}
       {unavailable && (
         <ModernEmptyState

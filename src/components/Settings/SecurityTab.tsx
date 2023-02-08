@@ -5,7 +5,6 @@ import {
   Modal,
   PasswordInput,
   Stack,
-  Switch,
   Text,
   TextInput,
 } from "@mantine/core";
@@ -17,21 +16,18 @@ import { useEffect, useState } from "react";
 import {
   HiCheck,
   HiCheckCircle,
-  HiDeviceMobile,
   HiExclamation,
   HiKey,
   HiLockClosed,
   HiMail,
   HiPencil,
-  HiQrcode,
   HiXCircle,
 } from "react-icons/hi";
 import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
 import { getCookie } from "../../util/cookies";
 import { User } from "../../util/prisma-types";
-import Descriptive from "../Descriptive";
+import LabelledCheckbox from "../LabelledCheckbox";
 import { updateAccount } from "./AccountTab";
-import Grouped from "./Grouped";
 import SettingsTab from "./SettingsTab";
 import SideBySide from "./SideBySide";
 
@@ -308,167 +304,139 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
         setSuccess={setSuccess}
         success={success}
       >
-        <Stack spacing={32}>
-          <Grouped title="Credentials" dark>
-            <Stack>
-              <SideBySide
-                title="Password"
-                description="Your password is used to log in to your account."
-                right={
-                  <PasswordInput
-                    label="Password"
-                    description="Your password"
-                    disabled
-                    icon={<HiLockClosed />}
-                    value="********"
-                  />
-                }
-                icon={<HiKey />}
-                actions={
-                  <Button
-                    onClick={() => setPasswordModal(true)}
-                    leftIcon={<HiKey />}
-                    fullWidth
-                  >
-                    Change password
-                  </Button>
-                }
-                shaded
-                noUpperBorder
+        <Stack spacing={16}>
+          <SideBySide
+            title="Password"
+            description="Your password is used to log in to your account."
+            right={
+              <PasswordInput
+                label="Password"
+                description="Your password"
+                disabled
+                icon={<HiLockClosed />}
+                value="********"
               />
-
-              <SideBySide
-                title="Email"
-                description="Your email address is used to log in to your account. You can also use it to reset your password."
-                right={
-                  <div>
-                    <TextInput
-                      disabled
-                      label="Email"
-                      description="Your email address"
-                      value={user.email}
-                      icon={<HiLockClosed />}
-                    />
-                    {!user.emailVerified && (
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 8,
-                          marginTop: 12,
-                        }}
-                      >
-                        <HiExclamation />
-                        <Text color="dimmed">
-                          You have not verified your email address.
-                        </Text>
-                      </div>
-                    )}
-                  </div>
-                }
-                icon={<HiMail />}
-                actions={
-                  <Group grow>
-                    <Button
-                      leftIcon={<HiCheck />}
-                      onClick={sendEmailVerification}
-                      disabled={emailVerificationSent || user.emailVerified}
-                    >
-                      {user.emailVerified
-                        ? "Verified"
-                        : emailVerificationSent
-                        ? "Sent!"
-                        : "Verify"}
-                    </Button>
-                    <Button
-                      leftIcon={<HiPencil />}
-                      onClick={() => setEmailModal(true)}
-                    >
-                      Change
-                    </Button>
-                  </Group>
-                }
-                shaded
-                noUpperBorder
-              />
-            </Stack>
-          </Grouped>
-          <Grouped title="Login" dark>
-            <SideBySide
-              title="Email Verification"
-              description="Require email verification before logging into your account."
-              right={
-                <Descriptive
-                  title="Enable email verification"
-                  description="Require a code from your inbox before logging into your account."
-                >
-                  <Switch
-                    defaultChecked={user.emailRequiredLogin}
-                    onChange={async (e) => {
-                      update("emailRequiredLogin", e.target.checked);
+            }
+            icon={<HiKey />}
+            actions={
+              <Button
+                onClick={() => setPasswordModal(true)}
+                leftIcon={<HiKey />}
+                fullWidth
+              >
+                Change password
+              </Button>
+            }
+            shaded
+            noUpperBorder
+          />
+          <SideBySide
+            title="Email"
+            description="Your email address is used to log in to your account. You can also use it to reset your password."
+            right={
+              <div>
+                <TextInput
+                  disabled
+                  label="Email"
+                  description="Your email address"
+                  value={user.email}
+                  icon={<HiLockClosed />}
+                />
+                {!user.emailVerified && (
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      marginTop: 12,
                     }}
-                    disabled={!user.emailVerified}
-                  />
-                </Descriptive>
-              }
-              icon={<HiMail />}
-              shaded
-              noUpperBorder
-              actions={
-                !user.emailVerified && (
-                  <Alert color="orange" title="Warning" icon={<HiXCircle />}>
-                    You must verify your email address before enabling this
-                    feature.
-                  </Alert>
-                )
-              }
-            />
-            <SideBySide
-              title="TOTP Verification"
-              description="Require two-factor authentication before logging into your account, from an authenticator app."
-              right={
-                <Descriptive
-                  title="Enable TOTP verification"
-                  description="Require a code from your authenticator app before logging into your account."
+                  >
+                    <HiExclamation />
+                    <Text color="dimmed">
+                      You have not verified your email address.
+                    </Text>
+                  </div>
+                )}
+              </div>
+            }
+            icon={<HiMail />}
+            actions={
+              <Group grow>
+                <Button
+                  leftIcon={<HiCheck />}
+                  onClick={sendEmailVerification}
+                  disabled={emailVerificationSent || user.emailVerified}
                 >
-                  <Switch
-                    defaultChecked={user.otpEnabled}
-                    onChange={async (e) => {
+                  {user.emailVerified
+                    ? "Verified"
+                    : emailVerificationSent
+                    ? "Sent!"
+                    : "Verify"}
+                </Button>
+                <Button
+                  leftIcon={<HiPencil />}
+                  onClick={() => setEmailModal(true)}
+                >
+                  Change
+                </Button>
+              </Group>
+            }
+            shaded
+            noUpperBorder
+          />
+          <SideBySide
+            title="Verification Methods"
+            description="Choose which verification methods you want enabled for your account."
+            icon={<HiKey />}
+            shaded
+            noUpperBorder
+            right={
+              <Stack spacing={4}>
+                {[
+                  {
+                    pointer: "emailRequiredLogin",
+                    title: "Email",
+                    description: "Require a code from your inbox.",
+                    disabled: !user.emailVerified,
+                  },
+                  {
+                    pointer: "otpEnabled",
+                    title: "TOTP",
+                    description: "Require a code from your authenticator app.",
+                    onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
                       if (e.target.checked) {
                         setTwofaPromptOpen(true);
                       } else {
                         disableTwoFactor();
                       }
+                    },
+                  },
+                  {
+                    pointer: "quickLoginEnabled",
+                    title: "Quick Login",
+                    description: "Log in to your account through a QR code.",
+                  },
+                ].map((method) => (
+                  <LabelledCheckbox
+                    label={method.title}
+                    description={method.description}
+                    defaultChecked={
+                      user[method.pointer as keyof User] as boolean
+                    }
+                    onChange={(e) => {
+                      if (method.onChange) {
+                        method.onChange(e);
+                      } else {
+                        update(method.pointer, e.target.checked);
+                      }
                     }}
+                    disabled={method.disabled}
+                    key={method.pointer}
                   />
-                </Descriptive>
-              }
-              icon={<HiDeviceMobile />}
-              shaded
-              noUpperBorder
-            />
-            <SideBySide
-              title="Enable Quick Login"
-              description="Quick login allows you to log in to your account through a QR code, without needing to enter any credentials."
-              right={
-                <Descriptive
-                  title="Enable Quick Login"
-                  description="Enable quick login to log in to your account through a QR code."
-                >
-                  <Switch
-                    defaultChecked={user.quickLoginEnabled}
-                    onChange={async (e) => {
-                      update("quickLoginEnabled", e.target.checked);
-                      setUser({ ...user, quickLoginEnabled: e.target.checked });
-                    }}
-                  />
-                </Descriptive>
-              }
-              icon={<HiQrcode />}
-              shaded
-              noUpperBorder
-            />
-          </Grouped>
+                ))}
+              </Stack>
+            }
+          />
         </Stack>
       </SettingsTab>
     </>

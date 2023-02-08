@@ -1,4 +1,4 @@
-import { Alert, Stack } from "@mantine/core";
+import { Alert, Stack, Text } from "@mantine/core";
 import { ReceiveNotification } from "@prisma/client";
 import { useState } from "react";
 import { HiCheckCircle } from "react-icons/hi";
@@ -63,7 +63,7 @@ const NotificationsTab = ({ user }: NotificationsTabProps) => {
   const categoryDescriptions = {
     SECURITY: "Receive notifications about your account's security",
     DONATIONS: "Receive notifications about donations",
-    EMAILS: "Receive emails for important actions"
+    EMAILS: "Receive emails for important actions",
   };
 
   return (
@@ -82,7 +82,13 @@ const NotificationsTab = ({ user }: NotificationsTabProps) => {
         );
       }}
     >
-      <Stack mb={32}>
+      <Text mb={32}>
+        Notifications ensure you&apos;re always up to date with what&apos;s
+        happening on Framework. You can choose to receive notifications for a
+        variety of actions, including when you receive a donation, when you miss
+        a message, and when your account is logged in.
+      </Text>
+      <Stack mb={16}>
         {Object.keys(notificationDescriptions).map((category) => {
           return (
             <SwitchCard

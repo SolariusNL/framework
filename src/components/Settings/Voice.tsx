@@ -1,10 +1,9 @@
-import { Alert, Anchor, Button, Progress, Select } from "@mantine/core";
+import { Alert, Anchor, Button, Progress, Select, Stack } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { useEffect, useState } from "react";
 import { HiBeaker, HiMicrophone, HiXCircle } from "react-icons/hi";
 import useMicIdStore from "../../stores/useMicIdStore";
 import { User } from "../../util/prisma-types";
-import Grouped from "./Grouped";
 import SettingsTab from "./SettingsTab";
 import SideBySide from "./SideBySide";
 
@@ -52,9 +51,7 @@ const VoiceTab: React.FC<VoiceTabProps> = ({ user }) => {
     if (navigator.mediaDevices === undefined) {
       return;
     }
-    setTestingInput(
-      (prev) => !prev
-    );
+    setTestingInput((prev) => !prev);
     if (!testingInput) {
       navigator.mediaDevices
         .getUserMedia({
@@ -111,7 +108,7 @@ const VoiceTab: React.FC<VoiceTabProps> = ({ user }) => {
 
   return (
     <SettingsTab tabTitle="Voice" tabValue="voice">
-      <Grouped title="Devices" dark>
+      <Stack spacing={16}>
         <SideBySide
           icon={<HiMicrophone />}
           title="Microphone"
@@ -165,7 +162,11 @@ const VoiceTab: React.FC<VoiceTabProps> = ({ user }) => {
           description="Test your microphone to make sure it's working."
           right={
             <>
-              <Button fullWidth onClick={() => testInput()} disabled={!hasPermission}>
+              <Button
+                fullWidth
+                onClick={() => testInput()}
+                disabled={!hasPermission}
+              >
                 {testingInput ? "Stop" : "Test"}
               </Button>
               {testingInput && <Progress value={testVolume} mt={12} />}
@@ -174,7 +175,7 @@ const VoiceTab: React.FC<VoiceTabProps> = ({ user }) => {
           noUpperBorder
           shaded
         />
-      </Grouped>
+      </Stack>
     </SettingsTab>
   );
 };

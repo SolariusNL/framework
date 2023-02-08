@@ -19,7 +19,6 @@ import {
 } from "react-icons/hi";
 import { User } from "../../util/prisma-types";
 import ShadedCard from "../ShadedCard";
-import Grouped from "./Grouped";
 import SettingsTab from "./SettingsTab";
 import SideBySide from "./SideBySide";
 
@@ -36,52 +35,50 @@ const DeleteAccountTab = ({ user }: DeleteAccountTabProps) => {
   return (
     <>
       <SettingsTab tabValue="deleteaccount" tabTitle="Delete Account">
-        <Grouped title="Delete Account" dark>
-          <SideBySide
-            title="Delete your account"
-            description="This will delete your account and all of your data. This action cannot be undone."
-            icon={<HiTrash />}
-            right={
-              <Button
-                fullWidth
-                leftIcon={<HiTrash />}
-                color="red"
-                onClick={() => setOpened(true)}
-                disabled={user.role === "ADMIN"}
-              >
-                Delete Account
-              </Button>
-            }
-            actions={
-              <div className="gap-2 flex flex-col">
-                <div className="flex items-start gap-2">
-                  <HiInformationCircle
-                    color={colors.gray[5]}
-                    className="flex-0.3"
-                  />
-                  <Text color="dimmed" size="sm" className="flex-1">
-                    This is <span className="font-bold">permanent</span> and
-                    cannot be undone. All data associated with your account will
-                    be deleted forever, including your games, plugins, Ticket
-                    balances, and more.
-                  </Text>
-                </div>
-                <div className="flex items-start gap-2">
-                  <HiInformationCircle
-                    color={colors.gray[5]}
-                    className="flex-0.3"
-                  />
-                  <Text color="dimmed" size="sm" className="flex-1">
-                    This feature is experimental and may not work as expected,
-                    contact us directly if account deletion fails.
-                  </Text>
-                </div>
+        <SideBySide
+          title="Delete your account"
+          description="This will delete your account and all of your data. This action cannot be undone."
+          icon={<HiTrash />}
+          right={
+            <Button
+              fullWidth
+              leftIcon={<HiTrash />}
+              color="red"
+              onClick={() => setOpened(true)}
+              disabled={user.role === "ADMIN"}
+            >
+              Delete Account
+            </Button>
+          }
+          actions={
+            <div className="gap-2 flex flex-col">
+              <div className="flex items-start gap-2">
+                <HiInformationCircle
+                  color={colors.gray[5]}
+                  className="flex-0.3"
+                />
+                <Text color="dimmed" size="sm" className="flex-1">
+                  This is <span className="font-bold">permanent</span> and
+                  cannot be undone. All data associated with your account will
+                  be deleted forever, including your games, plugins, Ticket
+                  balances, and more.
+                </Text>
               </div>
-            }
-            noUpperBorder
-            shaded
-          />
-        </Grouped>
+              <div className="flex items-start gap-2">
+                <HiInformationCircle
+                  color={colors.gray[5]}
+                  className="flex-0.3"
+                />
+                <Text color="dimmed" size="sm" className="flex-1">
+                  This feature is experimental and may not work as expected,
+                  contact us directly if account deletion fails.
+                </Text>
+              </div>
+            </div>
+          }
+          noUpperBorder
+          shaded
+        />
       </SettingsTab>
 
       <Modal

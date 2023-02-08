@@ -11,7 +11,9 @@ const useStyles = createStyles((theme) => ({
       marginTop: theme.spacing.md,
     },
     backgroundColor:
-      theme.colorScheme === "dark" ? theme.colors.dark[8] : theme.colors.gray[1],
+      theme.colorScheme === "dark"
+        ? theme.colors.dark[8]
+        : theme.colors.gray[1],
     padding: theme.spacing.md,
     borderRadius: theme.radius.md,
   },
@@ -56,6 +58,14 @@ const SwitchCard: React.FC<SwitchesCardProps> = ({
       noWrap
       spacing="xl"
       key={item.title}
+      sx={(theme) => ({
+        ...(dark && {
+          backgroundColor:
+            theme.colorScheme === "dark"
+              ? theme.colors.dark[9]
+              : theme.colors.gray[1],
+        }),
+      })}
     >
       <div>
         <Text>{item.title}</Text>
@@ -75,7 +85,6 @@ const SwitchCard: React.FC<SwitchesCardProps> = ({
 
   return (
     <Card
-      withBorder
       radius="md"
       p="lg"
       className={classes.card}
@@ -83,7 +92,7 @@ const SwitchCard: React.FC<SwitchesCardProps> = ({
         ...(dark && {
           backgroundColor:
             theme.colorScheme === "dark"
-              ? theme.colors.dark[9]
+              ? theme.colors.dark[8]
               : theme.colors.light,
         }),
       })}

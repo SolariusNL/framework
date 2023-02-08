@@ -5,14 +5,16 @@ import {
   Divider,
   Stack,
   Text,
-  Tooltip
+  Tooltip,
 } from "@mantine/core";
 import { Session } from "@prisma/client";
 import { deleteCookie, getCookie } from "cookies-next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import {
-  HiLogout, HiOutlineDesktopComputer, HiOutlineDeviceMobile
+  HiLogout,
+  HiOutlineDesktopComputer,
+  HiOutlineDeviceMobile,
 } from "react-icons/hi";
 import logout from "../../util/api/logout";
 import { User } from "../../util/prisma-types";
@@ -20,7 +22,7 @@ import {
   Device,
   getOperatingSystemDevice,
   getOperatingSystemEnumFromString,
-  getOperatingSystemString
+  getOperatingSystemString,
 } from "../../util/ua";
 import ShadedCard from "../ShadedCard";
 import Grouped from "./Grouped";
@@ -60,113 +62,108 @@ const SessionsTab: React.FC<SessionsTabProps> = ({ user }) => {
         Manage your active sessions. If you suspect that your account has been
         compromised, you can log out of all sessions below.
       </Text>
-      <Divider mt={32} mb={32} />
-      <Stack>
-        <Grouped title="Session actions" dark>
-          <SideBySide
-            title="Log out all sessions"
-            description="Log out of all sessions on all devices. This will log you out of this device as well."
-            icon={<HiLogout />}
-            right={
-              <>
-                <Button
-                  leftIcon={<HiLogout />}
-                  color="red"
-                  onClick={async () => {
-                    sessions.forEach(async (session) => {
-                      await logout(session.token, true);
-                    });
+      <Stack spacing={16}>
+        <SideBySide
+          title="Log out all sessions"
+          description="Log out of all sessions on all devices. This will log you out of this device as well."
+          icon={<HiLogout />}
+          right={
+            <>
+              <Button
+                leftIcon={<HiLogout />}
+                color="red"
+                onClick={async () => {
+                  sessions.forEach(async (session) => {
+                    await logout(session.token, true);
+                  });
 
-                    deleteCookie(".frameworksession");
-                    router.push("/");
-                  }}
-                  fullWidth
-                >
-                  Log out of all devices
-                </Button>
-                <Text color="dimmed" mt={8}>
-                  This will log you out of all devices, including this one.
-                </Text>
-              </>
-            }
-            noUpperBorder
-            shaded
-          />
-        </Grouped>
-        <Grouped title="Sessions" dark>
-          {sessions.map((session) => (
-            <ShadedCard
-              key={session.id}
-              className="flex items-center justify-between"
-              sx={(theme) => ({
-                backgroundColor:
-                  theme.colorScheme === "dark"
-                    ? theme.colors.dark[8]
-                    : theme.colors.gray[1],
-              })}
-            >
-              <div className="flex flex-col md:flex-row">
-                <Badge
-                  sx={{
-                    width: 48,
-                    height: 48,
-                  }}
-                  className="flex items-center justify-center"
-                >
-                  {getOperatingSystemDevice(
-                    getOperatingSystemEnumFromString(session.os)
-                  ) === Device.Desktop ? (
-                    <HiOutlineDesktopComputer
-                      size={20}
-                      className="flex items-center justify-center"
-                    />
-                  ) : (
-                    <HiOutlineDeviceMobile
-                      size={20}
-                      className="flex items-center justify-center"
-                    />
-                  )}
-                </Badge>
-                <div className="flex flex-col md:ml-4 mt-4 md:mt-0">
-                  <div className="flex items-center gap-2">
-                    <Text size="lg" weight={600}>
-                      {getOperatingSystemString(
-                        getOperatingSystemEnumFromString(session.os)
-                      )}
-                    </Text>
-                    {getCookie(".frameworksession") == session.token && (
-                      <Badge size="sm">Current Session</Badge>
+                  deleteCookie(".frameworksession");
+                  router.push("/");
+                }}
+                fullWidth
+              >
+                Log out of all devices
+              </Button>
+              <Text color="dimmed" mt={8}>
+                This will log you out of all devices, including this one.
+              </Text>
+            </>
+          }
+          noUpperBorder
+          shaded
+        />
+        {sessions.map((session) => (
+          <ShadedCard
+            key={session.id}
+            className="flex items-center justify-between"
+            sx={(theme) => ({
+              backgroundColor:
+                theme.colorScheme === "dark"
+                  ? theme.colors.dark[8]
+                  : theme.colors.gray[1],
+            })}
+          >
+            <div className="flex flex-col md:flex-row">
+              <Badge
+                sx={{
+                  width: 48,
+                  height: 48,
+                }}
+                className="flex items-center justify-center"
+              >
+                {getOperatingSystemDevice(
+                  getOperatingSystemEnumFromString(session.os)
+                ) === Device.Desktop ? (
+                  <HiOutlineDesktopComputer
+                    size={20}
+                    className="flex items-center justify-center"
+                  />
+                ) : (
+                  <HiOutlineDeviceMobile
+                    size={20}
+                    className="flex items-center justify-center"
+                  />
+                )}
+              </Badge>
+              <div className="flex flex-col md:ml-4 mt-4 md:mt-0">
+                <div className="flex items-center gap-2">
+                  <Text size="lg" weight={600}>
+                    {getOperatingSystemString(
+                      getOperatingSystemEnumFromString(session.os)
                     )}
-                  </div>
-                  <Text color="dimmed" size="sm">
-                    {session.ip.includes("::ffff:")
-                      ? "localhost"
-                      : session.ip.includes(":")
-                      ? session.ip.split(":").slice(-2).join(":")
-                      : session.ip}{" "}
-                    - {session.ua.split(")")[0].split("(")[1]}
                   </Text>
-                  {session.impersonation && (
-                    <Text mt="md" color="dimmed" size="sm">
-                      Your account is being accessed by a staff member using
-                      this session.
-                    </Text>
+                  {getCookie(".frameworksession") == session.token && (
+                    <Badge size="sm">Current Session</Badge>
                   )}
                 </div>
+                <Text color="dimmed" size="sm">
+                  {session.ip.includes("::ffff:")
+                    ? "localhost"
+                    : session.ip.includes(":")
+                    ? session.ip.split(":").slice(-2).join(":")
+                    : session.ip}{" "}
+                  - {session.ua.split(")")[0].split("(")[1]}
+                </Text>
+                {session.impersonation && (
+                  <Text mt="md" color="dimmed" size="sm">
+                    Your account is being accessed by a staff member using this
+                    session.
+                  </Text>
+                )}
               </div>
-              <Tooltip label="Log out of this session">
-                <CloseButton
-                  onClick={async () =>
-                    await logout(session.token, true).then(() => {
-                      fetchSessions();
-                    })
-                  }
-                  disabled={getCookie(".frameworksession") == session.token}
-                />
-              </Tooltip>
-            </ShadedCard>
-          ))}
-        </Grouped>
+            </div>
+            <Tooltip label="Log out of this session">
+              <CloseButton
+                onClick={async () =>
+                  await logout(session.token, true).then(() => {
+                    fetchSessions();
+                  })
+                }
+                disabled={getCookie(".frameworksession") == session.token}
+              />
+            </Tooltip>
+          </ShadedCard>
+        ))}
       </Stack>
     </SettingsTab>
   );

@@ -1,11 +1,16 @@
-import { Box, Divider, Loader, ScrollArea, Stack, Text } from "@mantine/core";
+import {
+  Box, Loader,
+  NativeSelect, Stack
+} from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
+import React from "react";
 import {
   HiBeaker,
   HiBell,
   HiCreditCard,
   HiDesktopComputer,
-  HiEye, HiInformationCircle,
+  HiEye,
+  HiInformationCircle,
   HiKey,
   HiMicrophone,
   HiPhotograph,
@@ -28,6 +33,7 @@ import SessionsTab from "../components/Settings/SessionsTab";
 import SubscriptionTab from "../components/Settings/SubscriptionTab";
 import VoiceTab from "../components/Settings/Voice";
 import TabNav from "../components/TabNav";
+import SidebarTabNavigation from "../layouts/SidebarTabNavigation";
 import authorizedRoute from "../util/authorizedRoute";
 import { User } from "../util/prisma-types";
 import useMediaQuery from "../util/useMediaQuery";
@@ -36,33 +42,53 @@ interface SettingsProps {
   user: User;
 }
 
-interface SettingsGroupProps {
-  title: string;
-  children: React.ReactNode;
-}
-
-const SettingsGroup = ({ title, children }: SettingsGroupProps) => {
-  return (
-    <>
-      <Text
-        color="dimmed"
-        size="sm"
-        weight={700}
-        sx={{
-          padding: "6px 8px",
-          marginLeft: "8px",
-        }}
-      >
-        {title}
-      </Text>
-
-      <Stack spacing={3}>{children}</Stack>
-    </>
-  );
-};
-
 const Settings: NextPage<SettingsProps> = ({ user }) => {
   const mobile = useMediaQuery("768");
+  const [value, setValue] = React.useState("account");
+  const tabs = [
+    { value: "account", icon: <HiUser />, color: "", label: "Profile" },
+    { value: "security", icon: <HiKey />, color: "", label: "Security" },
+    { value: "privacy", icon: <HiEye />, color: "", label: "Privacy" },
+    {
+      value: "subscriptions",
+      icon: <HiCreditCard />,
+      color: "",
+      label: "Billing",
+    },
+    {
+      value: "notifications",
+      icon: <HiBell />,
+      color: "",
+      label: "Notifications",
+    },
+    {
+      value: "sessions",
+      icon: <HiDesktopComputer />,
+      color: "",
+      label: "Sessions",
+    },
+    {
+      value: "appearance",
+      icon: <HiPhotograph />,
+      color: "",
+      label: "Appearance",
+    },
+    { value: "voice", icon: <HiMicrophone />, color: "", label: "Voice" },
+    { value: "beta", icon: <HiBeaker />, color: "", label: "Preview" },
+    { value: "referrals", icon: <HiTicket />, color: "", label: "Referrals" },
+    {
+      value: "about",
+      icon: <HiInformationCircle />,
+      color: "",
+      label: "About",
+    },
+    {
+      value: "deleteaccount",
+      icon: <HiTrash />,
+      color: "red",
+      label: "Delete Account",
+    },
+  ];
 
   return (
     <Framework
@@ -75,116 +101,82 @@ const Settings: NextPage<SettingsProps> = ({ user }) => {
         variant="pills"
         orientation={mobile ? "horizontal" : "vertical"}
         defaultValue="account"
+        value={value}
       >
-        <ScrollArea offsetScrollbars>
-          <TabNav.List>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                flex: 1,
-              }}
-            >
-              <Stack spacing={10}>
-                <SettingsGroup title="Account">
-                  <TabNav.Tab value="account" icon={<HiUser />}>
-                    Profile
-                  </TabNav.Tab>
-
-                  <TabNav.Tab value="security" icon={<HiKey />}>
-                    Security
-                  </TabNav.Tab>
-
-                  <TabNav.Tab value="privacy" icon={<HiEye />}>
-                    Privacy
-                  </TabNav.Tab>
-
-                  <TabNav.Tab value="subscriptions" icon={<HiCreditCard />}>
-                    Billing
-                  </TabNav.Tab>
-
-                  <TabNav.Tab value="notifications" icon={<HiBell />}>
-                    Notifications
-                  </TabNav.Tab>
-
-                  <TabNav.Tab value="sessions" icon={<HiDesktopComputer />}>
-                    Sessions
-                  </TabNav.Tab>
-                </SettingsGroup>
-
-                <Divider />
-
-                <SettingsGroup title="App">
-                  <TabNav.Tab value="appearance" icon={<HiPhotograph />}>
-                    Appearance
-                  </TabNav.Tab>
-
-                  <TabNav.Tab value="voice" icon={<HiMicrophone />}>
-                    Voice
-                  </TabNav.Tab>
-
-                  <TabNav.Tab value="beta" icon={<HiBeaker />}>
-                    Preview Program
-                  </TabNav.Tab>
-
-                  <TabNav.Tab value="referrals" icon={<HiTicket />}>
-                    Referrals
-                  </TabNav.Tab>
-                </SettingsGroup>
-
-                <Divider />
-
-                <SettingsGroup title="Other">
-                  <TabNav.Tab value="about" icon={<HiInformationCircle />}>
-                    About Framework
-                  </TabNav.Tab>
-                  <TabNav.Tab
-                    value="deleteaccount"
-                    icon={<HiTrash />}
-                    color="red"
-                  >
-                    Delete Account
-                  </TabNav.Tab>
-                </SettingsGroup>
-              </Stack>
-            </div>
-          </TabNav.List>
-        </ScrollArea>
-
-        {[
-          AccountTab,
-          SecurityTab,
-          PrivacyTab,
-          SubscriptionTab,
-          NotificationsTab,
-          AboutTab,
-          DeleteAccountTab,
-          AppearanceTab,
-          BetaTab,
-          SessionsTab,
-          VoiceTab,
-          ReferralsTab
-        ].map((Component, index) => (
-          <ReactNoSSR
-            key={index}
-            onSSR={
-              index == 0 ? (
-                <Box
-                  sx={{
-                    alignItems: "center",
+        <SidebarTabNavigation>
+          <SidebarTabNavigation.Sidebar customWidth={180}>
+            {mobile ? (
+              <NativeSelect
+                placeholder="Select a tab"
+                data={tabs}
+                onChange={(e) => setValue(e.target.value)}
+                value={value}
+                className="w-full col-span-full"
+                size="lg"
+              />
+            ) : (
+              <TabNav.List>
+                <div
+                  style={{
                     display: "flex",
-                    justifyContent: "center",
-                    width: "100%",
+                    flexDirection: "column",
+                    flex: 1,
                   }}
                 >
-                  <Loader />
-                </Box>
-              ) : undefined
-            }
-          >
-            <Component user={user} />
-          </ReactNoSSR>
-        ))}
+                  <Stack spacing={4}>
+                    {tabs.map((tab) => (
+                      <TabNav.Tab
+                        key={tab.value}
+                        value={tab.value}
+                        icon={tab.icon}
+                        color={tab.color}
+                        onClick={() => setValue(tab.value)}
+                      >
+                        {tab.label}
+                      </TabNav.Tab>
+                    ))}
+                  </Stack>
+                </div>
+              </TabNav.List>
+            )}
+          </SidebarTabNavigation.Sidebar>
+          <SidebarTabNavigation.Content>
+            {[
+              AccountTab,
+              SecurityTab,
+              PrivacyTab,
+              SubscriptionTab,
+              NotificationsTab,
+              AboutTab,
+              DeleteAccountTab,
+              AppearanceTab,
+              BetaTab,
+              SessionsTab,
+              VoiceTab,
+              ReferralsTab,
+            ].map((Component, index) => (
+              <ReactNoSSR
+                key={index}
+                onSSR={
+                  index == 0 ? (
+                    <Box
+                      sx={{
+                        alignItems: "center",
+                        display: "flex",
+                        justifyContent: "center",
+                        width: "100%",
+                      }}
+                    >
+                      <Loader />
+                    </Box>
+                  ) : undefined
+                }
+              >
+                <Component user={user} />
+              </ReactNoSSR>
+            ))}
+          </SidebarTabNavigation.Content>
+        </SidebarTabNavigation>
       </TabNav>
     </Framework>
   );

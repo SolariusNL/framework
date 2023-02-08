@@ -82,15 +82,12 @@ const PrivacyTab = ({ user }: PrivacyTabProps) => {
       }}
       saveButtonLabel="Save"
     >
-      <Title order={4} mb={16}>
-        User Data Manifesto 2.0
-      </Title>
       <Text mb={32}>
         The following principles are the foundation of the Framework platform
         and its services. They are the guiding principles that we use when
         making decisions regarding the privacy of our users and their data.
       </Text>
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-3 mb-6">
         {privacyFundamentals.map((fundamental) => (
           <div
             key={fundamental.title}
@@ -108,8 +105,7 @@ const PrivacyTab = ({ user }: PrivacyTabProps) => {
           </div>
         ))}
       </div>
-      <Divider mt={32} mb={32} />
-      <Stack mb={32}>
+      <Stack mb={16}>
         {Object.keys(privacyDescriptions).map((category) => {
           return (
             <SwitchCard

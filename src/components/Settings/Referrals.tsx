@@ -1,11 +1,10 @@
-import { Button, NumberInput, Text, Title } from "@mantine/core";
+import { Button, NumberInput, Stack, Text, Title } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { getCookie } from "cookies-next";
 import { HiCheckCircle, HiGift, HiTicket, HiUsers } from "react-icons/hi";
 import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
 import { User } from "../../util/prisma-types";
-import Grouped from "./Grouped";
 import SettingsTab from "./SettingsTab";
 import SideBySide from "./SideBySide";
 
@@ -81,7 +80,7 @@ const ReferralsTab: React.FC<ReferralsTabProps> = ({ user: _user }) => {
 
   return (
     <SettingsTab tabTitle="Referrals" tabValue="referrals">
-      <Grouped title="Referral code" dark>
+      <Stack spacing={16}>
         {user?.referral ? (
           <>
             <SideBySide
@@ -169,7 +168,7 @@ const ReferralsTab: React.FC<ReferralsTabProps> = ({ user: _user }) => {
               noUpperBorder
             />
           )}
-      </Grouped>
+      </Stack>
     </SettingsTab>
   );
 };
