@@ -681,12 +681,6 @@ class GameRouter {
       },
     };
 
-    const defaultOrder = {
-      likedBy: {
-        _count: "desc",
-      },
-    };
-
     const results = await prisma.game.findMany({
       where: {
         name: search ? { contains: search, mode: "insensitive" } : {},
