@@ -3,7 +3,7 @@ import {
   NavLink,
   RangeSlider,
   Select,
-  TextInput
+  TextInput,
 } from "@mantine/core";
 import { GameGenre } from "@prisma/client";
 import { GetServerSidePropsContext, NextPage } from "next";
@@ -13,6 +13,7 @@ import InfiniteScroll from "react-infinite-scroller";
 import Descriptive from "../components/Descriptive";
 import Framework from "../components/Framework";
 import GameCard from "../components/GameCard";
+import LabelledRadio from "../components/LabelledRadio";
 import ModernEmptyState from "../components/ModernEmptyState";
 import ShadedCard from "../components/ShadedCard";
 import authorizedRoute from "../util/authorizedRoute";
@@ -43,11 +44,13 @@ const Games: NextPage<GamesProps> = ({ user }) => {
     genre: GameGenre | "";
     search: string;
     playerRange: [number, number];
+    status: "online" | "offline" | "all";
   }>({
     filter: "most_liked",
     genre: "",
     search: "",
     playerRange: [0, 50] as [number, number],
+    status: "all",
   });
   const [games, setGames] = React.useState<Game[]>();
   const [loading, setLoading] = React.useState(false);
@@ -62,6 +65,7 @@ const Games: NextPage<GamesProps> = ({ user }) => {
         genre: "",
         search: "",
         playerRange: [0, 50] as [number, number],
+        status: "all",
       },
       icon: <HiSparkles />,
     },
@@ -73,6 +77,7 @@ const Games: NextPage<GamesProps> = ({ user }) => {
         genre: "",
         search: "",
         playerRange: [20, 50] as [number, number],
+        status: "all",
       },
       icon: <HiFire />,
     },
@@ -84,6 +89,7 @@ const Games: NextPage<GamesProps> = ({ user }) => {
         genre: "",
         search: "",
         playerRange: [0, 50] as [number, number],
+        status: "all",
       },
       icon: <HiGift />,
     },
@@ -95,6 +101,7 @@ const Games: NextPage<GamesProps> = ({ user }) => {
         genre: "",
         search: "",
         playerRange: [0, 50] as [number, number],
+        status: "all",
       },
       icon: <HiClock />,
     },
@@ -203,6 +210,47 @@ const Games: NextPage<GamesProps> = ({ user }) => {
                       value={filter.playerRange}
                       onChange={(v) => setFilter({ ...filter, playerRange: v })}
                     />
+                  </Descriptive>
+                  <Descriptive
+                    title="Status"
+                    description="Filter for games with a specific status."
+                    className="w-full"
+                  >
+                    {[
+                      {
+                        label: "All",
+                        value: "all",
+                        description: "All games, regardless of status.",
+                      },
+                      {
+                        label: "Online",
+                        value: "online",
+                        description: "Games that are online.",
+                      },
+                      {
+                        label: "Offline",
+                        value: "offline",
+                        description:
+                          "Games that are offline or do not have a server.",
+                      },
+                    ].map((status) => (
+                      <LabelledRadio
+                        label={status.label}
+                        description={status.description}
+                        value={status.value}
+                        checked={filter.status === status.value}
+                        onChange={(v) =>
+                          setFilter({
+                            ...filter,
+                            status: v.target.value as
+                              | "all"
+                              | "online"
+                              | "offline",
+                          })
+                        }
+                        key={status.value}
+                      />
+                    ))}
                   </Descriptive>
                 </div>
               </ShadedCard>

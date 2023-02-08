@@ -645,6 +645,7 @@ class GameRouter {
       | "least_visited" = parsed.filter;
     const genre: GameGenre = parsed.genre;
     const search: string = parsed.search;
+    const status: "online" | "offline" | "all" = parsed.status;
 
     const order = {
       most_liked: {
@@ -686,6 +687,22 @@ class GameRouter {
         name: search ? { contains: search, mode: "insensitive" } : {},
         genre: genre ? { equals: genre as GameGenre } : {},
         private: false,
+        connection: status
+          ? {
+              [status === "online"
+                ? "some"
+                : status === "offline"
+                ? "none"
+                : "every"]: {
+                online:
+                  status === "online"
+                    ? true
+                    : status === "offline"
+                    ? false
+                    : undefined,
+              },
+            }
+          : {},
       },
       select: gameSelect,
       take: Number(25),
