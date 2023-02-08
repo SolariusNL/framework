@@ -1,4 +1,4 @@
-import { Badge, Divider, Drawer, Text, Title } from "@mantine/core";
+import { Badge, Divider, Drawer, ScrollArea, Text, Title } from "@mantine/core";
 import Link from "next/link";
 import useUpdateDrawer from "../../stores/useUpdateDrawer";
 import ShadedButton from "../ShadedButton";
@@ -19,6 +19,20 @@ const UpdateDrawer: React.FC = () => {
     date: Date;
     href?: string;
   }> = [
+    {
+      title: "Redesigned Settings",
+      description:
+        "The settings page has been redesigned to simplify user experience and improve mobile UX.",
+      badge: BadgeType.CHANGE,
+      date: new Date("2023-02-07"),
+    },
+    {
+      title: "Banned Profiles",
+      description:
+        "Banned profiles are no longer shown to improve user safety.",
+      badge: BadgeType.CHANGE,
+      date: new Date("2023-02-07"),
+    },
     {
       title: "Email Login",
       description: "You can now login to Framework using your email.",
@@ -134,11 +148,12 @@ const UpdateDrawer: React.FC = () => {
     >
       <Title order={3}>What&apos;s new in Framework?</Title>
       <Divider mt="lg" mb="lg" />
-      <div
+      <ScrollArea
         style={{
           overflowY: "auto",
           height: "calc(100vh - 180px)",
         }}
+        offsetScrollbars
       >
         {newFeatures
           .sort((a, b) => b.date.getTime() - a.date.getTime())
@@ -184,7 +199,7 @@ const UpdateDrawer: React.FC = () => {
               </ShadedButton>
             </Link>
           ))}
-      </div>
+      </ScrollArea>
     </Drawer>
   );
 };
