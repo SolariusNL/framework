@@ -1,3 +1,4 @@
+import { PrivacyPreferences } from "@prisma/client";
 import { createHandler, Get } from "@storyofams/next-api-decorators";
 import Authorized, { Account } from "../../../util/api/authorized";
 import prisma from "../../../util/prisma";
@@ -64,6 +65,9 @@ class DashboardRouter {
               id: user.id,
             },
           },
+        },
+        privacyPreferences: {
+          has: PrivacyPreferences.USER_DISCOVERY,
         },
       },
       select: {

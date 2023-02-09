@@ -57,6 +57,13 @@ const PrivacyTab = ({ user }: PrivacyTabProps) => {
         label: "Allow newsletter",
       },
     },
+    FEATURES: {
+      USER_DISCOVERY: {
+        title: "User discovery",
+        description: "Users can find you through mutual friends with user discovery enabled",
+        label: "Appear in user discovery"
+      }
+    }
   };
   const categoryDescriptions = {
     ANALYTICS: "Framework will use the following data to improve the platform",

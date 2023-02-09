@@ -28,6 +28,7 @@ enum PrivacyPreferences {
   RECORD_SEARCH
   USAGE_ANALYTICS
   RECEIVE_NEWSLETTER
+  USER_DISCOVERY
 }
 
 enum PremiumSubscriptionType {
@@ -116,7 +117,7 @@ model User {
   gameId                     Int?
   punishmentHistory          PunishmentLog[]        @relation("punishmentLog")
   issuedPunishments          PunishmentLog[]        @relation("punishmentLogAuthor")
-  privacyPreferences         PrivacyPreferences[]
+  privacyPreferences         PrivacyPreferences[]   @default([USER_DISCOVERY])
   passwordResetRequired      Boolean                @default(false)
   emailResetRequired         Boolean                @default(false)
   adminPermissions           AdminPermission[]
