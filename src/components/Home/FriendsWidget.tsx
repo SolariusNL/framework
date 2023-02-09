@@ -1,7 +1,17 @@
-import { Avatar, Divider, Indicator, Loader, Text, Title } from "@mantine/core";
+import {
+  Avatar,
+  Divider,
+  Indicator,
+  Loader,
+  Text,
+  Title,
+  useMantineTheme,
+} from "@mantine/core";
 import { getCookie } from "cookies-next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { HiPlus } from "react-icons/hi";
+import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
 import getMediaUrl from "../../util/getMedia";
 import { NonUser } from "../../util/prisma-types";
 import ModernEmptyState from "../ModernEmptyState";
@@ -38,6 +48,9 @@ export const Section: React.FC<{
 };
 
 const Friend: React.FC<{ friend: NonUser }> = ({ friend }) => {
+  const { user } = useAuthorizedUserStore();
+  const { colors } = useMantineTheme();
+
   return (
     <Link href={`/profile/${friend.username}`} passHref>
       <ShadedButton className="w-full">
@@ -58,17 +71,34 @@ const Friend: React.FC<{ friend: NonUser }> = ({ friend }) => {
             />
           </Indicator>
           <div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
               <Text size="lg">{friend.username}</Text>
               {friend.alias && (
                 <Text size="sm" color="dimmed">
-                  ({friend.alias})
+                  {friend.alias}
                 </Text>
               )}
             </div>
             <Text size="sm" lineClamp={2} color="dimmed">
               {friend.bio}
             </Text>
+            {(
+              friend as NonUser & {
+                following: { id: number }[];
+              }
+            ).following &&
+              (
+                friend as NonUser & {
+                  following: { id: number }[];
+                }
+              ).following.find((f) => f.id === user?.id) && (
+                <div className="flex items-center gap-2 mt-2">
+                  <HiPlus color={colors.gray[6]} />
+                  <Text size="sm" color="dimmed" weight={500}>
+                    Follows you
+                  </Text>
+                </div>
+              )}
           </div>
         </div>
       </ShadedButton>
@@ -78,6 +108,7 @@ const Friend: React.FC<{ friend: NonUser }> = ({ friend }) => {
 
 const FriendsWidget: React.FC = () => {
   const [allFriends, setAllFriends] = useState<NonUser[]>();
+  const [recommendedFriends, setRecommendedFriends] = useState<NonUser[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -92,38 +123,14 @@ const FriendsWidget: React.FC = () => {
     })
       .then((res) => res.json())
       .then((res) => {
-        setAllFriends(res);
+        setAllFriends(res.allFriends);
+        setRecommendedFriends(res.recommendedFriends);
       })
       .finally(() => setLoading(false));
   }, []);
 
   return (
     <>
-      <Section
-        title="Your friends"
-        description="A list for easy access to your friends"
-      />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {loading ? (
-          <ShadedCard className="col-span-2 flex items-center justify-center py-8">
-            <Loader />
-          </ShadedCard>
-        ) : (
-          <>
-            {allFriends &&
-              allFriends.map((friend, i) => <Friend friend={friend} key={i} />)}
-            {allFriends && allFriends.length === 0 && (
-              <ShadedCard className="col-span-2">
-                <ModernEmptyState
-                  title="No friends"
-                  body="You have no friends yet. Add some!"
-                />
-              </ShadedCard>
-            )}
-          </>
-        )}
-      </div>
-      <Divider mt="xl" mb="xl" />
       <Section
         title="Online friends"
         description="Dive into a game with your friends"
@@ -165,6 +172,58 @@ const FriendsWidget: React.FC = () => {
           )}
         </>
       )}
+      <Divider mt="xl" mb="xl" />
+      <Section
+        title="Recommended people"
+        description="People you might know based on mutual friends"
+      />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {loading ? (
+          <ShadedCard className="col-span-2 flex items-center justify-center py-8">
+            <Loader />
+          </ShadedCard>
+        ) : (
+          <>
+            {recommendedFriends &&
+              recommendedFriends.map((friend, i) => (
+                <Friend friend={friend} key={i} />
+              ))}
+            {recommendedFriends && recommendedFriends.length === 0 && (
+              <ShadedCard className="col-span-2">
+                <ModernEmptyState
+                  title="No recommendations"
+                  body="We couldn't find any recommendations for you. Another time?"
+                />
+              </ShadedCard>
+            )}
+          </>
+        )}
+      </div>
+      <Divider mt="xl" mb="xl" />
+      <Section
+        title="Your friends"
+        description="A list for easy access to your friends"
+      />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {loading ? (
+          <ShadedCard className="col-span-2 flex items-center justify-center py-8">
+            <Loader />
+          </ShadedCard>
+        ) : (
+          <>
+            {allFriends &&
+              allFriends.map((friend, i) => <Friend friend={friend} key={i} />)}
+            {allFriends && allFriends.length === 0 && (
+              <ShadedCard className="col-span-2">
+                <ModernEmptyState
+                  title="No friends"
+                  body="You have no friends yet. Add some!"
+                />
+              </ShadedCard>
+            )}
+          </>
+        )}
+      </div>
     </>
   );
 };
