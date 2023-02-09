@@ -30,7 +30,65 @@ class DashboardRouter {
       },
     });
 
-    return friends;
+    const recommendedFriends = await prisma.user.findMany({
+      where: {
+        followers: {
+          some: {
+            followers: {
+              some: {
+                id: user.id,
+              },
+            },
+          },
+        },
+        following: {
+          some: {
+            following: {
+              some: {
+                id: user.id,
+              },
+            },
+          },
+        },
+        id: {
+          not: user.id,
+        },
+        NOT: {
+          followers: {
+            some: {
+              id: user.id,
+            },
+          },
+          following: {
+            some: {
+              id: user.id,
+            },
+          },
+        },
+      },
+      select: {
+        id: true,
+        avatarUri: true,
+        username: true,
+        alias: true,
+        bio: true,
+        lastSeen: true,
+        following: {
+          where: {
+            id: user.id,
+          },
+          select: {
+            id: true,
+          },
+        },
+      },
+      take: 4,
+    });
+
+    return {
+      allFriends: friends,
+      recommendedFriends,
+    };
   }
 
   @Get("/recommended/games")
