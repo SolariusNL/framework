@@ -1,7 +1,6 @@
 const banPresets = [
   "You have been previously banned from Framework, you are not allowed to create new accounts during the duration of your ban.",
   "Your game, {} violates our Community Guidelines/Terms of Service. Please view your email for more information.",
-  "Your profile contained an inappropriate {}.",
   "Do not use on-site exploits to gain an advantage over other players.",
   "Do not use third-party software to gain an advantage over other players.",
   "Do not use in-game exploits to gain an advantage over other players.",
@@ -19,6 +18,10 @@ const banPresets = [
   "Do not threaten or harass other players on Framework.",
   "Your account has been disabled in compliance with a DMCA takedown request. Please contact support for more information.",
   "Please do not create content that is intended to be offensive to other players.",
+  "Your username is not appropriate for Framework.",
+  "Your avatar is not appropriate for Framework.",
+  "Your bio is not appropriate for Framework.",
+  "Your profile contained content that violated the community guidelines. Your account is being punished as a result.",
 ];
 
 export default banPresets;

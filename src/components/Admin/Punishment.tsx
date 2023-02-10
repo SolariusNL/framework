@@ -114,6 +114,7 @@ const Punishment: React.FC<PunishmentProps> = ({
                 onChange={(value) => {
                   setPreset(value);
                 }}
+                searchable
               />
               <div className="flex justify-end mt-4 gap-2">
                 <Button
