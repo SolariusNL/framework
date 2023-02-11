@@ -1,13 +1,26 @@
+import clsx from "../util/clsx";
 import useMediaQuery from "../util/useMediaQuery";
 
-const SidebarTabNavigation: React.FC<{ children: React.ReactNode }> & {
+const SidebarTabNavigation: React.FC<{
+  children: React.ReactNode;
+  customGap?: number;
+}> & {
   Sidebar: (props: {
     children: React.ReactNode;
     customWidth?: number;
   }) => JSX.Element;
   Content: (props: { children: React.ReactNode }) => JSX.Element;
-} = ({ children }) => {
-  return <div className="flex flex-col md:flex-row gap-8 w-full">{children}</div>;
+} = ({ children, customGap }) => {
+  return (
+    <div
+      className={clsx(
+        "flex flex-col md:flex-row w-full",
+        customGap ? `gap-${customGap}` : "gap-8"
+      )}
+    >
+      {children}
+    </div>
+  );
 };
 
 SidebarTabNavigation.Sidebar = ({ children, customWidth }) => {

@@ -6,23 +6,24 @@ import {
   Image,
   Menu,
   Paper,
-  Popover,
-  ScrollArea,
-  Spoiler,
   Stack,
   Text,
   Title,
   Tooltip,
   useMantineColorScheme,
-  useMantineTheme
+  useMantineTheme,
 } from "@mantine/core";
+import { openModal } from "@mantine/modals";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import {
   HiChartBar,
   HiCheckCircle,
-  HiDotsVertical, HiExclamationCircle,
+  HiDotsVertical,
+  HiExclamation,
+  HiExclamationCircle,
   HiExternalLink,
+  HiInformationCircle,
   HiPencil,
   HiPlus,
   HiServer,
@@ -30,7 +31,7 @@ import {
   HiThumbUp,
   HiTrash,
   HiUsers,
-  HiXCircle
+  HiXCircle,
 } from "react-icons/hi";
 import abbreviateNumber from "../../util/abbreviate";
 import shutdownNucleus from "../../util/fetch/shutdownNucleus";
@@ -137,7 +138,6 @@ const Games = ({ user }: GamesProps) => {
 
           return (
             <Paper
-              withBorder
               shadow="md"
               p="md"
               key={game.id}
@@ -234,95 +234,70 @@ const Games = ({ user }: GamesProps) => {
                     </Stack>
                   </Group>
                   <div>
-                    <Popover width={300} zIndex={1200} shadow="md">
-                      <Popover.Target>
-                        <ActionIcon
-                          color={
-                            warnings.length <= 1
-                              ? "green"
-                              : warnings.length == 2
-                              ? "yellow"
-                              : "red"
-                          }
-                          variant="light"
-                        >
-                          {warnings.length <= 1 ? (
-                            <HiCheckCircle />
-                          ) : (
-                            warnings.length >= 2 && <HiExclamationCircle />
-                          )}
-                        </ActionIcon>
-                      </Popover.Target>
-
-                      <Popover.Dropdown>
-                        <Text color="dimmed" weight={600} mb={12}>
-                          Game Health
-                        </Text>
-                        <Paper
-                          sx={{
-                            backgroundColor:
-                              colorScheme === "dark"
-                                ? theme.colors.dark[8]
-                                : "#fff",
-                          }}
-                          p="md"
-                          withBorder
-                        >
-                          <ScrollArea offsetScrollbars>
-                            <Stack
-                              spacing={8}
-                              sx={{
-                                maxHeight: "calc(60vh - 240px)",
-                              }}
-                            >
-                              {warnings.map((warning) => (
-                                <div className="flex gap-4" key={warning.title}>
-                                  <div>
-                                    {warning.severity == "low" ? (
-                                      <HiExclamationCircle
-                                        color={theme.colors.gray[5]}
-                                        size={24}
-                                      />
-                                    ) : warning.severity == "medium" ? (
-                                      <HiExclamationCircle
-                                        color={theme.colors.yellow[5]}
-                                        size={24}
-                                      />
-                                    ) : (
-                                      <HiExclamationCircle
-                                        color={theme.colors.red[5]}
-                                        size={24}
-                                      />
-                                    )}
-                                  </div>
-                                  <div>
-                                    <Text weight={600}>{warning.title}</Text>
-                                    <Spoiler
-                                      maxHeight={20}
-                                      showLabel="See more"
-                                      hideLabel="See less"
-                                      sx={{
-                                        fontSize: 14,
-                                      }}
-                                    >
+                    <ActionIcon
+                      color={
+                        warnings.length <= 1
+                          ? "green"
+                          : warnings.length == 2
+                          ? "yellow"
+                          : "red"
+                      }
+                      variant="light"
+                      onClick={() =>
+                        openModal({
+                          title: "Health",
+                          children: (
+                            <>
+                              <Stack spacing={8}>
+                                {warnings.map((warning) => (
+                                  <div
+                                    className="flex gap-4"
+                                    key={warning.title}
+                                  >
+                                    <div>
+                                      {warning.severity == "low" ? (
+                                        <HiInformationCircle
+                                          color={theme.colors.gray[5]}
+                                          size={24}
+                                        />
+                                      ) : warning.severity == "medium" ? (
+                                        <HiExclamation
+                                          color={theme.colors.yellow[5]}
+                                          size={24}
+                                        />
+                                      ) : (
+                                        <HiExclamationCircle
+                                          color={theme.colors.red[5]}
+                                          size={24}
+                                        />
+                                      )}
+                                    </div>
+                                    <div>
+                                      <Text weight={600}>{warning.title}</Text>
                                       <Text color="dimmed" size="sm">
                                         {warning.description}
                                       </Text>
-                                    </Spoiler>
+                                    </div>
                                   </div>
-                                </div>
-                              ))}
-                              {warnings.length == 0 && (
-                                <ModernEmptyState
-                                  title="No issues found"
-                                  body="Your game is in good shape!"
-                                />
-                              )}
-                            </Stack>
-                          </ScrollArea>
-                        </Paper>
-                      </Popover.Dropdown>
-                    </Popover>
+                                ))}
+                                {warnings.length == 0 && (
+                                  <ModernEmptyState
+                                    title="No issues found"
+                                    body="Your game is in good shape!"
+                                  />
+                                )}
+                              </Stack>
+                            </>
+                          ),
+                        })
+                      }
+                    >
+                      {warnings.length <= 1 ? (
+                        <HiCheckCircle />
+                      ) : (
+                        warnings.length >= 2 && <HiExclamationCircle />
+                      )}
+                    </ActionIcon>
                   </div>
                 </div>
                 <div className="flex justify-between">
@@ -336,7 +311,7 @@ const Games = ({ user }: GamesProps) => {
                         View
                       </Button>
                     </Link>
-                    <Menu shadow="md">
+                    <Menu shadow="md" withArrow>
                       <Menu.Target>
                         <ActionIcon variant="default" size="lg">
                           <HiDotsVertical />

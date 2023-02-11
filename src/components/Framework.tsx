@@ -281,7 +281,7 @@ const Framework = ({
       title: "Profile",
       icon: <HiUser />,
       description: "View your profile.",
-      onTrigger: () => router.push(`/users/${user.id}`),
+      onTrigger: () => router.push(`/users/${user.username}`),
     },
     {
       title: "Daily prize",
@@ -364,7 +364,7 @@ const Framework = ({
           title: "Admin Dashboard",
           icon: <HiShieldCheck />,
           description: "Manage your Framework instance.",
-          onTrigger: () => router.push("/admin"),
+          onTrigger: () => router.push("/admin/dashboard"),
         },
       ]);
     }
@@ -402,6 +402,7 @@ const Framework = ({
       nothingFoundMessage="Nothing found..."
       disabled={user === null}
       radius="md"
+      limit={7}
     >
       {experiments.includes(ExperimentId.LiveChat) && (
         <Affix

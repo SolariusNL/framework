@@ -1,7 +1,4 @@
-import {
-  Box, Loader,
-  NativeSelect, Stack
-} from "@mantine/core";
+import { Box, Loader, NativeSelect, Stack } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
 import React from "react";
 import {
@@ -16,7 +13,7 @@ import {
   HiPhotograph,
   HiTicket,
   HiTrash,
-  HiUser
+  HiUser,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import Framework from "../components/Framework";
@@ -103,7 +100,7 @@ const Settings: NextPage<SettingsProps> = ({ user }) => {
         defaultValue="account"
         value={value}
       >
-        <SidebarTabNavigation>
+        <SidebarTabNavigation customGap={1}>
           <SidebarTabNavigation.Sidebar customWidth={180}>
             {mobile ? (
               <NativeSelect
