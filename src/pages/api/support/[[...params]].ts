@@ -1,20 +1,21 @@
+import { SupportTicketStatus } from "@prisma/client";
+import { render } from "@react-email/render";
 import {
   Body,
   createHandler,
   Get,
   Post,
 } from "@storyofams/next-api-decorators";
-import Authorized, { Account } from "../../../util/api/authorized";
-import type { User } from "../../../util/prisma-types";
-import { RateLimitMiddleware } from "../../../util/rateLimit";
 import z, { ZodLiteral } from "zod";
-import { categories } from "../../support";
-import prisma from "../../../util/prisma";
-import { SupportTicketStatus } from "@prisma/client";
-import { sendMail } from "../../../util/mail";
-import getMediaUrl from "../../../util/getMedia";
-import { render } from "@react-email/render";
 import SupportTicketCreated from "../../../../email/emails/support-ticket-created";
+import Authorized, { Account } from "../../../util/api/authorized";
+import getMediaUrl from "../../../util/getMedia";
+import { sendMail } from "../../../util/mail";
+import prisma from "../../../util/prisma";
+import type { User } from "../../../util/prisma-types";
+import { nonCurrentUserSelect } from "../../../util/prisma-types";
+import { RateLimitMiddleware } from "../../../util/rateLimit";
+import { categories } from "../../support";
 
 class SupportRouter {
   @Post("/submit")
@@ -86,7 +87,7 @@ class SupportRouter {
         }) as React.ReactElement
       )
     );
-   sendMail(
+    sendMail(
       String(process.env.SUPPORT_EMAIL),
       "New support ticket",
       `
@@ -131,7 +132,7 @@ class SupportRouter {
               <strong style="font-size: 16px; color: #333;">${
                 user.username
               }</strong>`
-                : "<strong style=\"font-size: 16px; color: #333;\">Anonymous</strong>"
+                : '<strong style="font-size: 16px; color: #333;">Anonymous</strong>'
             }
         </div>
       </div>
@@ -156,6 +157,10 @@ class SupportRouter {
       },
       orderBy: {
         createdAt: "desc",
+      },
+      include: {
+        author: nonCurrentUserSelect,
+        claimedBy: nonCurrentUserSelect,
       },
     });
 

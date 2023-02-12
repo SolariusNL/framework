@@ -4,6 +4,7 @@ import {
   NotificationType,
   OperatingSystem,
   PremiumSubscriptionType,
+  Prisma,
   PunishmentType,
   Role,
 } from "@prisma/client";
@@ -1255,22 +1256,58 @@ class AdminRouter {
     return article;
   }
 
-  @Get("/tickets")
+  @Get("/tickets/:page")
   @AdminAuthorized()
-  public async getTickets() {
+  public async getTickets(
+    @Param("page") page: string,
+    @Query("status") status: "OPEN" | "CLOSED" | "ALL" = "ALL",
+    @Query("filter")
+    filter: "CLAIMED_BY_ME" | "CLAIMED" | "UNCLAIMED" | "ALL" = "ALL",
+    @Account() user: User
+  ) {
+    const where: Prisma.SupportTicketWhereInput = {
+      status: status === "ALL" ? undefined : status,
+      ...(filter === "CLAIMED_BY_ME"
+        ? {
+            claimedBy: {
+              id: Number(user.id),
+            },
+          }
+        : {}),
+      ...(filter === "CLAIMED"
+        ? {
+            NOT: {
+              claimedBy: null,
+            },
+          }
+        : {}),
+      ...(filter === "UNCLAIMED"
+        ? {
+            claimedBy: null,
+          }
+        : {}),
+    };
+
     const tickets = await prisma.supportTicket.findMany({
-      where: {
-        status: "OPEN",
-      },
+      where: where,
       orderBy: {
         createdAt: "desc",
       },
       include: {
         author: nonCurrentUserSelect,
+        claimedBy: nonCurrentUserSelect,
       },
+      take: 27,
+      skip: (Number(page) - 1) * 27,
+    });
+    const count = await prisma.supportTicket.count({
+      where: where,
     });
 
-    return tickets;
+    return {
+      tickets,
+      pages: Math.ceil(count / 27),
+    };
   }
 
   @Post("/tickets/close/:id")
@@ -1294,6 +1331,27 @@ class AdminRouter {
         }) as React.ReactElement
       )
     );
+
+    return {
+      success: true,
+    };
+  }
+
+  @Post("/tickets/claim/:id")
+  @AdminAuthorized()
+  public async claimTicket(@Param("id") id: string, @Account() account: User) {
+    const t = await prisma.supportTicket.update({
+      where: {
+        id: String(id),
+      },
+      data: {
+        claimedBy: {
+          connect: {
+            id: Number(account.id),
+          },
+        },
+      },
+    });
 
     return {
       success: true,
