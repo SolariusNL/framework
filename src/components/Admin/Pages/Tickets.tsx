@@ -136,7 +136,7 @@ const Tickets: React.FC = () => {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         {loading ? (
           <Loader />
-        ) : !tickets ? (
+        ) : tickets.length === 0 ? (
           <ShadedCard className="col-span-3">
             <ModernEmptyState
               title="No tickets"
@@ -306,9 +306,6 @@ const Tickets: React.FC = () => {
                                   message: "The ticket has been closed",
                                   icon: <HiCheckCircle />,
                                 });
-                                setTickets(
-                                  tickets.filter((t) => t.id !== ticket.id)
-                                );
                                 setOpened(false);
                               });
                             }}
