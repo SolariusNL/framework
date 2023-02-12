@@ -97,7 +97,7 @@ const useStyles = createStyles((theme) => ({
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: theme.spacing.xl,
+    marginTop: 40,
     paddingTop: theme.spacing.xl,
     paddingBottom: theme.spacing.xl,
     borderTop: `1px solid ${
@@ -179,7 +179,6 @@ const Footer = () => {
                 style={{ textDecoration: "none" }}
               >
                 <Badge
-                  variant="dot"
                   color={
                     status === "up"
                       ? "green"
@@ -187,6 +186,7 @@ const Footer = () => {
                       ? "red"
                       : "blue"
                   }
+                  radius="md"
                   className="cursor-pointer mt-2"
                 >
                   {status === "up"
