@@ -41,10 +41,10 @@ import { useEffect, useState } from "react";
 import { HiCheckCircle } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import "../../flags.config";
-import SocketProvider from "../contexts/SocketContextProvider";
 import ElectronTitlebar from "../components/ElectronTitlebar";
 import Stateful from "../components/Stateful";
 import { FrameworkUserProvider } from "../contexts/FrameworkUser";
+import SocketProvider from "../contexts/SocketContextProvider";
 import { UserInformationWrapper } from "../contexts/UserInformationDialog";
 import "../styles/framework.css";
 import "../styles/tw.css";
@@ -117,7 +117,10 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
     <>
       <Head>
         <title>Framework</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1"
+        />
       </Head>
 
       <DefaultSeo
@@ -298,7 +301,7 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
                     hr: () => <Divider />,
                   }}
                 >
-                  <NotificationsProvider position="top-center" zIndex={1000}>
+                  <NotificationsProvider position="top-center" zIndex={999999}>
                     <FrameworkUserProvider
                       value={pageProps && pageProps.user && pageProps.user}
                     >

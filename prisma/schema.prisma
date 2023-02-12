@@ -150,6 +150,7 @@ model User {
   followedGames              Game[]                 @relation("gameFollowers")
   passwordResetRequests      PasswordResetRequest[] @relation("passwordResetRequests")
   createdInvites             Invite[]               @relation("userInvites")
+  claimedSupportTickets      SupportTicket[]        @relation("claimedSupportTickets")
 }
 
 model ConnectedAccount {
@@ -688,6 +689,8 @@ model SupportTicket {
   status       SupportTicketStatus
   contactEmail String
   contactName  String?
+  claimedBy    User?               @relation("claimedSupportTickets", fields: [claimedById], references: [id])
+  claimedById  Int?
 }
 
 enum SupportTicketStatus {
