@@ -1340,7 +1340,30 @@ class AdminRouter {
   @Post("/tickets/claim/:id")
   @AdminAuthorized()
   public async claimTicket(@Param("id") id: string, @Account() account: User) {
-    const t = await prisma.supportTicket.update({
+    const t = await prisma.supportTicket.findFirst({
+      where: {
+        id: String(id),
+      },
+      include: {
+        claimedBy: true,
+      },
+    });
+
+    if (!t) {
+      return {
+        success: false,
+        error: "Invalid ticket",
+      };
+    }
+
+    if (t.claimedBy) {
+      return {
+        success: false,
+        error: "Ticket already claimed",
+      };
+    }
+
+    await prisma.supportTicket.update({
       where: {
         id: String(id),
       },
