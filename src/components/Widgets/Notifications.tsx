@@ -1,4 +1,11 @@
-import { Anchor, Pagination, Spoiler, Text, Timeline } from "@mantine/core";
+import {
+  Anchor,
+  Pagination,
+  Spoiler,
+  Text,
+  Timeline,
+  Tooltip,
+} from "@mantine/core";
 import { Notification, NotificationType } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useState } from "react";
@@ -57,7 +64,7 @@ const Notifications: React.FC = () => {
           size="sm"
           radius="xl"
           withEdges
-          total={Math.ceil(user?.notifications?.length! / (mobile ? 3 : 5))}
+          total={Math.ceil(user?.notifications?.length! / 3)}
           page={activePage}
           onChange={setActivePage}
           align="center"
@@ -75,22 +82,38 @@ const Notifications: React.FC = () => {
             (a, b) =>
               new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
           )
-          .slice((activePage - 1) * (mobile ? 3 : 5), activePage * 5)
+          .slice((activePage - 1) * 3, activePage * 3)
           .map((notification) => (
             <Timeline.Item
               key={notification.id}
               bullet={typeIcon(notification.type)}
               title={notification.title}
             >
-              <Spoiler maxHeight={40} showLabel="See more" hideLabel="Collapse">
+              <Spoiler
+                maxHeight={43}
+                showLabel="See more"
+                hideLabel="Collapse"
+                classNames={{
+                  control: "font-semibold text-sm",
+                }}
+              >
                 <Text color="dimmed" size="sm">
                   {notification.message}
                 </Text>
               </Spoiler>
-              <Text size="xs" mt={4}>
-                {getRelativeTime(new Date(notification.createdAt))}
+              <Text size="xs" mt={4} color="dimmed">
+                <Tooltip
+                  label={new Date(notification.createdAt).toLocaleString()}
+                >
+                  <span>
+                    {getRelativeTime(new Date(notification.createdAt))}
+                  </span>
+                </Tooltip>
                 {" - "}
-                <Anchor onClick={() => handleReadNotification(notification)}>
+                <Anchor
+                  onClick={() => handleReadNotification(notification)}
+                  className="font-semibold"
+                >
                   Mark as read
                 </Anchor>
               </Text>
