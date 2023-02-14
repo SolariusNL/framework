@@ -87,7 +87,7 @@ const UpdateDrawer: React.FC = () => {
       description:
         "We've added a referral program. Access your referral code & enter your friends' referral codes in the Settings page.",
       badge: BadgeType.NEW,
-      href: "/settings",
+      href: "/settings/referrals",
       date: new Date("2023-01-18"),
     },
     {
@@ -132,7 +132,7 @@ const UpdateDrawer: React.FC = () => {
         "We've added a live chat experiment to the preview program. It's based on websocket technology, and is currently in alpha. You can find it in Preview Program tab in your settings.",
       badge: BadgeType.EXPERIMENT,
       date: new Date("2022-12-31"),
-      href: "/settings",
+      href: "/settings/preview-program",
     },
   ];
 

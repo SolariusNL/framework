@@ -61,7 +61,7 @@ const Sessions: NextPage<SessionsProps> = ({ user }) => {
       modernSubtitle="Manage your login sessions, and log out of other devices."
       returnTo={{
         label: "Back to settings",
-        href: "/settings",
+        href: "/settings/account",
       }}
     >
       <Button

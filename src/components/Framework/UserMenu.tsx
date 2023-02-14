@@ -208,7 +208,7 @@ const UserMenu = ({
             Change theme
           </Menu.Item>
           <Menu.Divider />
-          <Menu.Item icon={<HiCog />} onClick={() => router.push("/settings")}>
+          <Menu.Item icon={<HiCog />} onClick={() => router.push("/settings/account")}>
             Settings
           </Menu.Item>
           <Menu.Item

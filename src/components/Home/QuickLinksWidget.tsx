@@ -37,7 +37,7 @@ const QuickLinksWidget: React.FC = () => {
               "Manage your account settings, privacy, security, and more.",
             icon: <HiCog />,
             color: "grape",
-            link: "/settings",
+            link: "/settings/account",
           },
           {
             title: "Daily prize",

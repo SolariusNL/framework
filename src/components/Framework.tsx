@@ -226,7 +226,7 @@ const Framework = ({
     },
     {
       label: "Settings",
-      href: "/settings",
+      href: "/settings/account",
       icon: <HiCog />,
       color: "grape",
       description: "Manage your account and other settings",
@@ -275,7 +275,7 @@ const Framework = ({
       title: "Settings",
       icon: <HiCog />,
       description: "Change your account settings.",
-      onTrigger: () => router.push("/settings"),
+      onTrigger: () => router.push("/settings/account"),
     },
     {
       title: "Profile",

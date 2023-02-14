@@ -36,11 +36,7 @@ const SettingsTab = ({
   const [error, setError] = React.useState<string | null>(null);
 
   return (
-    <Tabs.Panel
-      value={tabValue}
-      pl={!mobile ? "lg" : undefined}
-      pt={mobile ? "lg" : undefined}
-    >
+    <>
       {children}
       {unavailable && (
         <ModernEmptyState
@@ -99,7 +95,7 @@ const SettingsTab = ({
           </Group>
         </>
       )}
-    </Tabs.Panel>
+    </>
   );
 };
 

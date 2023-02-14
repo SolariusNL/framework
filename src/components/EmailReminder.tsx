@@ -20,7 +20,7 @@ const EmailReminder = ({ setWarningSeen }: EmailReminderProps) => {
     >
       We recommend verifying your email address to ensure you are able to
       receive important messages.{" "}
-      <Link href="/settings">
+      <Link href="/settings/security">
         <Anchor>Go to settings</Anchor>
       </Link>
     </Alert>
