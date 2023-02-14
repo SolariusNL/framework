@@ -344,7 +344,7 @@ const EnvironmentVariables = ({ game }: EnvironmentVariablesProps) => {
                               : "Development environment"}
                           </Text>
                         </div>
-                        <div className="flex items-center gap-3">
+                        <div className="md:flex hidden items-center gap-3 ">
                           <Copy value={env.value} />
                           <Text size="sm" color="dimmed">
                             •••••••••••••••
@@ -449,6 +449,7 @@ const EnvironmentVariables = ({ game }: EnvironmentVariablesProps) => {
                                       name: values.name,
                                       value: values.value,
                                       environment: values.environment,
+                                      lastUpdated: new Date(),
                                     };
                                   }
                                   return e;
