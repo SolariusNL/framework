@@ -1,9 +1,11 @@
 import { NavLink } from "@mantine/core";
+import { GameEnvironmentVariable } from "@prisma/client";
 import { GetServerSidePropsContext, NextPage } from "next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   HiCloud,
+  HiCreditCard,
   HiCurrencyDollar,
   HiDatabase,
   HiExclamationCircle,
@@ -17,6 +19,7 @@ import Access from "../../../../components/EditGame/Access";
 import AgeRating from "../../../../components/EditGame/AgeRating";
 import Datastores from "../../../../components/EditGame/Datastores";
 import Details from "../../../../components/EditGame/Details";
+import EnvironmentVariables from "../../../../components/EditGame/EnvironmentVariables";
 import Funding from "../../../../components/EditGame/Funding";
 import Servers from "../../../../components/EditGame/Servers";
 import Store from "../../../../components/EditGame/Store";
@@ -26,7 +29,6 @@ import SidebarTabNavigation from "../../../../layouts/SidebarTabNavigation";
 import authorizedRoute from "../../../../util/authorizedRoute";
 import prisma from "../../../../util/prisma";
 import { Game, gameSelect, User } from "../../../../util/prisma-types";
-import useMediaQuery from "../../../../util/useMediaQuery";
 
 export type GameWithDatastore = Game & {
   datastores: {
@@ -35,6 +37,7 @@ export type GameWithDatastore = Game & {
     desc: string;
     createdAt: Date;
   }[];
+  envs: GameEnvironmentVariable[];
 };
 
 interface EditGameProps {
@@ -75,6 +78,13 @@ const tabs = [
     component: Datastores,
   },
   {
+    title: "Environment Variables",
+    desc: "Configure environment variables for your game.",
+    icon: <HiCreditCard />,
+    component: EnvironmentVariables,
+    customPath: "environment-variables",
+  },
+  {
     title: "Store",
     desc: "Configure your games store and gamepasses.",
     icon: <HiShoppingBag />,
@@ -98,7 +108,11 @@ const EditGame: NextPage<EditGameProps> = ({ game, user, activePage }) => {
   const [tab, setTab] = useState("details");
   const [active, setActive] = useState(activePage || "details");
   const page =
-    tabs.find((item) => item.title.toLowerCase() === active) || tabs[0];
+    tabs.find((item) =>
+      item.customPath
+        ? item.customPath === active
+        : item.title.toLowerCase() === active
+    ) || tabs[0];
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -106,13 +120,11 @@ const EditGame: NextPage<EditGameProps> = ({ game, user, activePage }) => {
     if (view) setTab(view);
   }, []);
 
-  const mobile = useMediaQuery("768");
-
   return (
     <Framework
       activeTab="invent"
       user={user}
-      modernTitle={`Editing ${game.name}`}
+      modernTitle={`${game.name} -> ${page.title}`}
       modernSubtitle="Configure your games details and other settings."
     >
       <SidebarTabNavigation>
@@ -120,14 +132,19 @@ const EditGame: NextPage<EditGameProps> = ({ game, user, activePage }) => {
           {tabs.map((tab, index) => (
             <Link
               passHref
-              href={`/game/${game.id}/edit/${tab.title.toLowerCase()}`}
+              href={`/game/${game.id}/edit/${
+                tab.customPath ? tab.customPath : tab.title.toLowerCase()
+              }`}
               key={index}
             >
               <NavLink
                 label={tab.title}
                 description={tab.desc}
                 icon={tab.icon}
-                active={active === tab.title.toLowerCase()}
+                active={
+                  active ===
+                  (tab.customPath ? tab.customPath : tab.title.toLowerCase())
+                }
                 className="rounded-md"
               />
             </Link>
@@ -176,6 +193,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
               },
             },
           },
+          envs: true,
         },
       })
     )
@@ -190,7 +208,13 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     };
   }
 
-  if (!tabs.find((item) => item.title.toLowerCase() === pageStr)) {
+  if (
+    !tabs.find((item) =>
+      item.customPath
+        ? item.customPath === pageStr
+        : item.title.toLowerCase() === pageStr
+    )
+  ) {
     return {
       redirect: {
         destination: "/404",
