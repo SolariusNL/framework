@@ -308,38 +308,39 @@ enum GameGenre {
 }
 
 model Game {
-  id                   Int                     @id @default(autoincrement())
+  id                   Int                       @id @default(autoincrement())
   name                 String
   genre                GameGenre
   description          String
-  maxPlayersPerSession Int                     @default(15)
-  updates              Update[]                @relation("updates")
-  author               User                    @relation("gameAuthor", fields: [authorId], references: [id])
+  maxPlayersPerSession Int                       @default(15)
+  updates              Update[]                  @relation("updates")
+  author               User                      @relation("gameAuthor", fields: [authorId], references: [id])
   authorId             Int
-  createdAt            DateTime                @default(now())
-  updatedAt            DateTime                @default(now())
+  createdAt            DateTime                  @default(now())
+  updatedAt            DateTime                  @default(now())
   iconUri              String
   gallery              String[]
-  likedBy              User[]                  @relation("likedGames")
-  dislikedBy           User[]                  @relation("dislikedGames")
-  visits               Int                     @default(0)
-  connection           Connection[]            @relation("gameConnection")
-  comments             GameComment[]           @relation("gameComments")
-  playing              Int                     @default(0)
-  playingUsers         User[]                  @relation("userPlaying")
-  funds                GameFund[]              @relation("gameFunds")
-  rating               Rating?                 @relation("gameRating")
-  datastores           GameDatastore[]         @relation("gameDatastore")
-  gamepasses           Gamepass[]              @relation("gamepasses")
-  copyrightMetadata    GameCopyrightMetadata[] @relation("gameCopyrightMetadata")
-  gameReports          UserReport[]            @relation("gameReport")
-  private              Boolean                 @default(false)
-  privateAccess        User[]                  @relation("privateGameAccess")
-  paywall              Boolean                 @default(false)
-  paywallAccess        User[]                  @relation("purchasedGames")
-  paywallPrice         Int                     @default(1)
-  followers            User[]                  @relation("gameFollowers")
-  updateLogs           GameUpdateLog[]         @relation("gameUpdateLogs")
+  likedBy              User[]                    @relation("likedGames")
+  dislikedBy           User[]                    @relation("dislikedGames")
+  visits               Int                       @default(0)
+  connection           Connection[]              @relation("gameConnection")
+  comments             GameComment[]             @relation("gameComments")
+  playing              Int                       @default(0)
+  playingUsers         User[]                    @relation("userPlaying")
+  funds                GameFund[]                @relation("gameFunds")
+  rating               Rating?                   @relation("gameRating")
+  datastores           GameDatastore[]           @relation("gameDatastore")
+  gamepasses           Gamepass[]                @relation("gamepasses")
+  copyrightMetadata    GameCopyrightMetadata[]   @relation("gameCopyrightMetadata")
+  gameReports          UserReport[]              @relation("gameReport")
+  private              Boolean                   @default(false)
+  privateAccess        User[]                    @relation("privateGameAccess")
+  paywall              Boolean                   @default(false)
+  paywallAccess        User[]                    @relation("purchasedGames")
+  paywallPrice         Int                       @default(1)
+  followers            User[]                    @relation("gameFollowers")
+  updateLogs           GameUpdateLog[]           @relation("gameUpdateLogs")
+  envs                 GameEnvironmentVariable[] @relation("environmentVariables")
 }
 
 model GameComment {
@@ -848,4 +849,19 @@ model PasswordResetRequest {
   user      User?    @relation("passwordResetRequests", fields: [userId], references: [id])
   userId    Int?     @unique
   createdAt DateTime @default(now())
+}
+
+model GameEnvironmentVariable {
+  id          String          @id @default(uuid())
+  game        Game            @relation("environmentVariables", fields: [gameId], references: [id])
+  gameId      Int
+  name        String
+  value       String
+  environment GameEnvironment
+  updatedAt   DateTime        @default(now())
+}
+
+enum GameEnvironment {
+  PRODUCTION
+  DEVELOPMENT
 }

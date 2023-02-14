@@ -1,4 +1,5 @@
 import {
+  GameEnvironment,
   GameGenre,
   GameUpdateLogType,
   Prisma,
@@ -9,6 +10,7 @@ import {
 import {
   Body,
   createHandler,
+  Delete,
   Get,
   Param,
   Post,
@@ -1705,6 +1707,130 @@ class GameRouter {
     });
 
     return games;
+  }
+
+  @Post("/envs/:gid/create")
+  @Authorized()
+  async createEnv(
+    @Account() user: User,
+    @Param("gid") gid: string,
+    @Body() body: unknown
+  ) {
+    const schema = z.object({
+      name: z.string().min(1).max(75),
+      value: z.string().min(1).max(1024),
+      environment: z.nativeEnum(GameEnvironment),
+    });
+
+    const data = schema.parse(body);
+
+    const game = await prisma.game.findFirst({
+      where: {
+        id: Number(gid),
+        authorId: user.id,
+      },
+    });
+
+    if (!game) {
+      return {
+        success: false,
+        error: "Game not found",
+      };
+    }
+
+    const v = await prisma.gameEnvironmentVariable.create({
+      data: {
+        gameId: Number(gid),
+        name: data.name,
+        value: data.value,
+        environment: data.environment,
+      },
+    });
+
+    return {
+      success: true,
+      variable: v,
+    };
+  }
+
+  @Post("/envs/:gid/update/:id")
+  @Authorized()
+  async updateEnv(
+    @Account() user: User,
+    @Param("gid") gid: string,
+    @Param("id") id: string,
+    @Body() body: unknown
+  ) {
+    const schema = z.object({
+      name: z.string().min(1).max(75),
+      value: z.string().min(1).max(1024),
+      environment: z.nativeEnum(GameEnvironment),
+    });
+
+    const data = schema.parse(body);
+
+    const game = await prisma.game.findFirst({
+      where: {
+        id: Number(gid),
+        authorId: user.id,
+      },
+    });
+
+    if (!game) {
+      return {
+        success: false,
+        error: "Game not found",
+      };
+    }
+
+    const v = await prisma.gameEnvironmentVariable.update({
+      where: {
+        id: String(id),
+      },
+      data: {
+        name: data.name,
+        value: data.value,
+        environment: data.environment,
+        updatedAt: new Date(),
+      },
+    });
+
+    return {
+      success: true,
+      variable: v,
+    };
+  }
+
+  @Delete("/envs/:gid/delete/:id")
+  @Authorized()
+  async deleteEnv(
+    @Account() user: User,
+    @Param("gid") gid: string,
+    @Param("id") id: string
+  ) {
+    const game = await prisma.game.findFirst({
+      where: {
+        id: Number(gid),
+        authorId: user.id,
+      },
+    });
+
+    if (!game) {
+      return {
+        success: false,
+        error: "Game not found",
+      };
+    }
+
+    await prisma.gameEnvironmentVariable.delete({
+      where: {
+        id: String(id),
+      },
+    });
+
+    return {
+      success: true,
+    };
   }
 }
 
