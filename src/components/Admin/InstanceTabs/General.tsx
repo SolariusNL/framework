@@ -20,10 +20,10 @@ const GeneralTab: React.FC = () => {
         setVersion(res.version);
       });
 
-    fetch("https://invent.soodam.rocks/api/v4/projects/4/releases/0.6.3")
+    fetch("https://invent.soodam.rocks/api/v4/projects/4/releases/")
       .then((res) => res.json())
-      .then((res: { tag_name: string }) => {
-        setLatestVersion(res.tag_name);
+      .then((res: Array<{ tag_name: string }>) => {
+        setLatestVersion(res[0].tag_name);
       });
   }, []);
 
