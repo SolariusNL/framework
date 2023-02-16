@@ -22,6 +22,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import {
   HiArrowLeft,
+  HiBeaker,
   HiBookmark,
   HiCheck,
   HiCog,
@@ -30,9 +31,9 @@ import {
   HiHome,
   HiKey,
   HiServer,
+  HiTicket,
   HiUsers,
   HiWifi,
-  HiTicket
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import Tasks from "../../components/Admin/Employee/Tasks";
@@ -42,11 +43,12 @@ import BannedIPs from "../../components/Admin/Pages/BannedIPs";
 import Cosmic from "../../components/Admin/Pages/Cosmic";
 import Dashboard from "../../components/Admin/Pages/Dashboard";
 import Directory from "../../components/Admin/Pages/Directory";
+import Experiments from "../../components/Admin/Pages/Experiments";
 import Instance from "../../components/Admin/Pages/Instance";
 import Invites from "../../components/Admin/Pages/Invites";
 import Reports from "../../components/Admin/Pages/Reports";
-import Users from "../../components/Admin/Pages/Users";
 import Tickets from "../../components/Admin/Pages/Tickets";
+import Users from "../../components/Admin/Pages/Users";
 import Settings from "../../components/Admin/Settings";
 import Footer from "../../components/Footer";
 import FrameworkLogo from "../../components/FrameworkLogo";
@@ -219,13 +221,20 @@ const data = [
     subtitle: "Manage Cosmic servers through the Nucleus API",
   },
   {
+    label: "Experiments",
+    icon: HiBeaker,
+    href: "/admin/experiments",
+    render: <Experiments />,
+    subtitle: "UI and functionality experiments",
+  },
+  {
     label: "Settings",
     icon: HiCog,
     href: "/admin/settings",
     render: <Settings />,
     subtitle: "Manage your personal admin settings",
     show: false,
-  }
+  },
 ];
 
 export type PageName =
@@ -300,25 +309,27 @@ const AdminDashboard: React.FC<{
     </a>
   );
 
-  const links = data.filter((item) => item.show !== false).map((item) => (
-    <Link
-      key={item.label}
-      href={String(item.href)}
-      onClick={(event) => {
-        setActive(item.label as PageName);
-        event.preventDefault();
-      }}
-    >
-      <a
-        className={cx(classes.link, {
-          [classes.linkActive]: item.label.toLowerCase() === active,
-        })}
+  const links = data
+    .filter((item) => item.show !== false)
+    .map((item) => (
+      <Link
+        key={item.label}
+        href={String(item.href)}
+        onClick={(event) => {
+          setActive(item.label as PageName);
+          event.preventDefault();
+        }}
       >
-        <item.icon className={classes.linkIcon} stroke="1.5" />
-        <span>{item.label}</span>
-      </a>
-    </Link>
-  ));
+        <a
+          className={cx(classes.link, {
+            [classes.linkActive]: item.label.toLowerCase() === active,
+          })}
+        >
+          <item.icon className={classes.linkIcon} stroke="1.5" />
+          <span>{item.label}</span>
+        </a>
+      </Link>
+    ));
 
   return (
     <>
