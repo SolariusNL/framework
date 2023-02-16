@@ -2,34 +2,29 @@ import {
   ActionIcon,
   Avatar,
   Button,
-  Divider,
   Loader,
   Menu,
   Modal,
-  Skeleton,
   Stack,
   Text,
-  Textarea,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { openModal } from "@mantine/modals";
 import { StatusPosts } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
 import {
-  HiChat,
   HiClipboardCopy,
   HiDotsVertical,
   HiFlag,
-  HiHeart,
   HiPlus,
 } from "react-icons/hi";
-import ReactNoSSR from "react-no-ssr";
 import { useFrameworkUser } from "../../contexts/FrameworkUser";
 import getMediaUrl from "../../util/getMedia";
 import { NonUser } from "../../util/prisma-types";
 import { getRelativeTime } from "../../util/relativeTime";
+import Markdown, { ToolbarItem } from "../Markdown";
 import ModernEmptyState from "../ModernEmptyState";
+import RenderMarkdown from "../RenderMarkdown";
 import ReportUser from "../ReportUser";
 import ShadedCard from "../ShadedCard";
 import UserContext from "../UserContext";
@@ -52,8 +47,8 @@ const FeedWidget: React.FC = () => {
     },
     validate: {
       status: (value) => {
-        if (value.length > 256 || value.length === 0) {
-          return "Status posts cannot be longer than 256 characters or empty";
+        if (value.length > 1024 || value.length === 0) {
+          return "Status posts cannot be longer than 1024 characters or empty";
         }
       },
     },
@@ -111,14 +106,19 @@ const FeedWidget: React.FC = () => {
         onClose={() => setNewPost(false)}
       >
         <form onSubmit={form.onSubmit(handleStatusPost)}>
-          <Textarea
-            label="Status"
-            description="What's on your mind?"
+          <Markdown
             placeholder="Enter your status..."
-            mb="xl"
+            toolbar={[
+              ToolbarItem.Bold,
+              ToolbarItem.H3,
+              ToolbarItem.H4,
+              ToolbarItem.BulletList,
+              ToolbarItem.OrderedList,
+              ToolbarItem.Url,
+            ]}
             {...form.getInputProps("status")}
           />
-          <div className="flex justify-end">
+          <div className="flex justify-end mt-6">
             <Button type="submit" variant="default">
               Post
             </Button>
@@ -174,13 +174,25 @@ const FeedWidget: React.FC = () => {
                               <Text mb={2} size="sm">
                                 @{status.user.username}
                               </Text>
-                              <Text color="dimmed" size="xs">
+                              <Text color="dimmed" size="xs" mb="md">
                                 {getRelativeTime(
                                   new Date(status.createdAt as Date)
                                 )}
                               </Text>
                             </div>
-                            <Text mt={12}>{status.content}</Text>
+                            <RenderMarkdown
+                              typographyStyles={{
+                                ...(/<[^>]*>/.test(status.content)
+                                  ? {}
+                                  : {
+                                      "& p": {
+                                        marginBottom: "0 !important",
+                                      },
+                                    }),
+                              }}
+                            >
+                              {status.content}
+                            </RenderMarkdown>
                           </div>
                         </div>
                         <div>

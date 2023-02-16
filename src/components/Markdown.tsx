@@ -1,12 +1,4 @@
-import {
-  ActionIcon,
-  Skeleton,
-  Tabs,
-  Textarea,
-  Tooltip,
-  TypographyStylesProvider,
-} from "@mantine/core";
-import { marked } from "marked";
+import { ActionIcon, Skeleton, Tabs, Textarea, Tooltip } from "@mantine/core";
 import dynamic from "next/dynamic";
 import { useEffect, useRef } from "react";
 import { BiHeading } from "react-icons/bi";
@@ -14,11 +6,13 @@ import {
   VscBold,
   VscCode,
   VscItalic,
+  VscLink,
   VscListOrdered,
   VscListTree,
   VscTable,
 } from "react-icons/vsc";
 import ModernEmptyState from "./ModernEmptyState";
+import RenderMarkdown from "./RenderMarkdown";
 import ShadedCard from "./ShadedCard";
 
 interface MarkdownProps {
@@ -32,7 +26,6 @@ export enum ToolbarItem {
   Bold,
   Url,
   Italic,
-  Mention,
   Code,
   CodeBlock,
   Table,
@@ -56,6 +49,7 @@ const Markdown: React.FC<MarkdownProps> = ({
     ToolbarItem.H2,
     ToolbarItem.H3,
     ToolbarItem.H4,
+    ToolbarItem.Url,
   ],
   onChange,
   value,
@@ -184,13 +178,14 @@ const Markdown: React.FC<MarkdownProps> = ({
           keybind: "2",
           tooltip: "Heading 2",
         };
+      case ToolbarItem.Url:
         return {
-          icon: <BiHeading />,
+          icon: <VscLink />,
           onClick: () => {
-            insertText("###### ", "");
+            insertText("[Label", "](https://youtube.come)");
           },
-          keybind: "6",
-          tooltip: "Heading 6",
+          keybind: "L",
+          tooltip: "Link",
         };
     }
   };
@@ -274,11 +269,7 @@ const Markdown: React.FC<MarkdownProps> = ({
         <Tabs.Panel value="preview">
           {value ? (
             <ShadedCard>
-              <TypographyStylesProvider>
-                <div
-                  dangerouslySetInnerHTML={{ __html: marked(value || "") }}
-                />
-              </TypographyStylesProvider>
+              <RenderMarkdown>{value}</RenderMarkdown>
             </ShadedCard>
           ) : (
             <ShadedCard className="w-full flex items-center justify-center py-4">

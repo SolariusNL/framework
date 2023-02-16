@@ -13,7 +13,9 @@ import {
   Post,
   Query,
 } from "@storyofams/next-api-decorators";
+import sanitize from "sanitize-html";
 import AccountUpdate from "../../../../email/emails/account-update";
+import { parse } from "../../../components/RenderMarkdown";
 import { category } from "../../../components/ReportUser";
 import countries from "../../../data/countries";
 import getTimezones from "../../../data/timezones";
@@ -320,16 +322,31 @@ class UserRouter {
       };
     }
 
-    if (status.length === 0 || status.length > 256) {
+    if (status.length === 0 || status.length > 1024) {
       return {
         status: 400,
-        message: "Status must be between 1 and 256 characters",
+        message: "Status must be between 1 and 1024 characters",
       };
     }
 
     const s = await prisma.statusPosts.create({
       data: {
-        content: String(status),
+        content: sanitize(parse(status), {
+          allowedTags: [
+            "b",
+            "i",
+            "u",
+            "s",
+            "a",
+            "p",
+            "br",
+            "ul",
+            "ol",
+            "li",
+            "h3",
+            "h4",
+          ],
+        }),
         createdAt: new Date(),
         user: {
           connect: {
