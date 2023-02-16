@@ -5,9 +5,10 @@ import { useEffect, useState } from "react";
 import {
   HiBell,
   HiChat,
-  HiCloud, HiSearch,
+  HiCloud,
+  HiSearch,
   HiSparkles,
-  HiUsers
+  HiUsers,
 } from "react-icons/hi";
 import Framework from "../components/Framework";
 import FeedWidget from "../components/Home/FeedWidget";

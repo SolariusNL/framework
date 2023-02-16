@@ -1,6 +1,7 @@
 import { Loader, NativeSelect, NavLink } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import React from "react";
 import {
   HiBeaker,
@@ -145,6 +146,7 @@ const Settings: NextPage<SettingsProps> = ({ user, activePage }) => {
   const [value, setValue] = React.useState("account");
   const [active, setActive] = React.useState(activePage || "account");
   const page = tabs.find((item) => item.value === active) || tabs[0];
+  const router = useRouter();
 
   return (
     <Framework
@@ -159,8 +161,10 @@ const Settings: NextPage<SettingsProps> = ({ user, activePage }) => {
             <NativeSelect
               placeholder="Select a tab"
               data={tabs}
-              onChange={(e) => setValue(e.target.value)}
-              value={value}
+              onChange={(e) => {
+                router.push(`/settings/${e.target.value}`);
+              }}
+              value={active}
               className="w-full col-span-full"
               size="lg"
             />
