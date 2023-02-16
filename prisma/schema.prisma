@@ -455,6 +455,7 @@ enum NotificationType {
   ALERT
   SUCCESS
   LOGIN
+  GIFT
 }
 
 model Notification {

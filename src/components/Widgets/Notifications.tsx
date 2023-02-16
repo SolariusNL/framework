@@ -13,6 +13,7 @@ import {
   HiCheckCircle,
   HiDesktopComputer,
   HiExclamationCircle,
+  HiGift,
   HiInformationCircle,
 } from "react-icons/hi";
 import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
@@ -33,6 +34,8 @@ const Notifications: React.FC = () => {
         return <HiDesktopComputer size={12} />;
       case "SUCCESS":
         return <HiCheckCircle size={12} />;
+      case "GIFT":
+        return <HiGift size={12} />;
       default:
         return <HiInformationCircle size={12} />;
     }

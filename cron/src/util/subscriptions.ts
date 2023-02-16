@@ -1,11 +1,11 @@
-import { client } from "../app";
-import { scheduleJob } from "node-schedule";
 import {
   NotificationType,
   PremiumSubscriptionType,
   Prisma,
 } from "@prisma/client";
 import { schedule } from "node-cron";
+import { scheduleJob } from "node-schedule";
+import { client } from "../app";
 
 const user = Prisma.validator<Prisma.UserArgs>()({
   include: {
@@ -77,7 +77,7 @@ async function grantPremiumMonthlyReward(user: User) {
           create: {
             title: "Premium monthly reward",
             message: `You have received ${amt} tickets for being a Framework Premium member. Thank you for your support!`,
-            type: NotificationType.SUCCESS,
+            type: NotificationType.GIFT,
           },
         },
       },
