@@ -21,6 +21,7 @@ interface MarkdownProps {
   toolbar?: Array<ToolbarItem>;
   onChange?: (value: string) => void;
   value?: string;
+  error?: string;
 }
 
 export enum ToolbarItem {
@@ -56,6 +57,7 @@ const Markdown: React.FC<MarkdownProps> = ({
   ],
   onChange,
   value,
+  error,
 }) => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const insertText = (left: string, right: string) => {
@@ -279,6 +281,7 @@ const Markdown: React.FC<MarkdownProps> = ({
                 fontFamily: "Roboto Mono, monospace !important",
               },
             })}
+            error={error}
           />
         </Tabs.Panel>
         <Tabs.Panel value="preview">
