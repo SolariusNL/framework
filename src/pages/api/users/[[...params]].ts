@@ -347,6 +347,9 @@ class UserRouter {
             "h4",
             "strong",
           ],
+          allowedAttributes: {
+            a: ["href"],
+          },
         }),
         createdAt: new Date(),
         user: {
