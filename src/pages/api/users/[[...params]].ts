@@ -345,6 +345,7 @@ class UserRouter {
             "li",
             "h3",
             "h4",
+            "strong",
           ],
         }),
         createdAt: new Date(),
