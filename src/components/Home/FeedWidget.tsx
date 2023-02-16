@@ -115,6 +115,7 @@ const FeedWidget: React.FC = () => {
               ToolbarItem.BulletList,
               ToolbarItem.OrderedList,
               ToolbarItem.Url,
+              ToolbarItem.Help,
             ]}
             {...form.getInputProps("status")}
           />

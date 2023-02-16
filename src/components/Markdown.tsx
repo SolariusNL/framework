@@ -9,6 +9,7 @@ import {
   VscLink,
   VscListOrdered,
   VscListTree,
+  VscQuestion,
   VscTable,
 } from "react-icons/vsc";
 import ModernEmptyState from "./ModernEmptyState";
@@ -34,6 +35,7 @@ export enum ToolbarItem {
   H2,
   H3,
   H4,
+  Help,
 }
 
 const Markdown: React.FC<MarkdownProps> = ({
@@ -50,6 +52,7 @@ const Markdown: React.FC<MarkdownProps> = ({
     ToolbarItem.H3,
     ToolbarItem.H4,
     ToolbarItem.Url,
+    ToolbarItem.Help,
   ],
   onChange,
   value,
@@ -186,6 +189,18 @@ const Markdown: React.FC<MarkdownProps> = ({
           },
           keybind: "L",
           tooltip: "Link",
+        };
+      case ToolbarItem.Help:
+        return {
+          icon: <VscQuestion />,
+          onClick: () => {
+            window.open(
+              "https://wiki.soodam.rocks/docs/features/markdown",
+              "_blank"
+            );
+          },
+          keybind: "H",
+          tooltip: "Help",
         };
     }
   };
