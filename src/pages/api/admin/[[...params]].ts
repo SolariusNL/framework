@@ -640,9 +640,9 @@ class AdminRouter {
       });
       await createNotification(
         Number(body.reportAuthorId),
-        NotificationType.SUCCESS,
+        NotificationType.GIFT,
         `Thank you for your report filed against ${user.username}! Appropriate action has been taken against the offender, and you have been rewarded with 250 tickets.`,
-        "Thank You"
+        "Thank you"
       );
     }
 
