@@ -463,6 +463,7 @@ model Notification {
   user      User             @relation("userNotifications", fields: [userId], references: [id])
   userId    Int
   message   String
+  styledMsg String
   type      NotificationType @default(INFO)
   title     String           @default("")
   createdAt DateTime         @default(now())
