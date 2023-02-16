@@ -181,19 +181,7 @@ const FeedWidget: React.FC = () => {
                                 )}
                               </Text>
                             </div>
-                            <RenderMarkdown
-                              typographyStyles={{
-                                ...(/<[^>]*>/.test(status.content)
-                                  ? {}
-                                  : {
-                                      "& p": {
-                                        marginBottom: "0 !important",
-                                      },
-                                    }),
-                              }}
-                            >
-                              {status.content}
-                            </RenderMarkdown>
+                            <RenderMarkdown>{status.content}</RenderMarkdown>
                           </div>
                         </div>
                         <div>

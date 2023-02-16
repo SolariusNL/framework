@@ -26,7 +26,14 @@ const RenderMarkdown: React.FC<
   > & { children: string; typographyStyles?: Sx }
 > = ({ children, typographyStyles, ...props }) => {
   return (
-    <TypographyStylesProvider sx={typographyStyles}>
+    <TypographyStylesProvider
+      sx={{
+        "& p": {
+          marginBottom: "0 !important",
+        },
+        ...typographyStyles,
+      }}
+    >
       <div
         dangerouslySetInnerHTML={{
           __html: sanitize(parse(children || "")),
