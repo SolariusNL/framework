@@ -1,11 +1,13 @@
 import {
   ActionIcon,
+  Skeleton,
   Tabs,
   Textarea,
   Tooltip,
   TypographyStylesProvider,
 } from "@mantine/core";
 import { marked } from "marked";
+import dynamic from "next/dynamic";
 import { useEffect, useRef } from "react";
 import { BiHeading } from "react-icons/bi";
 import {
@@ -36,10 +38,9 @@ export enum ToolbarItem {
   Table,
   BulletList,
   OrderedList,
+  H2,
   H3,
   H4,
-  H5,
-  H6,
 }
 
 const Markdown: React.FC<MarkdownProps> = ({
@@ -52,10 +53,9 @@ const Markdown: React.FC<MarkdownProps> = ({
     ToolbarItem.Table,
     ToolbarItem.BulletList,
     ToolbarItem.OrderedList,
+    ToolbarItem.H2,
     ToolbarItem.H3,
     ToolbarItem.H4,
-    ToolbarItem.H5,
-    ToolbarItem.H6,
   ],
   onChange,
   value,
@@ -175,16 +175,15 @@ const Markdown: React.FC<MarkdownProps> = ({
           keybind: "4",
           tooltip: "Heading 4",
         };
-      case ToolbarItem.H5:
+      case ToolbarItem.H2:
         return {
           icon: <BiHeading />,
           onClick: () => {
-            insertText("##### ", "");
+            insertText("## ", "");
           },
-          keybind: "5",
-          tooltip: "Heading 5",
+          keybind: "2",
+          tooltip: "Heading 2",
         };
-      case ToolbarItem.H6:
         return {
           icon: <BiHeading />,
           onClick: () => {
@@ -267,6 +266,7 @@ const Markdown: React.FC<MarkdownProps> = ({
                   theme.colorScheme === "dark"
                     ? "black"
                     : "white" + "!important",
+                fontFamily: "Roboto Mono, monospace !important",
               },
             })}
           />
@@ -294,4 +294,7 @@ const Markdown: React.FC<MarkdownProps> = ({
   );
 };
 
-export default Markdown;
+export default dynamic(() => Promise.resolve(Markdown), {
+  ssr: false,
+  loading: () => <Skeleton height={300} />,
+});
