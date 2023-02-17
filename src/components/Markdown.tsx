@@ -184,7 +184,7 @@ const Markdown: React.FC<MarkdownProps> = ({
           icon: (
             <div className="flex items-end">
               <RiHeading />
-              <RiNumber3 size={12} />
+              <RiNumber3 size={10} />
             </div>
           ),
           onClick: () => {
@@ -198,7 +198,7 @@ const Markdown: React.FC<MarkdownProps> = ({
           icon: (
             <div className="flex items-end">
               <RiHeading />
-              <RiNumber4 size={12} />
+              <RiNumber4 size={10} />
             </div>
           ),
           onClick: () => {
@@ -212,7 +212,7 @@ const Markdown: React.FC<MarkdownProps> = ({
           icon: (
             <div className="flex items-end">
               <RiHeading />
-              <RiNumber2 size={12} />
+              <RiNumber2 size={10} />
             </div>
           ),
           onClick: () => {
@@ -249,7 +249,11 @@ const Markdown: React.FC<MarkdownProps> = ({
     const handleKeyDown = (e: KeyboardEvent) => {
       toolbar.forEach((item) => {
         const action = getAction(item);
-        if (action && action.keybind === e.key.toUpperCase() && e.metaKey) {
+        if (
+          action &&
+          action.keybind === e.key.toUpperCase() &&
+          (e.metaKey || e.ctrlKey)
+        ) {
           e.preventDefault();
           action.onClick();
         }
@@ -266,6 +270,27 @@ const Markdown: React.FC<MarkdownProps> = ({
         const after = input.value.substring(end, input.value.length);
         input.value = before + "  " + after;
         input.selectionStart = input.selectionEnd = start + 2;
+      }
+
+      if (e.key === "Enter" && input) {
+        if (e.shiftKey) return;
+        e.preventDefault();
+
+        const v = input.value;
+        const lines = v.split("\n");
+        const lastLine = lines[lines.length - 1];
+
+        const BULLET = /^- (.*)/;
+        const ORDERED = /^\d+\. (.*)/;
+
+        if (BULLET.test(lastLine)) {
+          input.value += "\n- ";
+        } else if (ORDERED.test(lastLine)) {
+          let nextNumber = parseInt(String(lastLine.match(/^\d+/))) + 1;
+          input.value += "\n" + nextNumber + ". ";
+        } else {
+          input.value += "\n";
+        }
       }
     };
 
