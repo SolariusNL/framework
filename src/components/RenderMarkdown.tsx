@@ -27,12 +27,24 @@ const RenderMarkdown: React.FC<
 > = ({ children, typographyStyles, ...props }) => {
   return (
     <TypographyStylesProvider
-      sx={{
+      sx={(theme) => ({
         "& p": {
           marginBottom: "0 !important",
         },
+        "& h1:first-child, & h2:first-child, & h3:first-child, & h4:first-child, & h5:first-child, & h6:first-child":
+          {
+            marginTop: "0 !important",
+          },
+        "& hr": {
+          border: "none",
+          borderTop: "1px solid " + theme.colors.gray[7],
+          margin: "1.5rem 0",
+        },
+        "& ul, & ol": {
+          paddingLeft: "25px",
+        },
         ...typographyStyles,
-      }}
+      })}
     >
       <div
         dangerouslySetInnerHTML={{

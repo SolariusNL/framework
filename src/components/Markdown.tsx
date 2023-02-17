@@ -1,7 +1,7 @@
 import { ActionIcon, Skeleton, Tabs, Textarea, Tooltip } from "@mantine/core";
 import dynamic from "next/dynamic";
 import { useEffect, useRef } from "react";
-import { BiHeading } from "react-icons/bi";
+import { RiHeading, RiNumber2, RiNumber3, RiNumber4 } from "react-icons/ri";
 import {
   VscBold,
   VscCode,
@@ -60,7 +60,12 @@ const Markdown: React.FC<MarkdownProps> = ({
   error,
 }) => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const insertText = (left: string, right: string) => {
+  const insertText = (
+    left: string,
+    right: string,
+    selectOnInsert: boolean,
+    placeCursorInside: boolean
+  ) => {
     const input = inputRef.current;
     if (input) {
       if (input.selectionStart !== input.selectionEnd) {
@@ -71,6 +76,14 @@ const Markdown: React.FC<MarkdownProps> = ({
         const after = input.value.substring(end, input.value.length);
         input.value = before + left + selectedText + right + after;
         input.selectionStart = input.selectionEnd = start + left.length;
+
+        if (selectOnInsert) {
+          input.selectionStart = start + left.length;
+          input.selectionEnd = start + left.length + selectedText.length;
+        } else if (placeCursorInside) {
+          input.selectionStart = start + left.length + selectedText.length;
+          input.selectionEnd = start + left.length + selectedText.length;
+        }
       } else {
         const before = input.value.substring(0, input.selectionStart);
         const after = input.value.substring(
@@ -80,6 +93,14 @@ const Markdown: React.FC<MarkdownProps> = ({
         input.value = before + left + right + after;
         input.selectionStart = input.selectionEnd =
           input.selectionStart + left.length;
+
+        if (selectOnInsert) {
+          input.selectionStart = input.selectionStart - right.length;
+          input.selectionEnd = input.selectionEnd - right.length;
+        } else if (placeCursorInside) {
+          input.selectionStart = input.selectionStart - right.length;
+          input.selectionEnd = input.selectionEnd - right.length;
+        }
       }
 
       input.focus();
@@ -94,7 +115,7 @@ const Markdown: React.FC<MarkdownProps> = ({
         return {
           icon: <VscBold />,
           onClick: () => {
-            insertText("**", "**");
+            insertText("**", "**", true, false);
           },
           keybind: "B",
           tooltip: "Bold",
@@ -103,7 +124,7 @@ const Markdown: React.FC<MarkdownProps> = ({
         return {
           icon: <VscItalic />,
           onClick: () => {
-            insertText("*", "*");
+            insertText("*", "*", true, false);
           },
           keybind: "I",
           tooltip: "Italic",
@@ -112,7 +133,7 @@ const Markdown: React.FC<MarkdownProps> = ({
         return {
           icon: <VscCode />,
           onClick: () => {
-            insertText("`", "`");
+            insertText("`", "`", true, false);
           },
           keybind: "K",
           tooltip: "Code",
@@ -121,7 +142,7 @@ const Markdown: React.FC<MarkdownProps> = ({
         return {
           icon: <VscCode />,
           onClick: () => {
-            insertText("```\n", "\n```");
+            insertText("```\n", "\n```", false, true);
           },
           keybind: "J",
           tooltip: "Code Block",
@@ -132,7 +153,9 @@ const Markdown: React.FC<MarkdownProps> = ({
           onClick: () => {
             insertText(
               "| Column 1 | Column 2 | Column 3 |\n| -------- | -------- | -------- |\n| Text     | Text     | Text     |\n",
-              ""
+              "",
+              false,
+              false
             );
           },
           keybind: "T",
@@ -142,7 +165,7 @@ const Markdown: React.FC<MarkdownProps> = ({
         return {
           icon: <VscListTree />,
           onClick: () => {
-            insertText("- ", "");
+            insertText("- ", "", false, false);
           },
           keybind: "U",
           tooltip: "Bullet List",
@@ -151,34 +174,49 @@ const Markdown: React.FC<MarkdownProps> = ({
         return {
           icon: <VscListOrdered />,
           onClick: () => {
-            insertText("1. ", "");
+            insertText("1. ", "", false, false);
           },
           keybind: "O",
           tooltip: "Ordered List",
         };
       case ToolbarItem.H3:
         return {
-          icon: <BiHeading />,
+          icon: (
+            <div className="flex items-end">
+              <RiHeading />
+              <RiNumber3 size={12} />
+            </div>
+          ),
           onClick: () => {
-            insertText("### ", "");
+            insertText("### ", "", false, false);
           },
           keybind: "3",
           tooltip: "Heading 3",
         };
       case ToolbarItem.H4:
         return {
-          icon: <BiHeading />,
+          icon: (
+            <div className="flex items-end">
+              <RiHeading />
+              <RiNumber4 size={12} />
+            </div>
+          ),
           onClick: () => {
-            insertText("#### ", "");
+            insertText("#### ", "", false, false);
           },
           keybind: "4",
           tooltip: "Heading 4",
         };
       case ToolbarItem.H2:
         return {
-          icon: <BiHeading />,
+          icon: (
+            <div className="flex items-end">
+              <RiHeading />
+              <RiNumber2 size={12} />
+            </div>
+          ),
           onClick: () => {
-            insertText("## ", "");
+            insertText("## ", "", false, false);
           },
           keybind: "2",
           tooltip: "Heading 2",
@@ -187,7 +225,7 @@ const Markdown: React.FC<MarkdownProps> = ({
         return {
           icon: <VscLink />,
           onClick: () => {
-            insertText("[Label", "](https://youtube.come)");
+            insertText("[", "](https://)", true, true);
           },
           keybind: "L",
           tooltip: "Link",
@@ -305,5 +343,5 @@ const Markdown: React.FC<MarkdownProps> = ({
 
 export default dynamic(() => Promise.resolve(Markdown), {
   ssr: false,
-  loading: () => <Skeleton height={300} />,
+  loading: () => <Skeleton height={200} />,
 });
