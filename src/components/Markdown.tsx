@@ -284,9 +284,20 @@ const Markdown: React.FC<MarkdownProps> = ({
         const ORDERED = /^\d+\. (.*)/;
 
         if (BULLET.test(lastLine)) {
+          if (lastLine === "- ") {
+            input.value = v.substring(0, v.length - 3) + "\n\n";
+            return;
+          }
           input.value += "\n- ";
         } else if (ORDERED.test(lastLine)) {
-          let nextNumber = parseInt(String(lastLine.match(/^\d+/))) + 1;
+          const lastNumber = parseInt(String(lastLine.match(/^\d+/)));
+          let nextNumber = lastNumber + 1;
+
+          if (lastLine === `${lastNumber}. `) {
+            input.value = v.substring(0, v.length - 3) + "\n";
+            return;
+          }
+
           input.value += "\n" + nextNumber + ". ";
         } else {
           input.value += "\n";
