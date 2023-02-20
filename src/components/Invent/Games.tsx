@@ -79,7 +79,7 @@ const Games = ({ user }: GamesProps) => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {user.games.length == 0 && (
-          <div className="col-span-full flex items-center justify-center">
+          <div className="col-span-1 flex items-center justify-center">
             <ModernEmptyState
               title="No games"
               body="You don't have any games on your account."
