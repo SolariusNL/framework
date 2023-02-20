@@ -173,8 +173,7 @@ const UserMenu = ({
 
         <Menu.Dropdown>
           <Menu.Label>
-            👻 Framework {process.env.NEXT_PUBLIC_VERSION} - Built by Emil
-            {"&"} contributors
+            👻 Framework - Built by Soodam.re and contributors
           </Menu.Label>
           <Menu.Divider />
           {user?.role == "ADMIN" && (
@@ -208,7 +207,10 @@ const UserMenu = ({
             Change theme
           </Menu.Item>
           <Menu.Divider />
-          <Menu.Item icon={<HiCog />} onClick={() => router.push("/settings/account")}>
+          <Menu.Item
+            icon={<HiCog />}
+            onClick={() => router.push("/settings/account")}
+          >
             Settings
           </Menu.Item>
           <Menu.Item

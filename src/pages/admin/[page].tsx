@@ -8,6 +8,7 @@ import {
   createStyles,
   Group,
   Header,
+  Loader,
   MediaQuery,
   Navbar,
   ScrollArea,
@@ -29,6 +30,7 @@ import {
   HiDocument,
   HiFolder,
   HiHome,
+  HiIdentification,
   HiKey,
   HiServer,
   HiTicket,
@@ -52,6 +54,7 @@ import Users from "../../components/Admin/Pages/Users";
 import Settings from "../../components/Admin/Settings";
 import Footer from "../../components/Footer";
 import FrameworkLogo from "../../components/FrameworkLogo";
+import ShadedCard from "../../components/ShadedCard";
 import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
 import authorizedRoute from "../../util/authorizedRoute";
 import getMediaUrl from "../../util/getMedia";
@@ -221,6 +224,18 @@ const data = [
     subtitle: "Manage Cosmic servers through the Nucleus API",
   },
   {
+    label: "ID",
+    icon: HiIdentification,
+    href: "https://id.soodam.rocks",
+    external: true,
+    render: (
+      <ShadedCard className="w-full py-24 flex items-center justify-center">
+        <Loader />
+      </ShadedCard>
+    ),
+    subtitle: "Quick links managed by Soodam.re Employee Identity",
+  },
+  {
     label: "Experiments",
     icon: HiBeaker,
     href: "/admin/experiments",
@@ -324,6 +339,8 @@ const AdminDashboard: React.FC<{
           className={cx(classes.link, {
             [classes.linkActive]: item.label.toLowerCase() === active,
           })}
+          target={item.external ? "_blank" : undefined}
+          rel={item.external ? "noopener noreferrer" : undefined}
         >
           <item.icon className={classes.linkIcon} stroke="1.5" />
           <span>{item.label}</span>

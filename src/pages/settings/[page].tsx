@@ -143,7 +143,6 @@ const tabs = [
 
 const Settings: NextPage<SettingsProps> = ({ user, activePage }) => {
   const mobile = useMediaQuery("768");
-  const [value, setValue] = React.useState("account");
   const [active, setActive] = React.useState(activePage || "account");
   const page = tabs.find((item) => item.value === active) || tabs[0];
   const router = useRouter();
@@ -175,8 +174,7 @@ const Settings: NextPage<SettingsProps> = ({ user, activePage }) => {
                   icon={tab.icon}
                   color={tab.color}
                   label={tab.label}
-                  description={tab.description}
-                  className="rounded-md"
+                  className="rounded-lg -mb-1"
                   active={active === tab.value}
                   component="a"
                 />

@@ -17,7 +17,7 @@ import {
   Text,
   ThemeIcon,
   Title,
-  Tooltip,
+  Tooltip
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { GetServerSidePropsContext, NextPage } from "next";
@@ -31,13 +31,12 @@ import {
   HiClipboardCopy,
   HiClock,
   HiDesktopComputer,
-  HiFlag,
-  HiGift,
-  HiGlobe,
+  HiFlag, HiGlobe,
   HiOfficeBuilding,
+  HiSparkles,
   HiUser,
   HiUsers,
-  HiXCircle,
+  HiXCircle
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import AdminBadge from "../../components/Badges/Admin";
@@ -161,7 +160,9 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
               )}
               <div className="flex items-center gap-3">
                 {viewing.role == "ADMIN" && (
-                  <Image src="/brand/white.png" width={16} height={16} />
+                  <Tooltip label="Soodam.re Staff">
+                    <Image src="/brand/white.png" width={16} height={16} />
+                  </Tooltip>
                 )}
                 <Tooltip
                   label={
@@ -194,16 +195,20 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
               )}
             </div>
 
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                gap: "12px",
-              }}
-            >
+            <div className="flex items-center gap-4">
               <ReactNoSSR>
-                {viewing.busy && <Badge>Busy</Badge>}
-                {viewing.premium && <HiGift title="Premium" />}
+                {viewing.busy && (
+                  <Tooltip label="This user is busy, and may take a while to respond to your requests.">
+                    <Badge>Busy</Badge>
+                  </Tooltip>
+                )}
+                {viewing.premium && (
+                  <Tooltip label="Subscribed to Framework Premium">
+                    <div className="flex items-center">
+                      <HiSparkles title="Premium" />
+                    </div>
+                  </Tooltip>
+                )}
               </ReactNoSSR>
             </div>
 
