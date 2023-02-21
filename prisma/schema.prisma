@@ -887,4 +887,5 @@ model Team {
   ownerId     Int
   cakeDay     DateTime @default(now())
   updatedAt   DateTime @default(now())
+  slug        String   @default("")
 }

@@ -2,14 +2,17 @@ import {
   BadRequestException,
   Body,
   createHandler,
+  Get,
   Post,
 } from "@storyofams/next-api-decorators";
 import { z } from "zod";
 import getTimezones from "../../../data/timezones";
 import Authorized, { Account } from "../../../util/api/authorized";
 import prisma from "../../../util/prisma";
+import { nonCurrentUserSelect } from "../../../util/prisma-types";
 import type { User } from "../../../util/prisma-types";
 import { RateLimitMiddleware } from "../../../util/rate-limit";
+import { slugify } from "../../../util/slug";
 
 class TeamsRouter {
   @Post("/new")
@@ -56,6 +59,7 @@ class TeamsRouter {
             id: user.id,
           },
         },
+        slug: slugify(name),
       },
     });
 
@@ -63,6 +67,42 @@ class TeamsRouter {
       success: true,
       team,
     };
+  }
+
+  @Get("/")
+  @Authorized()
+  public async getTeams(
+    @Account() user: User
+  ) {
+    const myTeams = await prisma.team.findMany({
+      where: {
+        OR: [
+          {
+            ownerId: user.id,
+          },
+          {
+            members: {
+              some: {
+                id: user.id,
+              }
+            }
+          }
+        ]
+      },
+      include: {
+        _count: {
+          select: {
+            members: true,
+            games: true,
+          }
+        },
+        owner: {
+          select: nonCurrentUserSelect.select
+        }
+      }
+    });
+
+    return myTeams;
   }
 }
 
