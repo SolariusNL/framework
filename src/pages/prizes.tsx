@@ -12,7 +12,7 @@ import { GetServerSidePropsContext, NextPage } from "next";
 import React from "react";
 import Celebration from "react-confetti";
 import Framework from "../components/Framework";
-import authorizedRoute from "../util/authorizedRoute";
+import authorizedRoute from "../util/auth";
 import { User } from "../util/prisma-types";
 
 export const useStyles = createStyles((theme) => ({

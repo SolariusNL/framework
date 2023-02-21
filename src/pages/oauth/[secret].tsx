@@ -4,9 +4,9 @@ import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { useEffect, useState } from "react";
 import { HiCheckCircle } from "react-icons/hi";
-import authorizedRoute from "../../util/authorizedRoute";
-import prisma from "../../util/prisma";
 import ReactNoSSR from "react-no-ssr";
+import authorizedRoute from "../../util/auth";
+import prisma from "../../util/prisma";
 
 interface OAuth2FlowProps {
   user: User;

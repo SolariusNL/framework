@@ -16,13 +16,13 @@ import GameCard from "../components/GameCard";
 import LabelledRadio from "../components/LabelledRadio";
 import ModernEmptyState from "../components/ModernEmptyState";
 import ShadedCard from "../components/ShadedCard";
-import authorizedRoute from "../util/authorizedRoute";
+import authorizedRoute from "../util/auth";
 import { getCookie } from "../util/cookies";
 import { exclude } from "../util/exclude";
+import useMediaQuery from "../util/media-query";
 import prisma from "../util/prisma";
 import { Game, gameSelect, User } from "../util/prisma-types";
 import { genreMap } from "../util/universe/genre";
-import useMediaQuery from "../util/useMediaQuery";
 
 interface GamesProps {
   user: User;

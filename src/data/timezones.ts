@@ -1261,11 +1261,7 @@ const timezones = [
 ];
 
 const getTimezones = () => {
-  if (typeof window !== "undefined") {
-    return timezones;
-  }
-
-  return [];
+  return timezones;
 };
 
 export default getTimezones;

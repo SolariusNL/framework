@@ -1,5 +1,5 @@
-function clsx(...classes: string[]) {
-  return classes.filter(Boolean).join(" ");
+function clsx(...args: (string | undefined | null | false)[]) {
+  return args.filter(Boolean).join(" ");
 }
 
 export default clsx;

@@ -2,7 +2,6 @@ import {
   Avatar,
   Button,
   Card,
-  Grid,
   Group,
   Loader,
   Modal,
@@ -21,8 +20,8 @@ import Framework from "../../components/Framework";
 import ModernEmptyState from "../../components/ModernEmptyState";
 import Stateful from "../../components/Stateful";
 import UserContext from "../../components/UserContext";
-import authorizedRoute from "../../util/authorizedRoute";
-import getMediaUrl from "../../util/getMedia";
+import authorizedRoute from "../../util/auth";
+import getMediaUrl from "../../util/get-media";
 import prisma from "../../util/prisma";
 import { NonUser, Snippet, snippetSelect, User } from "../../util/prisma-types";
 

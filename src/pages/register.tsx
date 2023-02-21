@@ -1,23 +1,22 @@
-import type { GetServerSidePropsContext, NextPage } from "next";
 import {
-  TextInput,
-  PasswordInput,
-  Checkbox,
   Anchor,
-  Paper,
-  Title,
-  Text,
+  Button,
+  Checkbox,
   Container,
   Group,
-  Button,
+  Paper,
   Stack,
+  Text,
+  TextInput,
+  Title,
 } from "@mantine/core";
-import Link from "next/link";
-import authorizedRoute from "../util/authorizedRoute";
 import { useForm } from "@mantine/form";
-import { setCookie } from "../util/cookies";
+import type { GetServerSidePropsContext, NextPage } from "next";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import MinimalFooter from "../components/MinimalFooter";
+import authorizedRoute from "../util/auth";
+import { setCookie } from "../util/cookies";
 
 interface FormValues {
   code: string;

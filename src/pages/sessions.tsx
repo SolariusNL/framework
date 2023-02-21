@@ -17,7 +17,7 @@ import Copy from "../components/Copy";
 import Framework from "../components/Framework";
 import ShadedCard from "../components/ShadedCard";
 import logout from "../util/api/logout";
-import authorizedRoute from "../util/authorizedRoute";
+import authorizedRoute from "../util/auth";
 import { User } from "../util/prisma-types";
 import {
   Device,
@@ -119,7 +119,9 @@ const Sessions: NextPage<SessionsProps> = ({ user }) => {
                       <td>
                         <div className="flex items-center gap-2">
                           <Copy value={session.ip} />
-                          <Text weight={700} lineClamp={1}>{session.ip}</Text>
+                          <Text weight={700} lineClamp={1}>
+                            {session.ip}
+                          </Text>
                         </div>
                       </td>
                     </tr>

@@ -19,9 +19,9 @@ import {
   HiPlus,
 } from "react-icons/hi";
 import { useFrameworkUser } from "../../contexts/FrameworkUser";
-import getMediaUrl from "../../util/getMedia";
+import getMediaUrl from "../../util/get-media";
 import { NonUser } from "../../util/prisma-types";
-import { getRelativeTime } from "../../util/relativeTime";
+import { getRelativeTime } from "../../util/relative-time";
 import Markdown, { ToolbarItem } from "../Markdown";
 import ModernEmptyState from "../ModernEmptyState";
 import RenderMarkdown from "../RenderMarkdown";

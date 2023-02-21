@@ -1,10 +1,11 @@
 import {
   Button,
   Checkbox,
-  NumberInput, Select,
+  NumberInput,
+  Select,
   Stack,
   Text,
-  TextInput
+  TextInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { GameGenre } from "@prisma/client";
@@ -15,7 +16,7 @@ import Framework from "../../components/Framework";
 import LabelledRadio from "../../components/LabelledRadio";
 import RichText from "../../components/RichText";
 import ShadedCard from "../../components/ShadedCard";
-import authorizedRoute from "../../util/authorizedRoute";
+import authorizedRoute from "../../util/auth";
 import { getCookie } from "../../util/cookies";
 import { User } from "../../util/prisma-types";
 import { getGenreText } from "../../util/universe/genre";

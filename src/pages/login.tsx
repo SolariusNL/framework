@@ -20,7 +20,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { HiExclamation, HiXCircle } from "react-icons/hi";
 import MinimalFooter from "../components/MinimalFooter";
-import authorizedRoute from "../util/authorizedRoute";
+import authorizedRoute from "../util/auth";
 import { setCookie } from "../util/cookies";
 
 interface FormValues {

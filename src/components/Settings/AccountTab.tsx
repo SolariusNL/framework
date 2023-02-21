@@ -27,7 +27,7 @@ import {
 import ReactNoSSR from "react-no-ssr";
 import getTimezones from "../../data/timezones";
 import { getCookie } from "../../util/cookies";
-import getMediaUrl from "../../util/getMedia";
+import getMediaUrl from "../../util/get-media";
 import { User } from "../../util/prisma-types";
 import CountrySelect from "../CountryPicker";
 import Descriptive from "../Descriptive";

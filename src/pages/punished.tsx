@@ -9,7 +9,7 @@ import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import Framework from "../components/Framework";
-import authorizedRoute from "../util/authorizedRoute";
+import authorizedRoute from "../util/auth";
 import { User } from "../util/prisma-types";
 
 const PRIMARY_COL_HEIGHT = 300;

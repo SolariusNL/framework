@@ -10,9 +10,9 @@ import {
   HiViewGrid,
   HiXCircle,
 } from "react-icons/hi";
-import getMediaUrl from "../../../util/getMedia";
+import getMediaUrl from "../../../util/get-media";
+import useMediaQuery from "../../../util/media-query";
 import { NonUser, Report } from "../../../util/prisma-types";
-import useMediaQuery from "../../../util/useMediaQuery";
 import ModernEmptyState from "../../ModernEmptyState";
 import ReportCard from "../../ReportCard";
 import ShadedButton from "../../ShadedButton";
@@ -129,11 +129,13 @@ const Dashboard = () => {
                   <Link href={`/profile/${u.username}`} key={u.id}>
                     <ShadedButton>
                       <div className="flex items-center gap-4">
-                        <Avatar size={32} radius={99} src={getMediaUrl(u.avatarUri)} />
+                        <Avatar
+                          size={32}
+                          radius={99}
+                          src={getMediaUrl(u.avatarUri)}
+                        />
                         <div>
-                          <Text weight={500}>
-                            {u.username}
-                          </Text>
+                          <Text weight={500}>{u.username}</Text>
                           <Text size="sm" color="dimmed">
                             {u.email}
                           </Text>

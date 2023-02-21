@@ -5,7 +5,7 @@ import {
 } from "@storyofams/next-api-decorators";
 import { NextApiRequest, NextApiResponse } from "next";
 import { getClientIp } from "request-ip";
-import { getAccountFromSession } from "../authorizedRoute";
+import { getAccountFromSession } from "../auth";
 import prisma from "../prisma";
 import { nucleusKeySelect } from "../prisma-types";
 

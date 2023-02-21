@@ -15,7 +15,7 @@ import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
 import { HiCheckCircle, HiInformationCircle } from "react-icons/hi";
 import useAuthorizedUserStore from "../../../stores/useAuthorizedUser";
-import getMediaUrl from "../../../util/getMedia";
+import getMediaUrl from "../../../util/get-media";
 import { NonUser } from "../../../util/prisma-types";
 import ModernEmptyState from "../../ModernEmptyState";
 import ShadedButton from "../../ShadedButton";

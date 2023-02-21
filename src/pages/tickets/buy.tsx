@@ -5,8 +5,8 @@ import { useState } from "react";
 import { HiCheck } from "react-icons/hi";
 import CheckboxCard from "../../components/CheckboxCard";
 import Framework from "../../components/Framework";
-import authorizedRoute from "../../util/authorizedRoute";
-import getStripe from "../../util/getStripe";
+import authorizedRoute from "../../util/auth";
+import getStripe from "../../util/get-stripe";
 import { User } from "../../util/prisma-types";
 
 interface BuyTicketsProps {

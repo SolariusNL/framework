@@ -1,6 +1,8 @@
 import {
   Avatar,
+  Badge,
   Group,
+  HoverCard,
   Menu,
   Modal,
   Text,
@@ -24,13 +26,14 @@ import {
   HiQrcode,
   HiSun,
   HiUser,
+  HiUsers,
 } from "react-icons/hi";
 import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
 import useSidebar from "../../stores/useSidebar";
 import useUpdateDrawer from "../../stores/useUpdateDrawer";
 import logout from "../../util/api/logout";
-import getMediaUrl from "../../util/getMedia";
-import useMediaQuery from "../../util/useMediaQuery";
+import getMediaUrl from "../../util/get-media";
+import useMediaQuery from "../../util/media-query";
 import ClickToReveal from "../ClickToReveal";
 import { frameworkStyles } from "../Framework";
 
@@ -198,6 +201,27 @@ const UserMenu = ({
             onClick={() => router.push("/avatar")}
           >
             Avatar
+          </Menu.Item>
+          <Menu.Item
+            icon={<HiUsers />}
+            onClick={() => router.push("/teams")}
+            rightSection={
+              <HoverCard width={300} shadow="lg">
+                <HoverCard.Target>
+                  <Badge>Beta</Badge>
+                </HoverCard.Target>
+                <HoverCard.Dropdown>
+                  <Text size="lg">Teams</Text>
+                  <Text size="sm" color="dimmed">
+                    Teams are a new way to collaborate, organize, and manage
+                    your games and teammates. Teams are currently in beta, and
+                    major changes are expected.
+                  </Text>
+                </HoverCard.Dropdown>
+              </HoverCard>
+            }
+          >
+            Teams
           </Menu.Item>
           <Menu.Item
             icon={colorScheme === "dark" ? <HiMoon /> : <HiSun />}

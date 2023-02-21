@@ -8,7 +8,7 @@ import multer from "multer";
 import path from "path";
 import sharp from "sharp";
 import Authorized, { Account } from "../../../util/api/authorized";
-import { getAccountFromSession } from "../../../util/authorizedRoute";
+import { getAccountFromSession } from "../../../util/auth";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
 
@@ -165,6 +165,35 @@ const gamepassIcons = createMulter("gamepass", async (req, file, cb) => {
   cb(null, gamepass.id + ".webp");
 });
 
+const teamIcons = createMulter("team", async (req, file, cb) => {
+  const user = await getAccountFromSession(
+    String(req.headers["authorization"])
+  );
+
+  if (!req.params.teamId) return cb(new Error("No team id provided"), "");
+
+  const team = await prisma.team.findFirst({
+    where: {
+      id: String(req.params.teamId),
+      ownerId: user?.id,
+    },
+  });
+
+  if (!team) return cb(new Error("Team not found"), "");
+  if (!String(req.params.teamId)) return cb(new Error("Invalid team id"), "");
+
+  await prisma.team.update({
+    where: {
+      id: String(req.params.teamId),
+    },
+    data: {
+      iconUri: `/team/${team.id}.webp`,
+    },
+  });
+
+  cb(null, team.id + ".webp");
+});
+
 class MediaRouter {
   @Post("/upload/avatar")
   @Authorized()
@@ -208,6 +237,19 @@ class MediaRouter {
   ) {
     return {
       icon: `/gamepass/${gamepassId}.webp`,
+      success: true,
+    };
+  }
+
+  @Post("/upload/team/:teamId")
+  @Authorized()
+  @UseMiddleware(teamIcons.single("team"))
+  async uploadTeamIcon(
+    @Account() account: User,
+    @Param("teamId") teamId: string
+  ) {
+    return {
+      icon: `/team/${teamId}.webp`,
       success: true,
     };
   }

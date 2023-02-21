@@ -35,10 +35,10 @@ import Framework from "../components/Framework";
 import ModernEmptyState from "../components/ModernEmptyState";
 import ShadedCard from "../components/ShadedCard";
 import SidebarTabNavigation from "../layouts/SidebarTabNavigation";
-import authorizedRoute from "../util/authorizedRoute";
+import authorizedRoute from "../util/auth";
+import useMediaQuery from "../util/media-query";
 import prisma from "../util/prisma";
 import { User } from "../util/prisma-types";
-import useMediaQuery from "../util/useMediaQuery";
 
 interface ChecklistsProps {
   user: User;

@@ -18,7 +18,7 @@ import {
   useState,
 } from "react";
 import ModernEmptyState from "../components/ModernEmptyState";
-import getMediaUrl from "../util/getMedia";
+import getMediaUrl from "../util/get-media";
 import { NonUser, User } from "../util/prisma-types";
 import {
   getFollowers,

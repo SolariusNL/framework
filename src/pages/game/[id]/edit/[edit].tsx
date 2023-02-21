@@ -26,7 +26,7 @@ import Store from "../../../../components/EditGame/Store";
 import Updates from "../../../../components/EditGame/Updates";
 import Framework from "../../../../components/Framework";
 import SidebarTabNavigation from "../../../../layouts/SidebarTabNavigation";
-import authorizedRoute from "../../../../util/authorizedRoute";
+import authorizedRoute from "../../../../util/auth";
 import prisma from "../../../../util/prisma";
 import { Game, gameSelect, User } from "../../../../util/prisma-types";
 

@@ -1,7 +1,6 @@
 import {
   Affix,
   Button,
-  Grid,
   Loader,
   Transition,
   useMantineColorScheme,
@@ -13,7 +12,7 @@ import Head from "next/head";
 import React from "react";
 import { HiSave } from "react-icons/hi";
 import Framework from "../../../components/Framework";
-import authorizedRoute from "../../../util/authorizedRoute";
+import authorizedRoute from "../../../util/auth";
 import { getCookie } from "../../../util/cookies";
 import prisma from "../../../util/prisma";
 import { User } from "../../../util/prisma-types";

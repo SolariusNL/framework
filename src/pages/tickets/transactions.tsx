@@ -1,7 +1,7 @@
 import { GetServerSidePropsContext } from "next";
 import Framework from "../../components/Framework";
 import TransactionsWidget from "../../components/Widgets/Transactions";
-import authorizedRoute from "../../util/authorizedRoute";
+import authorizedRoute from "../../util/auth";
 import { User } from "../../util/prisma-types";
 
 interface TransactionProps {

@@ -151,6 +151,8 @@ model User {
   passwordResetRequests      PasswordResetRequest[] @relation("passwordResetRequests")
   createdInvites             Invite[]               @relation("userInvites")
   claimedSupportTickets      SupportTicket[]        @relation("claimedSupportTickets")
+  apartOf                    Team[]                 @relation("teamMembers")
+  ownedTeams                 Team[]                 @relation("teamOwner")
 }
 
 model ConnectedAccount {
@@ -341,6 +343,8 @@ model Game {
   followers            User[]                    @relation("gameFollowers")
   updateLogs           GameUpdateLog[]           @relation("gameUpdateLogs")
   envs                 GameEnvironmentVariable[] @relation("environmentVariables")
+  team                 Team?                     @relation("teamGame", fields: [teamId], references: [id])
+  teamId               String?
 }
 
 model GameComment {
@@ -865,4 +869,22 @@ model GameEnvironmentVariable {
 enum GameEnvironment {
   PRODUCTION
   DEVELOPMENT
+}
+
+model Team {
+  id          String   @id @default(uuid())
+  name        String
+  createdAt   DateTime @default(now())
+  members     User[]   @relation("teamMembers")
+  games       Game[]   @relation("teamGame")
+  iconUri     String   @default("")
+  description String   @default("")
+  location    String?  @default("")
+  timezone    String?  @default("")
+  website     String?  @default("")
+  email       String?  @default("")
+  owner       User     @relation("teamOwner", fields: [ownerId], references: [id])
+  ownerId     Int
+  cakeDay     DateTime @default(now())
+  updatedAt   DateTime @default(now())
 }

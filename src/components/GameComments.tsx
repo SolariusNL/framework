@@ -11,7 +11,7 @@ import { usePagination } from "@mantine/hooks";
 import { useState } from "react";
 import { HiChat } from "react-icons/hi";
 import { getCookie } from "../util/cookies";
-import getMediaUrl from "../util/getMedia";
+import getMediaUrl from "../util/get-media";
 import { Game, NonUser, User } from "../util/prisma-types";
 import Comment from "./Comment";
 import ModernEmptyState from "./ModernEmptyState";

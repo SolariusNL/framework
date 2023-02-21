@@ -13,8 +13,8 @@ import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { useState } from "react";
 import Framework from "../../components/Framework";
-import authorizedRoute from "../../util/authorizedRoute";
-import getMediaUrl from "../../util/getMedia";
+import authorizedRoute from "../../util/auth";
+import getMediaUrl from "../../util/get-media";
 import { User } from "../../util/prisma-types";
 
 interface DiscordServiceProps {

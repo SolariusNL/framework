@@ -1,5 +1,5 @@
 import { Group, Tabs, Text, Title } from "@mantine/core";
-import useMediaQuery from "../../util/useMediaQuery";
+import useMediaQuery from "../../util/media-query";
 import ModernEmptyState from "../ModernEmptyState";
 import ShadedCard from "../ShadedCard";
 

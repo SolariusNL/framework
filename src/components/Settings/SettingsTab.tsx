@@ -1,8 +1,8 @@
-import { Alert, Badge, Button, Group, Tabs, Title } from "@mantine/core";
+import { Alert, Button, Group } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import React from "react";
 import { HiCheckCircle, HiSave, HiXCircle } from "react-icons/hi";
-import useMediaQuery from "../../util/useMediaQuery";
+import useMediaQuery from "../../util/media-query";
 import ModernEmptyState from "../ModernEmptyState";
 
 interface SettingsTabProps {

@@ -57,12 +57,12 @@ import InfoTab from "../../../components/ViewGame/Info";
 import Store from "../../../components/ViewGame/Store";
 import UpdateLogTab from "../../../components/ViewGame/UpdateLog";
 import Votes from "../../../components/ViewGame/Votes";
-import authorizedRoute from "../../../util/authorizedRoute";
+import authorizedRoute from "../../../util/auth";
 import { getIpcRenderer } from "../../../util/electron";
-import getMediaUrl from "../../../util/getMedia";
+import getMediaUrl from "../../../util/get-media";
+import useMediaQuery from "../../../util/media-query";
 import prisma from "../../../util/prisma";
 import { Game, gameSelect, NonUser, User } from "../../../util/prisma-types";
-import useMediaQuery from "../../../util/useMediaQuery";
 
 type GameWithGamepass = Game & {
   gamepasses: Gamepass[];

@@ -11,7 +11,7 @@ import Link from "next/link";
 import React from "react";
 import { HiFlag } from "react-icons/hi";
 import { useFrameworkUser } from "../contexts/FrameworkUser";
-import getMediaUrl from "../util/getMedia";
+import getMediaUrl from "../util/get-media";
 import { NonUser } from "../util/prisma-types";
 import ReportUser from "./ReportUser";
 

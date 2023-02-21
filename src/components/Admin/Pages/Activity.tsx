@@ -11,7 +11,7 @@ import { AdminActivityLog } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import React, { forwardRef, useEffect, useState } from "react";
 import getAdmins from "../../../util/fetch/getAdmins";
-import getMediaUrl from "../../../util/getMedia";
+import getMediaUrl from "../../../util/get-media";
 import ModernEmptyState from "../../ModernEmptyState";
 
 interface UserItemProps extends React.ComponentPropsWithoutRef<"div"> {

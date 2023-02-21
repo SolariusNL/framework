@@ -1,5 +1,5 @@
 import { Divider, Text, Title, useMantineTheme } from "@mantine/core";
-import useMediaQuery from "../../util/useMediaQuery";
+import useMediaQuery from "../../util/media-query";
 
 interface SideBySideProps {
   title: string;

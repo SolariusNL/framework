@@ -12,7 +12,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { HiPlus } from "react-icons/hi";
 import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
-import getMediaUrl from "../../util/getMedia";
+import getMediaUrl from "../../util/get-media";
 import { NonUser } from "../../util/prisma-types";
 import ModernEmptyState from "../ModernEmptyState";
 import ShadedButton from "../ShadedButton";

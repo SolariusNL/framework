@@ -3,7 +3,7 @@ import { getCookie } from "cookies-next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { HiThumbDown, HiThumbUp } from "react-icons/hi";
-import getMediaUrl from "../../util/getMedia";
+import getMediaUrl from "../../util/get-media";
 import { Game } from "../../util/prisma-types";
 import ModernEmptyState from "../ModernEmptyState";
 import ShadedButton from "../ShadedButton";

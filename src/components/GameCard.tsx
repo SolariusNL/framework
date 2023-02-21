@@ -11,16 +11,14 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 import { randomId } from "@mantine/hooks";
-import { motion } from "framer-motion";
 import Link from "next/link";
 import { useState } from "react";
 import { HiThumbUp, HiUsers } from "react-icons/hi";
-import getMediaUrl from "../util/getMedia";
+import getMediaUrl from "../util/get-media";
 import { Game } from "../util/prisma-types";
 import { getRatingColor } from "../util/universe/ratings";
 import PlaceholderGameResource from "./PlaceholderGameResource";
 import ReportUser from "./ReportUser";
-import UserContext from "./UserContext";
 
 interface GameCardProps {
   game: Game;
@@ -67,13 +65,13 @@ const GameCard = ({ game }: GameCardProps) => {
         >
           <Card.Section mb="md">
             {game.iconUri ? (
-                <Image
-                  src={getMediaUrl(game.iconUri)}
-                  alt={game.name}
-                  radius={theme.radius.md}
-                  withPlaceholder
-                  className="w-full h-full object-cover"
-                />
+              <Image
+                src={getMediaUrl(game.iconUri)}
+                alt={game.name}
+                radius={theme.radius.md}
+                withPlaceholder
+                className="w-full h-full object-cover"
+              />
             ) : (
               <AspectRatio ratio={1}>
                 <PlaceholderGameResource game={game} />

@@ -3,7 +3,7 @@ import http from "http";
 import { NextApiResponse } from "next";
 import { Server } from "socket.io";
 import Authorized from "../../../util/api/authorized";
-import { getAccountFromSession } from "../../../util/authorizedRoute";
+import { getAccountFromSession } from "../../../util/auth";
 import logger from "../../../util/logger";
 import prisma from "../../../util/prisma";
 

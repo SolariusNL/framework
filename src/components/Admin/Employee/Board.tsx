@@ -1,13 +1,14 @@
 import {
   Avatar,
-  Button, Modal,
+  Button,
+  Modal,
   Paper,
   Skeleton,
   Stack,
   Text,
   TextInput,
   Title,
-  TypographyStylesProvider
+  TypographyStylesProvider,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
@@ -16,9 +17,9 @@ import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
 import { HiCheckCircle } from "react-icons/hi";
 import useAuthorizedUserStore from "../../../stores/useAuthorizedUser";
-import getMediaUrl from "../../../util/getMedia";
+import getMediaUrl from "../../../util/get-media";
 import { nonCurrentUserSelect } from "../../../util/prisma-types";
-import { getRelativeTime } from "../../../util/relativeTime";
+import { getRelativeTime } from "../../../util/relative-time";
 import Descriptive from "../../Descriptive";
 import RichText from "../../RichText";
 

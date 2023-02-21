@@ -6,7 +6,7 @@ import { getCookie } from "cookies-next";
 import { useState } from "react";
 import { HiCheck, HiCheckCircle, HiTicket } from "react-icons/hi";
 import { useFrameworkUser } from "../../contexts/FrameworkUser";
-import getMediaUrl from "../../util/getMedia";
+import getMediaUrl from "../../util/get-media";
 import { Game } from "../../util/prisma-types";
 import ModernEmptyState from "../ModernEmptyState";
 import PurchaseConfirmation from "../PurchaseConfirmation";

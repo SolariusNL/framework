@@ -17,8 +17,8 @@ import {
   HiInformationCircle,
 } from "react-icons/hi";
 import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
-import { getRelativeTime } from "../../util/relativeTime";
-import useMediaQuery from "../../util/useMediaQuery";
+import useMediaQuery from "../../util/media-query";
+import { getRelativeTime } from "../../util/relative-time";
 
 const Notifications: React.FC = () => {
   const [activePage, setActivePage] = useState(1);

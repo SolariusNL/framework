@@ -56,11 +56,11 @@ import Footer from "../../components/Footer";
 import FrameworkLogo from "../../components/FrameworkLogo";
 import ShadedCard from "../../components/ShadedCard";
 import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
-import authorizedRoute from "../../util/authorizedRoute";
-import getMediaUrl from "../../util/getMedia";
+import authorizedRoute from "../../util/auth";
+import getMediaUrl from "../../util/get-media";
+import useMediaQuery from "../../util/media-query";
 import prisma from "../../util/prisma";
 import { User } from "../../util/prisma-types";
-import useMediaQuery from "../../util/useMediaQuery";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon");

@@ -1,7 +1,7 @@
 import { createHandler, Get, SetHeader } from "@storyofams/next-api-decorators";
 import { readFile } from "fs/promises";
 import fetch from "node-fetch";
-import { RateLimitMiddleware } from "../../../util/rateLimit";
+import { RateLimitMiddleware } from "../../../util/rate-limit";
 
 interface BetterUptimeResponse {
   data: Array<{

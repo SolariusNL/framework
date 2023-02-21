@@ -29,7 +29,7 @@ import StaffEmail from "../../../../email/emails/staff-email";
 import SupportTicketClosed from "../../../../email/emails/support-ticket-closed";
 import { PrefCategory } from "../../../components/Admin/Pages/Instance";
 import type { ReportCategory } from "../../../components/ReportUser";
-import { AdminAction } from "../../../util/adminAction";
+import { AdminAction } from "../../../util/admin-action";
 import Authorized, {
   Account,
   AdminAuthorized,
@@ -44,7 +44,7 @@ import {
   nonCurrentUserSelect,
   userSelect,
 } from "../../../util/prisma-types";
-import { RateLimitMiddleware } from "../../../util/rateLimit";
+import { RateLimitMiddleware } from "../../../util/rate-limit";
 import { getOperatingSystem } from "../../../util/ua";
 
 class AdminRouter {

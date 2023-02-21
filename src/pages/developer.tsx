@@ -1,14 +1,14 @@
 import { GetServerSidePropsContext } from "next";
 import { HiHome, HiKey, HiNewspaper, HiUser } from "react-icons/hi";
+import ReactNoSSR from "react-no-ssr";
 import DeveloperActivity from "../components/Developer/Activity";
 import DeveloperDashboard from "../components/Developer/Dashboard";
 import DeveloperKeys from "../components/Developer/Keys";
 import DeveloperProfile from "../components/Developer/Profile";
 import Framework from "../components/Framework";
 import TabNav from "../components/TabNav";
-import authorizedRoute from "../util/authorizedRoute";
+import authorizedRoute from "../util/auth";
 import { User } from "../util/prisma-types";
-import ReactNoSSR from "react-no-ssr";
 
 interface DeveloperProps {
   user: User;

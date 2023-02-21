@@ -2,15 +2,15 @@ import { Loader, Tabs, Title } from "@mantine/core";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
 import React from "react";
-import { HiFolder, HiMail, HiPaperAirplane } from "react-icons/hi";
+import { HiMail, HiPaperAirplane } from "react-icons/hi";
+import ReactNoSSR from "react-no-ssr";
 import Framework from "../components/Framework";
 import Inbox from "../components/Messages/Inbox";
 import NewMessage from "../components/Messages/NewMessage";
 import ModernEmptyState from "../components/ModernEmptyState";
 import TabNav from "../components/TabNav";
-import authorizedRoute from "../util/authorizedRoute";
+import authorizedRoute from "../util/auth";
 import { Message, User } from "../util/prisma-types";
-import ReactNoSSR from "react-no-ssr";
 
 interface MessagesProps {
   user: User;

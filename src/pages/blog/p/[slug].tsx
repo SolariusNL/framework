@@ -2,8 +2,8 @@ import { Avatar, Text, TypographyStylesProvider } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { HiClock, HiPencil, HiStar, HiUsers } from "react-icons/hi";
 import Framework from "../../../components/Framework";
-import authorizedRoute from "../../../util/authorizedRoute";
-import getMediaUrl from "../../../util/getMedia";
+import authorizedRoute from "../../../util/auth";
+import getMediaUrl from "../../../util/get-media";
 import prisma from "../../../util/prisma";
 import { BlogPost, blogPostSelect, User } from "../../../util/prisma-types";
 

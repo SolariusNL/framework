@@ -15,7 +15,7 @@ import {
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import ReactNoSSR from "react-no-ssr";
-import useConfig from "../util/useConfig";
+import useConfig from "../util/config";
 import SoodamLogo from "./SoodamLogo";
 
 const useStyles = createStyles((theme) => ({
