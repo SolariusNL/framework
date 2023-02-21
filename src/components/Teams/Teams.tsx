@@ -5,7 +5,7 @@ import {
   HiPlus,
   HiTicket,
   HiViewGrid,
-  HiViewList
+  HiViewList,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import { User } from "../../util/prisma-types";
@@ -71,7 +71,11 @@ const TeamsProvider: React.FC<TeamsProps> = ({
           <IntegratedTabs>
             {tabs.map((tab) => (
               <Link href={tab.href} key={tab.name} passHref>
-                <IntegratedTabs.Tab icon={tab.icon} href={tab.href}>
+                <IntegratedTabs.Tab
+                  icon={tab.icon}
+                  href={tab.href}
+                  right={tab.right}
+                >
                   {tab.name}
                 </IntegratedTabs.Tab>
               </Link>

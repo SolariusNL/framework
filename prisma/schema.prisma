@@ -872,20 +872,21 @@ enum GameEnvironment {
 }
 
 model Team {
-  id          String   @id @default(uuid())
-  name        String
-  createdAt   DateTime @default(now())
-  members     User[]   @relation("teamMembers")
-  games       Game[]   @relation("teamGame")
-  iconUri     String   @default("")
-  description String   @default("")
-  location    String?  @default("")
-  timezone    String?  @default("")
-  website     String?  @default("")
-  email       String?  @default("")
-  owner       User     @relation("teamOwner", fields: [ownerId], references: [id])
-  ownerId     Int
-  cakeDay     DateTime @default(now())
-  updatedAt   DateTime @default(now())
-  slug        String   @default("")
+  id                  String   @id @default(uuid())
+  name                String
+  createdAt           DateTime @default(now())
+  members             User[]   @relation("teamMembers")
+  games               Game[]   @relation("teamGame")
+  iconUri             String   @default("")
+  description         String   @default("")
+  descriptionMarkdown String   @default("")
+  location            String?  @default("")
+  timezone            String?  @default("")
+  website             String?  @default("")
+  email               String?  @default("")
+  owner               User     @relation("teamOwner", fields: [ownerId], references: [id])
+  ownerId             Int
+  cakeDay             DateTime @default(now())
+  updatedAt           DateTime @default(now())
+  slug                String   @default("")
 }

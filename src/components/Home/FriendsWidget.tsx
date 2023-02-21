@@ -47,7 +47,7 @@ export const Section: React.FC<{
   );
 };
 
-const Friend: React.FC<{ friend: NonUser }> = ({ friend }) => {
+export const Friend: React.FC<{ friend: NonUser }> = ({ friend }) => {
   const { user } = useAuthorizedUserStore();
   const { colors } = useMantineTheme();
 
