@@ -1,11 +1,11 @@
 import {
-  ActionIcon,
   Avatar,
-  Menu,
   Select,
   Skeleton,
   Text,
   TextInput,
+  Tooltip,
+  useMantineTheme,
 } from "@mantine/core";
 import { Team } from "@prisma/client";
 import { getCookie } from "cookies-next";
@@ -13,18 +13,20 @@ import { GetServerSideProps } from "next";
 import Link from "next/link";
 import React from "react";
 import {
-  HiClipboard,
-  HiDotsVertical,
-  HiExternalLink,
-  HiPencil,
+  HiCake,
+  HiMap,
   HiSearch,
   HiSortAscending,
+  HiUsers,
+  HiViewGrid,
 } from "react-icons/hi";
 import Copy from "../../components/Copy";
 import ModernEmptyState from "../../components/ModernEmptyState";
+import RenderMarkdown from "../../components/RenderMarkdown";
 import ShadedButton from "../../components/ShadedButton";
 import ShadedCard from "../../components/ShadedCard";
 import TeamsProvider from "../../components/Teams/Teams";
+import UserContext from "../../components/UserContext";
 import authorizedRoute from "../../util/auth";
 import clsx from "../../util/clsx";
 import getMediaUrl from "../../util/get-media";
@@ -36,7 +38,7 @@ type TeamsProps = {
 
 type FilterType = "all" | "owner";
 type SortType = "last_updated" | "created_at" | "members" | "name";
-type TeamType = {
+export type TeamType = {
   owner: NonUser;
   _count: {
     members: number;
@@ -50,6 +52,7 @@ const Teams: React.FC<TeamsProps> = ({ user }) => {
   const [sort, setSort] = React.useState<SortType>("name");
   const [teams, setTeams] = React.useState<TeamType[]>();
   const [loading, setLoading] = React.useState(true);
+  const theme = useMantineTheme();
 
   const fetchTeams = async () => {
     setLoading(true);
@@ -140,15 +143,40 @@ const Teams: React.FC<TeamsProps> = ({ user }) => {
             </div>
           ) : (
             teams &&
-            teams.map((t) => (
-              <Link href={`/teams/${t.name}`} passHref key={t.id}>
-                <ShadedButton>
-                  <div className="w-full flex flex-row">
-                    <div className="flex gap-5 w-full">
-                      <Avatar src={getMediaUrl(t.iconUri)} size={82} />
-                      <div>
-                        <div className="flex justify-between items-center">
-                          <div className="flex items-center gap-2">
+            teams
+              .filter((t) => {
+                if (filter === "all") return true;
+                return t.ownerId === user.id;
+              })
+              .sort((a, b) => {
+                if (sort === "name") {
+                  return a.name.localeCompare(b.name);
+                } else if (sort === "last_updated") {
+                  return (
+                    new Date(b.updatedAt).getTime() -
+                    new Date(a.updatedAt).getTime()
+                  );
+                } else if (sort === "created_at") {
+                  return (
+                    new Date(b.cakeDay).getTime() -
+                    new Date(a.cakeDay).getTime()
+                  );
+                } else if (sort === "members") {
+                  return b._count.members + 1 - (a._count.members + 1);
+                }
+                return 0;
+              })
+              .filter((t) => {
+                return t.name.toLowerCase().includes(search.toLowerCase());
+              })
+              .map((t) => (
+                <Link href={`/teams/t/${t.slug}`} passHref key={t.id}>
+                  <ShadedButton>
+                    <div className="w-full">
+                      <div className="flex gap-5 w-full items-start">
+                        <Avatar src={getMediaUrl(t.iconUri)} size={82} />
+                        <div className="flex-grow">
+                          <div className="flex justify-between items-center">
                             <Text size="xl" weight={500}>
                               {t.name}
                             </Text>
@@ -159,39 +187,67 @@ const Teams: React.FC<TeamsProps> = ({ user }) => {
                               </Text>
                             </div>
                           </div>
-                          <Menu>
-                            <Menu.Target>
-                              <ActionIcon onClick={(e) => e.stopPropagation()}>
-                                <HiDotsVertical />
-                              </ActionIcon>
-                            </Menu.Target>
-                            <Menu.Dropdown>
-                              <Link href={`/teams/${t.name}/edit`} passHref>
-                                <Menu.Item icon={<HiPencil />} component="a">
-                                  Edit team
-                                </Menu.Item>
-                              </Link>
-                              <Link href={`/teams/${t.name}`} passHref>
-                                <Menu.Item
-                                  icon={<HiExternalLink />}
-                                  component="a"
-                                >
-                                  View team
-                                </Menu.Item>
-                              </Link>
-                              <Menu.Divider />
-                              <Menu.Item icon={<HiClipboard />}>
-                                Copy ID
-                              </Menu.Item>
-                            </Menu.Dropdown>
-                          </Menu>
+                          <div className="flex justify-between items-center mb-4">
+                            <div className="mt-2 flex items-center gap-2">
+                              <UserContext user={t.owner}>
+                                <Avatar
+                                  size={24}
+                                  src={getMediaUrl(t.owner.avatarUri)}
+                                  className="rounded-full"
+                                />
+                              </UserContext>
+                              <Text size="sm" color="dimmed">
+                                @{t.owner.username}
+                              </Text>
+                            </div>
+                            <Tooltip label="Created on">
+                              <div className="flex items-center gap-2">
+                                <HiCake color={theme.colors.gray[4]} />
+                                <Text size="sm" color="dimmed" weight={500}>
+                                  {new Date(
+                                    t.cakeDay as Date
+                                  ).toLocaleDateString()}
+                                </Text>
+                              </div>
+                            </Tooltip>
+                          </div>
+                          <RenderMarkdown clamp={2}>
+                            {t.description}
+                          </RenderMarkdown>
                         </div>
                       </div>
+                      <div className="flex justify-around gap-2 mt-4">
+                        {[
+                          {
+                            tooltip: "Member count",
+                            value: t._count.members + 1 || 0,
+                            icon: HiUsers,
+                          },
+                          {
+                            tooltip: "Located",
+                            value: t.location || "Unprovided",
+                            icon: HiMap,
+                          },
+                          {
+                            tooltip: "Game count",
+                            value: t._count.games,
+                            icon: HiViewGrid,
+                          },
+                        ].map(({ tooltip, value, icon: Icon }) => (
+                          <Tooltip label={tooltip} key={tooltip}>
+                            <div className="flex items-center gap-2">
+                              <Icon color={theme.colors.gray[5]} />
+                              <Text size="sm" color="dimmed" weight={500}>
+                                {value}
+                              </Text>
+                            </div>
+                          </Tooltip>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                </ShadedButton>
-              </Link>
-            ))
+                  </ShadedButton>
+                </Link>
+              ))
           )}
         </div>
       </ShadedCard>

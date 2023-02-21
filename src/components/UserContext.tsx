@@ -50,7 +50,11 @@ const UserContext = ({ user, children, customHref }: UserContextProps) => {
                 <Text size="sm" weight={700} sx={{ lineHeight: 1 }}>
                   {user.alias ? user.alias : user.username}
                 </Text>
-                <Link href={`/profile/${user.username}`} passHref>
+                <Link
+                  href={`/profile/${user.username}`}
+                  passHref
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <Anchor color="dimmed" size="xs" sx={{ lineHeight: 1 }}>
                     @{user.username}
                   </Anchor>

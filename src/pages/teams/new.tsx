@@ -145,36 +145,41 @@ const NewTeam: React.FC<NewTeamProps> = ({ user }) => {
                 .then(async (res) => {
                   if (res.success) {
                     const formData = new FormData();
-                    const file = new File(
-                      [
-                        Buffer.from(
-                          uploadedUrl?.replace(/^data:image\/\w+;base64,/, "")!,
-                          "base64"
-                        ),
-                      ],
-                      "team.jpeg",
-                      {
-                        type: "image/jpeg",
-                      }
-                    );
+                    if (uploadedUrl) {
+                      const file = new File(
+                        [
+                          Buffer.from(
+                            uploadedUrl?.replace(
+                              /^data:image\/\w+;base64,/,
+                              ""
+                            )!,
+                            "base64"
+                          ),
+                        ],
+                        "team.jpeg",
+                        {
+                          type: "image/jpeg",
+                        }
+                      );
 
-                    formData.append("team", file);
+                      formData.append("team", file);
 
-                    await fetch(`/api/media/upload/team/${res.team.id}`, {
-                      method: "POST",
-                      headers: {
-                        authorization: String(getCookie(".frameworksession")),
-                      },
-                      body: formData,
-                    }).catch(() => {
-                      showNotification({
-                        title: "Failed to upload icon",
-                        message: "Failed to upload icon. Please try again.",
-                        icon: <HiXCircle />,
+                      await fetch(`/api/media/upload/team/${res.team.id}`, {
+                        method: "POST",
+                        headers: {
+                          authorization: String(getCookie(".frameworksession")),
+                        },
+                        body: formData,
+                      }).catch(() => {
+                        showNotification({
+                          title: "Failed to upload icon",
+                          message: "Failed to upload icon. Please try again.",
+                          icon: <HiXCircle />,
+                        });
                       });
-                    });
+                    }
 
-                    router.push(`/teams/${res.team.name}`);
+                    router.push(`/teams/t/${res.team.slug}`);
                     showNotification({
                       title: "Team created",
                       message: "Your team has been created successfully.",

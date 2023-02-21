@@ -13,6 +13,8 @@ import { nonCurrentUserSelect } from "../../../util/prisma-types";
 import type { User } from "../../../util/prisma-types";
 import { RateLimitMiddleware } from "../../../util/rate-limit";
 import { slugify } from "../../../util/slug";
+import sanitize from "sanitize-html";
+import { parse } from "../../../components/RenderMarkdown";
 
 class TeamsRouter {
   @Post("/new")
@@ -49,7 +51,34 @@ class TeamsRouter {
     const team = await prisma.team.create({
       data: {
         name,
-        description,
+        description: sanitize(
+          parse(description),
+          {
+            allowedTags: [
+              "b",
+              "i",
+              "u",
+              "s",
+              "a",
+              "p",
+              "br",
+              "ul",
+              "ol",
+              "li",
+              "h2",
+              "h3",
+              "h4",
+              "strong",
+              "table",
+              "tr",
+              "th",
+              "td"
+            ],
+            allowedAttributes: {
+              a: ["href"],
+            },
+          }
+        ),
         location,
         timezone,
         website,
