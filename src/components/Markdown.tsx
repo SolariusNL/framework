@@ -352,7 +352,7 @@ const Markdown: React.FC<MarkdownProps> = ({
                   theme.colorScheme === "dark"
                     ? "black"
                     : "white" + "!important",
-                fontFamily: "Roboto Mono, monospace !important",
+                fontFamily: "Fira Code VF, monospace !important",
               },
             })}
             error={error}

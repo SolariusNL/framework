@@ -63,7 +63,7 @@ const TeamsDiscover: React.FC<TeamsDiscoverProps> = ({ user }) => {
       title="Discover"
       description="Find new teams to join, and connect with other users."
     >
-      <div
+      {/* <div
         className={clsx(
           "flex-initial flex-col md:flex-row flex items-center gap-4 mt-8",
           "items-stretch md:items-center mb-8"
@@ -110,7 +110,7 @@ const TeamsDiscover: React.FC<TeamsDiscoverProps> = ({ user }) => {
           }
           placeholder="Sort by..."
         />
-      </div>
+      </div> */}
       <ShadedCard>
         <InfiniteScroll
           pageStart={1}
