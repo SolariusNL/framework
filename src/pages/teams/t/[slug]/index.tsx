@@ -8,7 +8,7 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
-import { Rating } from "@prisma/client";
+import { Rating, TeamAccess } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { GetServerSideProps } from "next";
 import { useEffect, useState } from "react";
@@ -53,16 +53,19 @@ export type TeamViewProps = {
 const TeamView: React.FC<TeamViewProps> = ({ user, team }) => {
   const theme = useMantineTheme();
   const [member, setMember] = useState<boolean | null>(null);
+  const [invited, setInvited] = useState<boolean>(false);
+
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: String(getCookie(".frameworksession")),
+  };
 
   const joinTeam = async () => {
     if (member === null) return;
     setMember(!member);
     const res = await fetch(`/api/teams/${team.id}/join`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: String(getCookie(".frameworksession")),
-      },
+      headers,
     });
     if (res.status === 200 || res.status === 204) {
       setMember(!member);
@@ -85,13 +88,17 @@ const TeamView: React.FC<TeamViewProps> = ({ user, team }) => {
   useEffect(() => {
     fetch(`/api/teams/${team.id}/ismember`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: String(getCookie(".frameworksession")),
-      },
+      headers,
     })
       .then((res) => res.json())
       .then((res) => setMember(res.isMember));
+
+    fetch(`/api/teams/${team.id}/isinvited`, {
+      method: "GET",
+      headers,
+    })
+      .then((res) => res.json())
+      .then((res) => setInvited(res.isInvited));
   }, [team.id]);
 
   return (
@@ -117,10 +124,22 @@ const TeamView: React.FC<TeamViewProps> = ({ user, team }) => {
         </div>
         <Button
           color={member === null ? "dark" : member ? "red" : "blue"}
-          disabled={member === null || team.owner.id === user.id}
+          disabled={
+            member === null ||
+            team.owner.id === user.id ||
+            (team.access === TeamAccess.PRIVATE && !invited && !member)
+          }
           onClick={joinTeam}
         >
-          {member === null ? "..." : member ? "Leave team" : "Join team"}
+          {member === null
+            ? "..."
+            : member
+            ? "Leave team"
+            : team.access === TeamAccess.PRIVATE
+            ? invited
+              ? "Accept invite"
+              : "Private"
+            : "Join team"}
         </Button>
       </div>
       <ShadedCard>
@@ -151,7 +170,7 @@ const TeamView: React.FC<TeamViewProps> = ({ user, team }) => {
               {
                 tooltip: "Open issues",
                 icon: HiExclamationCircle,
-                value: "0 open issues" /** @todo - issues */,
+                value: "0 open issues",
               },
               {
                 tooltip: "Contact email",
@@ -174,13 +193,13 @@ const TeamView: React.FC<TeamViewProps> = ({ user, team }) => {
                 value: team.timezone || "Unprovided",
               },
             ].map(({ tooltip, icon: Icon, value }) => (
-              <Tooltip label={tooltip} key={tooltip}>
+              <Tooltip label={`${tooltip}: ${value}`} key={tooltip}>
                 <div className="flex items-center gap-3">
                   <Icon
                     color={theme.colors.gray[5]}
                     className="flex-shrink-0"
                   />
-                  <Text weight={500} color="dimmed">
+                  <Text weight={500} color="dimmed" lineClamp={1}>
                     {value.startsWith("http") ? (
                       <Anchor href={value} target="_blank" rel="noreferrer">
                         {value}

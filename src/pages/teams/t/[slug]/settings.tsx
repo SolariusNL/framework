@@ -1,18 +1,21 @@
 import {
+  Avatar,
   Button,
+  CloseButton,
   Divider,
   Image,
+  Loader,
   Select,
+  Stack,
   Text,
   TextInput,
   useMantineTheme,
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
-import { Rating } from "@prisma/client";
+import { Rating, TeamAccess } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { GetServerSideProps } from "next";
-import { useRouter } from "next/router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   HiCheck,
   HiCheckCircle,
@@ -22,9 +25,11 @@ import {
 } from "react-icons/hi";
 import { TeamType } from "../..";
 import ImageUploader from "../../../../components/ImageUploader";
+import LabelledRadio from "../../../../components/LabelledRadio";
 import Markdown, { ToolbarItem } from "../../../../components/Markdown";
 import SideBySide from "../../../../components/Settings/SideBySide";
 import TeamsViewProvider from "../../../../components/Teams/TeamsView";
+import UserSelect from "../../../../components/UserSelect";
 import getTimezones from "../../../../data/timezones";
 import authorizedRoute from "../../../../util/auth";
 import getMediaUrl from "../../../../util/get-media";
@@ -54,6 +59,7 @@ type Updatable = {
   timezone: string;
   website: string;
   email: string;
+  access: TeamAccess;
 };
 
 const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
@@ -63,27 +69,37 @@ const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
     timezone: team.timezone || "",
     website: team.website || "",
     email: team.email || "",
+    access: team.access || TeamAccess.OPEN,
   });
   const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
   const iconRef = useRef<HTMLImageElement>(null);
   const theme = useMantineTheme();
-  const router = useRouter();
+  const [invited, setInvited] = useState<
+    {
+      avatarUri: string;
+      username: string;
+      id: number;
+    }[]
+  >();
+  const [loadingInvited, setLoadingInvited] = useState<boolean>(false);
+
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: String(getCookie(".frameworksession")),
+  };
 
   const updateUpdatable = (key: keyof Updatable, value: string) => {
-    setUpdates((prev) => ({ ...prev, [key]: value }));
+    setUpdates((prev) => ({ ...prev, [key]: String(value) }));
   };
 
   const updateTeam = async () => {
     await fetch(`/api/teams/${team.id}`, {
       method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: String(getCookie(".frameworksession")),
-      },
+      headers,
       body: JSON.stringify(
         Object.fromEntries(
           Object.entries(updates).filter(([key, value]) => {
-            return value !== "" && value !== team[key as keyof TeamType];
+            return value !== team[key as keyof TeamType];
           })
         )
       ),
@@ -124,11 +140,10 @@ const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
           }
 
           showNotification({
-            title: "Team created",
-            message: "Your team has been created successfully.",
+            title: "Team updated",
+            message: "Your team has been updated.",
             icon: <HiCheckCircle />,
           });
-          router.reload();
         } else {
           showNotification({
             title: "Failed to update team",
@@ -138,6 +153,23 @@ const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
         }
       });
   };
+
+  const getInvited = async () => {
+    setLoadingInvited(true);
+    await fetch(`/api/teams/${team.id}/invited`, {
+      method: "GET",
+      headers,
+    })
+      .then(async (res) => res.json())
+      .then(async (res) => {
+        setInvited(res);
+        setLoadingInvited(false);
+      });
+  };
+
+  useEffect(() => {
+    getInvited();
+  }, []);
 
   return (
     <TeamsViewProvider user={user} team={team} active="settings">
@@ -256,6 +288,102 @@ const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
           />
         }
       />
+      <SideBySide
+        title="Access"
+        description="Control how people join your team."
+        right={
+          <Stack spacing="sm">
+            {[
+              {
+                label: "Public",
+                description: "Anyone can join your team.",
+                value: TeamAccess.OPEN,
+              },
+              {
+                label: "Private",
+                description: "Only invited users can join your team.",
+                value: TeamAccess.PRIVATE,
+              },
+            ].map((option) => (
+              <LabelledRadio
+                label={option.label}
+                description={option.description}
+                value={option.value}
+                key={option.value}
+                checked={updates.access === option.value}
+                onChange={() => {
+                  updateUpdatable("access", option.value);
+                }}
+              />
+            ))}
+          </Stack>
+        }
+      />
+      {updates.access === TeamAccess.PRIVATE && (
+        <SideBySide
+          title="Invited users"
+          description="Users who have been invited to join your team."
+          right={
+            !loadingInvited ? (
+              <div className="flex flex-col gap-2">
+                <UserSelect
+                  label="Add user"
+                  description="Invite a user to join your team."
+                  onUserSelect={async (user) => {
+                    if (invited?.find((u) => u.id === user.id)) return;
+                    setInvited((invited) => [...(invited || []), user]);
+
+                    await fetch(`/api/teams/${team.id}/invite/${user.id}`, {
+                      method: "POST",
+                      headers,
+                    });
+                  }}
+                  filter={(_, user) => !invited?.find((u) => u.id === user.id)}
+                />
+                <Stack spacing={2} mt="sm">
+                  {invited &&
+                    invited.map((user) => (
+                      <div
+                        key={user.id}
+                        className="flex justify-between items-center"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Avatar
+                            src={getMediaUrl(user.avatarUri)}
+                            size={20}
+                            radius={999}
+                          />
+                          <Text size="sm" color="dimmed" weight={500}>
+                            @{user.username}
+                          </Text>
+                        </div>
+                        <CloseButton
+                          size="xs"
+                          onClick={async () => {
+                            setInvited(
+                              invited?.filter((u) => u.id !== user.id)
+                            );
+                            await fetch(
+                              `/api/teams/${team.id}/invite/${user.id}`,
+                              {
+                                method: "DELETE",
+                                headers,
+                              }
+                            );
+                          }}
+                        />
+                      </div>
+                    ))}
+                </Stack>
+              </div>
+            ) : (
+              <div className="py-4 w-full flex justify-center">
+                <Loader />
+              </div>
+            )
+          }
+        />
+      )}
       <Divider mt={32} mb={32} />
       <div className="flex justify-end">
         <Button leftIcon={<HiCheck />} onClick={updateTeam}>

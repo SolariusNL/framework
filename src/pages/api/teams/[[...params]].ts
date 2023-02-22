@@ -1,7 +1,9 @@
+import { NotificationType, TeamAccess } from "@prisma/client";
 import {
   BadRequestException,
   Body,
   createHandler,
+  Delete,
   Get,
   Param,
   Patch,
@@ -12,6 +14,7 @@ import { z } from "zod";
 import { parse } from "../../../components/RenderMarkdown";
 import getTimezones from "../../../data/timezones";
 import Authorized, { Account } from "../../../util/api/authorized";
+import createNotification from "../../../util/notifications";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
 import { nonCurrentUserSelect } from "../../../util/prisma-types";
@@ -188,9 +191,14 @@ class TeamsRouter {
       ),
       website: z.optional(z.string().url().max(2048)),
       email: z.optional(z.string().email().max(100)),
+      access: z.optional(
+        z
+          .enum(["OPEN", "PRIVATE"])
+          .refine((a) => a === "OPEN" || a === "PRIVATE")
+      ),
     });
 
-    const { description, location, timezone, website, email } =
+    const { description, location, timezone, website, email, access } =
       schema.parse(body);
 
     const exists = await prisma.team.findFirst({
@@ -215,6 +223,7 @@ class TeamsRouter {
         timezone,
         website,
         email,
+        access,
       },
     });
 
@@ -234,6 +243,7 @@ class TeamsRouter {
       include: {
         members: { select: { id: true } },
         owner: true,
+        invited: { select: { id: true } },
       },
     });
 
@@ -243,6 +253,16 @@ class TeamsRouter {
 
     if (team.ownerId === user.id) {
       throw new BadRequestException("You are the owner of this team");
+    }
+
+    if (
+      team.access === TeamAccess.PRIVATE &&
+      !team.invited.some((i) => i.id === user.id) &&
+      !team.members.some((m) => m.id === user.id)
+    ) {
+      throw new BadRequestException(
+        "This team is private and you have not been invited"
+      );
     }
 
     if (team.members.some((m) => m.id === user.id)) {
@@ -263,6 +283,28 @@ class TeamsRouter {
         success: true,
         message: "You have left the team",
       };
+    }
+
+    if (team.invited.some((i) => i.id === user.id)) {
+      await prisma.team.update({
+        where: {
+          id,
+        },
+        data: {
+          invited: {
+            disconnect: {
+              id: user.id,
+            },
+          },
+        },
+      });
+
+      await createNotification(
+        team.ownerId,
+        NotificationType.INFO,
+        `@${user.username} has joined your team ${team.name} using your invite.`,
+        "Invite accepted"
+      );
     }
 
     await prisma.team.update({
@@ -311,6 +353,159 @@ class TeamsRouter {
     return {
       isMember: false,
     };
+  }
+
+  @Get("/:id/isinvited")
+  @Authorized()
+  public async isInvited(@Account() user: User, @Param("id") id: string) {
+    const team = await prisma.team.findFirst({
+      where: {
+        id,
+      },
+      include: {
+        invited: { select: { id: true } },
+        owner: true,
+      },
+    });
+
+    if (!team) {
+      throw new BadRequestException("Team does not exist");
+    }
+
+    if (team.ownerId === user.id) {
+      return {
+        isInvited: true,
+      };
+    }
+
+    if (team.invited.some((m) => m.id === user.id)) {
+      return {
+        isInvited: true,
+      };
+    }
+
+    return {
+      isInvited: false,
+    };
+  }
+
+  @Post("/:id/invite/:userId")
+  @Authorized()
+  public async inviteUser(
+    @Account() user: User,
+    @Param("id") id: string,
+    @Param("userId") userId: number
+  ) {
+    const team = await prisma.team.findFirst({
+      where: {
+        id,
+      },
+      include: {
+        invited: { select: { id: true } },
+        owner: true,
+      },
+    });
+
+    if (!team) {
+      throw new BadRequestException("Team does not exist");
+    }
+
+    if (team.ownerId !== user.id) {
+      throw new BadRequestException("You are not the owner of this team");
+    }
+
+    if (team.invited.some((m) => m.id === userId)) {
+      throw new BadRequestException("User is already invited");
+    }
+
+    await prisma.team.update({
+      where: {
+        id,
+      },
+      data: {
+        invited: {
+          connect: {
+            id: Number(userId),
+          },
+        },
+      },
+    });
+
+    return {
+      success: true,
+    };
+  }
+
+  @Delete("/:id/invite/:userId")
+  @Authorized()
+  public async uninviteUser(
+    @Account() user: User,
+    @Param("id") id: string,
+    @Param("userId") userId: number
+  ) {
+    const team = await prisma.team.findFirst({
+      where: {
+        id,
+      },
+      include: {
+        invited: { select: { id: true } },
+        owner: true,
+      },
+    });
+
+    if (!team) {
+      throw new BadRequestException("Team does not exist");
+    }
+
+    if (team.ownerId !== user.id) {
+      throw new BadRequestException("You are not the owner of this team");
+    }
+
+    await prisma.team.update({
+      where: {
+        id,
+      },
+      data: {
+        invited: {
+          disconnect: {
+            id: Number(userId),
+          },
+        },
+      },
+    });
+
+    return {
+      success: true,
+    };
+  }
+
+  @Get("/:id/invited")
+  @Authorized()
+  public async getInvited(@Account() user: User, @Param("id") id: string) {
+    const team = await prisma.team.findFirst({
+      where: {
+        id,
+      },
+      include: {
+        invited: {
+          select: {
+            avatarUri: true,
+            username: true,
+            id: true,
+          },
+        },
+      },
+    });
+
+    if (!team) {
+      throw new BadRequestException("Team does not exist");
+    }
+
+    if (team.ownerId !== user.id) {
+      throw new BadRequestException("You are not the owner of this team");
+    }
+
+    return team.invited;
   }
 }
 
