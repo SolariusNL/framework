@@ -60,7 +60,12 @@ const TeamsDiscover: React.FC<TeamsDiscoverProps> = ({ user }) => {
   React.useEffect(() => {
     setPage(1);
     setTeams([]);
-    fetchTeams();
+    getTeamsApi(1).then((res) => {
+      setTeams(res.teams);
+      setPages(res.pages);
+      setCanLoadMore(res.teams.length > 0);
+      setLoading(false);
+    });
   }, [search, filter, sort]);
 
   return (
