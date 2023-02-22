@@ -30,9 +30,9 @@ const TeamsDiscover: React.FC<TeamsDiscoverProps> = ({ user }) => {
   const [pages, setPages] = React.useState(1);
   const [canLoadMore, setCanLoadMore] = React.useState(true);
 
-  const getTeamsApi = async (page: number) => {
+  const getTeamsApi = async (p: number) => {
     const res = await fetch(
-      `/api/teams/discover/${page}?` +
+      `/api/teams/discover/${p}?` +
         new URLSearchParams({ q: search, filter, sort }).toString(),
       {
         method: "GET",
@@ -45,21 +45,10 @@ const TeamsDiscover: React.FC<TeamsDiscoverProps> = ({ user }) => {
     return res.json();
   };
 
-  const fetchTeams = async () => {
-    setLoading(true);
-
-    await getTeamsApi(page).then((res) => {
-      if (page === 1) setPage(page + 1);
-      setTeams(teams ? [...teams, ...res.teams] : res.teams);
-      setPages(res.pages);
-      setCanLoadMore(res.teams.length > 0);
-      setLoading(false);
-    });
-  };
-
   React.useEffect(() => {
     setPage(1);
     setTeams([]);
+    setLoading(true);
     getTeamsApi(1).then((res) => {
       setTeams(res.teams);
       setPages(res.pages);
