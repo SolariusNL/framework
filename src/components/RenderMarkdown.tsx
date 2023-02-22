@@ -28,7 +28,11 @@ const RenderMarkdown: React.FC<
   return (
     <TypographyStylesProvider
       sx={(theme) => ({
-        "& p": {
+        "& p:first-child": {
+          marginBottom: "0 !important",
+        },
+        "& p:not(:first-child)": {
+          marginTop: "12px !important",
           marginBottom: "0 !important",
         },
         "& h1:first-child, & h2:first-child, & h3:first-child, & h4:first-child, & h5:first-child, & h6:first-child":

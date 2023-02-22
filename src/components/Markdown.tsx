@@ -272,37 +272,37 @@ const Markdown: React.FC<MarkdownProps> = ({
         input.selectionStart = input.selectionEnd = start + 2;
       }
 
-      if (e.key === "Enter" && input) {
-        if (e.shiftKey) return;
-        e.preventDefault();
+      // if (e.key === "Enter" && input) {
+      //   if (e.shiftKey) return;
+      //   e.preventDefault();
 
-        const v = input.value;
-        const lines = v.split("\n");
-        const lastLine = lines[lines.length - 1];
+      //   const v = input.value;
+      //   const lines = v.split("\n");
+      //   const lastLine = lines[lines.length - 1];
 
-        const BULLET = /^- (.*)/;
-        const ORDERED = /^\d+\. (.*)/;
+      //   const BULLET = /^- (.*)/;
+      //   const ORDERED = /^\d+\. (.*)/;
 
-        if (BULLET.test(lastLine)) {
-          if (lastLine === "- ") {
-            input.value = v.substring(0, v.length - 3) + "\n\n";
-            return;
-          }
-          input.value += "\n- ";
-        } else if (ORDERED.test(lastLine)) {
-          const lastNumber = parseInt(String(lastLine.match(/^\d+/)));
-          let nextNumber = lastNumber + 1;
+      //   if (BULLET.test(lastLine)) {
+      //     if (lastLine === "- ") {
+      //       input.value = v.substring(0, v.length - 3) + "\n\n";
+      //       return;
+      //     }
+      //     input.value += "\n- ";
+      //   } else if (ORDERED.test(lastLine)) {
+      //     const lastNumber = parseInt(String(lastLine.match(/^\d+/)));
+      //     let nextNumber = lastNumber + 1;
 
-          if (lastLine === `${lastNumber}. `) {
-            input.value = v.substring(0, v.length - 3) + "\n";
-            return;
-          }
+      //     if (lastLine === `${lastNumber}. `) {
+      //       input.value = v.substring(0, v.length - 3) + "\n";
+      //       return;
+      //     }
 
-          input.value += "\n" + nextNumber + ". ";
-        } else {
-          input.value += "\n";
-        }
-      }
+      //     input.value += "\n" + nextNumber + ". ";
+      //   } else {
+      //     input.value += "\n";
+      //   }
+      // }
     };
 
     document.addEventListener("keydown", handleKeyDown);
