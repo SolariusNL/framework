@@ -132,7 +132,7 @@ class SupportRouter {
               <strong style="font-size: 16px; color: #333;">${
                 user.username
               }</strong>`
-                : '<strong style="font-size: 16px; color: #333;">Anonymous</strong>'
+                : "<strong style='font-size: 16px; color: #333;'>Anonymous</strong>"
             }
         </div>
       </div>
