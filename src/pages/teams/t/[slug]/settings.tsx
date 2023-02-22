@@ -203,7 +203,7 @@ const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
             }}
           />
         )}
-        <div className="flex items-center gap-3">
+        <div className="flex items-end flex-col gap-3">
           <Text size="sm" color="dimmed">
             Max 12MB. JPG, PNG, GIF. Recommended 1:1.
           </Text>
@@ -234,63 +234,9 @@ const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
       />
       <Divider mt={32} mb={32} />
       <SideBySide
-        title="Location"
-        description="Let people know where you're from."
-        noUpperBorder
-        right={
-          <TextInput
-            icon={<HiGlobe />}
-            value={updates.location}
-            onChange={(e) => updateUpdatable("location", e.currentTarget.value)}
-            placeholder="Location"
-          />
-        }
-      />
-      <SideBySide
-        title="Timezone"
-        description="This'll be useful for users to know when you're online."
-        right={
-          <Select
-            data={getTimezones().map((t) => ({
-              label: t.value,
-              value: t.value,
-            }))}
-            searchable
-            label="Timezone"
-            placeholder="Select a timezone"
-            description="The timezone of your team."
-            value={updates.timezone}
-            onChange={(value) => updateUpdatable("timezone", value!)}
-          />
-        }
-      />
-      <SideBySide
-        title="Website"
-        description="Let people know where to find you on the web."
-        right={
-          <TextInput
-            icon={<HiGlobe />}
-            value={updates.website}
-            onChange={(e) => updateUpdatable("website", e.currentTarget.value)}
-            placeholder="Website"
-          />
-        }
-      />
-      <SideBySide
-        title="Email"
-        description="Let people know where to find you on the web."
-        right={
-          <TextInput
-            icon={<HiMail />}
-            value={updates.email}
-            onChange={(e) => updateUpdatable("email", e.currentTarget.value)}
-            placeholder="Email"
-          />
-        }
-      />
-      <SideBySide
         title="Access"
         description="Control how people join your team."
+        noUpperBorder
         right={
           <Stack spacing="sm">
             {[
@@ -384,6 +330,60 @@ const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
           }
         />
       )}
+      <SideBySide
+        title="Location"
+        description="Let people know where you're from."
+        right={
+          <TextInput
+            icon={<HiGlobe />}
+            value={updates.location}
+            onChange={(e) => updateUpdatable("location", e.currentTarget.value)}
+            placeholder="Location"
+          />
+        }
+      />
+      <SideBySide
+        title="Timezone"
+        description="This'll be useful for users to know when you're online."
+        right={
+          <Select
+            data={getTimezones().map((t) => ({
+              label: t.value,
+              value: t.value,
+            }))}
+            searchable
+            label="Timezone"
+            placeholder="Select a timezone"
+            description="The timezone of your team."
+            value={updates.timezone}
+            onChange={(value) => updateUpdatable("timezone", value!)}
+          />
+        }
+      />
+      <SideBySide
+        title="Website"
+        description="Let people know where to find you on the web."
+        right={
+          <TextInput
+            icon={<HiGlobe />}
+            value={updates.website}
+            onChange={(e) => updateUpdatable("website", e.currentTarget.value)}
+            placeholder="Website"
+          />
+        }
+      />
+      <SideBySide
+        title="Email"
+        description="Let people know where to find you on the web."
+        right={
+          <TextInput
+            icon={<HiMail />}
+            value={updates.email}
+            onChange={(e) => updateUpdatable("email", e.currentTarget.value)}
+            placeholder="Email"
+          />
+        }
+      />
       <Divider mt={32} mb={32} />
       <div className="flex justify-end">
         <Button leftIcon={<HiCheck />} onClick={updateTeam}>

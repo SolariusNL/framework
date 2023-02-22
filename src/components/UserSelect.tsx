@@ -70,6 +70,7 @@ const UserSelect: React.FC<UserSelectProps & Omit<SelectProps, "data">> = ({
       filter={(value, item) =>
         item.username.toLowerCase().includes(value.toLowerCase())
       }
+      onClick={(e) => e.stopPropagation()}
       data={
         userAutoComplete.length > 0
           ? userAutoComplete.map((user) => ({
