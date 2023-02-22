@@ -103,7 +103,7 @@ const TeamView: React.FC<TeamViewProps> = ({ user, team }) => {
 
   return (
     <TeamsViewProvider user={user} team={team} active="details">
-      <div className="flex items-start justify-between mb-8">
+      <div className="flex items-start flex-col md:flex-row gap-y-4 md:gap-y-0 justify-between mb-8">
         <div className="flex items-start gap-4">
           <Avatar size={100} src={getMediaUrl(team.iconUri)} />
           <div className="flex flex-col gap-2">
@@ -130,6 +130,7 @@ const TeamView: React.FC<TeamViewProps> = ({ user, team }) => {
             (team.access === TeamAccess.PRIVATE && !invited && !member)
           }
           onClick={joinTeam}
+          className="ml-auto md:ml-0"
         >
           {member === null
             ? "..."
