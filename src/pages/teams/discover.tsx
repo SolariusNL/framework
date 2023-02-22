@@ -145,7 +145,14 @@ const TeamsDiscover: React.FC<TeamsDiscoverProps> = ({ user }) => {
                   ))}
               </>
             ) : (
-              <>{teams && teams.map((t) => <TeamCard key={t.id} team={t} />)}</>
+              <>
+                {teams &&
+                  teams
+                    .filter(
+                      (t, i, a) => a.findIndex((t2) => t2.id === t.id) === i
+                    )
+                    .map((t) => <TeamCard key={t.id} team={t} />)}
+              </>
             )}
             {!canLoadMore && (
               <div className="flex items-center justify-center col-span-2">
