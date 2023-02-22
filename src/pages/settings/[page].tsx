@@ -33,9 +33,9 @@ import SubscriptionTab from "../../components/Settings/SubscriptionTab";
 import VoiceTab from "../../components/Settings/Voice";
 import ShadedCard from "../../components/ShadedCard";
 import SidebarTabNavigation from "../../layouts/SidebarTabNavigation";
-import authorizedRoute from "../../util/authorizedRoute";
+import authorizedRoute from "../../util/auth";
+import useMediaQuery from "../../util/media-query";
 import { User } from "../../util/prisma-types";
-import useMediaQuery from "../../util/useMediaQuery";
 
 interface SettingsProps {
   user: User;

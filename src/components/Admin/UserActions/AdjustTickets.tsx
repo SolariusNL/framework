@@ -1,7 +1,7 @@
 import { Button, Modal, NumberInput, Stack, Text } from "@mantine/core";
 import React from "react";
 import { HiTicket } from "react-icons/hi";
-import performAdminAction, { AdminAction } from "../../../util/adminAction";
+import performAdminAction, { AdminAction } from "../../../util/admin-action";
 import { User } from "../../../util/prisma-types";
 import LabelledRadio from "../../LabelledRadio";
 import Stateful from "../../Stateful";

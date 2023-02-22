@@ -9,12 +9,12 @@ import {
 import z, { ZodLiteral } from "zod";
 import SupportTicketCreated from "../../../../email/emails/support-ticket-created";
 import Authorized, { Account } from "../../../util/api/authorized";
-import getMediaUrl from "../../../util/getMedia";
+import getMediaUrl from "../../../util/get-media";
 import { sendMail } from "../../../util/mail";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
 import { nonCurrentUserSelect } from "../../../util/prisma-types";
-import { RateLimitMiddleware } from "../../../util/rateLimit";
+import { RateLimitMiddleware } from "../../../util/rate-limit";
 import { categories } from "../../support";
 
 class SupportRouter {
@@ -132,7 +132,7 @@ class SupportRouter {
               <strong style="font-size: 16px; color: #333;">${
                 user.username
               }</strong>`
-                : "<strong style=\"font-size: 16px; color: #333;\">Anonymous</strong>"
+                : '<strong style="font-size: 16px; color: #333;">Anonymous</strong>'
             }
         </div>
       </div>

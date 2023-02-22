@@ -1,7 +1,7 @@
 import { Avatar, Button, Table, Text } from "@mantine/core";
 import { UserAdminNotes } from "@prisma/client";
 import { useEffect, useState } from "react";
-import getMediaUrl from "../../util/getMedia";
+import getMediaUrl from "../../util/get-media";
 import { NonUser } from "../../util/prisma-types";
 import ModernEmptyState from "../ModernEmptyState";
 import Stateful from "../Stateful";

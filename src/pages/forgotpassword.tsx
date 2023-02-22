@@ -19,7 +19,7 @@ import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { HiArrowLeft, HiCheckCircle, HiXCircle } from "react-icons/hi";
-import authorizedRoute from "../util/authorizedRoute";
+import authorizedRoute from "../util/auth";
 import prisma from "../util/prisma";
 import { nonCurrentUserSelect, NonUser } from "../util/prisma-types";
 

@@ -17,8 +17,8 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import Framework from "../../components/Framework";
 import RichText from "../../components/RichText";
-import authorizedRoute from "../../util/authorizedRoute";
-import getMediaUrl from "../../util/getMedia";
+import authorizedRoute from "../../util/auth";
+import getMediaUrl from "../../util/get-media";
 import prisma from "../../util/prisma";
 import { BlogPost, blogPostSelect, User } from "../../util/prisma-types";
 

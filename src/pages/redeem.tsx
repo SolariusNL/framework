@@ -18,9 +18,9 @@ import React from "react";
 import Celebration from "react-confetti";
 import Framework from "../components/Framework";
 import ShadedCard from "../components/ShadedCard";
-import authorizedRoute from "../util/authorizedRoute";
+import authorizedRoute from "../util/auth";
+import useMediaQuery from "../util/media-query";
 import { User } from "../util/prisma-types";
-import useMediaQuery from "../util/useMediaQuery";
 
 export const useStylesredeemCard = createStyles((theme) => ({
   title: {

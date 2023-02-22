@@ -1,12 +1,4 @@
-import {
-  Badge,
-  Button,
-  Group,
-  Select,
-  Stack,
-  Text,
-  Title,
-} from "@mantine/core";
+import { Badge, Button, Select, Stack, Text, Title } from "@mantine/core";
 import {
   RatingCategory,
   RatingCategoryScore,
@@ -14,8 +6,8 @@ import {
 } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
+import useMediaQuery from "../../util/media-query";
 import { Game } from "../../util/prisma-types";
-import useMediaQuery from "../../util/useMediaQuery";
 import GameRating from "../GameRating";
 import EditGameTab from "./EditGameTab";
 

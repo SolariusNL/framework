@@ -56,8 +56,8 @@ import useExperimentsStore, {
 import useSidebar from "../stores/useSidebar";
 import logout from "../util/api/logout";
 import { getIpcRenderer } from "../util/electron";
+import useMediaQuery from "../util/media-query";
 import { User } from "../util/prisma-types";
-import useMediaQuery from "../util/useMediaQuery";
 import Chat from "./Chat";
 import EmailReminder from "./EmailReminder";
 import Footer from "./Footer";
@@ -95,6 +95,7 @@ interface FrameworkProps {
     href: string;
   };
   actions?: [string | React.ReactNode, () => void][];
+  integratedTabs?: React.ReactNode;
 }
 
 export const frameworkStyles = createStyles((theme) => ({
@@ -164,6 +165,7 @@ const Framework = ({
   beta,
   returnTo,
   actions,
+  integratedTabs,
 }: FrameworkProps) => {
   const { classes } = frameworkStyles();
   const { opened: sidebarOpened, setOpened: setSidebarOpened } = useSidebar();
@@ -742,6 +744,7 @@ const Framework = ({
                     )}
                   </div>
                 </Group>
+                {integratedTabs && <div className="mt-8">{integratedTabs}</div>}
               </Container>
             </Box>
           )}

@@ -23,8 +23,8 @@ const RenderMarkdown: React.FC<
   React.DetailedHTMLProps<
     React.HTMLAttributes<HTMLDivElement>,
     HTMLDivElement
-  > & { children: string; typographyStyles?: Sx }
-> = ({ children, typographyStyles, ...props }) => {
+  > & { children: string; typographyStyles?: Sx; clamp?: number }
+> = ({ children, typographyStyles, clamp, ...props }) => {
   return (
     <TypographyStylesProvider
       sx={(theme) => ({
@@ -49,6 +49,15 @@ const RenderMarkdown: React.FC<
       <div
         dangerouslySetInnerHTML={{
           __html: sanitize(parse(children || "")),
+        }}
+        style={{
+          ...(clamp && {
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            display: "-webkit-box",
+            WebkitLineClamp: clamp,
+            WebkitBoxOrient: "vertical",
+          }),
         }}
         {...props}
       />

@@ -4,7 +4,7 @@ import {
   Tabs,
   Text,
   Title,
-  UnstyledButton
+  UnstyledButton,
 } from "@mantine/core";
 import { Transaction } from "@prisma/client";
 import {
@@ -15,7 +15,7 @@ import {
   LineElement,
   PointElement,
   Title as ChartTitle,
-  Tooltip
+  Tooltip,
 } from "chart.js";
 import { GetServerSidePropsContext, NextPage } from "next";
 import Link from "next/link";
@@ -26,9 +26,9 @@ import Framework from "../../components/Framework";
 import ShadedCard from "../../components/ShadedCard";
 import TabNav from "../../components/TabNav";
 import TransactionsWidget from "../../components/Widgets/Transactions";
-import authorizedRoute from "../../util/authorizedRoute";
+import authorizedRoute from "../../util/auth";
+import useMediaQuery from "../../util/media-query";
 import { User } from "../../util/prisma-types";
-import useMediaQuery from "../../util/useMediaQuery";
 
 ChartJS.register(
   LineController,

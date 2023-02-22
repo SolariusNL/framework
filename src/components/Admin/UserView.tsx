@@ -25,7 +25,7 @@ import { HiCheckCircle } from "react-icons/hi";
 import { useFrameworkUser } from "../../contexts/FrameworkUser";
 import { useUserInformationDialog } from "../../contexts/UserInformationDialog";
 import employeeRoleMeta from "../../data/employeeRoles";
-import getMediaUrl from "../../util/getMedia";
+import getMediaUrl from "../../util/get-media";
 import Copy from "../Copy";
 import ModernEmptyState from "../ModernEmptyState";
 import Stateful from "../Stateful";

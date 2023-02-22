@@ -15,7 +15,7 @@ import { getCookie } from "cookies-next";
 import { useState } from "react";
 import { HiCheckCircle, HiShieldCheck } from "react-icons/hi";
 import banPresets from "../../data/banPresets";
-import getMediaUrl from "../../util/getMedia";
+import getMediaUrl from "../../util/get-media";
 import { NonUser } from "../../util/prisma-types";
 import Stateful from "../Stateful";
 

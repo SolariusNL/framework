@@ -17,7 +17,7 @@ import {
   Text,
   ThemeIcon,
   Title,
-  Tooltip
+  Tooltip,
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { GetServerSidePropsContext, NextPage } from "next";
@@ -31,12 +31,13 @@ import {
   HiClipboardCopy,
   HiClock,
   HiDesktopComputer,
-  HiFlag, HiGlobe,
+  HiFlag,
+  HiGlobe,
   HiOfficeBuilding,
   HiSparkles,
   HiUser,
   HiUsers,
-  HiXCircle
+  HiXCircle,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import AdminBadge from "../../components/Badges/Admin";
@@ -55,13 +56,13 @@ import ShadedCard from "../../components/ShadedCard";
 import { useUserInformationDialog } from "../../contexts/UserInformationDialog";
 import countries from "../../data/countries";
 import getTimezones from "../../data/timezones";
-import authorizedRoute from "../../util/authorizedRoute";
+import authorizedRoute from "../../util/auth";
 import { getCookie } from "../../util/cookies";
 import { exclude } from "../../util/exclude";
-import getMediaUrl from "../../util/getMedia";
+import getMediaUrl from "../../util/get-media";
+import useMediaQuery from "../../util/media-query";
 import prisma from "../../util/prisma";
 import { User } from "../../util/prisma-types";
-import useMediaQuery from "../../util/useMediaQuery";
 
 interface ProfileProps {
   user: User;

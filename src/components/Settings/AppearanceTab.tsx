@@ -6,9 +6,8 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 import { HiMoon, HiSun } from "react-icons/hi";
+import useMediaQuery from "../../util/media-query";
 import { User } from "../../util/prisma-types";
-import useMediaQuery from "../../util/useMediaQuery";
-import Grouped from "./Grouped";
 import SettingsTab from "./SettingsTab";
 
 interface AppearanceTabProps {

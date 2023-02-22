@@ -1,5 +1,5 @@
 import clsx from "../util/clsx";
-import useMediaQuery from "../util/useMediaQuery";
+import useMediaQuery from "../util/media-query";
 
 const SidebarTabNavigation: React.FC<{
   children: React.ReactNode;

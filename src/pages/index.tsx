@@ -17,9 +17,9 @@ import NotificationsWidget from "../components/Home/NotificationsWidget";
 import SubscriptionWidget from "../components/Home/SubscriptionWidget";
 import UpdatesWidget from "../components/Home/UpdatesWidget";
 import SidebarTabNavigation from "../layouts/SidebarTabNavigation";
-import authorizedRoute from "../util/authorizedRoute";
+import authorizedRoute from "../util/auth";
+import useMediaQuery from "../util/media-query";
 import { User } from "../util/prisma-types";
-import useMediaQuery from "../util/useMediaQuery";
 
 interface HomeProps {
   user: User;

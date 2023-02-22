@@ -27,10 +27,10 @@ import {
 import SocketContext from "../contexts/Socket";
 import useAuthorizedUserStore from "../stores/useAuthorizedUser";
 import useChatStore from "../stores/useChatStore";
-import getMediaUrl from "../util/getMedia";
+import { useOnClickOutside } from "../util/click-outside";
+import getMediaUrl from "../util/get-media";
 import { ChatMessage, NonUser } from "../util/prisma-types";
 import { getMyFriends } from "../util/universe/friends";
-import { useOnClickOutside } from "../util/useOnClickOutside";
 import ShadedButton from "./ShadedButton";
 
 const Chat: React.FC = () => {

@@ -7,7 +7,7 @@ import {
   Select,
   Stack,
   Text,
-  TextInput
+  TextInput,
 } from "@mantine/core";
 import { openModal } from "@mantine/modals";
 import { Employee, EmployeeRole } from "@prisma/client";
@@ -15,7 +15,7 @@ import { getCookie } from "cookies-next";
 import { Fragment, useEffect, useState } from "react";
 import { HiArrowRight, HiMail, HiSearch } from "react-icons/hi";
 import employeeRoleMeta from "../../../data/employeeRoles";
-import getMediaUrl from "../../../util/getMedia";
+import getMediaUrl from "../../../util/get-media";
 import { NonUser } from "../../../util/prisma-types";
 import ModernEmptyState from "../../ModernEmptyState";
 import ShadedButton from "../../ShadedButton";

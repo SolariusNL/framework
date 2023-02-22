@@ -1,8 +1,8 @@
-import { Avatar, Badge, Group, Paper, Text, Title } from "@mantine/core";
+import { Avatar, Badge, Text } from "@mantine/core";
 import { useRouter } from "next/router";
-import getMediaUrl from "../util/getMedia";
+import getMediaUrl from "../util/get-media";
 import { Report } from "../util/prisma-types";
-import { getRelativeTime } from "../util/relativeTime";
+import { getRelativeTime } from "../util/relative-time";
 import ShadedButton from "./ShadedButton";
 import UserContext from "./UserContext";
 

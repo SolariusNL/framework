@@ -3,10 +3,11 @@ import {
   Avatar,
   Button,
   createStyles,
-  Menu, Stack,
+  Menu,
+  Stack,
   Text,
   Textarea,
-  Tooltip
+  Tooltip,
 } from "@mantine/core";
 import { getCookie } from "cookies-next";
 import { useState } from "react";
@@ -19,12 +20,12 @@ import {
   HiGift,
   HiPencil,
   HiShieldCheck,
-  HiTrash
+  HiTrash,
 } from "react-icons/hi";
 import { useFrameworkUser } from "../contexts/FrameworkUser";
-import getMediaUrl from "../util/getMedia";
+import getMediaUrl from "../util/get-media";
 import { NonUser } from "../util/prisma-types";
-import { getRelativeTime } from "../util/relativeTime";
+import { getRelativeTime } from "../util/relative-time";
 import ReportUser from "./ReportUser";
 import ShadedCard from "./ShadedCard";
 import UserContext from "./UserContext";

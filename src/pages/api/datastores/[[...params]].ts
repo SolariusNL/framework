@@ -11,7 +11,7 @@ import Authorized, {
 } from "../../../util/api/authorized";
 import prisma from "../../../util/prisma";
 import type { NucleusKey, User } from "../../../util/prisma-types";
-import { RateLimitMiddleware } from "../../../util/rateLimit";
+import { RateLimitMiddleware } from "../../../util/rate-limit";
 import { Nucleus } from "./../../../util/api/authorized";
 
 class DatastoreRouter {

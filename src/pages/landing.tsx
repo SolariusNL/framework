@@ -7,7 +7,7 @@ import Features from "../components/Landing/Features";
 import Power from "../components/Landing/Power";
 import Pros from "../components/Landing/Pros";
 import LandingHeader from "../components/LandingHeader";
-import useMediaQuery from "../util/useMediaQuery";
+import useMediaQuery from "../util/media-query";
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -167,7 +167,11 @@ const Landing: NextPage = () => {
             </div>
 
             <Container p={0} size={600} mt="lg">
-              <Text size="sm" color="dimmed" className="text-left md:text-center">
+              <Text
+                size="sm"
+                color="dimmed"
+                className="text-left md:text-center"
+              >
                 Soodam.re B.V. is not affiliated with Roblox Corporation. All
                 trademarks are property of their respective owners.
               </Text>

@@ -30,8 +30,8 @@ import {
   nonCurrentUserSelect,
   type User,
 } from "../../../util/prisma-types";
-import { RateLimitMiddleware } from "../../../util/rateLimit";
-import { logTransaction } from "../../../util/transactionHistory";
+import { RateLimitMiddleware } from "../../../util/rate-limit";
+import { logTransaction } from "../../../util/transaction-history";
 
 interface GameCreateBody {
   gameName: string;

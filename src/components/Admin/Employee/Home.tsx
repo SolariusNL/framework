@@ -11,7 +11,7 @@ import { EmployeeRole, EmployeeTask } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import getMediaUrl from "../../../util/getMedia";
+import getMediaUrl from "../../../util/get-media";
 import { NonUser } from "../../../util/prisma-types";
 import ModernEmptyState from "../../ModernEmptyState";
 import ShadedButton from "../../ShadedButton";

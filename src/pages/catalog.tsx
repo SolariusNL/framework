@@ -4,7 +4,7 @@ import React from "react";
 import Framework from "../components/Framework";
 import ModernEmptyState from "../components/ModernEmptyState";
 import ShadedCard from "../components/ShadedCard";
-import authorizedRoute from "../util/authorizedRoute";
+import authorizedRoute from "../util/auth";
 import { User } from "../util/prisma-types";
 
 interface CatalogProps {

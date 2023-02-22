@@ -9,9 +9,9 @@ import {
 import { GetServerSidePropsContext, NextPage } from "next";
 import { HiArrowRight, HiCheckCircle } from "react-icons/hi";
 import Framework from "../components/Framework";
-import authorizedRoute from "../util/authorizedRoute";
+import authorizedRoute from "../util/auth";
+import useMediaQuery from "../util/media-query";
 import { User } from "../util/prisma-types";
-import useMediaQuery from "../util/useMediaQuery";
 
 interface PremiumProps {
   user: User;

@@ -29,7 +29,7 @@ import {
 } from "react-icons/hi";
 import { GameWithDatastore } from "../../pages/game/[id]/edit/[edit]";
 import clsx from "../../util/clsx";
-import { getRelativeTime } from "../../util/relativeTime";
+import { getRelativeTime } from "../../util/relative-time";
 import Copy from "../Copy";
 import LabelledRadio from "../LabelledRadio";
 import ModernEmptyState from "../ModernEmptyState";

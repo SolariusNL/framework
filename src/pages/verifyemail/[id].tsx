@@ -4,7 +4,7 @@ import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
 import { HiCheckCircle, HiHome } from "react-icons/hi";
 import VerificationConfirmation from "../../../email/emails/verification-confirmation";
-import authorizedRoute from "../../util/authorizedRoute";
+import authorizedRoute from "../../util/auth";
 import { sendMail } from "../../util/mail";
 import prisma from "../../util/prisma";
 

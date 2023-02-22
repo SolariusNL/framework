@@ -3,7 +3,7 @@ import Framework from "../components/Framework";
 import GameCard from "../components/GameCard";
 import ModernEmptyState from "../components/ModernEmptyState";
 import UserCard from "../components/UserCard";
-import authorizedRoute from "../util/authorizedRoute";
+import authorizedRoute from "../util/auth";
 import prisma from "../util/prisma";
 import {
   Game,

@@ -1,16 +1,6 @@
-import {
-  Avatar,
-  Button,
-  Group,
-  Indicator,
-  Paper,
-  Text,
-  ThemeIcon,
-  Tooltip,
-} from "@mantine/core";
+import { Avatar, Button, Group, Indicator, Paper, Text } from "@mantine/core";
 import Link from "next/link";
-import { HiXCircle } from "react-icons/hi";
-import getMediaUrl from "../util/getMedia";
+import getMediaUrl from "../util/get-media";
 import { NonUser } from "../util/prisma-types";
 
 interface UserCardProps {

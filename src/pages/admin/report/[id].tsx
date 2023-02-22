@@ -35,9 +35,9 @@ import Framework from "../../../components/Framework";
 import ModernEmptyState from "../../../components/ModernEmptyState";
 import ShadedCard from "../../../components/ShadedCard";
 import UserContext from "../../../components/UserContext";
-import authorizedRoute from "../../../util/authorizedRoute";
+import authorizedRoute from "../../../util/auth";
 import { exclude } from "../../../util/exclude";
-import getMediaUrl from "../../../util/getMedia";
+import getMediaUrl from "../../../util/get-media";
 import prisma from "../../../util/prisma";
 import {
   Game,

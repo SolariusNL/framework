@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { HiAdjustments, HiBeaker, HiEmojiHappy } from "react-icons/hi";
 import AvatarViewer from "../components/AvatarViewer";
 import Framework from "../components/Framework";
-import authorizedRoute from "../util/authorizedRoute";
+import authorizedRoute from "../util/auth";
+import useMediaQuery from "../util/media-query";
 import { User } from "../util/prisma-types";
-import useMediaQuery from "../util/useMediaQuery";
 
 interface AvatarProps {
   user: User;

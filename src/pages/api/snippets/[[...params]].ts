@@ -15,7 +15,7 @@ import type { User } from "../../../util/prisma-types";
 import { snippetSelect } from "../../../util/prisma-types";
 import rateLimitedResource, {
   RateLimitMiddleware,
-} from "../../../util/rateLimit";
+} from "../../../util/rate-limit";
 
 interface SnippetCreateBody {
   name: string;

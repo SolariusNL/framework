@@ -29,10 +29,10 @@ import Shirts from "../components/Invent/Shirts";
 import Snippets from "../components/Invent/Snippets";
 import Sounds from "../components/Invent/Sounds";
 import TabNav from "../components/TabNav";
-import authorizedRoute from "../util/authorizedRoute";
+import authorizedRoute from "../util/auth";
+import useMediaQuery from "../util/media-query";
 import prisma from "../util/prisma";
 import { gameSelect, User } from "../util/prisma-types";
-import useMediaQuery from "../util/useMediaQuery";
 
 interface InventProps {
   user: User;

@@ -26,13 +26,13 @@ import ShadedCard from "../components/ShadedCard";
 import SocketContext from "../contexts/Socket";
 import SidebarTabNavigation from "../layouts/SidebarTabNavigation";
 import useChatStore from "../stores/useChatStore";
-import authorizedRoute from "../util/authorizedRoute";
-import getMediaUrl from "../util/getMedia";
+import authorizedRoute from "../util/auth";
+import { useOnClickOutside } from "../util/click-outside";
+import getMediaUrl from "../util/get-media";
+import useMediaQuery from "../util/media-query";
 import { ChatMessage, NonUser, User } from "../util/prisma-types";
-import { getRelativeTime } from "../util/relativeTime";
+import { getRelativeTime } from "../util/relative-time";
 import { getMyFriends } from "../util/universe/friends";
-import useMediaQuery from "../util/useMediaQuery";
-import { useOnClickOutside } from "../util/useOnClickOutside";
 
 interface ChatProps {
   user: User;

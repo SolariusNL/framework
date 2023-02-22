@@ -5,7 +5,6 @@ import {
   Divider,
   Modal,
   MultiSelect,
-  Text,
   TextInput,
   Tooltip,
   TypographyStylesProvider,
@@ -16,8 +15,8 @@ import { GetServerSidePropsContext, NextPage } from "next";
 import { useState } from "react";
 import Framework from "../../../components/Framework";
 import RichText from "../../../components/RichText";
-import authorizedRoute from "../../../util/authorizedRoute";
-import getMediaUrl from "../../../util/getMedia";
+import authorizedRoute from "../../../util/auth";
+import getMediaUrl from "../../../util/get-media";
 import prisma from "../../../util/prisma";
 import { Article, articleSelect, User } from "../../../util/prisma-types";
 

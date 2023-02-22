@@ -12,7 +12,7 @@ import { EmployeeRole, Role } from "@prisma/client";
 import dayjs from "dayjs";
 import React, { useEffect } from "react";
 import { HiUser } from "react-icons/hi";
-import performAdminAction, { AdminAction } from "../../../util/adminAction";
+import performAdminAction, { AdminAction } from "../../../util/admin-action";
 import { User } from "../../../util/prisma-types";
 import Stateful from "../../Stateful";
 import Action from "./Action";

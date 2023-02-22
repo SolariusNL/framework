@@ -4,7 +4,7 @@ import { useForm } from "@mantine/form";
 import { PremiumSubscriptionType } from "@prisma/client";
 import React, { useEffect } from "react";
 import { HiCalendar, HiCreditCard, HiStop } from "react-icons/hi";
-import performAdminAction, { AdminAction } from "../../../util/adminAction";
+import performAdminAction, { AdminAction } from "../../../util/admin-action";
 import { User } from "../../../util/prisma-types";
 import Stateful from "../../Stateful";
 import Action from "./Action";

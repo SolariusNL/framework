@@ -27,9 +27,9 @@ import createNotification from "../../../util/notifications";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
 import { nonCurrentUserSelect } from "../../../util/prisma-types";
-import { RateLimitMiddleware } from "../../../util/rateLimit";
+import { RateLimitMiddleware } from "../../../util/rate-limit";
 import { verificationEmail } from "../../../util/templates/verification-email";
-import { logTransaction } from "../../../util/transactionHistory";
+import { logTransaction } from "../../../util/transaction-history";
 
 interface UserUpdateBody {
   username?: string;

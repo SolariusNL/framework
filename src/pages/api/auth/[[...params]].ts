@@ -22,7 +22,7 @@ import { sendMail } from "../../../util/mail";
 import createNotification from "../../../util/notifications";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
-import { RateLimitMiddleware } from "../../../util/rateLimit";
+import { RateLimitMiddleware } from "../../../util/rate-limit";
 import { verificationEmail } from "../../../util/templates/verification-email";
 import { disableOTP, generateOTP, verifyOTP } from "../../../util/twofa";
 import { getOperatingSystem, getOperatingSystemString } from "../../../util/ua";

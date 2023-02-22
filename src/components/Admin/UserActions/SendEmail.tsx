@@ -5,7 +5,7 @@ import React from "react";
 import { HiEye, HiMail, HiPaperAirplane, HiX } from "react-icons/hi";
 import StaffEmail from "../../../../email/emails/staff-email";
 import useAuthorizedUserStore from "../../../stores/useAuthorizedUser";
-import performAdminAction, { AdminAction } from "../../../util/adminAction";
+import performAdminAction, { AdminAction } from "../../../util/admin-action";
 import { User } from "../../../util/prisma-types";
 import Descriptive from "../../Descriptive";
 import RichText from "../../RichText";

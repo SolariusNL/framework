@@ -9,14 +9,13 @@ import {
 } from "@mantine/core";
 import { EmailLoginRequest } from "@prisma/client";
 import { setCookie } from "cookies-next";
-import { motion } from "framer-motion";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { HiCheckCircle, HiXCircle } from "react-icons/hi";
 import ShadedCard from "../../../components/ShadedCard";
 import Stateful from "../../../components/Stateful";
-import getMediaUrl from "../../../util/getMedia";
+import getMediaUrl from "../../../util/get-media";
 import prisma from "../../../util/prisma";
 import { nonCurrentUserSelect, NonUser } from "../../../util/prisma-types";
 
@@ -123,9 +122,7 @@ const EmailLogin: NextPage<EmailLoginProps> = ({ emailId, request }) => {
                       setLoading(false);
                     });
                 }}
-                disabled={
-                  code && code.toString().length !== 6 ? true : loading
-                }
+                disabled={code && code.toString().length !== 6 ? true : loading}
               >
                 Verify
               </Button>

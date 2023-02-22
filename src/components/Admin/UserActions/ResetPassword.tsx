@@ -1,7 +1,7 @@
 import { Text } from "@mantine/core";
 import { openConfirmModal } from "@mantine/modals";
 import { HiKey } from "react-icons/hi";
-import performAdminAction, { AdminAction } from "../../../util/adminAction";
+import performAdminAction, { AdminAction } from "../../../util/admin-action";
 import { User } from "../../../util/prisma-types";
 import Action from "./Action";
 

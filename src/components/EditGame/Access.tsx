@@ -18,7 +18,7 @@ import {
   HiTicket,
   HiUsers,
 } from "react-icons/hi";
-import getMediaUrl from "../../util/getMedia";
+import getMediaUrl from "../../util/get-media";
 import { Game } from "../../util/prisma-types";
 import Copy from "../Copy";
 import SideBySide from "../Settings/SideBySide";
