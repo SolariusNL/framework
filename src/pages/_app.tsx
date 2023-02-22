@@ -48,6 +48,7 @@ import SocketProvider from "../contexts/SocketContextProvider";
 import { UserInformationWrapper } from "../contexts/UserInformationDialog";
 import "../styles/framework.css";
 import "../styles/tw.css";
+import "../styles/fonts.css";
 import logout from "../util/api/logout";
 
 const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
@@ -267,7 +268,7 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
               Select: {
                 styles: (theme: MantineTheme) => ({
                   item: {
-                    borderRadius: theme.defaultRadius + " !important",
+                    borderRadius: theme.radius.md,
                   },
                 }),
               },

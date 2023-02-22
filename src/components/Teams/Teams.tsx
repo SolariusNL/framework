@@ -1,6 +1,7 @@
 import Link from "next/link";
 import {
   HiExclamation,
+  HiGlobe,
   HiPaperClip,
   HiPlus,
   HiTicket,
@@ -26,9 +27,9 @@ const tabs = [
     icon: <HiViewList />,
   },
   {
-    name: "Games overview",
-    href: "/teams/games",
-    icon: <HiViewGrid />,
+    name: "Discover",
+    href: "/teams/discover",
+    icon: <HiGlobe />,
   },
   {
     name: "Assigned",

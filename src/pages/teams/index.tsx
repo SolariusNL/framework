@@ -1,34 +1,15 @@
-import {
-  Avatar,
-  Select,
-  Skeleton,
-  Text,
-  TextInput,
-  Tooltip,
-  useMantineTheme,
-} from "@mantine/core";
+import { Select, Skeleton, TextInput, useMantineTheme } from "@mantine/core";
 import { Team } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { GetServerSideProps } from "next";
-import Link from "next/link";
 import React from "react";
-import {
-  HiCake,
-  HiMap,
-  HiSearch,
-  HiSortAscending,
-  HiUsers,
-  HiViewGrid,
-} from "react-icons/hi";
-import Copy from "../../components/Copy";
+import { HiSearch, HiSortAscending } from "react-icons/hi";
 import ModernEmptyState from "../../components/ModernEmptyState";
-import ShadedButton from "../../components/ShadedButton";
 import ShadedCard from "../../components/ShadedCard";
+import TeamCard from "../../components/Teams/Team";
 import TeamsProvider from "../../components/Teams/Teams";
-import UserContext from "../../components/UserContext";
 import authorizedRoute from "../../util/auth";
 import clsx from "../../util/clsx";
-import getMediaUrl from "../../util/get-media";
 import { NonUser, User } from "../../util/prisma-types";
 
 type TeamsProps = {
@@ -134,7 +115,7 @@ const Teams: React.FC<TeamsProps> = ({ user }) => {
               <Skeleton key={i} height={220} />
             ))
           ) : teams && teams.length === 0 ? (
-            <div className="w-full flex items-center justify-center">
+            <div className="w-full flex items-center justify-center col-span-full">
               <ModernEmptyState
                 title="No teams"
                 body="You aren't apart of any teams yet. Why not make one to get started?"
@@ -168,85 +149,7 @@ const Teams: React.FC<TeamsProps> = ({ user }) => {
               .filter((t) => {
                 return t.name.toLowerCase().includes(search.toLowerCase());
               })
-              .map((t) => (
-                <Link href={`/teams/t/${t.slug}`} passHref key={t.id}>
-                  <ShadedButton>
-                    <div className="w-full">
-                      <div className="flex gap-5 w-full items-start">
-                        <Avatar src={getMediaUrl(t.iconUri)} size={82} />
-                        <div className="flex-grow">
-                          <div className="flex justify-between items-center">
-                            <Text size="xl" weight={500}>
-                              {t.name}
-                            </Text>
-                            <div className="flex items-center">
-                              <Copy value={t.id} dontPropagate />
-                              <Text size="sm" color="dimmed">
-                                Copy ID
-                              </Text>
-                            </div>
-                          </div>
-                          <div className="flex justify-between items-center mb-4">
-                            <div className="mt-2 flex items-center gap-2">
-                              <UserContext user={t.owner}>
-                                <Avatar
-                                  size={24}
-                                  src={getMediaUrl(t.owner.avatarUri)}
-                                  className="rounded-full"
-                                />
-                              </UserContext>
-                              <Text size="sm" color="dimmed">
-                                @{t.owner.username}
-                              </Text>
-                            </div>
-                            <Tooltip label="Created on">
-                              <div className="flex items-center gap-2">
-                                <HiCake color={theme.colors.gray[4]} />
-                                <Text size="sm" color="dimmed" weight={500}>
-                                  {new Date(
-                                    t.cakeDay as Date
-                                  ).toLocaleDateString()}
-                                </Text>
-                              </div>
-                            </Tooltip>
-                          </div>
-                          <Text lineClamp={2}>
-                            {t.description.replace(/<[^>]*>?/gm, "")}
-                          </Text>
-                        </div>
-                      </div>
-                      <div className="flex justify-around gap-2 mt-4">
-                        {[
-                          {
-                            tooltip: "Member count",
-                            value: t._count.members + 1 || 0,
-                            icon: HiUsers,
-                          },
-                          {
-                            tooltip: "Located",
-                            value: t.location || "Unprovided",
-                            icon: HiMap,
-                          },
-                          {
-                            tooltip: "Game count",
-                            value: t._count.games,
-                            icon: HiViewGrid,
-                          },
-                        ].map(({ tooltip, value, icon: Icon }) => (
-                          <Tooltip label={tooltip} key={tooltip}>
-                            <div className="flex items-center gap-2">
-                              <Icon color={theme.colors.gray[5]} />
-                              <Text size="sm" color="dimmed" weight={500}>
-                                {value}
-                              </Text>
-                            </div>
-                          </Tooltip>
-                        ))}
-                      </div>
-                    </div>
-                  </ShadedButton>
-                </Link>
-              ))
+              .map((t) => <TeamCard team={t} key={t.id} />)
           )}
         </div>
       </ShadedCard>

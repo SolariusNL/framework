@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from "@storyofams/next-api-decorators";
 import sanitize from "sanitize-html";
 import { z } from "zod";
@@ -20,6 +21,8 @@ import type { User } from "../../../util/prisma-types";
 import { nonCurrentUserSelect } from "../../../util/prisma-types";
 import { RateLimitMiddleware } from "../../../util/rate-limit";
 import { slugify } from "../../../util/slug";
+import type { FilterType, SortType } from "../../teams/discover";
+import { Prisma } from "./../../../../node_modules/.prisma/client/index.d";
 
 const teamSanitization = {
   allowedTags: [
@@ -506,6 +509,64 @@ class TeamsRouter {
     }
 
     return team.invited;
+  }
+
+  @Get("/discover/:page")
+  @Authorized()
+  public async discover(
+    @Query("q") q: string,
+    @Query("sort") sort: SortType,
+    @Query("filter") filter: FilterType,
+    @Param("page") page: number
+  ) {
+    const query: Prisma.TeamFindManyArgs = {
+      where: {
+        name: {
+          contains: q,
+          mode: "insensitive",
+        },
+        access: filter === "ALL" ? undefined : filter,
+      },
+      orderBy: {
+        ...(sort === "CREATED" ? { createdAt: "desc" } : {}),
+        ...(sort === "MEMBERS" ? { members: { _count: "desc" } } : {}),
+        ...(sort === "NAME" ? { name: "asc" } : {}),
+        ...(sort === "GAMES" ? { games: { _count: "desc" } } : {}),
+      },
+    };
+
+    const teams = await prisma.team
+      .findMany({
+        where: query.where,
+        orderBy: query.orderBy as Prisma.TeamOrderByWithRelationInput,
+        include: {
+          _count: {
+            select: {
+              members: true,
+              games: true,
+            },
+          },
+          owner: {
+            select: nonCurrentUserSelect.select,
+          },
+        },
+        skip:
+          // prevent from becoming NaN
+          page > 0 ? (page - 1) * 10 : 0,
+        take: 10,
+      })
+      .catch((e) => {
+        console.log(e);
+        return [];
+      });
+    const count = await prisma.team.count({
+      where: query.where,
+    });
+
+    return {
+      teams,
+      pages: Math.ceil(count / 10),
+    };
   }
 }
 
