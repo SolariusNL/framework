@@ -13,7 +13,7 @@ const Copy = ({ value, dontPropagate }: CopyProps) => {
         <Tooltip label={copied ? "Copied" : "Copy"} withArrow position="right">
           <ActionIcon
             color={copied ? "teal" : "gray"}
-            onClick={(e) => {
+            onClick={(e: any) => {
               if (dontPropagate) e.stopPropagation();
               copy();
             }}
