@@ -22,7 +22,6 @@ import {
 } from "react-icons/hi";
 import Copy from "../../components/Copy";
 import ModernEmptyState from "../../components/ModernEmptyState";
-import RenderMarkdown from "../../components/RenderMarkdown";
 import ShadedButton from "../../components/ShadedButton";
 import ShadedCard from "../../components/ShadedCard";
 import TeamsProvider from "../../components/Teams/Teams";
@@ -211,9 +210,9 @@ const Teams: React.FC<TeamsProps> = ({ user }) => {
                               </div>
                             </Tooltip>
                           </div>
-                          <RenderMarkdown clamp={2}>
-                            {t.description}
-                          </RenderMarkdown>
+                          <Text lineClamp={2}>
+                            {t.description.replace(/<[^>]*>?/gm, "")}
+                          </Text>
                         </div>
                       </div>
                       <div className="flex justify-around gap-2 mt-4">
