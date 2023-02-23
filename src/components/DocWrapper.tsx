@@ -1,6 +1,4 @@
-import { Text } from "@mantine/core";
 import React from "react";
-import { HiClock } from "react-icons/hi";
 import { User } from "../util/prisma-types";
 import Framework from "./Framework";
 
@@ -19,24 +17,27 @@ interface DocWrapperProps {
 
 const DocWrapper = ({ children, meta }: DocWrapperProps) => {
   return (
-    <Framework
-      user={children?.props?.user}
-      activeTab="none"
-      modernTitle={meta.title}
-      modernSubtitle={meta.summary}
-    >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 12,
-          marginBottom: 32,
-        }}
-      >
-        <HiClock />
-        <Text size="sm">Last updated: {meta.lastModified}</Text>
+    <Framework user={children?.props?.user} activeTab="none" noPadding>
+      <div className="px-4 sm:px-6 lg:px-8">
+        <div className="relative mx-auto max-w-[37.5rem] pt-20 text-center pb-24">
+          <div className="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-5xl">
+            {meta.title}
+          </div>
+          <p className="mt-4 text-base leading-7 text-slate-600 dark:text-zinc-400">
+            Last updated on{" "}
+            {new Date(meta.lastModified).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
+          </p>
+        </div>
+        <div className="relative sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-[40rem] prose prose-sm dark:prose-invert prose-slate prose-a:font-semibold prose-a:text-sky-500 hover:prose-a:text-sky-600">
+            {children}
+          </div>
+        </div>
       </div>
-      {children}
     </Framework>
   );
 };

@@ -49,6 +49,7 @@
     "@storyofams/next-api-decorators": "^1.8.2",
     "@stripe/stripe-js": "^1.44.1",
     "@supabase/supabase-js": "^1.35.4",
+    "@tailwindcss/typography": "^0.5.9",
     "@types/bcrypt": "^5.0.0",
     "@types/multer": "^1.4.7",
     "@types/nodemailer": "^6.4.5",

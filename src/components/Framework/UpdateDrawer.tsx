@@ -20,6 +20,20 @@ const UpdateDrawer: React.FC = () => {
     href?: string;
   }> = [
     {
+      title: "New Font",
+      description:
+        "We've switched to a new font, GitLab Sans, to improve readability and accessibility.",
+      badge: BadgeType.CHANGE,
+      date: new Date("2023-02-23"),
+    },
+    {
+      title: "Teams",
+      description:
+        "Teams are now available in an experimental state. Teams are our new way of collaboration and organization, comparable to Groups on Roblox.",
+      badge: BadgeType.EXPERIMENT,
+      date: new Date("2023-02-23"),
+    },
+    {
       title: "Redesigned Settings",
       description:
         "The settings page has been redesigned to simplify user experience and improve mobile UX.",
