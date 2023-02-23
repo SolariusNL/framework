@@ -566,6 +566,71 @@ class TeamsRouter {
       pages: Math.ceil(count / 10),
     };
   }
+
+  @Post("/:id/transfer/:gameId")
+  @Authorized()
+  public async transferGame(
+    @Account() user: User,
+    @Param("id") id: string,
+    @Param("gameId") gameId: number
+  ) {
+    const team = await prisma.team.findFirst({
+      where: {
+        id,
+      },
+      include: {
+        owner: true,
+        games: true,
+      },
+    });
+
+    if (!team) {
+      throw new BadRequestException("Team does not exist");
+    }
+
+    if (team.ownerId !== user.id) {
+      throw new BadRequestException("You are not the owner of this team");
+    }
+
+    const game = await prisma.game.findFirst({
+      where: {
+        id: Number(gameId),
+        authorId: Number(user.id),
+      },
+    });
+
+    if (!game) {
+      throw new BadRequestException(
+        "Game does not exist or you are not the author"
+      );
+    }
+
+    if (team.games.some((g) => g.id === game.id)) {
+      await prisma.game.update({
+        where: {
+          id: game.id,
+        },
+        data: {
+          teamId: null,
+        },
+      });
+      return {
+        success: true,
+      };
+    } else {
+      await prisma.game.update({
+        where: {
+          id: game.id,
+        },
+        data: {
+          teamId: team.id,
+        },
+      });
+      return {
+        success: true,
+      };
+    }
+  }
 }
 
 export default createHandler(TeamsRouter);

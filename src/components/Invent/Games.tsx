@@ -13,7 +13,9 @@ import {
   useMantineColorScheme,
   useMantineTheme,
 } from "@mantine/core";
-import { openModal } from "@mantine/modals";
+import { openConfirmModal, openModal } from "@mantine/modals";
+import { showNotification } from "@mantine/notifications";
+import { getCookie } from "cookies-next";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import {
@@ -334,8 +336,19 @@ const Games = ({ user }: GamesProps) => {
                           }
                           disabled={game.connection.length > 0}
                         >
-                          Add Connection
+                          Add connection
                         </Menu.Item>
+                        {!game.teamId && (
+                          <Menu.Item
+                            icon={<HiUsers />}
+                            className="bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600"
+                            onClick={() =>
+                              router.push(`/game/${game.id}/team/transfer`)
+                            }
+                          >
+                            Add to team
+                          </Menu.Item>
+                        )}
                         <Menu.Divider />
                         <Menu.Item
                           color="red"
@@ -346,6 +359,62 @@ const Games = ({ user }: GamesProps) => {
                         >
                           Shutdown all servers
                         </Menu.Item>
+                        {game.teamId && (
+                          <Menu.Item
+                            color="red"
+                            icon={<HiXCircle />}
+                            onClick={() => {
+                              openConfirmModal({
+                                title: "Remove from team",
+                                children: (
+                                  <Text size="sm" color="dimmed">
+                                    Are you sure you want to remove this game
+                                    from your team, {game.team!.name}? This
+                                    action cannot be undone.
+                                  </Text>
+                                ),
+                                labels: {
+                                  confirm: "Remove",
+                                  cancel: "Cancel",
+                                },
+                                confirmProps: { color: "red" },
+                                onConfirm: async () => {
+                                  await fetch(
+                                    `/api/teams/${game.team!.id}/transfer/${
+                                      game.id
+                                    }`,
+                                    {
+                                      method: "POST",
+                                      headers: {
+                                        "Content-Type": "application/json",
+                                        Authorization: String(
+                                          getCookie(".frameworksession")
+                                        ),
+                                      },
+                                    }
+                                  )
+                                    .then((res) => res.json())
+                                    .then((res) => {
+                                      if (res.success) {
+                                        router
+                                          .replace(router.asPath)
+                                          .then(() => {
+                                            showNotification({
+                                              title: "Success",
+                                              message:
+                                                "Game has been removed from team.",
+                                              icon: <HiCheckCircle />,
+                                            });
+                                          });
+                                      }
+                                    });
+                                },
+                              });
+                            }}
+                          >
+                            Remove from team
+                          </Menu.Item>
+                        )}
                         <Menu.Item color="red" icon={<HiTrash />}>
                           Disable game
                         </Menu.Item>

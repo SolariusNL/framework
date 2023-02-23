@@ -55,6 +55,7 @@ const user = Prisma.validator<Prisma.UserArgs>()({
             id: true,
           },
         },
+        team: true,
       },
     },
     nucleusKeys: true,
@@ -343,6 +344,8 @@ export const gameSelect: Prisma.GameSelect = {
     },
     take: 1,
   },
+  team: true,
+  teamId: true,
 };
 
 export const snippetSelect: Prisma.CodeSnippetSelect = {
@@ -441,6 +444,7 @@ const game = Prisma.validator<Prisma.GameArgs>()({
       },
       take: 1,
     },
+    team: true,
   },
 });
 
