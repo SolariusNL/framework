@@ -3,6 +3,7 @@ import {
   Alert,
   AspectRatio,
   Avatar,
+  Badge,
   Box,
   Button,
   Grid,
@@ -280,30 +281,51 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
           </Grid.Col>
           <Grid.Col span={mobile ? 24 : 8} p={10}>
             <Group position="apart" pl={0} pr={0} p={10} mb={32}>
-              <Link href={`/profile/${game.author.username}`}>
+              <Link
+                href={
+                  game.team
+                    ? `/teams/t/${game.team.slug}`
+                    : `/profile/${game.author.username}`
+                }
+              >
                 <Group
                   sx={{
                     cursor: "pointer",
                   }}
                 >
-                  <UserContext user={game.author}>
+                  {game.team ? (
                     <Avatar
-                      src={
-                        getMediaUrl(game.author.avatarUri) ||
-                        `https://avatars.dicebear.com/api/identicon/${game.authorId}.png`
-                      }
-                      alt={game.author.username}
+                      src={getMediaUrl(game.team.iconUri)}
+                      alt={game.team.name}
                       radius="xl"
                       size={48}
-                      onClick={() =>
-                        router.push(`/profile/${game.author.username}`)
-                      }
                     />
-                  </UserContext>
+                  ) : (
+                    <UserContext user={game.author}>
+                      <Avatar
+                        src={
+                          getMediaUrl(game.author.avatarUri) ||
+                          `https://avatars.dicebear.com/api/identicon/${game.authorId}.png`
+                        }
+                        alt={game.author.username}
+                        radius="xl"
+                        size={48}
+                      />
+                    </UserContext>
+                  )}
                   <Stack spacing={3}>
-                    <Text weight={700}>{game.author.username}</Text>
+                    <div className="flex items-center gap-2">
+                      <Text weight={700}>
+                        {game.team ? game.team.name : game.author.username}
+                      </Text>
+                      {game.team && (
+                        <Badge radius="md" size="sm">
+                          Team
+                        </Badge>
+                      )}
+                    </div>
                     <Text color="dimmed" size="sm">
-                      Game author
+                      {game.team ? "Managed by this team" : "Game author"}
                     </Text>
                   </Stack>
                 </Group>
