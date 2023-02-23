@@ -7,6 +7,7 @@ import {
   Modal,
   Stack,
   Text,
+  useMantineColorScheme,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { StatusPosts } from "@prisma/client";
@@ -53,6 +54,7 @@ const FeedWidget: React.FC = () => {
       },
     },
   });
+  const { colorScheme } = useMantineColorScheme();
 
   const handleStatusPost = async (values: { status: string }) => {
     await fetch("/api/users/@me/status", {
@@ -104,6 +106,7 @@ const FeedWidget: React.FC = () => {
         title="New post"
         opened={newPost}
         onClose={() => setNewPost(false)}
+        className={colorScheme}
       >
         <form onSubmit={form.onSubmit(handleStatusPost)}>
           <Markdown
