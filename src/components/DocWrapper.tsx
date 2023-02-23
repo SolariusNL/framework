@@ -1,6 +1,8 @@
 import React from "react";
+import clsx from "../util/clsx";
 import { User } from "../util/prisma-types";
 import Framework from "./Framework";
+import { proseStyles } from "./RenderMarkdown";
 
 interface DocWrapperProps {
   children: {
@@ -33,8 +35,8 @@ const DocWrapper = ({ children, meta }: DocWrapperProps) => {
           </p>
         </div>
         <div className="relative sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-[40rem] prose prose-sm dark:prose-invert prose-slate prose-a:font-semibold prose-a:text-sky-500 hover:prose-a:text-sky-600">
-            {children}
+          <div className="mx-auto max-w-[40rem]">
+            <div className={clsx(proseStyles, "prose-sm")}>{children}</div>
           </div>
         </div>
       </div>
