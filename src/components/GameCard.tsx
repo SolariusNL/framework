@@ -80,9 +80,16 @@ const GameCard = ({ game }: GameCardProps) => {
           </Card.Section>
           <div className="flex justify-between mb-4">
             <Title order={4}>{game.name}</Title>
-            <Tooltip label={game.author.username} openDelay={1300}>
+            <Tooltip
+              label={game.team ? game.team.name : game.author.username}
+              zIndex={10000}
+            >
               <Avatar
-                src={getMediaUrl(game.author.avatarUri)}
+                src={
+                  game.team
+                    ? getMediaUrl(game.team.iconUri)
+                    : getMediaUrl(game.author.avatarUri)
+                }
                 size={20}
                 radius="xl"
               />
