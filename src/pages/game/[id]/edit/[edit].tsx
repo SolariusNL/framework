@@ -1,5 +1,5 @@
 import { NavLink } from "@mantine/core";
-import { GameEnvironmentVariable } from "@prisma/client";
+import { GameEnvironmentVariable, Team } from "@prisma/client";
 import { GetServerSidePropsContext, NextPage } from "next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -38,6 +38,7 @@ export type GameWithDatastore = Game & {
     createdAt: Date;
   }[];
   envs: GameEnvironmentVariable[];
+  team: Team;
 };
 
 interface EditGameProps {
@@ -194,6 +195,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
             },
           },
           envs: true,
+          team: true,
         },
       })
     )

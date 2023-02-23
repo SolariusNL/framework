@@ -3,6 +3,7 @@ import {
   AspectRatio,
   Button,
   Card,
+  Divider,
   Group,
   Image,
   Modal,
@@ -26,11 +27,12 @@ import getMediaUrl from "../../util/get-media";
 import { Game } from "../../util/prisma-types";
 import { genreMap } from "../../util/universe/genre";
 import Descriptive from "../Descriptive";
+import { Section } from "../Home/FriendsWidget";
 import ImageUploader from "../ImageUploader";
 import ModernEmptyState from "../ModernEmptyState";
 import RichText from "../RichText";
-import Grouped from "../Settings/Grouped";
 import SideBySide from "../Settings/SideBySide";
+import ShadedCard from "../ShadedCard";
 import EditGameTab from "./EditGameTab";
 
 interface DetailsProps {
@@ -328,234 +330,231 @@ const Details = ({ game }: DetailsProps) => {
         </form>
       </Modal>
       <EditGameTab value="details">
+        <Section
+          title="Details"
+          description="General information about your game."
+        />
         <Stack spacing={12}>
-          <Grouped title="General Information">
-            {editable.map((value, index) => {
-              const {
-                property,
-                label,
-                description,
-                type,
-                options,
-                title,
-                hint,
-              } = value;
+          {editable.map((value, index) => {
+            const { property, label, description, type, options, title, hint } =
+              value;
 
-              return (
-                <SideBySide
-                  title={title}
-                  description={description}
-                  key={index}
-                  actions={hint}
-                  noUpperBorder
-                  shaded
-                  right={
-                    <>
-                      {type == EditableType.Text && (
-                        <TextInput
-                          label={label}
-                          description={description}
-                          defaultValue={String(property)}
-                          onChange={(event) => {
+            return (
+              <SideBySide
+                title={title}
+                description={description}
+                key={index}
+                actions={hint}
+                noUpperBorder
+                shaded
+                right={
+                  <>
+                    {type == EditableType.Text && (
+                      <TextInput
+                        label={label}
+                        description={description}
+                        defaultValue={String(property)}
+                        onChange={(event) => {
+                          setUpdated({
+                            ...updated,
+                            [value.pointer]: event.currentTarget.value,
+                          });
+                        }}
+                      />
+                    )}
+
+                    {type == EditableType.Select && (
+                      <Select
+                        label={label}
+                        description={description}
+                        defaultValue={String(property)}
+                        data={
+                          options ?? ([] as { label: string; value: any }[])
+                        }
+                        onChange={(s) => {
+                          setUpdated({ ...updated, [value.pointer]: s });
+                        }}
+                      />
+                    )}
+
+                    {type == EditableType.Bool && (
+                      <Descriptive title={label} description={description}>
+                        <Switch
+                          onChange={(e) => {
                             setUpdated({
                               ...updated,
-                              [value.pointer]: event.currentTarget.value,
+                              [value.pointer]: e.currentTarget.checked,
                             });
                           }}
+                          defaultChecked={Boolean(property)}
                         />
-                      )}
+                      </Descriptive>
+                    )}
 
-                      {type == EditableType.Select && (
-                        <Select
-                          label={label}
-                          description={description}
-                          defaultValue={String(property)}
-                          data={
-                            options ?? ([] as { label: string; value: any }[])
-                          }
+                    {type == EditableType.Numeric && (
+                      <NumberInput
+                        label={label}
+                        description={description}
+                        defaultValue={Number(property)}
+                        onChange={(s) => {
+                          setUpdated({ ...updated, [value.pointer]: s });
+                        }}
+                      />
+                    )}
+
+                    {type == EditableType.RichText && (
+                      <Descriptive title={label} description={description}>
+                        <RichText
+                          value={String(property)}
                           onChange={(s) => {
                             setUpdated({ ...updated, [value.pointer]: s });
                           }}
-                        />
-                      )}
-
-                      {type == EditableType.Bool && (
-                        <Descriptive title={label} description={description}>
-                          <Switch
-                            onChange={(e) => {
-                              setUpdated({
-                                ...updated,
-                                [value.pointer]: e.currentTarget.checked,
-                              });
-                            }}
-                            defaultChecked={Boolean(property)}
-                          />
-                        </Descriptive>
-                      )}
-
-                      {type == EditableType.Numeric && (
-                        <NumberInput
-                          label={label}
-                          description={description}
-                          defaultValue={Number(property)}
-                          onChange={(s) => {
-                            setUpdated({ ...updated, [value.pointer]: s });
+                          styles={{
+                            root: {
+                              maxHeight: "300px!important",
+                              overflowY: "auto",
+                            },
                           }}
+                          controls={[
+                            ["bold", "italic", "underline", "link"],
+                            ["h1", "h2", "h3", "h4"],
+                            ["blockquote"],
+                            ["code", "codeBlock"],
+                          ]}
                         />
-                      )}
+                      </Descriptive>
+                    )}
 
-                      {type == EditableType.RichText && (
-                        <Descriptive title={label} description={description}>
-                          <RichText
-                            value={String(property)}
-                            onChange={(s) => {
-                              setUpdated({ ...updated, [value.pointer]: s });
-                            }}
-                            styles={{
-                              root: {
-                                maxHeight: "300px!important",
-                                overflowY: "auto",
-                              },
-                            }}
-                            controls={[
-                              ["bold", "italic", "underline", "link"],
-                              ["h1", "h2", "h3", "h4"],
-                              ["blockquote"],
-                              ["code", "codeBlock"],
-                            ]}
-                          />
-                        </Descriptive>
-                      )}
-
-                      {type == EditableType.ListTitleDescriptionPair && (
-                        <Card withBorder p={12}>
-                          {(property as GameCopyrightMetadata[]).map(
-                            (value, index) => {
-                              return (
-                                <Card.Section
-                                  withBorder
-                                  p={12}
-                                  sx={(theme) => ({
-                                    "&:hover": {
-                                      backgroundColor:
-                                        theme.colorScheme === "dark"
-                                          ? theme.colors.dark[7]
-                                          : theme.colors.gray[1],
-                                    },
-                                    cursor: "pointer",
-                                    transition: "background-color 0.2s",
-                                  })}
-                                  key={index}
-                                  onClick={() => {
-                                    setEditingMetadata(value);
-                                    setEditing(true);
-                                  }}
-                                >
-                                  <Text
-                                    weight={500}
-                                    color="dimmed"
-                                    size="sm"
-                                    mb={6}
-                                  >
-                                    {value.title}
-                                  </Text>
-                                  <Text lineClamp={1}>
-                                    {value.description.slice(0, 40)}
-                                    {value.description.length > 40 && "..."}
-                                  </Text>
-                                </Card.Section>
-                              );
-                            }
-                          )}
-                          {(property as GameCopyrightMetadata[]).length ==
-                            0 && (
-                            <Stack spacing={16}>
-                              <ModernEmptyState
-                                title="No copyright notices"
-                                body="You haven't added any copyright notices yet."
-                              />
-                              <Button
-                                variant="default"
-                                onClick={async () =>
-                                  await createCopyRightMetadata()
-                                }
+                    {type == EditableType.ListTitleDescriptionPair && (
+                      <ShadedCard withBorder p={12}>
+                        {(property as GameCopyrightMetadata[]).map(
+                          (value, index) => {
+                            return (
+                              <Card.Section
+                                withBorder
+                                p={12}
+                                sx={(theme) => ({
+                                  "&:hover": {
+                                    backgroundColor:
+                                      theme.colorScheme === "dark"
+                                        ? theme.colors.dark[7]
+                                        : theme.colors.gray[1],
+                                  },
+                                  cursor: "pointer",
+                                  transition: "background-color 0.2s",
+                                })}
+                                key={index}
+                                onClick={() => {
+                                  setEditingMetadata(value);
+                                  setEditing(true);
+                                }}
                               >
-                                Create
-                              </Button>
-                            </Stack>
-                          )}
-                        </Card>
-                      )}
-                    </>
-                  }
-                />
-              );
-            })}
-          </Grouped>
-          <Grouped title="Images">
-            <SideBySide
-              title="Icon"
-              description="The icon is the image that represents your game in discoverability and search results."
-              shaded
-              noUpperBorder
-              right={
-                <>
-                  <Paper
-                    sx={{
-                      width: "100%",
-                      height: "100%",
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Image
-                      src={uploadedIcon ?? getMediaUrl(game.iconUri)}
-                      alt={`No icon uploaded for ${game.name}`}
-                      height={128}
-                      width={128}
-                      ref={iconRef}
-                    />
-                  </Paper>
-                </>
-              }
-              actions={
-                <ImageUploader
-                  onFinished={(imgStr) => setUploadedIcon(imgStr)}
-                  crop
-                  ratio={1}
-                  imgRef={iconRef}
-                />
-              }
-            />
-            <SideBySide
-              title="Thumbnail"
-              description="Your thumbnail is the main image that represents your game, make it pop!"
-              shaded
-              noUpperBorder
-              right={
-                <>
-                  <AspectRatio ratio={16 / 9}>
-                    <Image
-                      src={uploadedThumbnail ?? getMediaUrl(game.gallery[0])}
-                      alt={`No thumbnail uploaded for ${game.name}`}
-                      width="100%"
-                      height="100%"
-                      ref={thumbnailRef}
-                    />
-                  </AspectRatio>
-                </>
-              }
-              actions={
-                <ImageUploader
-                  onFinished={(imgStr) => setUploadedThumbnail(imgStr)}
-                  crop
-                  ratio={16 / 9}
-                  imgRef={thumbnailRef}
-                />
-              }
-            />
-          </Grouped>
+                                <Text
+                                  weight={500}
+                                  color="dimmed"
+                                  size="sm"
+                                  mb={6}
+                                >
+                                  {value.title}
+                                </Text>
+                                <Text lineClamp={1}>
+                                  {value.description.slice(0, 40)}
+                                  {value.description.length > 40 && "..."}
+                                </Text>
+                              </Card.Section>
+                            );
+                          }
+                        )}
+                        {(property as GameCopyrightMetadata[]).length == 0 && (
+                          <Stack spacing={16}>
+                            <ModernEmptyState
+                              title="No copyright notices"
+                              body="You haven't added any copyright notices yet."
+                            />
+                            <Button
+                              variant="default"
+                              onClick={async () =>
+                                await createCopyRightMetadata()
+                              }
+                            >
+                              Create
+                            </Button>
+                          </Stack>
+                        )}
+                      </ShadedCard>
+                    )}
+                  </>
+                }
+              />
+            );
+          })}
+          <Divider mt="xl" mb="xl" />
+          <Section
+            title="Media"
+            description="Your games media, such as icon and thumbnail."
+          />
+          <SideBySide
+            title="Icon"
+            description="The icon is the image that represents your game in discoverability and search results."
+            shaded
+            noUpperBorder
+            right={
+              <>
+                <Paper
+                  sx={{
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Image
+                    src={uploadedIcon ?? getMediaUrl(game.iconUri)}
+                    alt={`No icon uploaded for ${game.name}`}
+                    height={128}
+                    width={128}
+                    ref={iconRef}
+                  />
+                </Paper>
+              </>
+            }
+            actions={
+              <ImageUploader
+                onFinished={(imgStr) => setUploadedIcon(imgStr)}
+                crop
+                ratio={1}
+                imgRef={iconRef}
+              />
+            }
+          />
+          <SideBySide
+            title="Thumbnail"
+            description="Your thumbnail is the main image that represents your game, make it pop!"
+            shaded
+            noUpperBorder
+            right={
+              <>
+                <AspectRatio ratio={16 / 9}>
+                  <Image
+                    src={uploadedThumbnail ?? getMediaUrl(game.gallery[0])}
+                    alt={`No thumbnail uploaded for ${game.name}`}
+                    width="100%"
+                    height="100%"
+                    ref={thumbnailRef}
+                  />
+                </AspectRatio>
+              </>
+            }
+            actions={
+              <ImageUploader
+                onFinished={(imgStr) => setUploadedThumbnail(imgStr)}
+                crop
+                ratio={16 / 9}
+                imgRef={thumbnailRef}
+              />
+            }
+          />
         </Stack>
 
         {success && (
