@@ -550,9 +550,7 @@ class TeamsRouter {
             select: nonCurrentUserSelect.select,
           },
         },
-        skip:
-          // prevent from becoming NaN
-          page > 0 ? (page - 1) * 10 : 0,
+        skip: page > 0 ? (page - 1) * 10 : 0,
         take: 10,
       })
       .catch((e) => {

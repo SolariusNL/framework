@@ -1,4 +1,5 @@
 import { Select, Skeleton, TextInput } from "@mantine/core";
+import { useDebouncedValue } from "@mantine/hooks";
 import { getCookie } from "cookies-next";
 import { GetServerSideProps } from "next";
 import React from "react";
@@ -22,6 +23,7 @@ export type SortType = "CREATED" | "MEMBERS" | "NAME" | "GAMES";
 
 const TeamsDiscover: React.FC<TeamsDiscoverProps> = ({ user }) => {
   const [search, setSearch] = React.useState("");
+  const [debouncedSearch] = useDebouncedValue(search, 250);
   const [filter, setFilter] = React.useState<FilterType>("ALL");
   const [sort, setSort] = React.useState<SortType>("MEMBERS");
   const [teams, setTeams] = React.useState<TeamType[]>();
@@ -33,7 +35,7 @@ const TeamsDiscover: React.FC<TeamsDiscoverProps> = ({ user }) => {
   const getTeamsApi = async (p: number) => {
     const res = await fetch(
       `/api/teams/discover/${p}?` +
-        new URLSearchParams({ q: search, filter, sort }).toString(),
+        new URLSearchParams({ q: debouncedSearch, filter, sort }).toString(),
       {
         method: "GET",
         headers: {
@@ -55,7 +57,7 @@ const TeamsDiscover: React.FC<TeamsDiscoverProps> = ({ user }) => {
       setCanLoadMore(res.teams.length > 0);
       setLoading(false);
     });
-  }, [search, filter, sort]);
+  }, [debouncedSearch, filter, sort]);
 
   return (
     <TeamsProvider
@@ -63,7 +65,7 @@ const TeamsDiscover: React.FC<TeamsDiscoverProps> = ({ user }) => {
       title="Discover"
       description="Find new teams to join, and connect with other users."
     >
-      {/* <div
+      <div
         className={clsx(
           "flex-initial flex-col md:flex-row flex items-center gap-4 mt-8",
           "items-stretch md:items-center mb-8"
@@ -110,7 +112,7 @@ const TeamsDiscover: React.FC<TeamsDiscoverProps> = ({ user }) => {
           }
           placeholder="Sort by..."
         />
-      </div> */}
+      </div>
       <ShadedCard>
         <InfiniteScroll
           pageStart={1}
