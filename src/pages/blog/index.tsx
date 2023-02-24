@@ -3,6 +3,7 @@ import {
   Modal,
   Switch,
   TextInput,
+  UnstyledButton,
   useMantineColorScheme,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
@@ -190,14 +191,14 @@ const Blog: NextPage<BlogProps> = ({ user, posts, featured }) => {
                       />
                     </div>
                     <div className="px-2 grow flex">
-                      <Button
+                      <UnstyledButton
                         type="submit"
-                        className="bg-sky-500 flex-auto shadow text-white text-sm border-y border-transparent py-2 font-semibold px-1 hover:bg-sky-600 dark:hover:bg-sky-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-300 dark:focus:ring-offset-slate-900 dark:focus:ring-sky-700 highlight-white/25"
+                        className="bg-sky-500 flex-auto shadow text-white text-sm border-y border-transparent py-2 font-semibold px-0 hover:bg-sky-600 dark:hover:bg-sky-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-300 dark:focus:ring-offset-slate-900 dark:focus:ring-sky-700 highlight-white/25 disabled:opacity-50 disabled:cursor-not-allowed text-center"
                         style={{ borderRadius: "8px" }}
-                        loading={loading}
+                        disabled={loading}
                       >
                         Subscribe
-                      </Button>
+                      </UnstyledButton>
                     </div>
                   </form>
                 )}
