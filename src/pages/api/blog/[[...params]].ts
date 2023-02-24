@@ -1,9 +1,10 @@
 import { AdminPermission } from "@prisma/client";
 import { Body, createHandler, Post } from "@storyofams/next-api-decorators";
+import { parse } from "../../../components/RenderMarkdown";
 import Authorized, { Account } from "../../../util/api/authorized";
 import prisma from "../../../util/prisma";
-import { blogPostSelect } from "../../../util/prisma-types";
 import type { User } from "../../../util/prisma-types";
+import { blogPostSelect } from "../../../util/prisma-types";
 
 class BlogRouter {
   @Post("/create")
@@ -25,45 +26,75 @@ class BlogRouter {
       };
     }
 
-    const featuredArticles = await prisma.blogPost.findMany({
-      where: {
-        featured: true,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-      take: 3,
-    });
-
-    if (featuredArticles.length === 3 && body.featured) {
-      await prisma.blogPost.update({
-        where: {
-          id: featuredArticles[2].id,
-        },
-        data: {
-          featured: false,
-        },
-      });
-    }
-
     const article = await prisma.blogPost.create({
       data: {
         title: body.title,
-        content: body.content,
+        content: parse(body.content),
         createdAt: new Date(),
         author: {
           connect: {
             id: Number(account.id),
           },
         },
-        featured: body.featured,
-        subtitle: body.subtitle,
+        subtitle: parse(body.subtitle),
         slug: body.title.toLowerCase().replace(/ /g, "-"),
       },
       select: blogPostSelect,
     });
 
     return article;
+  }
+
+  @Post("/newsletter/subscribe")
+  @Authorized()
+  public async subscribeToNewsletter(
+    @Body()
+    body: {
+      email: string;
+    },
+    @Account() account: User
+  ) {
+    if (account.newsletterSubscribed) {
+      await prisma.user.update({
+        where: {
+          id: Number(account.id),
+        },
+        data: {
+          newsletterSubscribed: false,
+        },
+      });
+
+      return {
+        success: true,
+        subscribed: false,
+      };
+    } else {
+      if (!body.email)
+        return {
+          success: false,
+          error: "No email provided",
+        };
+      if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(body.email))
+        return {
+          success: false,
+          error: "Invalid email",
+        };
+
+      await prisma.user.update({
+        where: {
+          id: Number(account.id),
+        },
+        data: {
+          newsletterSubscribed: true,
+          newsletterEmail: body.email,
+        },
+      });
+
+      return {
+        success: true,
+        subscribed: true,
+      };
+    }
   }
 }
 

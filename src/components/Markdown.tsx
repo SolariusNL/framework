@@ -22,6 +22,7 @@ interface MarkdownProps {
   onChange?: (value: string) => void;
   value?: string;
   error?: string;
+  className?: string;
 }
 
 export enum ToolbarItem {
@@ -58,6 +59,7 @@ const Markdown: React.FC<MarkdownProps> = ({
   onChange,
   value,
   error,
+  className,
 }) => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const insertText = (
@@ -315,7 +317,7 @@ const Markdown: React.FC<MarkdownProps> = ({
   }, [toolbar]);
 
   return (
-    <div>
+    <div className={className}>
       <Tabs defaultValue="write" variant="pills">
         <Tabs.List className="flex justify-between items-start mb-4 flex-col lg:flex-row gap-4">
           <div className="flex items-center gap-2">

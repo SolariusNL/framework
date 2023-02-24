@@ -240,6 +240,7 @@ export const userSelect: Prisma.UserSelect = {
   },
   loginQR: true,
   quickLoginEnabled: true,
+  newsletterSubscribed: true,
 };
 
 const article = Prisma.validator<Prisma.AdminArticleArgs>()({

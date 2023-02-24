@@ -154,6 +154,8 @@ model User {
   apartOf                    Team[]                 @relation("teamMembers")
   ownedTeams                 Team[]                 @relation("teamOwner")
   invitedToTeams             Team[]                 @relation("teamInvites")
+  newsletterSubscribed       Boolean                @default(false)
+  newsletterEmail            String?
 }
 
 model ConnectedAccount {

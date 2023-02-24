@@ -96,6 +96,7 @@ interface FrameworkProps {
   };
   actions?: [string | React.ReactNode, () => void][];
   integratedTabs?: React.ReactNode;
+  relative?: boolean;
 }
 
 export const frameworkStyles = createStyles((theme) => ({
@@ -166,6 +167,7 @@ const Framework = ({
   returnTo,
   actions,
   integratedTabs,
+  relative,
 }: FrameworkProps) => {
   const { classes } = frameworkStyles();
   const { opened: sidebarOpened, setOpened: setSidebarOpened } = useSidebar();
@@ -405,6 +407,7 @@ const Framework = ({
       disabled={user === null}
       radius="md"
       limit={7}
+      className={relative ? "relative" : ""}
     >
       {experiments.includes(ExperimentId.LiveChat) && (
         <Affix

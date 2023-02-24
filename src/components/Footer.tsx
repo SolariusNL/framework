@@ -15,6 +15,7 @@ import {
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import ReactNoSSR from "react-no-ssr";
+import clsx from "../util/clsx";
 import useConfig from "../util/config";
 import SoodamLogo from "./SoodamLogo";
 
@@ -157,7 +158,7 @@ const Footer = () => {
   }, []);
 
   return (
-    <footer className={classes.footer}>
+    <footer className={clsx(classes.footer, "relative")}>
       <Container className={classes.inner}>
         <div className={classes.logo}>
           <SoodamLogo height={64} width={64} />
