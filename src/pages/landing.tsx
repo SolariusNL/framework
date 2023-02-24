@@ -61,22 +61,6 @@ const useStyles = createStyles((theme) => ({
     },
   },
 
-  control: {
-    "&:not(:first-of-type)": {
-      marginLeft: theme.spacing.md,
-    },
-
-    "@media (max-width: 520px)": {
-      height: 42,
-      fontSize: theme.fontSizes.md,
-
-      "&:not(:first-of-type)": {
-        marginTop: theme.spacing.md,
-        marginLeft: 0,
-      },
-    },
-  },
-
   spacer: {
     marginBottom: theme.spacing.xl * 4,
   },
@@ -126,47 +110,29 @@ const Landing: NextPage = () => {
         <LandingHeader />
         <Container className={classes.wrapper} size={1400}>
           <div className={classes.inner}>
-            <Title className={classes.title}>
+            <Title className="text-slate-900 font-extrabold text-4xl sm:text-5xl lg:text-6xl tracking-tight text-center dark:text-white">
               Roblox{" "}
-              <Text
-                component="span"
-                variant="gradient"
-                gradient={{ from: "pink", to: "grape" }}
-                inherit
-              >
-                redefined.
-              </Text>
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-purple-500">
+                redefined
+              </span>
             </Title>
 
-            <Container p={0} size={600}>
-              <Text
-                size="lg"
-                color="dimmed"
-                className={classes.description}
-                mb="md"
-              >
-                Join our free, open-source federated network to explore the
-                possibilities of limitless creativity and self-expression in a
-                decentralized, censorship-resistant, and permissionless
-                environment.
-              </Text>
-            </Container>
+            <p className="mt-6 text-lg text-slate-600 text-center max-w-3xl mx-auto dark:text-slate-400 mb-12">
+              Join our free, open-source federated network to explore the
+              possibilities of limitless creativity and self-expression in a
+              decentralized, censorship-resistant, and permissionless
+              environment.
+            </p>
 
             <div className={classes.controls}>
               <Link href="/register" passHref>
-                <Button
-                  className={classes.control}
-                  size="lg"
-                  component="a"
-                  variant="gradient"
-                  gradient={{ from: "pink", to: "violet" }}
-                >
+                <a className="bg-slate-900 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 text-white font-semibold h-12 px-6 rounded-lg w-full flex items-center justify-center sm:w-auto dark:bg-pink-500 dark:highlight-white/20 dark:hover:bg-pink-400 no-underline">
                   Join Now
-                </Button>
+                </a>
               </Link>
             </div>
 
-            <Container p={0} size={600} mt="lg">
+            <Container p={0} size={600} className="mt-12">
               <Text
                 size="sm"
                 color="dimmed"

@@ -56,6 +56,11 @@ const features = [
     description:
       "Framework is built on top of open standards, which means that you can use any client you want to connect to our servers that implements the ActivityPub protocol tailored to Framework.",
   },
+  {
+    title: "Extensible",
+    description:
+      "Framework is built on top of a modular architecture, which means that you can extend it with your own plugins and services. You can also use our plugin ecosystem to extend Framework with plugins made by other people.",
+  },
 ];
 
 const Features = () => {
@@ -73,13 +78,13 @@ const Features = () => {
           </Text>
         </Col>
         <Col span={12} md={7}>
-          <Stack spacing={16}>
+          <div className="grid md:grid-cols-2 gap-6 grid-cols-1">
             {features.map((feature) => (
-              <div className="flex items-center" key={feature.title}>
+              <div className="flex items-start" key={feature.title}>
                 <div className="hidden md:block">
-                  <HiCheckCircle className="text-teal-500 mr-6 w-8 h-8" />
+                  <HiCheckCircle className="text-pink-400 mr-6 w-8 h-8" />
                 </div>
-                <div>
+                <div className="flex flex-col gap-2">
                   <Title order={5}>{feature.title}</Title>
                   <Text size="sm" color="dimmed">
                     {feature.description}
@@ -87,7 +92,7 @@ const Features = () => {
                 </div>
               </div>
             ))}
-          </Stack>
+          </div>
         </Col>
       </Grid>
     </div>

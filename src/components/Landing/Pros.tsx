@@ -69,8 +69,7 @@ const Pros = () => {
       <ThemeIcon
         size={44}
         radius="md"
-        variant="gradient"
-        gradient={{ deg: 133, ...feature.gradient }}
+        className="bg-purple-500 dark:highlight-white/40"
       >
         <feature.icon size={26} stroke={"1.5"} />
       </ThemeIcon>
@@ -87,26 +86,15 @@ const Pros = () => {
     <div className={classes.wrapper}>
       <Grid gutter={80}>
         <Col span={12} md={5}>
+          <p className="text-purple-500 font-bold text-sm">Why Framework?</p>
           <Title className={classes.title} order={2}>
-            Our Standards
+            Our standards
           </Title>
           <Text color="dimmed">
             Framework unlocks creativity, freedom, and imagination. Our powerful
-            tools empower people like you to create stunning experiences.
+            tools empower people like you to create stunning experiences,
+            without the hassle.
           </Text>
-
-          <Link href="/register" passHref>
-            <Button
-              variant="gradient"
-              gradient={{ deg: 133, from: "blue", to: "cyan" }}
-              size="lg"
-              radius="md"
-              mt="xl"
-              component="a"
-            >
-              Get started
-            </Button>
-          </Link>
         </Col>
         <Col span={12} md={7}>
           <SimpleGrid
