@@ -34,6 +34,7 @@ import Authorized, {
   Account,
   AdminAuthorized,
 } from "../../../util/api/authorized";
+import { PREMIUM_PAYOUTS } from "../../../util/constants";
 import { hashPass } from "../../../util/hash/password";
 import { sendMail } from "../../../util/mail";
 import createNotification from "../../../util/notifications";
@@ -1061,10 +1062,28 @@ class AdminRouter {
                 },
               },
               premium: true,
+              // if user didnt already have premium, dont do
+              ...(user.premium
+                ? {}
+                : {
+                    tickets: {
+                      increment: PREMIUM_PAYOUTS[subscription.type!],
+                    },
+                  }),
             },
           });
 
           await createActionLog(`Adjusted ${user.username}'s subscription`, 3);
+          if (!user.premium) {
+            await createNotification(
+              user.id,
+              NotificationType.GIFT,
+              `Welcome to Framework Premium. You've received your first payout of ${
+                PREMIUM_PAYOUTS[subscription.type!]
+              } tickets! Thank you for supporting us.`,
+              "Welcome to Premium"
+            );
+          }
         },
       },
       {

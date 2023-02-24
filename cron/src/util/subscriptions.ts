@@ -1,10 +1,7 @@
-import {
-  NotificationType,
-  PremiumSubscriptionType,
-  Prisma,
-} from "@prisma/client";
+import { NotificationType, Prisma } from "@prisma/client";
 import { schedule } from "node-cron";
 import { scheduleJob } from "node-schedule";
+import { PREMIUM_PAYOUTS } from "../../../src/util/constants";
 import { client } from "../app";
 
 const user = Prisma.validator<Prisma.UserArgs>()({
@@ -90,17 +87,7 @@ async function grantPremiumMonthlyReward(user: User) {
     new Date().getTime() - user.premiumSubscription!.lastReward.getTime() >
     1000 * 60 * 60 * 24 * 30
   ) {
-    switch (level) {
-      case PremiumSubscriptionType.PREMIUM_ONE_MONTH:
-        await grantTickets(1200);
-        break;
-      case PremiumSubscriptionType.PREMIUM_ONE_YEAR:
-        await grantTickets(14400);
-        break;
-      case PremiumSubscriptionType.PREMIUM_SIX_MONTHS:
-        await grantTickets(7200);
-        break;
-    }
+    await grantTickets(PREMIUM_PAYOUTS[level!]);
   }
 }
 
