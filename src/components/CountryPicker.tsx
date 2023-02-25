@@ -1,6 +1,6 @@
 /* eslint-disable react/display-name */
 
-import { Avatar, Group, Select, Text } from "@mantine/core";
+import { Group, Select, Text } from "@mantine/core";
 import { forwardRef } from "react";
 import ReactCountryFlag from "react-country-flag";
 import countries from "../data/countries";

@@ -1,6 +1,6 @@
 import { Avatar, Badge, Group, Select, SelectProps, Text } from "@mantine/core";
 import { getCookie } from "cookies-next";
-import { forwardRef, useState } from "react";
+import { forwardRef, useMemo, useState } from "react";
 import { exclude } from "../util/exclude";
 import getMediaUrl from "../util/get-media";
 import { NonUser } from "../util/prisma-types";
@@ -49,6 +49,7 @@ const UserSelect: React.FC<UserSelectProps & Omit<SelectProps, "data">> = ({
   ...props
 }) => {
   const [userAutoComplete, setUserAutoComplete] = useState<NonUser[]>([]);
+  const [value, setValue] = useState<string>();
 
   return (
     <Select
@@ -71,24 +72,28 @@ const UserSelect: React.FC<UserSelectProps & Omit<SelectProps, "data">> = ({
         item.username.toLowerCase().includes(value.toLowerCase())
       }
       onClick={(e) => e.stopPropagation()}
-      data={
-        userAutoComplete.length > 0
-          ? userAutoComplete.map((user) => ({
-              value: user.id,
-              label: user.username,
-              avatarUri: user.avatarUri,
-              username: user.username,
-              bio: user.bio,
-              banned: user.banned,
-              role: user.role,
-            }))
-          : []
-      }
+      data={useMemo(
+        () =>
+          userAutoComplete.length > 0
+            ? userAutoComplete.map((user) => ({
+                value: user.id,
+                label: user.username,
+                avatarUri: user.avatarUri,
+                username: user.username,
+                bio: user.bio,
+                banned: user.banned,
+                role: user.role,
+              }))
+            : [],
+        [userAutoComplete]
+      )}
       onChange={(id: number) => {
         onUserSelect(
           userAutoComplete.find((user) => user.id === id) as NonUser
         );
+        setValue("");
       }}
+      value={value}
       {...exclude(props, ["data"])}
     />
   );

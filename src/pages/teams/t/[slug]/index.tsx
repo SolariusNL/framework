@@ -18,16 +18,17 @@ import {
   HiClock,
   HiExclamationCircle,
   HiGlobe,
+  HiLockClosed,
   HiMail,
   HiOfficeBuilding,
   HiUsers,
   HiViewGrid,
 } from "react-icons/hi";
 import { TeamType } from "../..";
+import Owner from "../../../../components/Owner";
 import RenderMarkdown from "../../../../components/RenderMarkdown";
 import ShadedCard from "../../../../components/ShadedCard";
 import TeamsViewProvider from "../../../../components/Teams/TeamsView";
-import UserContext from "../../../../components/UserContext";
 import authorizedRoute from "../../../../util/auth";
 import getMediaUrl from "../../../../util/get-media";
 import { NonUser, User } from "../../../../util/prisma-types";
@@ -104,22 +105,16 @@ const TeamView: React.FC<TeamViewProps> = ({ user, team }) => {
   return (
     <TeamsViewProvider user={user} team={team} active="details">
       <div className="flex items-start flex-col md:flex-row gap-y-4 md:gap-y-0 justify-between mb-8">
-        <div className="flex items-start gap-4">
+        <div className="flex items-start gap-7">
           <Avatar size={100} src={getMediaUrl(team.iconUri)} />
           <div className="flex flex-col gap-2">
-            <Title order={2}>{team.name}</Title>
-            <div className="flex items-center gap-2">
-              <UserContext user={team.owner}>
-                <Avatar
-                  size={28}
-                  src={getMediaUrl(team.owner.avatarUri)}
-                  className="rounded-full"
-                />
-              </UserContext>
-              <Text size="sm" weight={500} color={"dimmed"}>
-                @{team.owner.username}
-              </Text>
+            <div className="flex items-center gap-4">
+              {team.access === TeamAccess.PRIVATE && (
+                <HiLockClosed className="dark:text-gray-300/50 text-gray-700/50" />
+              )}
+              <Title order={2}>{team.name}</Title>
             </div>
+            <Owner user={team.owner} size={34} className="mt-2" />
           </div>
         </div>
         <Button

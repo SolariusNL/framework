@@ -2,8 +2,6 @@ import {
   Avatar,
   Button,
   CloseButton,
-  Divider,
-  Image,
   Loader,
   Select,
   Stack,
@@ -11,6 +9,7 @@ import {
   TextInput,
   useMantineTheme,
 } from "@mantine/core";
+import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { Rating, TeamAccess } from "@prisma/client";
 import { getCookie } from "cookies-next";
@@ -19,15 +18,18 @@ import { useEffect, useRef, useState } from "react";
 import {
   HiCheck,
   HiCheckCircle,
+  HiClock,
   HiGlobe,
   HiMail,
+  HiPlus,
   HiXCircle,
 } from "react-icons/hi";
 import { TeamType } from "../..";
+import Descriptive from "../../../../components/Descriptive";
+import DetailCard from "../../../../components/DetailCard";
 import ImageUploader from "../../../../components/ImageUploader";
 import LabelledRadio from "../../../../components/LabelledRadio";
 import Markdown, { ToolbarItem } from "../../../../components/Markdown";
-import SideBySide from "../../../../components/Settings/SideBySide";
 import TeamsViewProvider from "../../../../components/Teams/TeamsView";
 import UserSelect from "../../../../components/UserSelect";
 import getTimezones from "../../../../data/timezones";
@@ -35,6 +37,12 @@ import authorizedRoute from "../../../../util/auth";
 import getMediaUrl from "../../../../util/get-media";
 import { NonUser, User } from "../../../../util/prisma-types";
 import { getTeam } from "../../../../util/teams";
+
+const headers = {
+  "Content-Type": "application/json",
+  Authorization: String(getCookie(".frameworksession")),
+};
+const blackInput = "dark:bg-black dark:text-white";
 
 export type TeamViewSettingsProps = {
   user: User;
@@ -62,18 +70,17 @@ type Updatable = {
   access: TeamAccess;
 };
 
-const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
-  const [updates, setUpdates] = useState<Updatable>({
-    description: team.descriptionMarkdown || "No description",
-    location: team.location || "",
-    timezone: team.timezone || "",
-    website: team.website || "",
-    email: team.email || "",
-    access: team.access || TeamAccess.OPEN,
-  });
-  const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
-  const iconRef = useRef<HTMLImageElement>(null);
-  const theme = useMantineTheme();
+type InvitedListProps = {
+  loading: boolean;
+  setLoading: (loading: boolean) => void;
+  tid: string;
+};
+
+const InvitedList: React.FC<InvitedListProps> = ({
+  loading,
+  tid,
+  setLoading,
+}) => {
   const [invited, setInvited] = useState<
     {
       avatarUri: string;
@@ -81,24 +88,150 @@ const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
       id: number;
     }[]
   >();
+  const getInvited = async () => {
+    setLoading(true);
+    await fetch(`/api/teams/${tid}/invited`, {
+      method: "GET",
+      headers,
+    })
+      .then(async (res) => res.json())
+      .then(async (res) => {
+        setInvited(res);
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    getInvited();
+  }, []);
+
+  return !loading ? (
+    <div className="flex flex-col gap-2">
+      <UserSelect
+        label="Add user"
+        description="Invite a user to join your team."
+        onUserSelect={async (user) => {
+          if (invited?.find((u) => u.id === user.id)) return;
+          setInvited((invited) => [...(invited || []), user]);
+
+          await fetch(`/api/teams/${tid}/invite/${user.id}`, {
+            method: "POST",
+            headers,
+          });
+        }}
+        key={tid}
+        id={tid}
+        filter={(_, user) =>
+          !invited?.find((u) => u.username === user.username)
+        }
+        classNames={{
+          input: blackInput,
+          icon: "dark:text-white",
+        }}
+        icon={<HiPlus />}
+      />
+      <Stack spacing={2} mt="sm">
+        {invited &&
+          invited.map((user) => (
+            <div key={user.id} className="flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <Avatar
+                  src={getMediaUrl(user.avatarUri)}
+                  size={20}
+                  radius={999}
+                />
+                <Text size="sm" color="dimmed" weight={500}>
+                  @{user.username}
+                </Text>
+              </div>
+              <CloseButton
+                size="xs"
+                onClick={async () => {
+                  setInvited(invited?.filter((u) => u.id !== user.id));
+                  await fetch(`/api/teams/${tid}/invite/${user.id}`, {
+                    method: "DELETE",
+                    headers,
+                  });
+                }}
+              />
+            </div>
+          ))}
+      </Stack>
+    </div>
+  ) : (
+    <div className="py-4 w-full flex justify-center">
+      <Loader />
+    </div>
+  );
+};
+
+const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
+  const form = useForm<{
+    description: string;
+    location?: string;
+    timezone?: string;
+    website?: string;
+    email?: string;
+    access?: TeamAccess;
+  }>({
+    initialValues: {
+      description: team.descriptionMarkdown || "",
+      location: team.location || "",
+      timezone: team.timezone || "",
+      website: team.website || "",
+      email: team.email || "",
+      access: team.access || TeamAccess.OPEN,
+    },
+    validate: {
+      description: (value) => {
+        if (value.length > 2048 || value.length < 3) {
+          return "Description must be between 3 and 2048 characters";
+        }
+      },
+      location: (value: string) => {
+        if (value && (value.length > 50 || value.length < 3)) {
+          return "Location must be between 3 and 50 characters";
+        }
+      },
+      timezone: (value: string) => {
+        if (value && (value.length > 50 || value.length < 3)) {
+          return "Timezone must be between 3 and 50 characters";
+        }
+      },
+      website: (value: string) => {
+        if (
+          value &&
+          !value.match(
+            /^(https?:\/\/)?((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?(\#[-a-z\d_]*)?$/i
+          )
+        ) {
+          return "Website must be a valid URL";
+        }
+      },
+      email: (value: string) => {
+        if (
+          value &&
+          !value.match(
+            /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          )
+        ) {
+          return "Email must be a valid email address";
+        }
+      },
+    },
+  });
+  const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
+  const iconRef = useRef<HTMLImageElement>(null);
+  const theme = useMantineTheme();
   const [loadingInvited, setLoadingInvited] = useState<boolean>(false);
 
-  const headers = {
-    "Content-Type": "application/json",
-    Authorization: String(getCookie(".frameworksession")),
-  };
-
-  const updateUpdatable = (key: keyof Updatable, value: string) => {
-    setUpdates((prev) => ({ ...prev, [key]: String(value) }));
-  };
-
-  const updateTeam = async () => {
+  const updateTeam = async (values: Updatable) => {
     await fetch(`/api/teams/${team.id}`, {
       method: "PATCH",
       headers,
       body: JSON.stringify(
         Object.fromEntries(
-          Object.entries(updates).filter(([key, value]) => {
+          Object.entries(values).filter(([key, value]) => {
             return value !== team[key as keyof TeamType];
           })
         )
@@ -154,242 +287,161 @@ const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
       });
   };
 
-  const getInvited = async () => {
-    setLoadingInvited(true);
-    await fetch(`/api/teams/${team.id}/invited`, {
-      method: "GET",
-      headers,
-    })
-      .then(async (res) => res.json())
-      .then(async (res) => {
-        setInvited(res);
-        setLoadingInvited(false);
-      });
-  };
-
-  useEffect(() => {
-    getInvited();
-  }, []);
-
   return (
     <TeamsViewProvider user={user} team={team} active="settings">
-      <div className="flex justify-between items-center mb-4">
-        {uploadedUrl ? (
-          <Image
-            src={uploadedUrl || ""}
-            height={128}
-            width={128}
-            ref={iconRef}
-            className="rounded-lg mb-4"
-            radius="md"
-          />
-        ) : team.iconUri ? (
-          <Image
-            src={getMediaUrl(team.iconUri)}
-            height={128}
-            width={128}
-            ref={iconRef}
-            className="rounded-lg mb-4"
-            radius="md"
-          />
-        ) : (
-          <div
-            className="w-32 h-32 rounded-lg mb-4"
-            style={{
-              backgroundColor:
-                theme.colorScheme === "dark"
-                  ? theme.colors.dark[9]
-                  : theme.colors.gray[1],
-            }}
-          />
+      <form
+        onSubmit={form.onSubmit(async (values) =>
+          updateTeam(values as Updatable)
         )}
-        <div className="flex items-end flex-col gap-3">
-          <Text size="sm" color="dimmed">
-            Max 12MB. JPG, PNG, GIF. Recommended 1:1.
-          </Text>
-          <ImageUploader
-            onFinished={(imgStr) => setUploadedUrl(imgStr)}
-            crop
-            ratio={1}
-            imgRef={iconRef}
-          />
-        </div>
-      </div>
-      <Markdown
-        toolbar={[
-          ToolbarItem.Bold,
-          ToolbarItem.Italic,
-          ToolbarItem.Code,
-          ToolbarItem.Url,
-          ToolbarItem.Table,
-          ToolbarItem.BulletList,
-          ToolbarItem.OrderedList,
-          ToolbarItem.H2,
-          ToolbarItem.H3,
-          ToolbarItem.H4,
-          ToolbarItem.Help,
-        ]}
-        value={updates.description}
-        onChange={(value) => updateUpdatable("description", value)}
-      />
-      <Divider mt={32} mb={32} />
-      <SideBySide
-        title="Access"
-        description="Control how people join your team."
-        noUpperBorder
-        right={
-          <Stack spacing="sm">
+      >
+        <DetailCard.Group>
+          <DetailCard
+            title="Details"
+            description="User-facing information about your team, such as its description
+                and avatar."
+          >
+            <Descriptive
+              title="Description"
+              description="A description of your team."
+            >
+              <Markdown
+                {...form.getInputProps("description")}
+                toolbar={[
+                  ToolbarItem.Bold,
+                  ToolbarItem.Italic,
+                  ToolbarItem.Code,
+                  ToolbarItem.Url,
+                  ToolbarItem.Table,
+                  ToolbarItem.BulletList,
+                  ToolbarItem.OrderedList,
+                  ToolbarItem.H2,
+                  ToolbarItem.H3,
+                  ToolbarItem.H4,
+                  ToolbarItem.Help,
+                ]}
+              />
+            </Descriptive>
+            <Descriptive title="Photo" description="Your team's photo.">
+              <div className="mt-1 flex items-center space-x-5">
+                <Avatar
+                  src={uploadedUrl ? uploadedUrl : getMediaUrl(team.iconUri)}
+                  size={48}
+                  ref={iconRef}
+                />
+                <ImageUploader
+                  crop
+                  imgRef={iconRef}
+                  ratio={1}
+                  onFinished={setUploadedUrl}
+                />
+              </div>
+            </Descriptive>
+          </DetailCard>
+          <DetailCard
+            title="Contact"
+            description="Contact information for your team, such as its email address and website."
+          >
+            <TextInput
+              icon={<HiGlobe />}
+              label="Website"
+              description="A website for your team to share with the world."
+              placeholder="https://framework.soodam.rocks"
+              classNames={{
+                input: blackInput,
+                icon: "dark:text-white",
+              }}
+              {...form.getInputProps("website")}
+            />
+            <TextInput
+              icon={<HiMail />}
+              label="Email"
+              description="A way for people to reach your team."
+              placeholder="hi@soodam.rocks"
+              classNames={{
+                input: blackInput,
+                icon: "dark:text-white",
+              }}
+              {...form.getInputProps("email")}
+            />
+            <TextInput
+              icon={<HiGlobe />}
+              label="Based in"
+              description="Share where your team is based, to grow your community."
+              placeholder="New York, NY"
+              classNames={{
+                input: blackInput,
+                icon: "dark:text-white",
+              }}
+              {...form.getInputProps("location")}
+            />
+            <Select
+              data={getTimezones().map((t) => ({
+                label: t.value,
+                value: t.value,
+              }))}
+              searchable
+              label="Timezone"
+              placeholder="Select a timezone"
+              description="The timezone of your team."
+              className="md:w-1/2"
+              styles={{
+                root: {
+                  width: "100% !important",
+                },
+              }}
+              classNames={{
+                input: blackInput,
+                icon: "dark:text-white",
+              }}
+              icon={<HiClock />}
+              {...form.getInputProps("timezone")}
+            />
+          </DetailCard>
+          <DetailCard
+            title="Access"
+            description="Control how people join your team, whether your team is public or private."
+          >
             {[
               {
                 label: "Public",
-                description: "Anyone can join your team.",
                 value: TeamAccess.OPEN,
+                description: "Anyone can join your team.",
               },
               {
                 label: "Private",
-                description: "Only invited users can join your team.",
                 value: TeamAccess.PRIVATE,
+                description: "Only invited members can join your team.",
               },
-            ].map((option) => (
+            ].map((t) => (
               <LabelledRadio
-                label={option.label}
-                description={option.description}
-                value={option.value}
-                key={option.value}
-                checked={updates.access === option.value}
-                onChange={() => {
-                  updateUpdatable("access", option.value);
-                }}
+                key={t.value}
+                label={t.label}
+                description={t.description}
+                {...form.getInputProps("access")}
+                value={t.value}
+                checked={form.values.access === t.value}
               />
             ))}
-          </Stack>
-        }
-      />
-      {updates.access === TeamAccess.PRIVATE && (
-        <SideBySide
-          title="Invited users"
-          description="Users who have been invited to join your team."
-          right={
-            !loadingInvited ? (
-              <div className="flex flex-col gap-2">
-                <UserSelect
-                  label="Add user"
-                  description="Invite a user to join your team."
-                  onUserSelect={async (user) => {
-                    if (invited?.find((u) => u.id === user.id)) return;
-                    setInvited((invited) => [...(invited || []), user]);
-
-                    await fetch(`/api/teams/${team.id}/invite/${user.id}`, {
-                      method: "POST",
-                      headers,
-                    });
-                  }}
-                  filter={(_, user) => !invited?.find((u) => u.id === user.id)}
-                />
-                <Stack spacing={2} mt="sm">
-                  {invited &&
-                    invited.map((user) => (
-                      <div
-                        key={user.id}
-                        className="flex justify-between items-center"
-                      >
-                        <div className="flex items-center gap-2">
-                          <Avatar
-                            src={getMediaUrl(user.avatarUri)}
-                            size={20}
-                            radius={999}
-                          />
-                          <Text size="sm" color="dimmed" weight={500}>
-                            @{user.username}
-                          </Text>
-                        </div>
-                        <CloseButton
-                          size="xs"
-                          onClick={async () => {
-                            setInvited(
-                              invited?.filter((u) => u.id !== user.id)
-                            );
-                            await fetch(
-                              `/api/teams/${team.id}/invite/${user.id}`,
-                              {
-                                method: "DELETE",
-                                headers,
-                              }
-                            );
-                          }}
-                        />
-                      </div>
-                    ))}
-                </Stack>
-              </div>
-            ) : (
-              <div className="py-4 w-full flex justify-center">
-                <Loader />
-              </div>
-            )
-          }
-        />
-      )}
-      <SideBySide
-        title="Location"
-        description="Let people know where you're from."
-        right={
-          <TextInput
-            icon={<HiGlobe />}
-            value={updates.location}
-            onChange={(e) => updateUpdatable("location", e.currentTarget.value)}
-            placeholder="Location"
-          />
-        }
-      />
-      <SideBySide
-        title="Timezone"
-        description="This'll be useful for users to know when you're online."
-        right={
-          <Select
-            data={getTimezones().map((t) => ({
-              label: t.value,
-              value: t.value,
-            }))}
-            searchable
-            label="Timezone"
-            placeholder="Select a timezone"
-            description="The timezone of your team."
-            value={updates.timezone}
-            onChange={(value) => updateUpdatable("timezone", value!)}
-          />
-        }
-      />
-      <SideBySide
-        title="Website"
-        description="Let people know where to find you on the web."
-        right={
-          <TextInput
-            icon={<HiGlobe />}
-            value={updates.website}
-            onChange={(e) => updateUpdatable("website", e.currentTarget.value)}
-            placeholder="Website"
-          />
-        }
-      />
-      <SideBySide
-        title="Email"
-        description="Let people know where to find you on the web."
-        right={
-          <TextInput
-            icon={<HiMail />}
-            value={updates.email}
-            onChange={(e) => updateUpdatable("email", e.currentTarget.value)}
-            placeholder="Email"
-          />
-        }
-      />
-      <Divider mt={32} mb={32} />
-      <div className="flex justify-end">
-        <Button leftIcon={<HiCheck />} onClick={updateTeam}>
-          Save changes
-        </Button>
-      </div>
+          </DetailCard>
+          {team.access === TeamAccess.PRIVATE && (
+            <DetailCard
+              title="Invited"
+              description="People who have been invited to join your team."
+            >
+              <InvitedList
+                tid={team.id}
+                loading={loadingInvited}
+                setLoading={setLoadingInvited}
+              />
+            </DetailCard>
+          )}
+        </DetailCard.Group>
+        <div className="mt-8 flex justify-end">
+          <Button leftIcon={<HiCheck />} type="submit">
+            Save
+          </Button>
+        </div>
+      </form>
     </TeamsViewProvider>
   );
 };

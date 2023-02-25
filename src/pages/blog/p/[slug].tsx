@@ -1,9 +1,9 @@
-import { Avatar } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
 import Link from "next/link";
 import { HiChevronLeft } from "react-icons/hi";
 import Background from "../../../components/Background";
 import Framework from "../../../components/Framework";
+import Owner from "../../../components/Owner";
 import RenderMarkdown from "../../../components/RenderMarkdown";
 import authorizedRoute from "../../../util/auth";
 import clsx from "../../../util/clsx";
@@ -73,31 +73,7 @@ const BlogPost: NextPage<BlogPostProps> = ({ post, user }) => {
                           "flex flex-wrap text-sm leading-6 -mt-6 -mx-5 pl-0"
                         )}
                       >
-                        <li
-                          key={post.author.id}
-                          className="flex items-center font-medium whitespace-nowrap px-5 mt-6"
-                        >
-                          <Avatar
-                            src={post.author.avatarUri}
-                            alt=""
-                            className="mr-3 w-9 h-9 rounded-full"
-                          />
-                          <div className="text-sm leading-4">
-                            <div className="text-slate-900 dark:text-slate-200">
-                              {post.author.alias ?? post.author.username}
-                            </div>
-                            <div className="mt-1">
-                              <Link
-                                href={`/profile/${post.author.username}`}
-                                passHref
-                              >
-                                <a className="text-sky-500 hover:text-sky-600 dark:text-sky-400 no-underline">
-                                  @{post.author.username}
-                                </a>
-                              </Link>
-                            </div>
-                          </div>
-                        </li>
+                        <Owner user={post.author} className="px-5 mt-6" />
                       </ul>
                     </div>
                     <div className={clsx("mt-12")}>
