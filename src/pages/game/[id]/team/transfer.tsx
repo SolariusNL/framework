@@ -102,7 +102,7 @@ const TransferGameToTeam: React.FC<TransferGameToTeamProps> = ({
                     <div className="flex items-center gap-2">
                       <HiUsers className="text-gray-400" />
                       <Text size="sm" color="dimmed">
-                        {team._count.members} members
+                        {team._count.members + 1} members
                       </Text>
                     </div>
                   </div>
