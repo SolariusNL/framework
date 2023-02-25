@@ -26,7 +26,7 @@ const Owner: React.FC<OwnerProps> = ({ user, size, ...props }) => {
       />
       <div className="text-sm leading-4">
         <div className="text-slate-900 dark:text-slate-200">
-          {user.alias ?? user.username}
+          {user.alias ? user.alias : user.username}
         </div>
         <div className="mt-1">
           <Link href={`/profile/${user.username}`} passHref>
