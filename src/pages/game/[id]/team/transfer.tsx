@@ -1,6 +1,6 @@
-import { Avatar, Button, Text } from "@mantine/core";
+import { Avatar, Badge, Button, Text, Title } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
-import { Team } from "@prisma/client";
+import { Team, TeamAccess } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
@@ -66,39 +66,33 @@ const TransferGameToTeam: React.FC<TransferGameToTeamProps> = ({
     >
       {teams.length > 0 ? (
         <>
-          <div className="grid md:grid-cols-2 gap-4 grid-cols-1 mb-12">
+          <div className="grid lg:grid-cols-3 gap-4 grid-cols-1 mb-12 md:grid-cols-2">
             {teams.map((team) => (
               <ShadedCard
                 className={clsx(
                   team.id == selectedTeam?.id
                     ? "dark:border-blue-700 border-blue-500"
-                    : "border-gray-200 dark:border-zinc-700 !border-opacity-40",
+                    : "border-transparent",
                   "border-solid cursor-pointer shadow-md ",
                   "transition-all duration-100 ease-in-out"
                 )}
                 key={team.id}
                 onClick={() => setSelectedTeam(team)}
               >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-start gap-4">
-                    <Avatar src={getMediaUrl(team.iconUri)} size="xl" />
-                    <div className="flex flex-col gap-1">
-                      <Text size="xl" weight={500}>
-                        {team.name}
-                      </Text>
-                      <div className="flex items-center gap-2">
-                        <Avatar
-                          src={getMediaUrl(user.avatarUri)}
-                          size="sm"
-                          className="rounded-full"
-                        />
-                        <Text size="sm" color="dimmed">
-                          @{user.username}
-                        </Text>
-                      </div>
-                    </div>
-                  </div>
+                <div className="flex flex-col gap-4">
+                  <Avatar src={getMediaUrl(team.iconUri)} size="lg" />
                   <div className="flex flex-col gap-1">
+                    <Title order={4} className="gap-2 items-center flex">
+                      {team.name}{" "}
+                      {team.access === TeamAccess.PRIVATE && (
+                        <Badge size="sm" radius="md">
+                          Private
+                        </Badge>
+                      )}
+                    </Title>
+                    <Text color="dimmed" lineClamp={2} mb="md">
+                      {team.description.replace(/(<([^>]+)>)/gi, "")}
+                    </Text>
                     <div className="flex items-center gap-2">
                       <HiCake className="text-gray-400" />
                       <Text size="sm" color="dimmed">
