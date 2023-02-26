@@ -19,9 +19,10 @@ import {
 } from "@storyofams/next-api-decorators";
 import * as Validate from "class-validator";
 import fetch from "node-fetch";
-import sanitizeHtml from "sanitize-html";
+import { default as sanitize, default as sanitizeHtml } from "sanitize-html";
 import { z } from "zod";
 import { scoreDescriptions } from "../../../components/EditGame/AgeRating";
+import { parse } from "../../../components/RenderMarkdown";
 import Authorized, { Account } from "../../../util/api/authorized";
 import logger from "../../../util/logger";
 import prisma from "../../../util/prisma";
@@ -49,11 +50,6 @@ interface CreateConnectionBody {
 
 interface GameCommentBody {
   body: string;
-}
-
-interface CreateFundBody {
-  name: string;
-  goal: number;
 }
 
 interface UpdateRatingBody {
@@ -90,6 +86,32 @@ class CreateGamepassDTO {
     this.price = price;
   }
 }
+
+const fundSanitization = {
+  allowedTags: [
+    "h3",
+    "h4",
+    "b",
+    "i",
+    "strong",
+    "em",
+    "a",
+    "ul",
+    "ol",
+    "li",
+    "table",
+    "thead",
+    "tbody",
+    "tr",
+    "th",
+    "td",
+    "p",
+    "br",
+  ],
+  allowedAttributes: {
+    a: ["href"],
+  },
+};
 
 class GameRouter {
   @Post("/create")
@@ -1031,8 +1053,25 @@ class GameRouter {
   async createFund(
     @Account() user: User,
     @Param("id") id: number,
-    @Body() body: CreateFundBody
+    @Body() body: unknown
   ) {
+    const schema = z.object({
+      name: z.string().min(3).max(50),
+      goal: z.number().min(50).max(1000000),
+      description: z.string().min(3).max(1024),
+    });
+
+    try {
+      schema.parse(body);
+    } catch (e: any) {
+      return {
+        success: false,
+        error: e.message,
+      };
+    }
+
+    const data = schema.parse(body);
+
     const game = await prisma.game.findFirst({
       where: {
         id: Number(id),
@@ -1053,36 +1092,93 @@ class GameRouter {
       };
     }
 
-    if (body.goal < 1 || body.goal > 1000000) {
-      return {
-        success: false,
-        error: "Invalid amount",
-      };
-    }
-
-    if (body.name.length < 3 || body.name.length > 120) {
-      return {
-        success: false,
-        error: "Invalid name",
-      };
-    }
-
     const fund = await prisma.gameFund.create({
       data: {
-        target: Number(body.goal),
+        target: Number(data.goal),
         game: {
           connect: {
             id: Number(id),
           },
         },
         current: 0,
-        name: String(body.name),
+        name: String(data.name),
+        descriptionMd: String(data.description),
+        description: sanitize(parse(data.description), fundSanitization),
       },
     });
 
     return {
       success: true,
       fund,
+    };
+  }
+
+  @Post("/:id/fund/:fundId/edit")
+  @Authorized()
+  async editFund(
+    @Account() user: User,
+    @Param("id") id: number,
+    @Param("fundId") fundId: string,
+    @Body() body: unknown
+  ) {
+    const schema = z.object({
+      name: z.string().min(3).max(50),
+      goal: z.number().min(50).max(1000000),
+      description: z.string().min(3).max(1024),
+    });
+
+    try {
+      schema.parse(body);
+    } catch (e: any) {
+      return {
+        success: false,
+        error: e.message,
+      };
+    }
+
+    const data = schema.parse(body);
+
+    const game = await prisma.game.findFirst({
+      where: {
+        id: Number(id),
+      },
+    });
+
+    if (!game || game.authorId !== user.id) {
+      return {
+        success: false,
+        error: "Game not found",
+      };
+    }
+
+    const fund = await prisma.gameFund.findFirst({
+      where: {
+        id: fundId,
+      },
+    });
+
+    if (!fund) {
+      return {
+        success: false,
+        error: "Fund not found",
+      };
+    }
+
+    const f = await prisma.gameFund.update({
+      where: {
+        id: fundId,
+      },
+      data: {
+        target: Number(data.goal),
+        name: String(data.name),
+        descriptionMd: String(data.description),
+        description: sanitize(parse(data.description), fundSanitization),
+      },
+    });
+
+    return {
+      success: true,
+      fund: f,
     };
   }
 

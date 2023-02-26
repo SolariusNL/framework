@@ -1,5 +1,13 @@
-import { Button, Modal, Text, Title } from "@mantine/core";
+import {
+  Button,
+  Modal,
+  Text,
+  Title,
+  useMantineColorScheme,
+} from "@mantine/core";
 import { HiCheckCircle, HiStop } from "react-icons/hi";
+import clsx from "../util/clsx";
+import RenderMarkdown from "./RenderMarkdown";
 
 interface PurchaseConfirmationProps {
   productTitle: string;
@@ -8,6 +16,7 @@ interface PurchaseConfirmationProps {
   onPurchaseComplete: () => void;
   opened: boolean;
   setOpened: (opened: boolean) => void;
+  proseDescription?: boolean;
 }
 
 const PurchaseConfirmation: React.FC<PurchaseConfirmationProps> = ({
@@ -17,12 +26,17 @@ const PurchaseConfirmation: React.FC<PurchaseConfirmationProps> = ({
   onPurchaseComplete,
   opened,
   setOpened,
+  proseDescription,
 }) => {
+  const { colorScheme } = useMantineColorScheme();
   return (
     <Modal
       opened={opened}
       onClose={() => setOpened(false)}
-      className="flex items-center justify-center flex-col text-center"
+      className={clsx(
+        "flex items-center justify-center flex-col text-center",
+        colorScheme === "dark" && "dark"
+      )}
       withCloseButton={false}
     >
       <Text color="dimmed" size="sm" weight={700} mb={16}>
@@ -31,13 +45,18 @@ const PurchaseConfirmation: React.FC<PurchaseConfirmationProps> = ({
       <Title order={4} mb={8}>
         {productTitle}
       </Title>
-      <Text color="dimmed" mb={32}>
-        {productDescription}
-      </Text>
+      {proseDescription ? (
+        <RenderMarkdown proseAddons="prose-sm text-left">
+          {productDescription}
+        </RenderMarkdown>
+      ) : (
+        <Text color="dimmed">{productDescription}</Text>
+      )}
       <Button
         fullWidth
         leftIcon={<HiCheckCircle />}
         mb={6}
+        mt="lg"
         onClick={() => {
           onPurchaseComplete();
           setOpened(false);

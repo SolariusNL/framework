@@ -22,13 +22,20 @@ export const Section: React.FC<{
   title: string;
   description: string;
   right?: React.ReactNode;
-}> = ({ title, description, right }) => {
+  titleClassName?: string;
+  descriptionClassName?: string;
+}> = ({ title, description, right, titleClassName, descriptionClassName }) => {
   const meta = (
     <>
-      <Title order={3} mb={4}>
+      <Title order={3} mb={4} className={titleClassName}>
         {title}
       </Title>
-      <Text size="sm" color="dimmed" mb={!right ? "md" : 0}>
+      <Text
+        size="sm"
+        color="dimmed"
+        mb={!right ? "md" : 0}
+        className={descriptionClassName}
+      >
         {description}
       </Text>
     </>

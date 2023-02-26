@@ -53,6 +53,7 @@ const Activity: React.FC = () => {
       .then((res) => res.json())
       .then((res) => {
         setActivities(res.activity);
+        setTotalPages(res.pages);
       });
   };
 

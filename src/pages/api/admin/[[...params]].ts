@@ -735,6 +735,22 @@ class AdminRouter {
     @Query("importance") importance: number,
     @Query("userId") userId: number
   ) {
+    const where = {
+      ...(importance
+        ? {
+            importance: {
+              gte: Number(importance),
+            },
+          }
+        : {}),
+      ...(userId
+        ? {
+            user: {
+              id: Number(userId),
+            },
+          }
+        : {}),
+    };
     const activity = await prisma.adminActivityLog.findMany({
       orderBy: {
         createdAt: "desc",
@@ -748,29 +764,18 @@ class AdminRouter {
           },
         },
       },
-      where: {
-        ...(importance
-          ? {
-              importance: {
-                gte: Number(importance),
-              },
-            }
-          : {}),
-        ...(userId
-          ? {
-              user: {
-                id: Number(userId),
-              },
-            }
-          : {}),
-      },
+      where,
       take: 50,
       ...(page ? { skip: (page - 1) * 50 } : {}),
+    });
+    const count = await prisma.adminActivityLog.count({
+      where,
     });
 
     return {
       success: true,
       activity,
+      pages: Math.ceil(count / 50),
     };
   }
 

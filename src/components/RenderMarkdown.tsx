@@ -40,8 +40,13 @@ const RenderMarkdown: React.FC<
   React.DetailedHTMLProps<
     React.HTMLAttributes<HTMLDivElement>,
     HTMLDivElement
-  > & { children: string; typographyStyles?: Sx; clamp?: number }
-> = ({ children, typographyStyles, clamp, ...props }) => {
+  > & {
+    children: string;
+    typographyStyles?: Sx;
+    clamp?: number;
+    proseAddons?: string;
+  }
+> = ({ children, typographyStyles, clamp, proseAddons, ...props }) => {
   return (
     <TypographyStylesProvider
       sx={(theme) => ({
@@ -88,7 +93,7 @@ const RenderMarkdown: React.FC<
             WebkitBoxOrient: "vertical",
           }),
         }}
-        className={proseStyles}
+        className={clsx(proseStyles, proseAddons)}
         {...props}
       />
     </TypographyStylesProvider>

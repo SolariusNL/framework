@@ -374,16 +374,18 @@ model NucleusKey {
 }
 
 model GameFund {
-  id           String   @id @default(uuid())
-  game         Game     @relation("gameFunds", fields: [gameId], references: [id])
-  gameId       Int
-  name         String
-  target       Int
-  current      Int
-  donors       User[]   @relation("donatedFunds")
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @default(now())
-  lastDonation DateTime @default(now())
+  id            String   @id @default(uuid())
+  game          Game     @relation("gameFunds", fields: [gameId], references: [id])
+  description   String   @default("This was created before the release of Funds 2, so no description was provided.")
+  descriptionMd String   @default("")
+  gameId        Int
+  name          String
+  target        Int
+  current       Int
+  donors        User[]   @relation("donatedFunds")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now())
+  lastDonation  DateTime @default(now())
 }
 
 model GameDatastore {
