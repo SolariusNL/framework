@@ -355,7 +355,7 @@ const ChecklistTask = ({
               <Button
                 fullWidth
                 color="red"
-                onClick={(e) => {
+                onClick={(e: any) => {
                   e.stopPropagation();
                   deleteTask(taskState.id);
                 }}
