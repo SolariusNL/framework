@@ -29,7 +29,7 @@ const FundsTab = ({ game }: FundsTabProps) => {
   const [funds, setFunds] = useState(game.funds);
   const [toFund, setToFund] = useState<GameFund | null>(null);
   const [fundOpen, setFundOpen] = useState(false);
-  const [selectedFundAmount, setSelectedFundAmount] = useState(0);
+  const [selectedFundAmount, setSelectedFundAmount] = useState(1);
   const [fundLoading, setFundLoading] = useState(false);
   const { colorScheme } = useMantineColorScheme();
   const [confirmationOpen, setConfirmationOpen] = useState(false);
