@@ -319,6 +319,7 @@ const ChecklistTask = ({
                 label="Completed"
                 checked={taskState.completed}
                 onChange={(e) => {
+                  e.stopPropagation();
                   taskState.completed = e.target.checked;
                   setCurrentChecklist({
                     ...currentChecklist,
@@ -349,13 +350,16 @@ const ChecklistTask = ({
                 marginTop: taskState.completed ? 12 : 0,
                 width: "100%",
               }}
+              className="relative"
             >
               <Button
                 fullWidth
                 color="red"
-                onClick={() => deleteTask(taskState.id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  deleteTask(taskState.id);
+                }}
                 leftIcon={<HiTrash />}
-                className="opacity-100 z-50"
               >
                 Delete
               </Button>
