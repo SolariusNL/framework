@@ -177,6 +177,9 @@ const Settings: NextPage<SettingsProps> = ({ user, activePage }) => {
                   className="rounded-lg -mb-1"
                   active={active === tab.value}
                   component="a"
+                  {...(active === tab.value && {
+                    description: tab.description,
+                  })}
                 />
               </Link>
             ))
