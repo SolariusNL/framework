@@ -2,16 +2,17 @@ import {
   Body,
   createHandler,
   Get,
-  Param,
+  Header,
   Post,
   Query,
   Res,
 } from "@storyofams/next-api-decorators";
 import type { NextApiResponse } from "next";
 import Authorized, { Account } from "../../../util/api/authorized";
+import { exclude } from "../../../util/exclude";
 import prisma from "../../../util/prisma";
-import { nonCurrentUserSelect } from "../../../util/prisma-types";
 import type { User } from "../../../util/prisma-types";
+import { nonCurrentUserSelect } from "../../../util/prisma-types";
 
 class OAuth2Router {
   @Get("/authorize")
@@ -21,7 +22,7 @@ class OAuth2Router {
     @Query("auth") auth: string,
     @Res() res: NextApiResponse
   ) {
-    const app = await prisma.oAuth2Client.findFirst({
+    const app = await prisma.oAuthApplication.findFirst({
       where: {
         secret: clientId,
       },
@@ -34,7 +35,7 @@ class OAuth2Router {
       };
     }
 
-    if (!app.redirectUri.includes(redirectUri)) {
+    if (app.redirectUri !== redirectUri) {
       return {
         success: false,
         error: "Invalid redirect uri",
@@ -57,30 +58,37 @@ class OAuth2Router {
       };
     }
 
-    const access = await prisma.oAuth2Access.create({
+    const access = await prisma.oAuthClient.create({
       data: {
         user: {
           connect: {
             id: session.userId,
           },
         },
-        client: {
+        application: {
           connect: {
             id: app.id,
           },
         },
+        code: await crypto.randomUUID(),
         expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30 * 6),
       },
     });
 
-    res.redirect(`${redirectUri}?access=${access.id}`);
+    res.redirect(
+      `${redirectUri}?access_token=${
+        access.code
+      }&token_type=bearer&expires_in=${access.expiresAt.getTime()}&scope=${app.scopes.join(
+        ","
+      )}`
+    );
   }
 
-  @Get("/access/:id")
-  public async access(@Param("id") id: string) {
-    const access = await prisma.oAuth2Access.findFirst({
+  @Get("/access")
+  public async access(@Header("Authorization") auth: string) {
+    const access = await prisma.oAuthClient.findFirst({
       where: {
-        id,
+        code: auth,
       },
     });
 
@@ -91,12 +99,25 @@ class OAuth2Router {
       };
     }
 
+    if (new Date(access.expiresAt as Date).getTime() < new Date().getTime()) {
+      await prisma.oAuthClient.delete({
+        where: {
+          id: access.id,
+        },
+      });
+
+      return {
+        success: false,
+        error: "Access token expired",
+      };
+    }
+
     const user = await prisma.user.findFirst({
       where: {
         id: access.userId,
       },
       select: {
-        ...nonCurrentUserSelect.select,
+        ...exclude(nonCurrentUserSelect.select, "statusPosts"),
       },
     });
 

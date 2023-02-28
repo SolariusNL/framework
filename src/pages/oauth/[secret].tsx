@@ -1,18 +1,54 @@
-import { Button, Card, Container, Stack, Text, Title } from "@mantine/core";
-import { OAuth2Client, User } from "@prisma/client";
+import {
+  Button,
+  Container,
+  createStyles,
+  Paper,
+  Stack,
+  Text,
+  Title,
+} from "@mantine/core";
+import { OAuthApplication, OAuthScope, User } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { useEffect, useState } from "react";
-import { HiCheckCircle } from "react-icons/hi";
+import {
+  HiCheckCircle,
+  HiExternalLink,
+  HiKey,
+  HiLockClosed,
+  HiShieldCheck,
+  HiXCircle,
+} from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
+import scopes from "../../data/scopes";
 import authorizedRoute from "../../util/auth";
 import prisma from "../../util/prisma";
 
-interface OAuth2FlowProps {
+type OAuth2FlowProps = {
   user: User;
-  app: OAuth2Client;
+  app: OAuthApplication;
   providedRedirect: string;
-}
+};
+
+const useStyles = createStyles((theme) => ({
+  title: {
+    fontSize: 26,
+    fontWeight: 900,
+  },
+
+  controls: {
+    [theme.fn.smallerThan("xs")]: {
+      flexDirection: "column-reverse",
+    },
+  },
+
+  control: {
+    [theme.fn.smallerThan("xs")]: {
+      width: "100%",
+      textAlign: "center",
+    },
+  },
+}));
 
 const OAuth2Flow: NextPage<OAuth2FlowProps> = ({
   user,
@@ -28,13 +64,13 @@ const OAuth2Flow: NextPage<OAuth2FlowProps> = ({
   }, []);
 
   return (
-    <Container size={460} my={30}>
-      <Card
-        shadow="md"
-        p={30}
-        withBorder
-        className="text-center center content-center"
-      >
+    <Container size={420} my={40}>
+      <Title align="center">Framework</Title>
+      <Text color="dimmed" size="sm" align="center" mt={5}>
+        {app.name} is requesting access to the scopes below.
+      </Text>
+
+      <Paper withBorder shadow="md" p={30} radius="md" mt="xl">
         <Title order={4} mb={6}>
           {app.name}
         </Title>
@@ -43,15 +79,27 @@ const OAuth2Flow: NextPage<OAuth2FlowProps> = ({
         </Text>
 
         <Text size="sm" mb={18}>
-          is requesting access for these scopes:
+          If you trust {app.name}, it:
         </Text>
 
-        <Stack mb={32}>
-          {app.grants.map((scope) => (
-            <div className="flex" key={scope}>
-              <HiCheckCircle className="text-teal-500 mr-4" />
+        <Stack mb="xl">
+          {Object.values(OAuthScope).map((scope) => (
+            <div className="flex items-center gap-2" key={scope}>
+              <div className="flex-shrink-0">
+                {app.scopes.includes(scope) ? (
+                  <HiCheckCircle
+                    className="text-teal-500 items-center flex"
+                    size={20}
+                  />
+                ) : (
+                  <HiXCircle
+                    className="text-red-500 items-center flex"
+                    size={20}
+                  />
+                )}
+              </div>
               <Text size="sm" weight={500}>
-                {scope}
+                {app.scopes.includes(scope) ? "Can" : "Can't"} {scopes[scope]}
               </Text>
             </div>
           ))}
@@ -62,35 +110,67 @@ const OAuth2Flow: NextPage<OAuth2FlowProps> = ({
             href={`/api/oauth/authorize?client_id=${app.secret}&redirect_uri=${providedRedirect}&auth=${cookie}`}
             className="no-underline"
           >
-            <Button fullWidth>Allow access for {app.name}</Button>
+            <Button fullWidth size="lg" leftIcon={<HiKey />}>
+              Allow access for {app.name}
+            </Button>
           </a>
 
-          <Text color="dimmed" size="sm" mt={6}>
-            You will be redirected to {providedRedirect}
-          </Text>
+          <Stack mt="xl" spacing="sm">
+            {[
+              {
+                icon: <HiExternalLink />,
+                text: `
+              You will be redirected to ${providedRedirect} to
+              complete the authorization process.
+            `,
+              },
+              {
+                icon: <HiLockClosed />,
+                text: "The developers privacy policy and terms of service apply to this application.",
+              },
+              {
+                icon: <HiShieldCheck />,
+                text: "This application cannot read your password or any other sensitive information.",
+              },
+            ].map((item, i) => (
+              <div className="flex items-center gap-4" key={i}>
+                <div className="flex-shrink-0">{item.icon}</div>
+                <Text size="sm" color="dimmed">
+                  {item.text}
+                </Text>
+              </div>
+            ))}
+          </Stack>
         </ReactNoSSR>
-      </Card>
+      </Paper>
     </Container>
   );
 };
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { secret } = context.query;
-  const to = context.query.to as string;
+  const to = context.query.redirect_uri as string;
 
   const auth = await authorizedRoute(context, true, false);
 
   if (auth.redirect) return auth;
 
-  const app = await prisma.oAuth2Client.findFirst({
+  const app = await prisma.oAuthApplication.findFirst({
     where: {
       secret: String(secret),
     },
   });
 
-  if (!app) return { redirect: { destination: "/", permanent: false } };
-  if (!app.redirectUri.includes(to))
-    return { redirect: { destination: "/", permanent: false } };
+  if (!app) return context.res.end(JSON.stringify({ error: "invalid_client" }));
+  if (app.redirectUri !== to) {
+    return context.res.end(
+      JSON.stringify({
+        error: "invalid_redirect_uri",
+        error_description:
+          "The redirect URI provided does not match the one registered with the application.",
+      })
+    );
+  }
 
   return {
     props: {

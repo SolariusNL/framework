@@ -97,9 +97,7 @@ model User {
   timeZone                   String                 @default("UTC+12")
   donatedFunds               GameFund[]             @relation("donatedFunds")
   checklists                 Checklist[]            @relation("userChecklists")
-  oauthApps                  OAuth2Client[]         @relation("oauth2Clients")
   connectedAccounts          ConnectedAccount[]     @relation("connectedAccounts")
-  oauthAccessTokens          OAuth2Access[]         @relation("oauth2Access")
   discordAccount             DiscordConnectCode?    @relation("discordAccount")
   alias                      String?
   previousUsernames          String[]
@@ -156,6 +154,8 @@ model User {
   invitedToTeams             Team[]                 @relation("teamInvites")
   newsletterSubscribed       Boolean                @default(false)
   newsletterEmail            String?
+  oauthApps                  OAuthApplication[]     @relation("oauthApplications")
+  oauthClients               OAuthClient[]          @relation("oauthClients")
 }
 
 model ConnectedAccount {
@@ -537,33 +537,9 @@ model RatingScore {
   description String
 }
 
-model OAuth2Client {
-  id          String         @id @default(uuid())
-  name        String
-  description String
-  secret      String         @default(uuid())
-  redirectUri String[]
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @default(now())
-  grants      Grant[]
-  users       User[]         @relation("oauth2Clients")
-  access      OAuth2Access[] @relation("oauth2ClientAccess")
-}
-
 enum Grant {
   USER_READ
   USER_CONNECTIONS_ADD
-}
-
-model OAuth2Access {
-  id        String       @id @default(uuid())
-  client    OAuth2Client @relation("oauth2ClientAccess", fields: [clientId], references: [id])
-  clientId  String
-  user      User         @relation("oauth2Access", fields: [userId], references: [id])
-  userId    Int
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @default(now())
-  expiresAt DateTime
 }
 
 model BannedIP {
@@ -901,4 +877,37 @@ model Team {
 enum TeamAccess {
   OPEN
   PRIVATE
+}
+
+enum OAuthScope {
+  USER_PROFILE_READ
+  USER_CHATS_READ
+  USER_TEAMS_JOIN
+  USER_TEAMS_LEAVE
+  USER_CHATS_WRITE
+}
+
+model OAuthApplication {
+  id          String        @id @default(uuid())
+  name        String
+  description String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @default(now())
+  owner       User          @relation("oauthApplications", fields: [ownerId], references: [id])
+  ownerId     Int
+  scopes      OAuthScope[]
+  secret      String        @unique
+  redirectUri String
+  clients     OAuthClient[] @relation("oauthCodeApplication")
+}
+
+model OAuthClient {
+  id            String           @id @default(uuid())
+  application   OAuthApplication @relation(fields: [applicationId], references: [id], name: "oauthCodeApplication")
+  applicationId String
+  user          User             @relation(fields: [userId], references: [id], name: "oauthClients")
+  userId        Int
+  code          String           @unique
+  createdAt     DateTime         @default(now())
+  expiresAt     DateTime
 }
