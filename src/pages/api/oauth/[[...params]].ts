@@ -16,6 +16,25 @@ import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
 import { nonCurrentUserSelect } from "../../../util/prisma-types";
 
+async function getUserFromScopes(scopes: OAuthScope[], uid: number) {
+  const user = await prisma.user.findFirst({
+    where: {
+      id: uid,
+    },
+    select: {
+      ...exclude(nonCurrentUserSelect, "statusPosts"),
+      ...(scopes.includes(OAuthScope.USER_EMAIL_READ)
+        ? {
+            email: true,
+            emailVerified: true,
+          }
+        : {}),
+    },
+  });
+
+  return user;
+}
+
 class OAuth2Router {
   @Get("/authorize")
   public async authorize(
@@ -143,12 +162,18 @@ class OAuth2Router {
       };
     }
 
+    const user = await getUserFromScopes(
+      access.application.scopes,
+      access.userId
+    );
+
     return {
       success: true,
       access_token: access.session,
       token_type: "bearer",
       expires_in: access.expiresAt,
       scope: access.application.scopes.join(","),
+      user: user,
     };
   }
 
@@ -173,20 +198,10 @@ class OAuth2Router {
       };
     }
 
-    const user = await prisma.user.findFirst({
-      where: {
-        id: access.userId,
-      },
-      select: {
-        ...exclude(nonCurrentUserSelect, "statusPosts"),
-        ...(access.application.scopes.includes(OAuthScope.USER_EMAIL_READ)
-          ? {
-              email: true,
-              emailVerified: true,
-            }
-          : {}),
-      },
-    });
+    const user = await getUserFromScopes(
+      access.application.scopes,
+      access.userId
+    );
 
     if (!user) {
       return {
