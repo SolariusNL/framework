@@ -156,7 +156,10 @@ class OAuth2Router {
   public async me(@Header("Authorization") auth: string) {
     const access = await prisma.oAuthClient.findFirst({
       where: {
-        session: auth,
+        session: auth
+          .split(" ")
+          .filter((x) => x !== "Bearer")
+          .join(" "),
       },
       include: {
         application: true,
