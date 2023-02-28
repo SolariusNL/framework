@@ -910,4 +910,5 @@ model OAuthClient {
   code          String           @unique
   createdAt     DateTime         @default(now())
   expiresAt     DateTime
+  session       String           @default("")
 }

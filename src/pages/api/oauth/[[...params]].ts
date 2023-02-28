@@ -8,6 +8,7 @@ import {
   Res,
 } from "@storyofams/next-api-decorators";
 import type { NextApiResponse } from "next";
+import { z } from "zod";
 import Authorized, { Account } from "../../../util/api/authorized";
 import { exclude } from "../../../util/exclude";
 import prisma from "../../../util/prisma";
@@ -71,12 +72,13 @@ class OAuth2Router {
           },
         },
         code: await crypto.randomUUID(),
+        session: session.token,
         expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30 * 6),
       },
     });
 
     res.redirect(
-      `${redirectUri}?access_token=${
+      `${redirectUri}?code=${
         access.code
       }&token_type=bearer&expires_in=${access.expiresAt.getTime()}&scope=${app.scopes.join(
         ","
@@ -84,11 +86,77 @@ class OAuth2Router {
     );
   }
 
-  @Get("/access")
-  public async access(@Header("Authorization") auth: string) {
+  @Post("/token")
+  public async token(@Body() body: unknown) {
+    const schema = z.object({
+      client_id: z.string(),
+      client_secret: z.string(),
+      code: z.string(),
+    });
+
+    const parsed = schema.safeParse(body);
+
+    if (!parsed.success) {
+      return {
+        success: false,
+        error: "Invalid body",
+      };
+    }
+
     const access = await prisma.oAuthClient.findFirst({
       where: {
-        code: auth,
+        code: parsed.data.code,
+      },
+      include: { application: true },
+    });
+
+    if (!access) {
+      return {
+        success: false,
+        error: "Invalid code",
+      };
+    }
+
+    if (new Date(access.expiresAt as Date).getTime() < new Date().getTime()) {
+      await prisma.oAuthClient.delete({
+        where: {
+          id: access.id,
+        },
+      });
+
+      return {
+        success: false,
+        error: "Access token expired",
+      };
+    }
+
+    if (
+      access.applicationId !== parsed.data.client_id ||
+      access.application.secret !== parsed.data.client_secret
+    ) {
+      return {
+        success: false,
+        error: "Invalid client id or secret",
+      };
+    }
+
+    return {
+      success: true,
+      access_token: access.session,
+      token_type: "bearer",
+      expires_in: access.expiresAt,
+      scope: access.application.scopes.join(","),
+    };
+  }
+
+  @Get("/me")
+  public async me(@Header("Authorization") auth: string) {
+    const access = await prisma.oAuthClient.findFirst({
+      where: {
+        session: auth,
+      },
+      include: {
+        user: exclude(nonCurrentUserSelect, "statusPosts"),
       },
     });
 
@@ -112,18 +180,9 @@ class OAuth2Router {
       };
     }
 
-    const user = await prisma.user.findFirst({
-      where: {
-        id: access.userId,
-      },
-      select: {
-        ...exclude(nonCurrentUserSelect.select, "statusPosts"),
-      },
-    });
-
     return {
       success: true,
-      user,
+      user: access.user,
     };
   }
 
