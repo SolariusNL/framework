@@ -200,7 +200,7 @@ class OAuth2Router {
         id: access.userId,
       },
       select: {
-        ...exclude(nonCurrentUserSelect, "statusPosts"),
+        ...exclude(nonCurrentUserSelect.select, "statusPosts"),
         ...(access.application.scopes.includes(OAuthScope.USER_EMAIL_READ)
           ? {
               email: true,

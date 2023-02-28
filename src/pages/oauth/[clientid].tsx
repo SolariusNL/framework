@@ -1,12 +1,4 @@
-import {
-  Button,
-  Container,
-  createStyles,
-  Paper,
-  Stack,
-  Text,
-  Title,
-} from "@mantine/core";
+import { Button, Container, Paper, Stack, Text, Title } from "@mantine/core";
 import { OAuthApplication, OAuthScope, User } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
@@ -30,26 +22,6 @@ type OAuth2FlowProps = {
   app: OAuthApplication;
   providedRedirect: string;
 };
-
-const useStyles = createStyles((theme) => ({
-  title: {
-    fontSize: 26,
-    fontWeight: 900,
-  },
-
-  controls: {
-    [theme.fn.smallerThan("xs")]: {
-      flexDirection: "column-reverse",
-    },
-  },
-
-  control: {
-    [theme.fn.smallerThan("xs")]: {
-      width: "100%",
-      textAlign: "center",
-    },
-  },
-}));
 
 const OAuth2Flow: NextPage<OAuth2FlowProps> = ({
   user,
