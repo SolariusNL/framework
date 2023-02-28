@@ -22,6 +22,7 @@ import {
 import ReactNoSSR from "react-no-ssr";
 import scopes from "../../data/scopes";
 import authorizedRoute from "../../util/auth";
+import { exclude } from "../../util/exclude";
 import prisma from "../../util/prisma";
 
 type OAuth2FlowProps = {
@@ -107,7 +108,7 @@ const OAuth2Flow: NextPage<OAuth2FlowProps> = ({
 
         <ReactNoSSR>
           <a
-            href={`/api/oauth/authorize?client_id=${app.secret}&redirect_uri=${providedRedirect}&auth=${cookie}`}
+            href={`/api/oauth/authorize?client_id=${app.id}&redirect_uri=${providedRedirect}&auth=${cookie}`}
             className="no-underline"
           >
             <Button fullWidth size="lg" leftIcon={<HiKey />}>
@@ -148,7 +149,7 @@ const OAuth2Flow: NextPage<OAuth2FlowProps> = ({
 };
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const { secret } = context.query;
+  const { clientid } = context.query;
   const to = context.query.redirect_uri as string;
 
   const auth = await authorizedRoute(context, true, false);
@@ -157,7 +158,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   const app = await prisma.oAuthApplication.findFirst({
     where: {
-      secret: String(secret),
+      id: clientid as string,
     },
   });
 
@@ -175,7 +176,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   return {
     props: {
       user: auth.props.user,
-      app: JSON.parse(JSON.stringify(app)),
+      app: JSON.parse(JSON.stringify(exclude(app, "secret"))),
       providedRedirect: to,
     },
   };

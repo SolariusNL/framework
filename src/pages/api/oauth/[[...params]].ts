@@ -24,7 +24,7 @@ class OAuth2Router {
   ) {
     const app = await prisma.oAuthApplication.findFirst({
       where: {
-        secret: clientId,
+        id: clientId,
       },
     });
 
