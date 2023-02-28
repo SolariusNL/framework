@@ -885,6 +885,7 @@ enum OAuthScope {
   USER_TEAMS_JOIN
   USER_TEAMS_LEAVE
   USER_CHATS_WRITE
+  USER_EMAIL_READ
 }
 
 model OAuthApplication {

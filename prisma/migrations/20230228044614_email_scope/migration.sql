@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "OAuthScope" ADD VALUE 'USER_EMAIL_READ';

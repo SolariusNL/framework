@@ -1,3 +1,4 @@
+import { OAuthScope } from "@prisma/client";
 import {
   Body,
   createHandler,
@@ -156,10 +157,7 @@ class OAuth2Router {
         session: auth,
       },
       include: {
-        user: {
-          ...exclude(nonCurrentUserSelect, "statusPosts"),
-          email: true,
-        },
+        application: true,
       },
     });
 
@@ -167,6 +165,28 @@ class OAuth2Router {
       return {
         success: false,
         error: "Invalid access token",
+      };
+    }
+
+    const user = await prisma.user.findFirst({
+      where: {
+        id: access.userId,
+      },
+      select: {
+        ...exclude(nonCurrentUserSelect, "statusPosts"),
+        ...(access.application.scopes.includes(OAuthScope.USER_EMAIL_READ)
+          ? {
+              email: true,
+              emailVerified: true,
+            }
+          : {}),
+      },
+    });
+
+    if (!user) {
+      return {
+        success: false,
+        error: "Unknown error",
       };
     }
 
@@ -185,7 +205,7 @@ class OAuth2Router {
 
     return {
       success: true,
-      user: access.user,
+      user: user,
     };
   }
 
