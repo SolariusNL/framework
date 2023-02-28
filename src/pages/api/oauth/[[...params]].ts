@@ -156,7 +156,10 @@ class OAuth2Router {
         session: auth,
       },
       include: {
-        user: exclude(nonCurrentUserSelect, "statusPosts"),
+        user: {
+          ...exclude(nonCurrentUserSelect, "statusPosts"),
+          email: true,
+        },
       },
     });
 

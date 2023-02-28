@@ -136,7 +136,11 @@ const OAuth2Flow: NextPage<OAuth2FlowProps> = ({
             ].map((item, i) => (
               <div className="flex items-center gap-4" key={i}>
                 <div className="flex-shrink-0">{item.icon}</div>
-                <Text size="sm" color="dimmed">
+                <Text
+                  size="sm"
+                  color="dimmed"
+                  style={{ whiteSpace: "pre-wrap" }}
+                >
                   {item.text}
                 </Text>
               </div>
