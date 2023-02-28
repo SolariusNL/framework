@@ -134,6 +134,10 @@ export async function getAccountFromSession(
     return undefined;
   }
 
+  if (session.oauth) {
+    return undefined;
+  }
+
   const account = JSON.parse(
     JSON.stringify(
       await prisma.user.findFirst({
