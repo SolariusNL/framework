@@ -269,6 +269,7 @@ model Session {
   ua            String          @default("")
   os            OperatingSystem @default(OTHER)
   impersonation Boolean         @default(false)
+  oauth         Boolean         @default(false)
 }
 
 enum OperatingSystem {

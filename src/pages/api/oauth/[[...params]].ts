@@ -6,15 +6,18 @@ import {
   Header,
   Post,
   Query,
+  Req,
   Res,
 } from "@storyofams/next-api-decorators";
-import type { NextApiResponse } from "next";
+import type { NextApiRequest, NextApiResponse } from "next";
+import { getClientIp } from "request-ip";
 import { z } from "zod";
 import Authorized, { Account } from "../../../util/api/authorized";
 import { exclude } from "../../../util/exclude";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
 import { nonCurrentUserSelect } from "../../../util/prisma-types";
+import { OperatingSystem } from "../../../util/ua";
 
 async function getUserFromScopes(scopes: OAuthScope[], uid: number) {
   const user = await prisma.user.findFirst({
@@ -41,7 +44,8 @@ class OAuth2Router {
     @Query("client_id") clientId: string,
     @Query("redirect_uri") redirectUri: string,
     @Query("auth") auth: string,
-    @Res() res: NextApiResponse
+    @Res() res: NextApiResponse,
+    @Req() req: NextApiRequest
   ) {
     const app = await prisma.oAuthApplication.findFirst({
       where: {
@@ -66,6 +70,7 @@ class OAuth2Router {
     const session = await prisma.session.findFirst({
       where: {
         token: auth,
+        oauth: false,
       },
       include: {
         user: nonCurrentUserSelect,
@@ -78,6 +83,24 @@ class OAuth2Router {
         error: "Invalid auth token",
       };
     }
+
+    const newSession = await prisma.session.create({
+      data: {
+        user: {
+          connect: {
+            id: session.userId,
+          },
+        },
+        oauth: true,
+        os: OperatingSystem.Other,
+        ip: getClientIp(req) || "",
+        ua: req.headers["user-agent"] || "",
+        token: Array(64)
+          .fill(0)
+          .map(() => Math.floor(Math.random() * 16).toString(16))
+          .join(""),
+      },
+    });
 
     const access = await prisma.oAuthClient.create({
       data: {
@@ -94,7 +117,7 @@ class OAuth2Router {
         code:
           Math.random().toString(36).substring(2, 15) +
           Math.random().toString(36).substring(2, 15),
-        session: session.token,
+        session: newSession.token,
         expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30 * 6),
       },
     });
