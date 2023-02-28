@@ -72,7 +72,9 @@ class OAuth2Router {
             id: app.id,
           },
         },
-        code: await crypto.randomUUID(),
+        code:
+          Math.random().toString(36).substring(2, 15) +
+          Math.random().toString(36).substring(2, 15),
         session: session.token,
         expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30 * 6),
       },
