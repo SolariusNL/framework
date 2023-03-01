@@ -263,7 +263,7 @@ const DeveloperAPIKeys: React.FC<DeveloperProps> = ({ user }) => {
                         <span>
                           Delete key
                           <br />
-                          recommended if it is compromised or no longer in use
+                          Recommended if it is compromised or no longer in use
                         </span>
                       }
                     >
