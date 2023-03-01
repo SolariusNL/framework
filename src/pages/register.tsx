@@ -1,20 +1,13 @@
 import {
   Anchor,
   Button,
-  Checkbox,
-  Container,
-  Group,
-  Paper,
-  Stack,
-  Text,
-  TextInput,
-  Title,
+  Checkbox, Group, Stack, TextInput
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import type { GetServerSidePropsContext, NextPage } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import MinimalFooter from "../components/MinimalFooter";
+import OuterUI from "../layouts/OuterUI";
 import authorizedRoute from "../util/auth";
 import { setCookie } from "../util/cookies";
 
@@ -92,66 +85,63 @@ const Register: NextPage = () => {
   };
 
   return (
-    <Container size={420} my={40}>
-      <Title align="center">Framework</Title>
-      <Text color="dimmed" size="sm" align="center" mt={5}>
-        Framework is in alpha and requires an invite code to join.{" "}
-        <Link href="/login">
-          <Anchor>Have an account already? Login to your account.</Anchor>
-        </Link>
-      </Text>
+    <OuterUI
+      description={
+        <span>
+          Framework is in alpha and requires an invite code to join.{" "}
+          <Link href="/login">
+            <Anchor>Have an account already? Login to your account.</Anchor>
+          </Link>
+        </span>
+      }
+    >
+      <form onSubmit={form.onSubmit((values) => handleRegister(values))}>
+        <Stack spacing={12}>
+          <TextInput
+            label="Invite code"
+            description="You should've received this in your email. If you cannot locate your invite code, please contact us."
+            placeholder="0000-0000-0000-0000"
+            required
+            {...form.getInputProps("code")}
+          />
 
-      <Paper withBorder shadow="md" p={30} mt={30} radius="md" mb={30}>
-        <form onSubmit={form.onSubmit((values) => handleRegister(values))}>
-          <Stack spacing={12}>
-            <TextInput
-              label="Invite code"
-              description="You should've received this in your email. If you cannot locate your invite code, please contact us."
-              placeholder="0000-0000-0000-0000"
-              required
-              {...form.getInputProps("code")}
-            />
+          <TextInput
+            label="Username"
+            description="Your username is unique to you."
+            placeholder="Framework"
+            required
+            {...form.getInputProps("username")}
+          />
 
-            <TextInput
-              label="Username"
-              description="Your username is unique to you."
-              placeholder="Framework"
-              required
-              {...form.getInputProps("username")}
-            />
+          <TextInput
+            label="Email"
+            type="email"
+            description="Used to send you password reset emails, and for general protection."
+            placeholder="Enter an email"
+            required
+            {...form.getInputProps("email")}
+          />
 
-            <TextInput
-              label="Email"
-              type="email"
-              description="Used to send you password reset emails, and for general protection."
-              placeholder="Enter an email"
-              required
-              {...form.getInputProps("email")}
-            />
-
-            <TextInput
-              label="Password"
-              type="password"
-              description="Your password is used to login to your account."
-              placeholder="Enter a password"
-              required
-              {...form.getInputProps("password")}
-            />
-          </Stack>
-          <Group position="apart" mt="md">
-            <Checkbox
-              label="Remember me"
-              {...form.getInputProps("remainLoggedIn")}
-            />
-          </Group>
-          <Button fullWidth mt="xl" type="submit">
-            Register
-          </Button>
-        </form>
-      </Paper>
-
-      <MinimalFooter />
-    </Container>
+          <TextInput
+            label="Password"
+            type="password"
+            description="Your password is used to login to your account."
+            placeholder="Enter a password"
+            required
+            {...form.getInputProps("password")}
+          />
+        </Stack>
+        <Group position="apart" mt="md">
+          <Checkbox
+            label="Remember me"
+            {...form.getInputProps("remainLoggedIn")}
+          />
+        </Group>
+        <Button fullWidth mt="xl" type="submit">
+          Register
+        </Button>
+      </form>
+    </OuterUI>
   );
 };
 

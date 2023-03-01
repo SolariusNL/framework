@@ -2,14 +2,11 @@ import {
   Anchor,
   Button,
   Checkbox,
-  Container,
   Group,
   Modal,
-  Paper,
   Stack,
   Text,
   TextInput,
-  Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { PinInput } from "@mantine/labs";
@@ -19,7 +16,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { HiExclamation, HiXCircle } from "react-icons/hi";
-import MinimalFooter from "../components/MinimalFooter";
+import OuterUI from "../layouts/OuterUI";
 import authorizedRoute from "../util/auth";
 import { setCookie } from "../util/cookies";
 
@@ -161,49 +158,46 @@ const Login: NextPage = () => {
           Verify code
         </Button>
       </Modal>
-      <Container size={420} my={40}>
-        <Title align="center">Framework</Title>
-        <Text color="dimmed" size="sm" align="center" mt={5}>
-          Framework is in alpha and requires an invite code to join.{" "}
-          <Link href="/register">
-            <Anchor>Have a code? Register for a Framework account.</Anchor>
-          </Link>
-        </Text>
-
-        <Paper withBorder shadow="md" p={30} mt={30} radius="md" mb={30}>
-          <form onSubmit={form.onSubmit((values) => handleLogin(values))}>
-            <Stack spacing={12}>
-              <TextInput
-                label="Username or email"
-                placeholder="Framework"
-                required
-                {...form.getInputProps("username")}
-              />
-              <TextInput
-                label="Password"
-                type="password"
-                placeholder="Enter a password"
-                required
-                {...form.getInputProps("password")}
-              />
-            </Stack>
-            <Group position="apart" mt="md">
-              <Checkbox
-                label="Remember me"
-                {...form.getInputProps("rememberMe")}
-              />
-              <Link passHref href="/forgotpassword">
-                <Anchor size="sm">Forgot your password?</Anchor>
-              </Link>
-            </Group>
-            <Button fullWidth mt="xl" type="submit" loading={loading}>
-              Sign in
-            </Button>
-          </form>
-        </Paper>
-
-        <MinimalFooter />
-      </Container>
+      <OuterUI
+        description={
+          <span>
+            Framework is in alpha and requires an invite code to join.{" "}
+            <Link href="/register">
+              <Anchor>Have a code? Register for a Framework account.</Anchor>
+            </Link>
+          </span>
+        }
+      >
+        <form onSubmit={form.onSubmit((values) => handleLogin(values))}>
+          <Stack spacing={12}>
+            <TextInput
+              label="Username or email"
+              placeholder="Framework"
+              required
+              {...form.getInputProps("username")}
+            />
+            <TextInput
+              label="Password"
+              type="password"
+              placeholder="Enter a password"
+              required
+              {...form.getInputProps("password")}
+            />
+          </Stack>
+          <Group position="apart" mt="md">
+            <Checkbox
+              label="Remember me"
+              {...form.getInputProps("rememberMe")}
+            />
+            <Link passHref href="/forgotpassword">
+              <Anchor size="sm">Forgot your password?</Anchor>
+            </Link>
+          </Group>
+          <Button fullWidth mt="xl" type="submit" loading={loading}>
+            Sign in
+          </Button>
+        </form>
+      </OuterUI>
     </>
   );
 };

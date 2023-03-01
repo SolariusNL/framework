@@ -1,50 +1,34 @@
-import { Alert, Anchor, Container, Paper } from "@mantine/core";
+import { Alert, Anchor, Box, Center } from "@mantine/core";
 import { render } from "@react-email/render";
 import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
-import { HiCheckCircle, HiHome } from "react-icons/hi";
+import { HiArrowLeft, HiCheckCircle } from "react-icons/hi";
 import VerificationConfirmation from "../../../email/emails/verification-confirmation";
+import OuterUI from "../../layouts/OuterUI";
 import authorizedRoute from "../../util/auth";
 import { sendMail } from "../../util/mail";
 import prisma from "../../util/prisma";
 
 const VerifyEmail = () => {
   return (
-    <Container size={460} my={30}>
-      <Paper
-        withBorder
-        shadow="md"
-        p={30}
-        radius="md"
-        mt="xl"
-        sx={(theme) => ({
-          background:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[8]
-              : theme.colors.gray[0],
-        })}
+    <OuterUI description="Thanks for verifying your email.">
+      <Alert
+        title="Email verified"
+        color="green"
+        icon={<HiCheckCircle size={24} />}
+        mb={24}
       >
-        <Alert
-          title="Email verified"
-          color="green"
-          icon={<HiCheckCircle size={24} />}
-          mb={24}
-        >
-          Your email has been verified. Thanks.
-        </Alert>
-        <Link href="/">
-          <Anchor
-            style={{
-              alignItems: "center",
-            }}
-            weight={500}
-          >
-            <HiHome style={{ marginRight: 8 }} />
-            Return to the homepage
-          </Anchor>
-        </Link>
-      </Paper>
-    </Container>
+        Your email has been verified. Thanks.
+      </Alert>
+      <Link href="/">
+        <Anchor color="dimmed" size="sm">
+          <Center inline>
+            <HiArrowLeft size={12} />
+            <Box ml={5}>Go to homepage</Box>
+          </Center>
+        </Anchor>
+      </Link>
+    </OuterUI>
   );
 };
 

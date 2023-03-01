@@ -3,14 +3,10 @@ import {
   Box,
   Button,
   Center,
-  Container,
   createStyles,
   Group,
-  Paper,
   PasswordInput,
-  Text,
   TextInput,
-  Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
@@ -19,6 +15,7 @@ import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { HiArrowLeft, HiCheckCircle, HiXCircle } from "react-icons/hi";
+import OuterUI from "../layouts/OuterUI";
 import authorizedRoute from "../util/auth";
 import prisma from "../util/prisma";
 import { nonCurrentUserSelect, NonUser } from "../util/prisma-types";
@@ -85,110 +82,105 @@ const ForgotPassword: React.FC<{
   });
 
   return (
-    <Container size={420} my={40}>
-      <Title align="center">Framework</Title>
-      <Text color="dimmed" size="sm" align="center" mt={5}>
-        Enter your email address and we will send you a link to reset your
-        password.
-      </Text>
-
-      <Paper withBorder shadow="md" p={30} radius="md" mt="xl">
-        {hasToken ? (
-          <form
-            onSubmit={newPasswordForm.onSubmit(async (values) => {
-              await fetch("/api/auth/forgotpassword/auth", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  password: values.password,
-                  token: token.id,
-                }),
-              })
-                .then((res) => res.json())
-                .then((res) => {
-                  if (res.success) {
-                    showNotification({
-                      title: "Password reset",
-                      message:
-                        "Your password has been reset. You will be redirected to the login page.",
-                      icon: <HiCheckCircle />,
-                    });
-                    router.push("/login");
-                  } else {
-                    showNotification({
-                      title: "Error",
-                      message:
-                        "We were unable to reset your password because of certain circumstances. Please try again later.",
-                      icon: <HiXCircle />,
-                    });
-                  }
-                });
-            })}
-          >
-            <PasswordInput
-              label="New password"
-              placeholder="********"
-              required
-              mb="sm"
-              {...newPasswordForm.getInputProps("password")}
-            />
-            <PasswordInput
-              label="Confirm password"
-              placeholder="********"
-              required
-              {...newPasswordForm.getInputProps("confirmPassword")}
-            />
-            <Group position="apart" mt="lg" className="items-end justify-end">
-              <Button className={classes.control} type="submit">
-                Reset password
-              </Button>
-            </Group>
-          </form>
-        ) : (
-          <form
-            onSubmit={form.onSubmit(async (values) => {
-              await fetch("/api/auth/forgotpassword", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify(values),
-              }).finally(() => {
-                form.reset();
-                showNotification({
-                  title: "Reset link sent",
-                  message:
-                    "If the email address you entered is valid, you should receive an email with a reset link shortly.",
-                  icon: <HiCheckCircle />,
-                });
+    <OuterUI
+      description="Enter your email address and we will send you a link to reset your
+    password."
+    >
+      {hasToken ? (
+        <form
+          onSubmit={newPasswordForm.onSubmit(async (values) => {
+            await fetch("/api/auth/forgotpassword/auth", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                password: values.password,
+                token: token.id,
+              }),
+            })
+              .then((res) => res.json())
+              .then((res) => {
+                if (res.success) {
+                  showNotification({
+                    title: "Password reset",
+                    message:
+                      "Your password has been reset. You will be redirected to the login page.",
+                    icon: <HiCheckCircle />,
+                  });
+                  router.push("/login");
+                } else {
+                  showNotification({
+                    title: "Error",
+                    message:
+                      "We were unable to reset your password because of certain circumstances. Please try again later.",
+                    icon: <HiXCircle />,
+                  });
+                }
               });
-            })}
-          >
-            <TextInput
-              label="Your email"
-              placeholder="me@soodam.rocks"
-              required
-              {...form.getInputProps("email")}
-            />
-            <Group position="apart" mt="lg" className={classes.controls}>
-              <Link href="/login" passHref>
-                <Anchor color="dimmed" size="sm" className={classes.control}>
-                  <Center inline>
-                    <HiArrowLeft size={12} />
-                    <Box ml={5}>Back to login page</Box>
-                  </Center>
-                </Anchor>
-              </Link>
-              <Button className={classes.control} type="submit">
-                Reset password
-              </Button>
-            </Group>
-          </form>
-        )}
-      </Paper>
-    </Container>
+          })}
+        >
+          <PasswordInput
+            label="New password"
+            placeholder="********"
+            required
+            mb="sm"
+            {...newPasswordForm.getInputProps("password")}
+          />
+          <PasswordInput
+            label="Confirm password"
+            placeholder="********"
+            required
+            {...newPasswordForm.getInputProps("confirmPassword")}
+          />
+          <Group position="apart" mt="lg" className="items-end justify-end">
+            <Button className={classes.control} type="submit">
+              Reset password
+            </Button>
+          </Group>
+        </form>
+      ) : (
+        <form
+          onSubmit={form.onSubmit(async (values) => {
+            await fetch("/api/auth/forgotpassword", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(values),
+            }).finally(() => {
+              form.reset();
+              showNotification({
+                title: "Reset link sent",
+                message:
+                  "If the email address you entered is valid, you should receive an email with a reset link shortly.",
+                icon: <HiCheckCircle />,
+              });
+            });
+          })}
+        >
+          <TextInput
+            label="Your email"
+            placeholder="me@soodam.rocks"
+            required
+            {...form.getInputProps("email")}
+          />
+          <Group position="apart" mt="lg" className={classes.controls}>
+            <Link href="/login" passHref>
+              <Anchor color="dimmed" size="sm" className={classes.control}>
+                <Center inline>
+                  <HiArrowLeft size={12} />
+                  <Box ml={5}>Back to login page</Box>
+                </Center>
+              </Anchor>
+            </Link>
+            <Button className={classes.control} type="submit">
+              Reset password
+            </Button>
+          </Group>
+        </form>
+      )}
+    </OuterUI>
   );
 };
 
