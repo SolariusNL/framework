@@ -15,9 +15,9 @@ import { useRouter } from "next/router";
 import { toDataURL } from "qrcode";
 import React, { useEffect } from "react";
 import {
-  HiAdjustments,
   HiChevronDown,
   HiChevronRight,
+  HiCloud,
   HiCog,
   HiInformationCircle,
   HiLibrary,
@@ -197,10 +197,10 @@ const UserMenu = ({
             Profile
           </Menu.Item>
           <Menu.Item
-            icon={<HiAdjustments />}
-            onClick={() => router.push("/avatar")}
+            icon={<HiCloud />}
+            onClick={() => router.push("/developer")}
           >
-            Avatar
+            Developers
           </Menu.Item>
           <Menu.Item
             icon={<HiUsers />}
