@@ -1,0 +1,110 @@
+import { Table } from "@mantine/core";
+import DocWrapper from "../components/DocWrapper";
+import authorizedRoute from "../util/auth";
+import Framework from "../components/Framework";
+
+export const meta = {
+  title: "Framework Community Standards",
+  lastModified: "03/01/2023",
+  summary: "Framework Community Standards",
+};
+
+Framework is a platform where people from different backgrounds come together to connect, play, and create
+content. Our community standards outline our expectations for how our community should behave, both on and
+off the platform. We strive to create a safe, respectful, fair, and transparent environment for everyone
+who uses our platform.
+
+## Safety
+
+We take safety seriously. We want all of our users to feel safe and secure while using our platform. To
+ensure the safety of our community, we have the following guidelines:
+
+- **Personal information**: Do not share personal information, such as your full name, address, or phone
+  number, on the platform.
+- **Bullying and harassment**: Do not engage in any form of bullying or harassment on the platform. This
+  includes name-calling, threats, or any other behavior that makes someone feel uncomfortable or unsafe.
+- **Scams and fraud**: Do not engage in any scams or fraud on the platform. This includes phishing
+  attempts, pyramid schemes, or any other fraudulent behavior.
+- **Violence and threat**: Do not make any threats or engage in any violent behavior on the platform.
+- **Sexual content**: Do not share any sexual content or engage in any sexual behavior on the platform.
+  This includes nudity, sexual language, or any other sexually explicit content.
+
+## Respect
+
+Respect for others and their opinions are one of our highest priorities. We believe that everyone should
+be treated with dignity and respect, regardless of their race, gender, sexual orientation, religion,
+or any other characteristic. To maintain a respectful environment within our community, we have the
+following guidelines:
+
+- **Hate speech**: Do not engage in any hate speech on the platform. This includes language or behavior
+  that promotes discrimination or prejudice against a particular group of people.
+- **Discrimination**: Do not engage in any discriminatory behavior on the platform. This includes any
+  behavior that excludes or treats someone unfairly based on their race, gender, sexual orientation,
+  religion, or any other characteristic.
+- **Trolling**: Do not engage in any trolling behavior on the platform. This includes posting offensive
+  or controversial content with the intention of provoking others.
+- **Offensive content**: Do not post any content that is offensive or inappropriate. This includes content
+  that is violent, vulgar, or sexually explicit.
+
+## Free Speech
+
+At Framework, we honor free speech, but with some limitations. It is a fact that free speech is never
+absolute. We believe that free speech is a fundamental right, but it is not a right that can be exercised
+of the expense of others. We want our community to be a place where people can express themselves freely,
+fairly. To ensure free speech within our community, we have the following guidelines:
+
+- **Hate speech**: Do not engage in any hate speech on the platform. This includes language or behavior
+  that promotes discrimination or prejudice against a particular group of people.
+- **Incitement** to violence: Do not incite violence or encourage others to engage in violent behavior on
+  the platform.
+- **Defamation**: Do not engage in any defamation on the platform. This includes making false or harmful
+  statements about someone.
+- **Harassment**: Do not engage in any harassment on the platform. This includes name-calling, threats,
+  or any other behavior that makes someone feel uncomfortable or unsafe.
+
+## Fairness and Transparency
+
+We believe in fairness and transparency. We want our community to be a place where everyone is treated
+equally and has a voice. To protect the democratic nature of our community, we have the following
+guidelines:
+
+- **Rules and policies**: Follow our rules and policies. We have guidelines in place to ensure that our
+  community remains safe, respectful, and fair.
+- **Reporting**: Report any violations of our community standards to us. We take reports seriously and
+  will investigate any violations to our upmost ability to maintain fairness within our community.
+- **Appeals process**: If you feel that your account has been unfairly suspended or terminated, you can
+  appeal the decision through our appeals process. We will review your appeal and take appropriate action
+  based on the circumstances.
+- **Transparency**: We are committed to being transparent with our community. We will communicate any
+  changes to our policies or guidelines and provide explanations for any actions we take.
+- **Votes**: For major decisions that can impact the path of the platform, we will hold a vote to ensure
+  that the community has a say in the matter to determine what is best for the platform and it's users.
+
+## Moderation
+
+To ensure that our community standards are upheld, we have a team of moderators who monitor the platform
+for violations. Our moderators have the authority to take action against users who violate our community
+standards, including warning, suspending, or terminating accounts.
+
+We also rely on our community to report any violations of our standards. If you see something that you
+believe violates our standards, please report it to us.
+
+Additionally, because Framework is a decentralized & [federated](<https://www.wikiwand.com/en/Federation_(information_technology)>) platform,
+administrative actions and bans are exchanged between instances in the 'main' [fediverse](https://www.wikiwand.com/en/Fediverse). This is incredibly
+effective at preventing users from circumventing bans by simply creating a new account on another instance,
+and is also effective because it does not require a huge team of moderators to manage.
+
+---
+
+At Framework, we are committed to creating a safe, respectful, fair, and transparent community for
+everyone who uses our platform. Our community standards are in place to ensure that everyone is able to
+enjoy the platform without fear of harassment or discrimination. We expect all of our users to adhere to
+these standards, and we will take action against those who violate them. Thank you for being a part of
+our community. We hope you enjoy your time on Framework!
+
+export default ({ children }) => (
+  <DocWrapper meta={meta}>{children}</DocWrapper>
+);
+export async function getServerSideProps(context) {
+  return await authorizedRoute(context, false, false);
+}
