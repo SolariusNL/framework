@@ -1,4 +1,4 @@
-import { Session } from "@prisma/client";
+import { OAuthApplication, Session } from "@prisma/client";
 import { GetServerSidePropsContext } from "next";
 import { getClientIp } from "request-ip";
 import { exclude } from "./exclude";
@@ -107,13 +107,16 @@ const authorizedRoute = async (
   }
 };
 
-async function verifySession(token: string): Promise<Session | undefined> {
+async function verifySession(
+  token: string
+): Promise<(Session & { oauth: OAuthApplication }) | undefined> {
   const session = JSON.parse(
     JSON.stringify(
       await prisma.session.findFirst({
         where: {
           token,
         },
+        include: { oauth: true },
       })
     )
   );
