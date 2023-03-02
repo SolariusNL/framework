@@ -775,6 +775,7 @@ class UserRouter {
   public async getSessions(@Account() user: User) {
     const sessions = await prisma.session.findMany({
       where: { userId: user.id },
+      include: { oauth: true },
     });
 
     return {

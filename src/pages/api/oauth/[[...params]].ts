@@ -51,7 +51,7 @@ class OAuth2Router {
     const session = await prisma.session.findFirst({
       where: {
         token: auth,
-        oauth: false,
+        oauth: null,
       },
       include: {
         user: nonCurrentUserSelect,
@@ -72,7 +72,11 @@ class OAuth2Router {
             id: session.userId,
           },
         },
-        oauth: true,
+        oauth: {
+          connect: {
+            id: app.id,
+          },
+        },
         os: OperatingSystem.Other,
         ip: getClientIp(req) || "",
         ua: req.headers["user-agent"] || "",

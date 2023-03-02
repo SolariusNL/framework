@@ -3,23 +3,28 @@ import {
   Button,
   CloseButton,
   Pagination,
+  Select,
   Skeleton,
   Stack,
   Text,
   Tooltip,
 } from "@mantine/core";
 import { openConfirmModal } from "@mantine/modals";
-import { Session } from "@prisma/client";
+import { OAuthApplication, Session } from "@prisma/client";
 import { deleteCookie, getCookie } from "cookies-next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import {
   HiCheck,
+  HiFilter,
+  HiLink,
   HiLogout,
   HiOutlineDesktopComputer,
   HiOutlineDeviceMobile,
+  HiQuestionMarkCircle,
 } from "react-icons/hi";
 import logout from "../../util/api/logout";
+import clsx from "../../util/clsx";
 import { User } from "../../util/prisma-types";
 import {
   Device,
@@ -27,19 +32,41 @@ import {
   getOperatingSystemEnumFromString,
   getOperatingSystemString,
 } from "../../util/ua";
+import ModernEmptyState from "../ModernEmptyState";
 import ShadedCard from "../ShadedCard";
 import SettingsTab from "./SettingsTab";
 import SideBySide from "./SideBySide";
 
-interface SessionsTabProps {
+type SessionsTabProps = {
   user: User;
-}
+};
+type Filter = "all" | "desktop" | "mobile" | "staff" | "oauth";
+type SessionWithOAuth = Session & { oauth: OAuthApplication | null };
 
 const SessionsTab: React.FC<SessionsTabProps> = ({ user }) => {
-  const [sessions, setSessions] = useState<Session[]>([]);
+  const [sessions, setSessions] = useState<SessionWithOAuth[]>([]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const [page, setPage] = useState(1);
+  const [filter, setFilter] = useState<Filter>("all");
+
+  const filterFn = (session: SessionWithOAuth) => {
+    if (filter === "all") return true;
+    if (filter === "desktop")
+      return (
+        getOperatingSystemDevice(
+          getOperatingSystemEnumFromString(session.os)
+        ) === Device.Desktop
+      );
+    if (filter === "mobile")
+      return (
+        getOperatingSystemDevice(
+          getOperatingSystemEnumFromString(session.os)
+        ) === Device.Mobile
+      );
+    if (filter === "staff") return session.impersonation;
+    if (filter === "oauth") return session.oauth !== null;
+  };
 
   const fetchSessions = async () => {
     setLoading(true);
@@ -114,88 +141,147 @@ const SessionsTab: React.FC<SessionsTabProps> = ({ user }) => {
               noUpperBorder
               shaded
             />
-            <div className="flex items-center justify-center">
+            <div className="flex items-center md:flex-row flex-col justify-between mt-4 mb-4 gap-4">
               <Pagination
-                total={Math.ceil(sessions.length / 5)}
+                total={Math.ceil(sessions.filter(filterFn).length / 5)}
                 page={page}
                 onChange={setPage}
-                mt="md"
-                mb="md"
                 radius="md"
               />
+              <Select
+                icon={<HiFilter />}
+                value={filter}
+                onChange={(v) => setFilter(v as Filter)}
+                placeholder="Filter by"
+                data={[
+                  { label: "All", value: "all" },
+                  { label: "Desktop sessions", value: "desktop" },
+                  { label: "Mobile sessions", value: "mobile" },
+                  { label: "Staff sessions", value: "staff" },
+                  { label: "OAuth applications", value: "oauth" },
+                ]}
+              />
             </div>
-            {sessions.slice((page - 1) * 5, page * 5).map((session) => (
-              <ShadedCard
-                key={session.id}
-                className="flex items-center justify-between overflow-visible"
-                sx={(theme) => ({
-                  backgroundColor:
-                    theme.colorScheme === "dark"
-                      ? theme.colors.dark[8]
-                      : theme.colors.gray[1],
-                })}
-              >
-                <div className="flex flex-col md:flex-row">
-                  <Badge
-                    sx={{
-                      width: 48,
-                      height: 48,
-                    }}
-                    className="flex items-center justify-center"
+            {sessions.filter(filterFn).length > 0 ? (
+              sessions
+                .filter(filterFn)
+                .slice((page - 1) * 5, page * 5)
+                .map((session) => (
+                  <ShadedCard
+                    key={session.id}
+                    className="flex items-center justify-between overflow-visible"
+                    sx={(theme) => ({
+                      backgroundColor:
+                        theme.colorScheme === "dark"
+                          ? theme.colors.dark[8]
+                          : theme.colors.gray[1],
+                    })}
                   >
-                    {getOperatingSystemDevice(
-                      getOperatingSystemEnumFromString(session.os)
-                    ) === Device.Desktop ? (
-                      <HiOutlineDesktopComputer
-                        size={20}
+                    <div className="flex flex-col md:flex-row flex-shrink-0">
+                      <Badge
+                        sx={{
+                          width: 48,
+                          height: 48,
+                        }}
                         className="flex items-center justify-center"
-                      />
-                    ) : (
-                      <HiOutlineDeviceMobile
-                        size={20}
-                        className="flex items-center justify-center"
-                      />
-                    )}
-                  </Badge>
-                  <div className="flex flex-col md:ml-4 mt-4 md:mt-0">
-                    <div className="flex items-center gap-2">
-                      <Text size="lg" weight={600}>
-                        {getOperatingSystemString(
+                      >
+                        {getOperatingSystemDevice(
                           getOperatingSystemEnumFromString(session.os)
+                        ) === Device.Desktop ? (
+                          <HiOutlineDesktopComputer
+                            size={20}
+                            className="flex items-center justify-center"
+                          />
+                        ) : getOperatingSystemDevice(
+                            getOperatingSystemEnumFromString(session.os)
+                          ) === Device.Mobile ? (
+                          <HiOutlineDeviceMobile
+                            size={20}
+                            className="flex items-center justify-center"
+                          />
+                        ) : session.oauth !== null ? (
+                          <HiLink
+                            size={20}
+                            className="flex items-center justify-center"
+                          />
+                        ) : (
+                          <HiQuestionMarkCircle
+                            size={20}
+                            className="flex items-center justify-center"
+                          />
                         )}
-                      </Text>
-                      {getCookie(".frameworksession") == session.token && (
-                        <Badge size="sm">Current Session</Badge>
-                      )}
+                      </Badge>
+                      <div
+                        className={clsx(
+                          "flex flex-col md:ml-4 mt-4 md:mt-0",
+                          "max-w-[280px] md:max-w-[300px] lg:max-w-[400px]"
+                        )}
+                      >
+                        <div className="flex items-center gap-2">
+                          <Text size="lg" weight={600}>
+                            {session.impersonation
+                              ? "Admin session"
+                              : session.oauth
+                              ? session.oauth.name
+                              : getOperatingSystemString(
+                                  getOperatingSystemEnumFromString(session.os)
+                                )}
+                          </Text>
+                          {getCookie(".frameworksession") == session.token && (
+                            <Badge size="sm">Current Session</Badge>
+                          )}
+                        </div>
+                        <Text color="dimmed" size="sm">
+                          {session.ip.includes("::ffff:")
+                            ? "localhost"
+                            : session.ip.includes(":")
+                            ? session.ip.split(":").slice(-2).join(":")
+                            : session.ip}{" "}
+                          - {session.ua.split(")")[0].split("(")[1]}
+                        </Text>
+                        {session.impersonation && (
+                          <Text mt="md" color="dimmed" size="sm">
+                            Your account is being accessed by a staff member
+                            using this session.
+                          </Text>
+                        )}
+                        {session.oauth && (
+                          <Text mt="md" color="dimmed" size="sm">
+                            This session is being used by an OAuth application,{" "}
+                            {session.oauth.name}. If you don&apos;t recognize
+                            this application, you should revoke access to it.
+                          </Text>
+                        )}
+                      </div>
                     </div>
-                    <Text color="dimmed" size="sm">
-                      {session.ip.includes("::ffff:")
-                        ? "localhost"
-                        : session.ip.includes(":")
-                        ? session.ip.split(":").slice(-2).join(":")
-                        : session.ip}{" "}
-                      - {session.ua.split(")")[0].split("(")[1]}
-                    </Text>
-                    {session.impersonation && (
-                      <Text mt="md" color="dimmed" size="sm">
-                        Your account is being accessed by a staff member using
-                        this session.
-                      </Text>
-                    )}
-                  </div>
-                </div>
-                <Tooltip label="Log out of this session">
-                  <CloseButton
-                    onClick={async () =>
-                      await logout(session.token, true).then(() => {
-                        fetchSessions();
-                      })
-                    }
-                    disabled={getCookie(".frameworksession") == session.token}
-                  />
-                </Tooltip>
+                    <Tooltip
+                      label={
+                        session.oauth
+                          ? "Revoke access to this application"
+                          : "Log out of this session"
+                      }
+                    >
+                      <CloseButton
+                        onClick={async () =>
+                          await logout(session.token, true).then(() => {
+                            fetchSessions();
+                          })
+                        }
+                        disabled={
+                          getCookie(".frameworksession") == session.token
+                        }
+                      />
+                    </Tooltip>
+                  </ShadedCard>
+                ))
+            ) : (
+              <ShadedCard className="flex items-center justify-center">
+                <ModernEmptyState
+                  title="No sessions found"
+                  body="No sessions found with the selected filter."
+                />
               </ShadedCard>
-            ))}
+            )}
           </>
         )}
       </Stack>

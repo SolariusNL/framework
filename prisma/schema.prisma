@@ -261,15 +261,16 @@ model Invite {
 }
 
 model Session {
-  id            String          @id @default(uuid())
-  user          User            @relation("userSessions", fields: [userId], references: [id])
+  id            String            @id @default(uuid())
+  user          User              @relation("userSessions", fields: [userId], references: [id])
   userId        Int
-  token         String          @unique
-  ip            String          @default("")
-  ua            String          @default("")
-  os            OperatingSystem @default(OTHER)
-  impersonation Boolean         @default(false)
-  oauth         Boolean         @default(false)
+  token         String            @unique
+  ip            String            @default("")
+  ua            String            @default("")
+  os            OperatingSystem   @default(OTHER)
+  impersonation Boolean           @default(false)
+  oauth         OAuthApplication? @relation("oauthSessions", fields: [oauthId], references: [id])
+  oauthId       String?
 }
 
 enum OperatingSystem {
@@ -901,6 +902,7 @@ model OAuthApplication {
   secret      String        @unique
   redirectUri String
   clients     OAuthClient[] @relation("oauthCodeApplication")
+  sessions    Session[]     @relation("oauthSessions")
 }
 
 model OAuthClient {
