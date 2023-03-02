@@ -7,7 +7,7 @@ import {
   Skeleton,
   Stack,
   Text,
-  Tooltip,
+  Tooltip
 } from "@mantine/core";
 import { openConfirmModal } from "@mantine/modals";
 import { OAuthApplication, Session } from "@prisma/client";
@@ -21,7 +21,7 @@ import {
   HiLogout,
   HiOutlineDesktopComputer,
   HiOutlineDeviceMobile,
-  HiQuestionMarkCircle,
+  HiQuestionMarkCircle
 } from "react-icons/hi";
 import logout from "../../util/api/logout";
 import clsx from "../../util/clsx";
@@ -30,7 +30,7 @@ import {
   Device,
   getOperatingSystemDevice,
   getOperatingSystemEnumFromString,
-  getOperatingSystemString,
+  getOperatingSystemString
 } from "../../util/ua";
 import ModernEmptyState from "../ModernEmptyState";
 import ShadedCard from "../ShadedCard";
@@ -50,20 +50,13 @@ const SessionsTab: React.FC<SessionsTabProps> = ({ user }) => {
   const [page, setPage] = useState(1);
   const [filter, setFilter] = useState<Filter>("all");
 
+  const getOS = (os: string) =>
+    getOperatingSystemDevice(getOperatingSystemEnumFromString(os));
+
   const filterFn = (session: SessionWithOAuth) => {
     if (filter === "all") return true;
-    if (filter === "desktop")
-      return (
-        getOperatingSystemDevice(
-          getOperatingSystemEnumFromString(session.os)
-        ) === Device.Desktop
-      );
-    if (filter === "mobile")
-      return (
-        getOperatingSystemDevice(
-          getOperatingSystemEnumFromString(session.os)
-        ) === Device.Mobile
-      );
+    if (filter === "desktop") return getOS(session.os) === Device.Desktop;
+    if (filter === "mobile") return getOS(session.os) === Device.Mobile;
     if (filter === "staff") return session.impersonation;
     if (filter === "oauth") return session.oauth !== null;
   };
@@ -185,16 +178,12 @@ const SessionsTab: React.FC<SessionsTabProps> = ({ user }) => {
                         }}
                         className="flex items-center justify-center"
                       >
-                        {getOperatingSystemDevice(
-                          getOperatingSystemEnumFromString(session.os)
-                        ) === Device.Desktop ? (
+                        {getOS(session.os) === Device.Desktop ? (
                           <HiOutlineDesktopComputer
                             size={20}
                             className="flex items-center justify-center"
                           />
-                        ) : getOperatingSystemDevice(
-                            getOperatingSystemEnumFromString(session.os)
-                          ) === Device.Mobile ? (
+                        ) : getOS(session.os) === Device.Mobile ? (
                           <HiOutlineDeviceMobile
                             size={20}
                             className="flex items-center justify-center"
