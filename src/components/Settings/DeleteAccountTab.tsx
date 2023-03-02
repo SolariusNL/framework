@@ -13,6 +13,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import {
   HiCheck,
+  HiExclamationCircle,
   HiInformationCircle,
   HiTrash,
   HiXCircle,
@@ -40,15 +41,29 @@ const DeleteAccountTab = ({ user }: DeleteAccountTabProps) => {
           description="This will delete your account and all of your data. This action cannot be undone."
           icon={<HiTrash />}
           right={
-            <Button
-              fullWidth
-              leftIcon={<HiTrash />}
-              color="red"
-              onClick={() => setOpened(true)}
-              disabled={user.role === "ADMIN"}
-            >
-              Delete Account
-            </Button>
+            <>
+              <Button
+                fullWidth
+                leftIcon={<HiTrash />}
+                color="red"
+                onClick={() => setOpened(true)}
+                disabled={user.role === "ADMIN"}
+              >
+                Delete Account
+              </Button>
+              <div className="flex items-start gap-2 mt-4">
+                <HiExclamationCircle size={20} className="text-red-600 flex-shrink-0" />
+                <div>
+                  <Text className="text-red-500 font-semibold">
+                    Disabled
+                  </Text>
+                  <Text color="dimmed" size="sm">
+                    Account deletion is temporarily disabled due to underlying
+                    issues with the database.
+                  </Text>
+                </div>
+              </div>
+            </>
           }
           actions={
             <div className="gap-2 flex flex-col">
