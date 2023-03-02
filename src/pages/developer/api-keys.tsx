@@ -6,7 +6,6 @@ import {
   ScrollArea,
   Stack,
   Table,
-  Tabs,
   Text,
   TextInput,
   Title,
@@ -18,12 +17,19 @@ import { openConfirmModal, openModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import { ApiKey, ApiKeyPermission } from "@prisma/client";
 import { getCookie } from "cookies-next";
+import { GetServerSidePropsContext } from "next";
 import { useEffect, useState } from "react";
 import { HiCheckCircle, HiEye, HiTrash } from "react-icons/hi";
+import ModernEmptyState from "../../components/ModernEmptyState";
 import apiKeyPermissions from "../../data/apiKeyPermissions";
-import ModernEmptyState from "../ModernEmptyState";
+import Developer from "../../layouts/DeveloperLayout";
+import authorizedRoute from "../../util/auth";
+import { User } from "../../util/prisma-types";
 
-const DeveloperKeys: React.FC = () => {
+interface DeveloperProps {
+  user: User;
+}
+const DeveloperAPIKeys: React.FC<DeveloperProps> = ({ user }) => {
   const [keys, setKeys] = useState<ApiKey[]>();
   const [createOpened, setCreateOpened] = useState(false);
   const { copy } = useClipboard();
@@ -152,36 +158,42 @@ const DeveloperKeys: React.FC = () => {
   );
 
   return (
-    <>
+    <Developer
+      user={user}
+      title="API Keys"
+      description="Manage your API keys and integrate your applications with Framework."
+    >
       {createKeyForm}
-      <Tabs.Panel value="keys">
-        <div className="flex items-center gap-4 mb-3">
-          <Title order={3}>Keys</Title>
-          <Button variant="subtle" onClick={() => setCreateOpened(true)}>
-            Create new key
-          </Button>
-        </div>
-        <Text color="dimmed" mb="md">
-          API keys allow you to access the Framework API programmatically. It is
-          a safe alternative to using your account session token, as it allows
-          fine-grained control over what your application can do.
-        </Text>
-        <ScrollArea>
-          <Table highlightOnHover>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Created at</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {keys && keys.length > 0 ? (
-                keys.map((key) => (
-                  <tr key={key.id}>
-                    <td className="font-semibold">{key.name}</td>
-                    <td>{new Date(key.createdAt).toLocaleDateString()}</td>
-                    <td className="flex items-center gap-2">
+      <div className="flex items-center gap-4 mb-3">
+        <Title order={3}>Keys</Title>
+        <Button variant="subtle" onClick={() => setCreateOpened(true)}>
+          Create new key
+        </Button>
+      </div>
+      <Text color="dimmed" mb="md">
+        API keys allow you to access the Framework API programmatically. It is a
+        safe alternative to using your account session token, as it allows
+        fine-grained control over what your application can do.
+      </Text>
+      <ScrollArea className="overflow-visible">
+        <Table highlightOnHover={keys && keys.length > 0}>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Created at</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {keys && keys.length > 0 ? (
+              keys.map((key) => (
+                <tr key={key.id}>
+                  <td className="font-semibold">{key.name}</td>
+                  <td className="text-gray-400 dark:text-gray-400/75">
+                    {new Date(key.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="flex items-center gap-2">
+                    <Tooltip label="View details">
                       <ActionIcon
                         onClick={() => {
                           openModal({
@@ -245,6 +257,16 @@ const DeveloperKeys: React.FC = () => {
                       >
                         <HiEye />
                       </ActionIcon>
+                    </Tooltip>
+                    <Tooltip
+                      label={
+                        <span>
+                          Delete key
+                          <br />
+                          Recommended if it is compromised or no longer in use
+                        </span>
+                      }
+                    >
                       <ActionIcon
                         color="red"
                         onClick={async () => {
@@ -274,25 +296,29 @@ const DeveloperKeys: React.FC = () => {
                       >
                         <HiTrash />
                       </ActionIcon>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={3}>
-                    <ModernEmptyState
-                      title="No keys"
-                      body="You don't have any keys yet."
-                    />
+                    </Tooltip>
                   </td>
                 </tr>
-              )}
-            </tbody>
-          </Table>
-        </ScrollArea>
-      </Tabs.Panel>
-    </>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={3}>
+                  <ModernEmptyState
+                    title="No keys"
+                    body="You don't have any keys yet."
+                  />
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </Table>
+      </ScrollArea>
+    </Developer>
   );
 };
 
-export default DeveloperKeys;
+export async function getServerSideProps(ctx: GetServerSidePropsContext) {
+  return await authorizedRoute(ctx, true, false);
+}
+
+export default DeveloperAPIKeys;
