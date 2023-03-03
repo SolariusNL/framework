@@ -464,7 +464,7 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
                             to help us provide you the best experience. By
                             continuing to use our services, you agree to our use
                             of cookies. Read our{" "}
-                            <Link href="/privacy">
+                            <Link href="/privacy" passHref>
                               <Anchor>Privacy Policy</Anchor>
                             </Link>{" "}
                             for more information regarding your privacy and how
