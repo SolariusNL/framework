@@ -1,4 +1,4 @@
-import { createHandler, Get } from "@storyofams/next-api-decorators";
+import { createHandler, Get, Param } from "@storyofams/next-api-decorators";
 import Authorized, { Account } from "../../../util/api/authorized";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
@@ -19,12 +19,36 @@ class CosmicRouter {
             id: true,
             name: true,
             iconUri: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
 
     return servers || [];
+  }
+
+  @Get("/my/servers/:id/stdout")
+  @Authorized()
+  public async getMyServerStdout(
+    @Account() user: User,
+    @Param("id") id: string
+  ) {
+    const logs = await prisma.nucleusStdout.findMany({
+      where: {
+        connectionId: id,
+        connection: {
+          game: {
+            authorId: user.id,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      take: 150,
+    });
+
+    return logs.map((log) => log.line);
   }
 }
 

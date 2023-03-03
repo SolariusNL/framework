@@ -1,7 +1,6 @@
 import {
   createHandler,
   Get,
-  Header,
   Param,
   Post,
   Query,
@@ -13,6 +12,7 @@ import Authorized, {
   Nucleus,
   NucleusAuthorized,
 } from "../../../util/api/authorized";
+import { COSMIC_SOCKETS } from "../../../util/constants";
 import logger from "../../../util/logger";
 import prisma from "../../../util/prisma";
 import type { NucleusKey, User } from "../../../util/prisma-types";
@@ -20,105 +20,6 @@ import { nonCurrentUserSelect } from "../../../util/prisma-types";
 import { RateLimitMiddleware } from "../../../util/rate-limit";
 
 class NucleusRouter {
-  @Post("/auth")
-  public async authorize(@Header("authorization") authorization: string) {
-    const match = await prisma.nucleusKey.findFirst({
-      where: {
-        key: authorization,
-      },
-      include: {
-        connection: {
-          include: {
-            game: true,
-          },
-        },
-      },
-    });
-
-    if (!match) {
-      return {
-        success: false,
-        message: "Invalid authorization key",
-      };
-    } else {
-      await prisma.connection.update({
-        where: {
-          id: match.connectionId,
-        },
-        data: {
-          online: true,
-        },
-      });
-
-      return {
-        success: true,
-        message: "Authorized with Nucleus",
-        game: {
-          id: match.connection.gameId,
-          name: match.connection.game.name,
-        },
-      };
-    }
-  }
-
-  @Post("/disconnect")
-  @NucleusAuthorized()
-  public async disconnect(@Header("authorization") authorization: string) {
-    const match = await prisma.nucleusKey.findFirst({
-      where: {
-        key: authorization,
-      },
-      include: {
-        connection: {
-          include: {
-            game: true,
-          },
-        },
-      },
-    });
-
-    if (!match) {
-      return {
-        success: false,
-        message: "Invalid authorization key",
-      };
-    }
-
-    await prisma.connection.update({
-      where: {
-        id: String(match.connectionId),
-      },
-      data: {
-        online: false,
-      },
-    });
-
-    const playing = await prisma.user.findMany({
-      where: {
-        playing: {
-          id: match.connection.gameId,
-        },
-      },
-    });
-
-    await prisma.game.update({
-      where: {
-        id: match.connection.gameId,
-      },
-      data: {
-        playingUsers: {
-          disconnect: playing.map((p) => ({ id: p.id })),
-        },
-        playing: 0,
-      },
-    });
-
-    return {
-      success: true,
-      message: "Disconnected",
-    };
-  }
-
   @Post("/:key/delete")
   public async delete(@Param("key") key: string, @Account() user: User) {
     if (!key) {
@@ -405,25 +306,13 @@ class NucleusRouter {
     const connections = await prisma.connection.findMany({
       where: {
         gameId: game.id,
+        online: true,
       },
     });
 
-    connections.forEach(async (conn) => {
-      const webhookAuth = await prisma.cosmicWebhookSignature.create({
-        data: {},
-      });
-
-      fetch(`http://${conn.ip}:${conn.port}/api/webhook/shutdown`, {
-        headers: {
-          "nucleus-signature": webhookAuth.secret,
-        },
-        method: "POST",
-      }).catch((e) => {
-        logger().warn(
-          `Failed to shut down connection ${conn.id} for game ${game.id}`
-        );
-      });
-    });
+    for (const conn of connections) {
+      COSMIC_SOCKETS.get(conn.id)!();
+    }
 
     return {
       success: true,

@@ -419,13 +419,14 @@ model NucleusAuthTicket {
 }
 
 model Connection {
-  id         String       @id @default(uuid())
-  game       Game         @relation("gameConnection", fields: [gameId], references: [id])
+  id         String          @id @default(uuid())
+  game       Game            @relation("gameConnection", fields: [gameId], references: [id])
   gameId     Int
   ip         String
   port       Int
-  online     Boolean      @default(false)
-  nucleusKey NucleusKey[] @relation("nucleusKeyConnection")
+  online     Boolean         @default(false)
+  nucleusKey NucleusKey[]    @relation("nucleusKeyConnection")
+  stdout     NucleusStdout[] @relation("nucleusStdout")
 }
 
 model Update {
@@ -915,4 +916,12 @@ model OAuthClient {
   createdAt     DateTime         @default(now())
   expiresAt     DateTime
   session       String           @default("")
+}
+
+model NucleusStdout {
+  id           String     @id @default(uuid())
+  createdAt    DateTime   @default(now())
+  line         String
+  connectionId String
+  connection   Connection @relation("nucleusStdout", fields: [connectionId], references: [id])
 }

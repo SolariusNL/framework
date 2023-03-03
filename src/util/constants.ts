@@ -5,5 +5,6 @@ const PREMIUM_PAYOUTS = {
   [PremiumSubscriptionType.PREMIUM_SIX_MONTHS]: 7200,
   [PremiumSubscriptionType.PREMIUM_ONE_YEAR]: 14400,
 };
+const COSMIC_SOCKETS = new Map<string, () => void>();
 
-export { PREMIUM_PAYOUTS };
+export { PREMIUM_PAYOUTS, COSMIC_SOCKETS };
