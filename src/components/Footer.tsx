@@ -182,7 +182,7 @@ const Footer = () => {
                 <Badge
                   color={
                     status === "up"
-                      ? "green"
+                      ? "blue"
                       : status === "problems"
                       ? "red"
                       : "blue"
@@ -191,9 +191,9 @@ const Footer = () => {
                   className="cursor-pointer mt-2"
                 >
                   {status === "up"
-                    ? "All systems operational"
+                    ? "Systems normal"
                     : status === "problems"
-                    ? "Some systems experiencing issues"
+                    ? "Experiencing issues"
                     : "..."}
                 </Badge>
               </a>
