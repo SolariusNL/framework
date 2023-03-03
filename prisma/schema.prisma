@@ -419,14 +419,18 @@ model NucleusAuthTicket {
 }
 
 model Connection {
-  id         String          @id @default(uuid())
-  game       Game            @relation("gameConnection", fields: [gameId], references: [id])
-  gameId     Int
-  ip         String
-  port       Int
-  online     Boolean         @default(false)
-  nucleusKey NucleusKey[]    @relation("nucleusKeyConnection")
-  stdout     NucleusStdout[] @relation("nucleusStdout")
+  id               String          @id @default(uuid())
+  game             Game            @relation("gameConnection", fields: [gameId], references: [id])
+  gameId           Int
+  ip               String
+  port             Int
+  online           Boolean         @default(false)
+  nucleusKey       NucleusKey[]    @relation("nucleusKeyConnection")
+  stdout           NucleusStdout[] @relation("nucleusStdout")
+  reportedMemoryGb Float?          @default(0)
+  reportedCores    Int?            @default(0)
+  reportedDiskGb   Float?          @default(0)
+  protocol         String          @default("P-1000")
 }
 
 model Update {

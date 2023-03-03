@@ -27,12 +27,14 @@ import {
   HiArrowRight,
   HiBeaker,
   HiChartBar,
+  HiChip,
   HiClipboard,
   HiCloud,
   HiCode,
   HiCubeTransparent,
   HiDotsVertical,
   HiExclamationCircle,
+  HiFolder,
   HiQuestionMarkCircle,
   HiRefresh,
   HiSearch,
@@ -372,7 +374,22 @@ const Servers: FC<ServersProps> = ({ user }) => {
                           {
                             tooltip: "Protocol version",
                             icon: HiCode,
-                            value: "r1001",
+                            value: selectedServer.protocol,
+                          },
+                          {
+                            tooltip: "CPU cores",
+                            icon: HiChip,
+                            value: `${selectedServer.reportedCores} cores`,
+                          },
+                          {
+                            tooltip: "Memory",
+                            icon: HiChip,
+                            value: `${selectedServer.reportedMemoryGb} GB`,
+                          },
+                          {
+                            tooltip: "Disk",
+                            icon: HiFolder,
+                            value: `${selectedServer.reportedDiskGb} GB`,
                           },
                         ].map(({ tooltip, icon: Icon, value }) => (
                           <Tooltip label={`${tooltip}: ${value}`} key={tooltip}>
@@ -590,7 +607,7 @@ const Servers: FC<ServersProps> = ({ user }) => {
                                       <div className="flex items-center gap-2">
                                         <HiCloud className="text-gray-500" />
                                         <Text size="sm" color="dimmed">
-                                          r1001
+                                          {s.protocol}
                                         </Text>
                                       </div>
                                     </Tooltip>

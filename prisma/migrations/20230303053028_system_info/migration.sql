@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Connection" ADD COLUMN     "reportedCores" INTEGER DEFAULT 0,
+ADD COLUMN     "reportedDiskGb" DOUBLE PRECISION DEFAULT 0,
+ADD COLUMN     "reportedMemoryGb" DOUBLE PRECISION DEFAULT 0;

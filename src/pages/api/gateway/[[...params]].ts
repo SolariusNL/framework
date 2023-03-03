@@ -90,6 +90,18 @@ class GatewayRouter {
               }
             }
           );
+
+          await prisma.connection.update({
+            where: {
+              id: key.connectionId,
+            },
+            data: {
+              reportedCores: socket.handshake.auth.system.cpuCores || 0,
+              reportedMemoryGb: socket.handshake.auth.system.memoryGb || 0,
+              reportedDiskGb: socket.handshake.auth.system.diskGb || 0,
+              protocol: socket.handshake.auth.protocol,
+            },
+          });
         }
         next();
       });
