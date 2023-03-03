@@ -48,7 +48,9 @@ const ConsoleOutput: React.FC<ConsoleOutputProps> = (props) => {
                   className: theme.colorScheme === "dark" ? "dark" : "",
                   children: (
                     <>
-                      <div className="bg-black rounded-md p-4">
+                      <div className="bg-black rounded-md p-4" style={{
+                        fontFamily: "Fira Code VF, monospace"
+                      }}>
                         <div
                           dangerouslySetInnerHTML={{
                             __html: s,

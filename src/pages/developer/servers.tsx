@@ -292,7 +292,7 @@ const Servers: FC<ServersProps> = ({ user }) => {
                                               title: "Connection test",
                                               children: (
                                                 <>
-                                                  <Text mb="md">
+                                                  <Text mb="md" size="sm" color="dimmed">
                                                     Connection to{" "}
                                                     {selectedServer.ip}:
                                                     {selectedServer.port} was
