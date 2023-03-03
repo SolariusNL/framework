@@ -13,6 +13,7 @@ import React from "react";
 import Celebration from "react-confetti";
 import Framework from "../components/Framework";
 import authorizedRoute from "../util/auth";
+import clsx from "../util/clsx";
 import { User } from "../util/prisma-types";
 
 export const useStyles = createStyles((theme) => ({
@@ -120,7 +121,7 @@ const Prizes: NextPage<PrizesProps> = ({ user }) => {
             )}
 
             <Button
-              className={classes.control}
+              className={clsx(classes.control, "transition-all")}
               fullWidth
               onClick={handlePrize}
               mt={24}
@@ -129,6 +130,7 @@ const Prizes: NextPage<PrizesProps> = ({ user }) => {
                   Date.now() - 24 * 60 * 60 * 1000 || !user.emailVerified
               }
               loading={loading}
+              size="lg"
             >
               Claim prize
             </Button>

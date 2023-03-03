@@ -1,6 +1,5 @@
 import { ActionIcon, Progress, Tooltip } from "@mantine/core";
 import { getCookie } from "cookies-next";
-import React from "react";
 import { HiThumbDown, HiThumbUp } from "react-icons/hi";
 import { useFrameworkUser } from "../../contexts/FrameworkUser";
 import { Game, NonUser } from "../../util/prisma-types";
