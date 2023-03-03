@@ -2,9 +2,9 @@ import { createHandler, Get, Res } from "@storyofams/next-api-decorators";
 import http from "http";
 import { NextApiResponse } from "next";
 import { Server } from "socket.io";
+import { EventEmitter } from "stream";
 import Authorized from "../../../util/api/authorized";
 import { getAccountFromSession } from "../../../util/auth";
-import { COSMIC_SOCKETS } from "../../../util/constants";
 import logger from "../../../util/logger";
 import prisma from "../../../util/prisma";
 
@@ -15,6 +15,23 @@ type NextApiResponseWithIO = NextApiResponse & {
     };
   };
 };
+
+const events = new EventEmitter();
+
+export const onSocketEvent = <T>(
+  event: Events,
+  callback: (payload: T) => void
+) => {
+  events.on(event, callback);
+};
+
+export const emitSocketEvent = <T>(event: Events, payload: T) => {
+  events.emit(event, payload);
+};
+
+export enum Events {
+  SHUTDOWN_COSMIC = "shutdown-cosmic",
+}
 
 class GatewayRouter {
   @Get("/initialize")
@@ -65,6 +82,14 @@ class GatewayRouter {
           }
 
           socket.data.cosmic = key;
+          onSocketEvent(
+            Events.SHUTDOWN_COSMIC,
+            async (payload: { connectionId: string }) => {
+              if (payload.connectionId === key.connectionId) {
+                socket.emit("@cosmic/shutdown", {});
+              }
+            }
+          );
         }
         next();
       });
@@ -130,11 +155,6 @@ class GatewayRouter {
               socket.data.cosmic.connection.id
           );
 
-          COSMIC_SOCKETS.set(
-            socket.data.cosmic.connection.id,
-            socket.disconnect
-          );
-
           socket.emit("@cosmic/hello", {
             game: {
               id: socket.data.cosmic.connection.gameId,
@@ -186,8 +206,6 @@ class GatewayRouter {
                 playing: 0,
               },
             });
-
-            COSMIC_SOCKETS.delete(socket.data.cosmic.connection.id);
           });
 
           socket.on("@cosmic/stdout", async (data) => {

@@ -12,7 +12,6 @@ import Authorized, {
   Nucleus,
   NucleusAuthorized,
 } from "../../../util/api/authorized";
-import { COSMIC_SOCKETS } from "../../../util/constants";
 import logger from "../../../util/logger";
 import prisma from "../../../util/prisma";
 import type { NucleusKey, User } from "../../../util/prisma-types";
@@ -310,9 +309,22 @@ class NucleusRouter {
       },
     });
 
-    for (const conn of connections) {
-      COSMIC_SOCKETS.get(conn.id)!();
-    }
+    connections.forEach(async (conn) => {
+      const webhookAuth = await prisma.cosmicWebhookSignature.create({
+        data: {},
+      });
+
+      fetch(`http://${conn.ip}:${conn.port}/api/webhook/shutdown`, {
+        headers: {
+          "nucleus-signature": webhookAuth.secret,
+        },
+        method: "POST",
+      }).catch((e) => {
+        logger().warn(
+          `Failed to shut down connection ${conn.id} for game ${game.id}`
+        );
+      });
+    });
 
     return {
       success: true,

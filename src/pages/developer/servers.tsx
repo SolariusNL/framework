@@ -2,7 +2,9 @@ import {
   ActionIcon,
   Avatar,
   Badge,
+  Divider,
   Loader,
+  Menu,
   NavLink,
   Select,
   Text,
@@ -11,6 +13,9 @@ import {
   Tooltip,
   useMantineTheme,
 } from "@mantine/core";
+import { openModal } from "@mantine/modals";
+import { showNotification } from "@mantine/notifications";
+import { Prism } from "@mantine/prism";
 import { Connection } from "@prisma/client";
 import Convert from "ansi-to-html";
 import { getCookie } from "cookies-next";
@@ -19,15 +24,23 @@ import { GetServerSideProps } from "next";
 import { FC, ReactNode, useEffect, useState } from "react";
 import {
   HiArrowLeft,
+  HiArrowRight,
+  HiBeaker,
   HiChartBar,
+  HiClipboard,
   HiCloud,
   HiCode,
   HiCubeTransparent,
+  HiDotsVertical,
   HiExclamationCircle,
+  HiQuestionMarkCircle,
+  HiRefresh,
   HiSearch,
   HiServer,
   HiSortAscending,
+  HiStop,
   HiWifi,
+  HiXCircle,
 } from "react-icons/hi";
 import { Section } from "../../components/Home/FriendsWidget";
 import ModernEmptyState from "../../components/ModernEmptyState";
@@ -37,6 +50,7 @@ import Developer from "../../layouts/DeveloperLayout";
 import SidebarTabNavigation from "../../layouts/SidebarTabNavigation";
 import authorizedRoute from "../../util/auth";
 import clsx from "../../util/clsx";
+import shutdownNucleus from "../../util/fetch/shutdownNucleus";
 import getMediaUrl from "../../util/get-media";
 import { Game, User } from "../../util/prisma-types";
 
@@ -199,29 +213,143 @@ const Servers: FC<ServersProps> = ({ user }) => {
                     }}
                   >
                     <div className="flex items-center justify-between">
-                      <div className="flex items-start gap-4">
-                        <ActionIcon
-                          onClick={() => {
-                            setSelectedServer(undefined);
-                            setShouldAnimateMainServerPanel(true);
-                          }}
-                          size="xl"
-                          className="rounded-full hover:border-zinc-500/50 transition-all"
-                          sx={{
-                            borderWidth: 1,
-                          }}
-                        >
-                          <HiArrowLeft />
-                        </ActionIcon>
+                      <div className="flex items-start gap-5">
+                        <div className="flex items-center md:gap-6 gap-2">
+                          <ActionIcon
+                            onClick={() => {
+                              setSelectedServer(undefined);
+                              setShouldAnimateMainServerPanel(true);
+                            }}
+                            size="xl"
+                            className="rounded-full hover:border-zinc-500/50 transition-all"
+                            sx={{
+                              borderWidth: 1,
+                            }}
+                          >
+                            <HiArrowLeft />
+                          </ActionIcon>
+                          <HiServer size={32} />
+                        </div>
                         <div>
                           <Title order={3}>{selectedServer.ip}</Title>
                           <Text color="dimmed">{selectedServer.port}</Text>
                         </div>
                       </div>
+                      <div className="flex items-center gap-4">
+                        {loading && <Loader size="sm" />}
+                        <Badge
+                          size="lg"
+                          radius="md"
+                          color={selectedServer.online ? "green" : "red"}
+                        >
+                          {selectedServer.online ? "Online" : "Offline"}
+                        </Badge>
+                        <Menu width={180}>
+                          <Menu.Target>
+                            <ActionIcon>
+                              <HiDotsVertical />
+                            </ActionIcon>
+                          </Menu.Target>
+                          <Menu.Dropdown>
+                            <Menu.Label>Actions</Menu.Label>
+                            <Menu.Item
+                              icon={<HiBeaker />}
+                              disabled={!selectedServer.online}
+                              onClick={async () => {
+                                await fetch(
+                                  `/api/nucleus/test/${selectedServer.gameId}`,
+                                  {
+                                    method: "GET",
+                                    headers: {
+                                      "Content-Type": "application/json",
+                                      Authorization: String(
+                                        getCookie(".frameworksession")
+                                      ),
+                                    },
+                                  }
+                                )
+                                  .then((res) => res.json())
+                                  .then((res) => {
+                                    if (res.success) {
+                                      openModal({
+                                        title: "Connection test",
+                                        children: (
+                                          <>
+                                            <Text mb="md">
+                                              Connection to {selectedServer.ip}:
+                                              {selectedServer.port} was
+                                              successful:
+                                            </Text>
+                                            <Prism language="json">
+                                              {JSON.stringify(
+                                                res.data,
+                                                null,
+                                                2
+                                              )}
+                                            </Prism>
+                                          </>
+                                        ),
+                                      });
+                                    } else {
+                                      showNotification({
+                                        title: "Connection Failed",
+                                        message: `Connection to ${selectedServer.ip}:${selectedServer.port} failed.`,
+                                        icon: <HiXCircle />,
+                                      });
+                                    }
+                                  });
+                              }}
+                            >
+                              Test connection
+                            </Menu.Item>
+                            <Menu.Item icon={<HiClipboard />}>
+                              Copy ID
+                            </Menu.Item>
+                            <Menu.Item
+                              icon={<HiRefresh />}
+                              onClick={() => {
+                                getServers().then(() => {
+                                  setSelectedServer(
+                                    servers?.find(
+                                      (s) => s.id === selectedServer.id
+                                    )
+                                  );
+                                });
+                              }}
+                            >
+                              Refresh
+                            </Menu.Item>
+                            <Menu.Divider />
+                            <Menu.Label>Danger zone</Menu.Label>
+                            <Menu.Item
+                              color="red"
+                              icon={<HiStop />}
+                              disabled={!selectedServer.online}
+                              onClick={async () =>
+                                await shutdownNucleus(
+                                  selectedServer.gameId
+                                ).then(() => {
+                                  setTimeout(() => {
+                                    getServers().then(() => {
+                                      setSelectedServer(
+                                        servers?.find(
+                                          (s) => s.id === selectedServer.id
+                                        )
+                                      );
+                                    });
+                                  }, 1500);
+                                })
+                              }
+                            >
+                              Stop server
+                            </Menu.Item>
+                          </Menu.Dropdown>
+                        </Menu>
+                      </div>
                     </div>
                     <div
                       className={clsx(
-                        "flex flex-col md:flex-row gap-4 md:gap-8 mt-4"
+                        "flex flex-col md:flex-row gap-4 md:gap-8 mt-6"
                       )}
                     >
                       <div className="flex flex-col w-full md:w-1/3 gap-2">
@@ -259,14 +387,43 @@ const Servers: FC<ServersProps> = ({ user }) => {
                             </div>
                           </Tooltip>
                         ))}
+                        <Divider mt="md" mb="md" />
+                        <NavLink
+                          icon={<HiArrowRight />}
+                          label="Console"
+                          description="Remotely administer your server."
+                          className="rounded-md"
+                        />
+                        <NavLink
+                          icon={<HiArrowRight />}
+                          label="Scripts"
+                          description="Hot deploy scripts to your server without restarting."
+                          className="rounded-md"
+                        />
+                        <NavLink
+                          icon={<HiArrowRight />}
+                          label="Plugins"
+                          description="Manage your server's plugins."
+                          className="rounded-md"
+                        />
                       </div>
                       <div className="flex flex-col w-full md:w-2/3 gap-2">
                         <ShadedCard>
-                          <Text color="dimmed" weight={500}>
-                            Console output
-                          </Text>
+                          <div className="flex items-center gap-2">
+                            <Text color="dimmed" weight={500}>
+                              Console output
+                            </Text>
+                            <Tooltip label="Console output is polled every 5 seconds to prevent DDoS attacks">
+                              <div>
+                                <HiQuestionMarkCircle
+                                  color={theme.colors.gray[5]}
+                                  className="items-center flex justify-center flex-shrink-0"
+                                />
+                              </div>
+                            </Tooltip>
+                          </div>
                           <div
-                            className="mt-4 bg-black p-4 rounded-md"
+                            className="mt-4 bg-black p-2 rounded-md"
                             style={{
                               height: 300,
                               flexDirection: "column-reverse",
@@ -278,11 +435,39 @@ const Servers: FC<ServersProps> = ({ user }) => {
                             <div className="flex gap-2 flex-col-reverse">
                               {stdout.map((s, i) => (
                                 <div
+                                  className="cursor-pointer hover:bg-zinc-900/75 text-sm p-2 rounded-md"
+                                  style={{
+                                    fontFamily: "Fira Code VF, monospace",
+                                  }}
+                                  onClick={() => {
+                                    openModal({
+                                      title: "Console line details",
+                                      className:
+                                        theme.colorScheme === "dark"
+                                          ? "dark"
+                                          : "",
+                                      children: (
+                                        <>
+                                          <div className="bg-black rounded-md p-4">
+                                            <div
+                                              dangerouslySetInnerHTML={{
+                                                __html: s,
+                                              }}
+                                            />
+                                          </div>
+                                        </>
+                                      ),
+                                    });
+                                  }}
                                   key={i}
-                                  className="text-sm"
                                   dangerouslySetInnerHTML={{ __html: s }}
                                 />
                               ))}
+                              {stdout.length === 0 && (
+                                <Text color="dimmed">
+                                  No console output available.
+                                </Text>
+                              )}
                             </div>
                           </div>
                         </ShadedCard>
