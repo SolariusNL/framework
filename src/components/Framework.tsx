@@ -567,7 +567,7 @@ const Framework = ({
                 >
                   <Megaphone />
                 </ThemeIcon>
-                <div className="flex justify-between items-center w-full">
+                <div className="flex justify-between items-start w-full flex-col gap-y-2 md:flex-row">
                   <Text weight={500} color="white">
                     Do you have a second to help us improve Framework? We&apos;d
                     love to hear your feedback!
