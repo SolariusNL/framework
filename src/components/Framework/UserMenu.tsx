@@ -1,19 +1,14 @@
 import {
   Avatar,
   Badge,
-  CloseButton,
   Group,
   HoverCard,
   Menu,
   Modal,
-  Popover,
-  Skeleton,
   Text,
-  Tooltip,
   UnstyledButton,
   useMantineColorScheme,
 } from "@mantine/core";
-import { showNotification } from "@mantine/notifications";
 import { getCookie } from "cookies-next";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -24,7 +19,6 @@ import {
   HiChevronRight,
   HiCloud,
   HiCog,
-  HiGift,
   HiInformationCircle,
   HiLibrary,
   HiLogout,
@@ -33,9 +27,7 @@ import {
   HiSun,
   HiUser,
   HiUsers,
-  HiXCircle,
 } from "react-icons/hi";
-import ReactNoSSR from "react-no-ssr";
 import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
 import useSidebar from "../../stores/useSidebar";
 import useUpdateDrawer from "../../stores/useUpdateDrawer";
@@ -44,7 +36,6 @@ import getMediaUrl from "../../util/get-media";
 import useMediaQuery from "../../util/media-query";
 import ClickToReveal from "../ClickToReveal";
 import { frameworkStyles } from "../Framework";
-import Rating from "../Rating";
 
 const headers = {
   "Content-Type": "application/json",
@@ -93,32 +84,6 @@ const UserMenu = ({
             setQrDataUrl(url);
           }
         );
-      });
-  };
-
-  const submitRating = async (stars: number) => {
-    setLoading(true);
-    await fetch("/api/users/@me/survey/" + stars, {
-      method: "POST",
-      headers,
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.success) {
-          if (stars !== 0) {
-            showNotification({
-              title: "Thank you",
-              message:
-                "Thank you for your feedback, it helps us make the platform great! You've been awarded 250T$ for your participation",
-              icon: <HiGift />,
-            });
-          }
-          setProperty("lastSurvey", new Date());
-          setProperty("tickets", user?.tickets! + 250);
-        } else {
-          setProperty("lastSurvey", new Date());
-          setLoading(false);
-        }
       });
   };
 
@@ -314,40 +279,7 @@ const UserMenu = ({
           </Text>
         </div>
       </Modal>
-      <ReactNoSSR onSSR={<Skeleton width={240} height={"100%"} />}>
-        <Popover
-          shadow="md"
-          opened={
-            (typeof window !== "undefined" &&
-              new Date(user?.lastSurvey as Date).getTime() <
-                Date.now() - 3 * 30 * 24 * 60 * 60 * 1000) ||
-            !user?.lastSurvey
-          }
-          closeOnClickOutside
-          onClose={() => submitRating(0)}
-        >
-          <Popover.Target>
-            <Dropdown />
-          </Popover.Target>
-          <Popover.Dropdown className="items-center justify-center flex flex-col">
-            <>
-              <div className="flex items-center gap-2 mb-2">
-                <Text size="sm">How are we doing?</Text>
-                <Tooltip label="Not now">
-                  <CloseButton
-                    size="sm"
-                    onClick={() => {
-                      setProperty("lastSurvey", new Date());
-                      submitRating(0);
-                    }}
-                  />
-                </Tooltip>
-              </div>
-              <Rating onRatingConfirmation={submitRating} loading={loading} />
-            </>
-          </Popover.Dropdown>
-        </Popover>
-      </ReactNoSSR>
+      <Dropdown />
     </>
   );
 };

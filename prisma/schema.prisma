@@ -938,4 +938,5 @@ model Survey {
   rating    Int
   user      User     @relation("userRatings", fields: [userId], references: [id])
   userId    Int
+  feedback  String?  @default("No feedback provided.")
 }

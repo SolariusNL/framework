@@ -11,10 +11,12 @@ import {
   createStyles,
   Drawer,
   Group,
+  Modal,
   NavLink,
   Popover,
   Stack,
   Text,
+  Textarea,
   ThemeIcon,
   Title,
   useMantineColorScheme,
@@ -26,9 +28,16 @@ import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import isElectron from "is-electron";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useContext, useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   HiArrowLeft,
+  HiArrowRight,
   HiChat,
   HiCheckCircle,
   HiCode,
@@ -48,7 +57,9 @@ import {
   HiUser,
   HiViewGrid,
 } from "react-icons/hi";
+import ReactNoSSR from "react-no-ssr";
 import SocketContext from "../contexts/Socket";
+import Megaphone from "../icons/Megaphone";
 import useAuthorizedUserStore from "../stores/useAuthorizedUser";
 import useExperimentsStore, {
   ExperimentId,
@@ -59,6 +70,7 @@ import { getIpcRenderer } from "../util/electron";
 import useMediaQuery from "../util/media-query";
 import { User } from "../util/prisma-types";
 import Chat from "./Chat";
+import Descriptive from "./Descriptive";
 import EmailReminder from "./EmailReminder";
 import Footer from "./Footer";
 import CurrencyMenu from "./Framework/CurrencyMenu";
@@ -68,6 +80,7 @@ import Search from "./Framework/Search";
 import UpdateDrawer from "./Framework/UpdateDrawer";
 import UserMenu from "./Framework/UserMenu";
 import FrameworkLogo from "./FrameworkLogo";
+import Rating from "./Rating";
 import TabNav from "./TabNav";
 
 interface FrameworkProps {
@@ -98,6 +111,42 @@ interface FrameworkProps {
   integratedTabs?: React.ReactNode;
   relative?: boolean;
 }
+
+const headers = {
+  "Content-Type": "application/json",
+  Authorization: String(getCookie(".frameworksession")),
+};
+
+const FeedbackBody = ({
+  value,
+  onChange,
+  ref,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  ref: any;
+}) => {
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      onChange(e.target.value);
+    },
+    [onChange]
+  );
+
+  return (
+    <Textarea
+      label="Feedback"
+      placeholder="What do you like about Framework? What could we improve?"
+      onChange={(e) => handleChange(e)}
+      defaultValue={value}
+      description="Your feedback is completely anonymous and will help us improve Framework."
+      mt="md"
+      autoFocus
+      key="feedback"
+      minRows={4}
+    />
+  );
+};
 
 export const frameworkStyles = createStyles((theme) => ({
   header: {
@@ -178,6 +227,37 @@ const Framework = ({
   const oldCookie = getCookie(".frameworksession.old");
   const [impersonating, setImpersonating] = useState(false);
   const [mobileSearchOpened, _setMobileSearchOpened] = useState(false);
+  const [ratingModal, setRatingModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [feedback, setFeedback] = useState("");
+  const [rating, setRating] = useState(0);
+
+  const submitRating = async (stars: number, feedback: string = "") => {
+    setLoading(true);
+    await fetch("/api/users/@me/survey/" + stars, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ feedback }),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.success) {
+          if (stars !== 0) {
+            showNotification({
+              title: "Thank you",
+              message:
+                "Thank you for your feedback, it helps us make the platform great! You've been awarded 250T$ for your participation",
+              icon: <HiGift />,
+            });
+          }
+          setProperty("lastSurvey", new Date());
+          setProperty("tickets", user?.tickets! + 250);
+        } else {
+          setProperty("lastSurvey", new Date());
+          setLoading(false);
+        }
+      });
+  };
 
   useEffect(() => {
     if (sidebarOpened) {
@@ -355,7 +435,12 @@ const Framework = ({
   const [searchPopoverOpen, setSearchPopoverOpen] = useState(false);
   const { flags } = useFlags();
   const { experiments } = useExperimentsStore();
-  const { user: userStore, setUser: setUserStore } = useAuthorizedUserStore()!;
+  const feedbackRef = useRef<HTMLInputElement>(null);
+  const {
+    user: userStore,
+    setUser: setUserStore,
+    setProperty,
+  } = useAuthorizedUserStore()!;
 
   React.useEffect(() => {
     setIsSSR(false);
@@ -459,6 +544,81 @@ const Framework = ({
           </Container>
         </Box>
       )}
+      <ReactNoSSR>
+        {typeof window !== "undefined" &&
+          new Date(userStore?.lastSurvey as Date).getTime() <
+            Date.now() - 7776000000 &&
+          !userStore?.lastSurvey && (
+            <Box p={12}>
+              <Container
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <ThemeIcon
+                  variant="gradient"
+                  gradient={{
+                    from: "blue",
+                    to: "purple",
+                  }}
+                  size={28}
+                  mr={16}
+                >
+                  <Megaphone />
+                </ThemeIcon>
+                <div className="flex justify-between items-center w-full">
+                  <Text weight={500} color="white">
+                    Do you have a second to help us improve Framework? We&apos;d
+                    love to hear your feedback!
+                  </Text>
+                  <a
+                    className="text-sky-500 hover:text-sky-600 dark:text-sky-400 no-underline cursor-pointer"
+                    onClick={() => setRatingModal(true)}
+                  >
+                    Yes, I&apos;d love to help &nbsp;&rarr;
+                  </a>
+                </div>
+              </Container>
+            </Box>
+          )}
+      </ReactNoSSR>
+      <Modal
+        title="Experience survey"
+        opened={ratingModal}
+        onClose={() => setRatingModal(false)}
+      >
+        <Text size="sm" color="dimmed" mb="md">
+          We only ask for this once every 3 months. We promise it won&apos;t
+          take long, and your feedback will help us improve Framework. Thanks!
+        </Text>
+        <Descriptive
+          required
+          title="Star rating"
+          description="How would you rate your experience with Framework?"
+        >
+          <Rating
+            value={rating}
+            onChange={(rating) => setRating(Number(rating))}
+          />
+        </Descriptive>
+        <FeedbackBody
+          value={feedback}
+          onChange={setFeedback}
+          ref={feedbackRef}
+        />
+        <div className="flex justify-end mt-6">
+          <Button
+            leftIcon={<HiArrowRight />}
+            onClick={() => {
+              setRatingModal(false);
+              submitRating(rating, feedback);
+            }}
+          >
+            Submit
+          </Button>
+        </div>
+      </Modal>
       <div
         className={classes.header}
         style={{

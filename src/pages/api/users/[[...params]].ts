@@ -1129,10 +1129,11 @@ class UserRouter {
   @Authorized()
   public async rateFramework(
     @Account() user: User,
-    @Param("stars") stars: number = 0
+    @Param("stars") stars: number = 0,
+    @Body() body: { feedback: string }
   ) {
     if (
-      new Date(user?.lastSurvey as Date).getTime()! !>
+      new Date(user?.lastSurvey as Date).getTime()!! >
       Date.now() - 3 * 30 * 24 * 60 * 60 * 1000
     ) {
       throw new UnauthorizedException("Cannot perform this action yet");
@@ -1140,6 +1141,10 @@ class UserRouter {
 
     if (stars > 5) {
       throw new BadRequestException("Invalid rating range");
+    }
+
+    if (body.feedback && body.feedback.length > 500) {
+      throw new BadRequestException("Feedback is too long");
     }
 
     await prisma.user.update({
@@ -1151,11 +1156,12 @@ class UserRouter {
           ratings: {
             create: {
               rating: Number(stars),
+              ...(body.feedback && { feedback: body.feedback }),
             },
           },
           tickets: {
             increment: 250,
-          }
+          },
         }),
         lastSurvey: new Date(),
       },
