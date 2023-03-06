@@ -156,6 +156,8 @@ model User {
   newsletterEmail            String?
   oauthApps                  OAuthApplication[]     @relation("oauthApplications")
   oauthClients               OAuthClient[]          @relation("oauthClients")
+  lastSurvey                 DateTime?
+  ratings                    Survey[]               @relation("userRatings")
 }
 
 model ConnectedAccount {
@@ -928,4 +930,12 @@ model NucleusStdout {
   line         String
   connectionId String
   connection   Connection @relation("nucleusStdout", fields: [connectionId], references: [id])
+}
+
+model Survey {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  rating    Int
+  user      User     @relation("userRatings", fields: [userId], references: [id])
+  userId    Int
 }

@@ -5,6 +5,7 @@ import {
 } from "@prisma/client";
 import { render } from "@react-email/render";
 import {
+  BadRequestException,
   Body,
   createHandler,
   Delete,
@@ -12,6 +13,7 @@ import {
   Param,
   Post,
   Query,
+  UnauthorizedException,
 } from "@storyofams/next-api-decorators";
 import sanitize from "sanitize-html";
 import AccountUpdate from "../../../../email/emails/account-update";
@@ -1115,6 +1117,47 @@ class UserRouter {
       },
       data: {
         premium: false,
+      },
+    });
+
+    return {
+      success: true,
+    };
+  }
+
+  @Post("/@me/survey/:stars")
+  @Authorized()
+  public async rateFramework(
+    @Account() user: User,
+    @Param("stars") stars: number = 0
+  ) {
+    if (
+      new Date(user?.lastSurvey as Date).getTime()! !>
+      Date.now() - 3 * 30 * 24 * 60 * 60 * 1000
+    ) {
+      throw new UnauthorizedException("Cannot perform this action yet");
+    }
+
+    if (stars > 5) {
+      throw new BadRequestException("Invalid rating range");
+    }
+
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        ...(stars > 0 && {
+          ratings: {
+            create: {
+              rating: Number(stars),
+            },
+          },
+          tickets: {
+            increment: 250,
+          }
+        }),
+        lastSurvey: new Date(),
       },
     });
 

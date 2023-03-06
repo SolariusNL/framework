@@ -1,24 +1,30 @@
 import {
   Avatar,
   Badge,
+  CloseButton,
   Group,
   HoverCard,
   Menu,
   Modal,
+  Popover,
+  Skeleton,
   Text,
+  Tooltip,
   UnstyledButton,
   useMantineColorScheme,
 } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import { getCookie } from "cookies-next";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { toDataURL } from "qrcode";
-import React, { useEffect } from "react";
+import React, { forwardRef, useEffect } from "react";
 import {
   HiChevronDown,
   HiChevronRight,
   HiCloud,
   HiCog,
+  HiGift,
   HiInformationCircle,
   HiLibrary,
   HiLogout,
@@ -27,7 +33,9 @@ import {
   HiSun,
   HiUser,
   HiUsers,
+  HiXCircle,
 } from "react-icons/hi";
+import ReactNoSSR from "react-no-ssr";
 import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
 import useSidebar from "../../stores/useSidebar";
 import useUpdateDrawer from "../../stores/useUpdateDrawer";
@@ -36,6 +44,12 @@ import getMediaUrl from "../../util/get-media";
 import useMediaQuery from "../../util/media-query";
 import ClickToReveal from "../ClickToReveal";
 import { frameworkStyles } from "../Framework";
+import Rating from "../Rating";
+
+const headers = {
+  "Content-Type": "application/json",
+  Authorization: String(getCookie(".frameworksession")),
+};
 
 const UserMenu = ({
   userMenuOpened,
@@ -55,14 +69,12 @@ const UserMenu = ({
   const mobile = useMediaQuery("768");
   const [quickLoginOpened, setQuickLoginOpened] = React.useState(false);
   const [qrDataUrl, setQrDataUrl] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
 
   const refetch = async () => {
     await fetch("/api/auth/loginqr/generate", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: String(getCookie(".frameworksession")),
-      },
+      headers,
     })
       .then((res) => res.json())
       .then((data) => {
@@ -84,47 +96,34 @@ const UserMenu = ({
       });
   };
 
-  useEffect(() => {
-    if (quickLoginOpened) {
-      refetch();
-      const interval = setInterval(() => {
-        refetch();
-      }, 30000);
-      return () => clearInterval(interval);
-    }
-  }, [quickLoginOpened]);
+  const submitRating = async (stars: number) => {
+    setLoading(true);
+    await fetch("/api/users/@me/survey/" + stars, {
+      method: "POST",
+      headers,
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.success) {
+          if (stars !== 0) {
+            showNotification({
+              title: "Thank you",
+              message:
+                "Thank you for your feedback, it helps us make the platform great! You've been awarded 250T$ for your participation",
+              icon: <HiGift />,
+            });
+          }
+          setProperty("lastSurvey", new Date());
+          setProperty("tickets", user?.tickets! + 250);
+        } else {
+          setProperty("lastSurvey", new Date());
+          setLoading(false);
+        }
+      });
+  };
 
-  return (
-    <>
-      <Modal
-        title="Quick login"
-        opened={quickLoginOpened}
-        onClose={() => setQuickLoginOpened(false)}
-      >
-        <Text size="sm" color="dimmed" mb="lg">
-          Scan this QR code with your camera to log in to Framework on another
-          device. Do not share this code with anyone. It allows anyone with this
-          code to log in to your account.
-        </Text>
-
-        <div className="flex justify-center p-4 flex-col items-center">
-          <ClickToReveal
-            hiddenType="blur"
-            blurStrength={8}
-            className="rounded-md mb-8 w-fit"
-          >
-            <Image
-              src={qrDataUrl}
-              width={256}
-              height={256}
-              className="rounded-md w-fit"
-            />
-          </ClickToReveal>
-          <Text size="sm" color="dimmed" align="center">
-            Click to reveal QR code
-          </Text>
-        </div>
-      </Modal>
+  const Dropdown = forwardRef<HTMLDivElement>((props, ref) => (
+    <div ref={ref!} {...props}>
       <Menu
         transition={right ? "pop" : "pop-top-right"}
         width={240}
@@ -271,6 +270,84 @@ const UserMenu = ({
           </Menu.Item>
         </Menu.Dropdown>
       </Menu>
+    </div>
+  ));
+
+  useEffect(() => {
+    if (quickLoginOpened) {
+      refetch();
+      const interval = setInterval(() => {
+        refetch();
+      }, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [quickLoginOpened]);
+
+  return (
+    <>
+      <Modal
+        title="Quick login"
+        opened={quickLoginOpened}
+        onClose={() => setQuickLoginOpened(false)}
+      >
+        <Text size="sm" color="dimmed" mb="lg">
+          Scan this QR code with your camera to log in to Framework on another
+          device. Do not share this code with anyone. It allows anyone with this
+          code to log in to your account.
+        </Text>
+
+        <div className="flex justify-center p-4 flex-col items-center">
+          <ClickToReveal
+            hiddenType="blur"
+            blurStrength={8}
+            className="rounded-md mb-8 w-fit"
+          >
+            <Image
+              src={qrDataUrl}
+              width={256}
+              height={256}
+              className="rounded-md w-fit"
+            />
+          </ClickToReveal>
+          <Text size="sm" color="dimmed" align="center">
+            Click to reveal QR code
+          </Text>
+        </div>
+      </Modal>
+      <ReactNoSSR onSSR={<Skeleton width={240} height={"100%"} />}>
+        <Popover
+          shadow="md"
+          opened={
+            (typeof window !== "undefined" &&
+              new Date(user?.lastSurvey as Date).getTime() <
+                Date.now() - 3 * 30 * 24 * 60 * 60 * 1000) ||
+            !user?.lastSurvey
+          }
+          closeOnClickOutside
+          onClose={() => submitRating(0)}
+        >
+          <Popover.Target>
+            <Dropdown />
+          </Popover.Target>
+          <Popover.Dropdown className="items-center justify-center flex flex-col">
+            <>
+              <div className="flex items-center gap-2 mb-2">
+                <Text size="sm">How are we doing?</Text>
+                <Tooltip label="Not now">
+                  <CloseButton
+                    size="sm"
+                    onClick={() => {
+                      setProperty("lastSurvey", new Date());
+                      submitRating(0);
+                    }}
+                  />
+                </Tooltip>
+              </div>
+              <Rating onRatingConfirmation={submitRating} loading={loading} />
+            </>
+          </Popover.Dropdown>
+        </Popover>
+      </ReactNoSSR>
     </>
   );
 };
