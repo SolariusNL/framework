@@ -1,24 +1,30 @@
 import {
   Avatar,
   Badge,
+  Button,
   Group,
   HoverCard,
   Menu,
   Modal,
   Text,
+  Textarea,
   UnstyledButton,
   useMantineColorScheme,
 } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import { getCookie } from "cookies-next";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { toDataURL } from "qrcode";
 import React, { forwardRef, useEffect } from "react";
 import {
+  HiArrowRight,
+  HiCheckCircle,
   HiChevronDown,
   HiChevronRight,
   HiCloud,
   HiCog,
+  HiGlobe,
   HiInformationCircle,
   HiLibrary,
   HiLogout,
@@ -35,7 +41,9 @@ import logout from "../../util/api/logout";
 import getMediaUrl from "../../util/get-media";
 import useMediaQuery from "../../util/media-query";
 import ClickToReveal from "../ClickToReveal";
+import Descriptive from "../Descriptive";
 import { frameworkStyles } from "../Framework";
+import Rating from "../Rating";
 
 const headers = {
   "Content-Type": "application/json",
@@ -61,6 +69,36 @@ const UserMenu = ({
   const [quickLoginOpened, setQuickLoginOpened] = React.useState(false);
   const [qrDataUrl, setQrDataUrl] = React.useState("");
   const [loading, setLoading] = React.useState(false);
+  const [ratingModal, setRatingModal] = React.useState(false);
+  const [feedback, setFeedback] = React.useState("");
+  const [rating, setRating] = React.useState(0);
+  const feedbackRef = React.useRef<HTMLTextAreaElement>(null);
+
+  const submitRating = async (stars: number, feedback: string = "") => {
+    setLoading(true);
+    await fetch("/api/users/@me/survey/" + stars, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ feedback }),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.success) {
+          if (stars !== 0) {
+            showNotification({
+              title: "Thank you",
+              message:
+                "Thank you for your feedback, we sincerely value your opinion and will use it to improve our platform.",
+              icon: <HiCheckCircle />,
+            });
+          }
+          setProperty("lastSurvey", new Date());
+        } else {
+          setProperty("lastSurvey", new Date());
+          setLoading(false);
+        }
+      });
+  };
 
   const refetch = async () => {
     await fetch("/api/auth/loginqr/generate", {
@@ -85,6 +123,42 @@ const UserMenu = ({
           }
         );
       });
+  };
+
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: String(getCookie(".frameworksession")),
+  };
+
+  const FeedbackBody = ({
+    value,
+    onChange,
+    ref,
+  }: {
+    value: string;
+    onChange: (value: string) => void;
+    ref: any;
+  }) => {
+    const handleChange = React.useCallback(
+      (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        onChange(e.target.value);
+      },
+      [onChange]
+    );
+
+    return (
+      <Textarea
+        label="Feedback"
+        placeholder="What do you like about Framework? What could we improve?"
+        onChange={(e) => handleChange(e)}
+        defaultValue={value}
+        description="Your feedback is completely anonymous and will help us improve Framework."
+        mt="md"
+        autoFocus
+        key="feedback"
+        minRows={4}
+      />
+    );
   };
 
   const Dropdown = forwardRef<HTMLDivElement>((props, ref) => (
@@ -210,6 +284,15 @@ const UserMenu = ({
           >
             What&apos;s new?
           </Menu.Item>
+          <Menu.Item
+            icon={<HiGlobe />}
+            onClick={() => {
+              setRatingModal(true);
+              if (mobile) setSidebarOpened(false);
+            }}
+          >
+            Feedback
+          </Menu.Item>
           <Menu.Divider />
           {user?.quickLoginEnabled && (
             <Menu.Item
@@ -277,6 +360,39 @@ const UserMenu = ({
           <Text size="sm" color="dimmed" align="center">
             Click to reveal QR code
           </Text>
+        </div>
+      </Modal>
+      <Modal
+        title="Experience survey"
+        opened={ratingModal}
+        onClose={() => setRatingModal(false)}
+      >
+        <Text size="sm" color="dimmed" mb="md">
+          We only ask for this once every 3 months. We promise it won&apos;t
+          take long, and your feedback will help us improve Framework. Thanks!
+        </Text>
+        <Descriptive
+          required
+          title="Star rating"
+          description="How would you rate your experience with Framework?"
+        >
+          <Rating value={rating} setValue={setRating} />
+        </Descriptive>
+        <FeedbackBody
+          value={feedback}
+          onChange={setFeedback}
+          ref={feedbackRef}
+        />
+        <div className="flex justify-end mt-6">
+          <Button
+            leftIcon={<HiArrowRight />}
+            onClick={() => {
+              setRatingModal(false);
+              submitRating(rating, feedback);
+            }}
+          >
+            Submit
+          </Button>
         </div>
       </Modal>
       <Dropdown />

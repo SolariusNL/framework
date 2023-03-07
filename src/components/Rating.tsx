@@ -11,14 +11,14 @@ type RatingProps = React.DetailedHTMLProps<
   loading?: boolean;
   value?: number;
   onChange?: (rating: number) => void;
+  setValue: React.Dispatch<React.SetStateAction<number>>;
 };
 
 const Rating: React.FC<RatingProps> = (props) => {
-  const [rating, setRating] = useState(props.value || 0);
   const [hover, setHover] = useState(0);
 
   return (
-    <div className="justify-center gap-1 flex" {...props}>
+    <div className="justify-center flex" {...props}>
       {[...Array(5)].map((star, index) => {
         index += 1;
         return (
@@ -29,22 +29,22 @@ const Rating: React.FC<RatingProps> = (props) => {
             <UnstyledButton
               type="button"
               className={clsx(
-                index <= (hover || rating)
+                index <= (hover || props.value || 0)
                   ? "dark:text-yellow-300 text-yellow-500"
                   : "text-gray-400/50",
                 "text-3xl",
                 props.loading &&
-                  index <= rating &&
+                  index <= props.value! &&
                   "dark:text-yellow-300/30 text-yellow-500/30 cursor-not-allowed"
               )}
               onClick={() => {
                 if (props.loading) return;
-                setRating(index);
+                props.setValue(index);
                 if (props.onRatingConfirmation)
                   props.onRatingConfirmation(index);
               }}
               onMouseEnter={() => setHover(index)}
-              onMouseLeave={() => setHover(rating)}
+              onMouseLeave={() => setHover(props.value || 0)}
             >
               <HiStar />
             </UnstyledButton>

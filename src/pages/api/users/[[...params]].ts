@@ -13,7 +13,6 @@ import {
   Param,
   Post,
   Query,
-  UnauthorizedException,
 } from "@storyofams/next-api-decorators";
 import sanitize from "sanitize-html";
 import AccountUpdate from "../../../../email/emails/account-update";
@@ -1132,13 +1131,6 @@ class UserRouter {
     @Param("stars") stars: number = 0,
     @Body() body: { feedback: string }
   ) {
-    if (
-      new Date(user?.lastSurvey as Date).getTime()!! >
-      Date.now() - 3 * 30 * 24 * 60 * 60 * 1000
-    ) {
-      throw new UnauthorizedException("Cannot perform this action yet");
-    }
-
     if (stars > 5) {
       throw new BadRequestException("Invalid rating range");
     }
@@ -1158,9 +1150,6 @@ class UserRouter {
               rating: Number(stars),
               ...(body.feedback && { feedback: body.feedback }),
             },
-          },
-          tickets: {
-            increment: 250,
           },
         }),
         lastSurvey: new Date(),
