@@ -26,7 +26,7 @@ import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import isElectron from "is-electron";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   HiArrowLeft,
   HiChat,
@@ -355,7 +355,6 @@ const Framework = ({
   const [searchPopoverOpen, setSearchPopoverOpen] = useState(false);
   const { flags } = useFlags();
   const { experiments } = useExperimentsStore();
-  const feedbackRef = useRef<HTMLInputElement>(null);
   const {
     user: userStore,
     setUser: setUserStore,
@@ -464,46 +463,6 @@ const Framework = ({
           </Container>
         </Box>
       )}
-      {/* <ReactNoSSR>
-        {typeof window !== "undefined" &&
-          new Date(userStore?.lastSurvey as Date).getTime() <
-            Date.now() - 7776000000 &&
-          !userStore?.lastSurvey &&
-          Math.floor(Math.random() * 45) === 1 && (
-            <Box p={12}>
-              <Container
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                <ThemeIcon
-                  variant="gradient"
-                  gradient={{
-                    from: "blue",
-                    to: "purple",
-                  }}
-                  size={28}
-                  mr={16}
-                >
-                  <Megaphone />
-                </ThemeIcon>
-                <div className="flex justify-between items-start w-full flex-col gap-y-2 md:flex-row">
-                  <Text weight={500} color="white">
-                    Do you have a second to help us improve Framework? We&apos;d
-                    love to hear your feedback!
-                  </Text>
-                  <a
-                    className="text-sky-500 hover:text-sky-600 dark:text-sky-400 no-underline cursor-pointer"
-                    onClick={() => setRatingModal(true)}
-                  >
-                    Yes, I&apos;d love to help &nbsp;&rarr;
-                  </a>
-                </div>
-              </Container>
-            </Box>
-          )}
-      </ReactNoSSR> */}
       <div
         className={classes.header}
         style={{
