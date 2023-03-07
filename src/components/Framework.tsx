@@ -548,7 +548,8 @@ const Framework = ({
         {typeof window !== "undefined" &&
           new Date(userStore?.lastSurvey as Date).getTime() <
             Date.now() - 7776000000 &&
-          !userStore?.lastSurvey && (
+          !userStore?.lastSurvey &&
+          Math.floor(Math.random() * 100) === 1 && (
             <Box p={12}>
               <Container
                 sx={{
