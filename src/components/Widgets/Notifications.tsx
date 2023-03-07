@@ -100,8 +100,25 @@ const Notifications: React.FC = () => {
                   control: "font-semibold text-sm",
                 }}
               >
-                <Text color="dimmed" size="sm">
-                  {notification.message}
+                <Text color="dimmed" size="sm" className="break-words">
+                  {notification.message.split(" ").map((word) => {
+                    if (word.startsWith("http")) {
+                      return (
+                        <>
+                          <Anchor
+                            key={word}
+                            href={word}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {word}
+                          </Anchor>{" "}
+                        </>
+                      );
+                    } else {
+                      return word + " ";
+                    }
+                  })}
                 </Text>
               </Spoiler>
               <Text size="xs" mt={4} color="dimmed">

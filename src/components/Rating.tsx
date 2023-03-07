@@ -13,9 +13,14 @@ type RatingProps = React.DetailedHTMLProps<
   value?: number;
   onChange?: (rating: number) => void;
   setValue: React.Dispatch<React.SetStateAction<number>>;
+  editable?: boolean;
 };
 
-const Rating: React.FC<RatingProps> = (props) => {
+const Rating: React.FC<RatingProps> = ({
+  editable = true,
+  loading = false,
+  ...props
+}) => {
   const [hover, setHover] = useState(0);
 
   return (
@@ -24,8 +29,13 @@ const Rating: React.FC<RatingProps> = (props) => {
         index += 1;
         return (
           <Tooltip
-            label={`Rate experience ${index} star${index > 1 ? "s" : ""}`}
+            label={`${
+              editable
+                ? `Rate experience ${index} star${index > 1 ? "s" : ""}`
+                : `Rated ${index} star${index > 1 ? "s" : ""}`
+            }`}
             key={index}
+            openDelay={200}
           >
             <motion.div
               animate={{
@@ -44,13 +54,13 @@ const Rating: React.FC<RatingProps> = (props) => {
                     ? "dark:text-yellow-300 text-yellow-500"
                     : "text-gray-400/50",
                   "text-3xl",
-                  props.loading &&
+                  loading &&
                     index <= props.value! &&
                     "dark:text-yellow-300/30 text-yellow-500/30 cursor-not-allowed",
                   "transition-colors duration-200 ease-in-out"
                 )}
                 onClick={() => {
-                  if (props.loading) return;
+                  if (loading) return;
                   props.setValue(index);
                   if (props.onRatingConfirmation)
                     props.onRatingConfirmation(index);
