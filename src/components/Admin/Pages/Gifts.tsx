@@ -117,13 +117,6 @@ const Gifts: React.FC = () => {
     <>
       <div className="mb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="flex flex-col md:flex-row md:items-center md:gap-4 gap-3 items-start">
-          <Pagination
-            total={pages}
-            page={activePage}
-            onChange={setActivePage}
-            radius="md"
-            className="md:mr-4"
-          />
           <Select
             icon={<HiFilter />}
             value={filter}
@@ -180,6 +173,13 @@ const Gifts: React.FC = () => {
           </Menu.Dropdown>
         </Menu>
       </div>
+      <Pagination
+            total={pages}
+            page={activePage}
+            onChange={setActivePage}
+            radius="md"
+            
+          />
       <ScrollArea>
         <Table mt="lg" striped>
           <thead>
