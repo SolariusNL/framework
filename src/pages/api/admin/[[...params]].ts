@@ -12,8 +12,10 @@ import {
 import { render } from "@react-email/render";
 import { setEnvVar } from "@soodam.re/env-utils";
 import {
+  BadRequestException,
   Body,
   createHandler,
+  Delete,
   Get,
   Param,
   Post,
@@ -1865,6 +1867,42 @@ class AdminRouter {
     return {
       success: true,
       gift,
+    };
+  }
+
+  @Delete("/gifts/:id")
+  @AdminAuthorized()
+  public async deleteGiftCode(@Param("id") id: string, @Account() admin: User) {
+    const res = await prisma.giftCode.findFirst({
+      where: {
+        id,
+      },
+    });
+
+    if (!res) {
+      throw new BadRequestException("Invalid code");
+    }
+
+    await prisma.giftCode.delete({
+      where: {
+        id,
+      },
+    });
+
+    await prisma.adminActivityLog.create({
+      data: {
+        user: {
+          connect: {
+            id: admin.id,
+          },
+        },
+        activity: `Deleted gift code with grant ${res.grant}`,
+        importance: 2,
+      },
+    });
+
+    return {
+      success: true,
     };
   }
 }

@@ -1,4 +1,5 @@
 import {
+  ActionIcon,
   Avatar,
   Badge,
   Button,
@@ -14,11 +15,12 @@ import { AdminPermission, GiftCode, GiftCodeGrant } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
 import {
-  HiCheck,
+  HiCheckCircle,
   HiCreditCard,
   HiFilter,
   HiStar,
   HiTicket,
+  HiTrash,
   HiXCircle
 } from "react-icons/hi";
 import giftGrants from "../../../data/giftGrants";
@@ -72,7 +74,7 @@ const Gifts: React.FC = () => {
       showNotification({
         title: "Gift code created",
         message: "Gift code created successfully",
-        icon: <HiCheck />,
+        icon: <HiCheckCircle />,
       });
     } else {
       showNotification({
@@ -168,6 +170,7 @@ const Gifts: React.FC = () => {
               <th>Redeemed by</th>
               <th>Created by</th>
               <th>Created</th>
+              <th></th>
             </tr>
           </thead>
           <tbody className="whitespace-nowrap">
@@ -213,11 +216,47 @@ const Gifts: React.FC = () => {
                       day: "numeric",
                     })}
                   </td>
+                  <td>
+                    <ActionIcon
+                      disabled={
+                        !user?.adminPermissions.includes(
+                          AdminPermission.GENERATE_GIFTS
+                        )
+                      }
+                      color="red"
+                      onClick={async () => {
+                        await fetch(`/api/admin/gifts/${code.id}`, {
+                          method: "DELETE",
+                          headers,
+                        })
+                          .then((res) => res.json())
+                          .then(async (res) => {
+                            if (res.success) {
+                              showNotification({
+                                title: "Deleted key",
+                                message: "Successfully deleted gift code.",
+                                icon: <HiCheckCircle />,
+                              });
+
+                              await fetchCodes();
+                            } else {
+                              showNotification({
+                                title: "Error",
+                                message: "Failed to delete gift code.",
+                                icon: <HiXCircle />,
+                              });
+                            }
+                          });
+                      }}
+                    >
+                      <HiTrash />
+                    </ActionIcon>
+                  </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={5}>
+                <td colSpan={6}>
                   <ModernEmptyState
                     title="No gift codes"
                     body="No gift codes could be found with the current filter and sort."
