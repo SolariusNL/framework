@@ -1816,6 +1816,7 @@ class AdminRouter {
       take: 50,
       include: {
         redeemedBy: nonCurrentUserSelect,
+        createdBy: nonCurrentUserSelect,
       },
     });
 
@@ -1841,6 +1842,11 @@ class AdminRouter {
         grant,
         redeemedAt: new Date(),
         code,
+        createdBy: {
+          connect: {
+            id: admin.id,
+          },
+        },
       },
     });
 

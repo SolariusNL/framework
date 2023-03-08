@@ -12,7 +12,7 @@ import {
   Table,
   Tabs,
   Text,
-  Title,
+  Title
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
@@ -667,6 +667,10 @@ const UserView = ({ user }: UserViewProps) => {
                           [
                             AdminPermission.IMPERSONATE_USERS,
                             "impersonate users",
+                          ],
+                          [
+                            AdminPermission.GENERATE_GIFTS,
+                            "generate gift codes",
                           ],
                         ].find((i) => i[0] === permission)![1]) as string
                     }

@@ -7,10 +7,10 @@ import {
   ScrollArea,
   Select,
   Table,
-  Text,
+  Text
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
-import { GiftCode, GiftCodeGrant } from "@prisma/client";
+import { AdminPermission, GiftCode, GiftCodeGrant } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
 import {
@@ -19,16 +19,20 @@ import {
   HiFilter,
   HiStar,
   HiTicket,
-  HiXCircle,
+  HiXCircle
 } from "react-icons/hi";
 import giftGrants from "../../../data/giftGrants";
+import useAuthorizedUserStore from "../../../stores/useAuthorizedUser";
 import getMediaUrl from "../../../util/get-media";
 import { NonUser } from "../../../util/prisma-types";
 import ModernEmptyState from "../../ModernEmptyState";
 
 type Filter = "unused" | "used" | "all" | "premium" | "tickets";
 type Sort = "oldest" | "newest";
-type GiftCodeWithRedeemer = GiftCode & { redeemedBy: NonUser };
+type GiftCodeWithRedeemer = GiftCode & {
+  redeemedBy: NonUser;
+  createdBy: NonUser;
+};
 
 const Gifts: React.FC = () => {
   const [filter, setFilter] = useState<Filter>("all");
@@ -36,6 +40,7 @@ const Gifts: React.FC = () => {
   const [pages, setPages] = useState(1);
   const [activePage, setActivePage] = useState(1);
   const [codes, setCodes] = useState<GiftCodeWithRedeemer[]>();
+  const { user } = useAuthorizedUserStore()!;
 
   const headers = {
     "Content-Type": "application/json",
@@ -123,9 +128,17 @@ const Gifts: React.FC = () => {
         </div>
         <Menu>
           <Menu.Target>
-            <Button variant="subtle" leftIcon={<HiCreditCard />}>
-              Create gift code
-            </Button>
+            {user?.adminPermissions?.includes(
+              AdminPermission.GENERATE_GIFTS
+            ) ? (
+              <Button variant="subtle" leftIcon={<HiCreditCard />}>
+                Create gift code
+              </Button>
+            ) : (
+              <Text size="sm" color="dimmed">
+                No permission.
+              </Text>
+            )}
           </Menu.Target>
           <Menu.Dropdown>
             {Object.keys(GiftCodeGrant).map((grant) => (
@@ -153,6 +166,7 @@ const Gifts: React.FC = () => {
               <th>Code</th>
               <th>Value</th>
               <th>Redeemed by</th>
+              <th>Created by</th>
               <th>Created</th>
             </tr>
           </thead>
@@ -179,6 +193,20 @@ const Gifts: React.FC = () => {
                     )}
                   </td>
                   <td>
+                    {code.createdBy ? (
+                      <div className="flex items-center gap-2">
+                        <Avatar
+                          src={getMediaUrl(code.createdBy.avatarUri)}
+                          radius={999}
+                          size={24}
+                        />
+                        <Text color="dimmed">{code.createdBy.username}</Text>
+                      </div>
+                    ) : (
+                      <Text color="dimmed">No data available</Text>
+                    )}
+                  </td>
+                  <td>
                     {new Date(code.createdAt).toLocaleDateString("en-US", {
                       year: "numeric",
                       month: "long",
@@ -189,7 +217,7 @@ const Gifts: React.FC = () => {
               ))
             ) : (
               <tr>
-                <td colSpan={4}>
+                <td colSpan={5}>
                   <ModernEmptyState
                     title="No gift codes"
                     body="No gift codes could be found with the current filter and sort."
