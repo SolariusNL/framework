@@ -77,7 +77,7 @@ const TeamsViewProvider: React.FC<TeamsViewProps> = ({
           {tabs.map((t) => (
             <Link href={`/teams/t/${team.slug}${t.href}`} key={t.name}>
               <NavLink
-                className="rounded-lg"
+                className="rounded-md"
                 label={t.name}
                 icon={t.icon}
                 active={t.name.toLowerCase() === active}
@@ -87,7 +87,7 @@ const TeamsViewProvider: React.FC<TeamsViewProps> = ({
           {team.ownerId === user.id && (
             <Link href={`/teams/t/${team.slug}/settings`}>
               <NavLink
-                className="rounded-lg"
+                className="rounded-md"
                 label="Settings"
                 icon={<HiCog />}
                 active={"settings" === active}

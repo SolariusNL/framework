@@ -174,7 +174,7 @@ const Settings: NextPage<SettingsProps> = ({ user, activePage }) => {
                   icon={tab.icon}
                   color={tab.color}
                   label={tab.label}
-                  className="rounded-lg -mb-1"
+                  className="rounded-md -mb-1"
                   active={active === tab.value}
                   component="a"
                   {...(active === tab.value && {

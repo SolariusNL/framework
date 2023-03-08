@@ -13,6 +13,11 @@ module.exports = {
       typography: (theme) => ({
         DEFAULT: {},
       }),
+      borderRadius: {
+        md: "8px",
+        lg: "12px",
+        xl: "16px",
+      },
     },
   },
   plugins: [

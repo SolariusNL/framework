@@ -38,7 +38,7 @@ IntegratedTabs.Tab = (props) => {
     <Link href={props.href} passHref>
       <a
         className={clsx(
-          "px-3 py-2 font-medium text-sm rounded-lg",
+          "px-3 py-2 font-medium text-sm rounded-md",
           "no-underline flex items-center gap-2",
           props.right ? "md:!ml-auto" : undefined
         )}
