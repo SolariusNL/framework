@@ -1814,8 +1814,8 @@ class AdminRouter {
       orderBy: {
         createdAt: sort === "newest" ? "desc" : "asc",
       },
-      skip: (page - 1) * 10,
-      take: 10,
+      skip: (page - 1) * 25,
+      take: 25,
       include: {
         redeemedBy: nonCurrentUserSelect,
         createdBy: nonCurrentUserSelect,
@@ -1828,7 +1828,7 @@ class AdminRouter {
 
     return {
       codes,
-      pages: Math.ceil(count / 10),
+      pages: Math.ceil(count / 25),
     };
   }
 
