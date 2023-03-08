@@ -1831,13 +1831,28 @@ class AdminRouter {
 
   @Post("/gifts/:grant")
   @AdminAuthorized()
-  public async createGiftCode(@Param("grant") grant: GiftCodeGrant) {
+  public async createGiftCode(
+    @Param("grant") grant: GiftCodeGrant,
+    @Account() admin: User
+  ) {
     const code = generateGiftCode();
     const gift = await prisma.giftCode.create({
       data: {
         grant,
         redeemedAt: new Date(),
         code,
+      },
+    });
+
+    await prisma.adminActivityLog.create({
+      data: {
+        user: {
+          connect: {
+            id: Number(admin.id),
+          },
+        },
+        activity: `Created a gift code with grant ${grant}`,
+        importance: 2,
       },
     });
 
