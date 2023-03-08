@@ -7,7 +7,7 @@ import {
   PremiumSubscriptionType,
   Prisma,
   PunishmentType,
-  Role,
+  Role
 } from "@prisma/client";
 import { render } from "@react-email/render";
 import { setEnvVar } from "@soodam.re/env-utils";
@@ -20,7 +20,7 @@ import {
   Param,
   Post,
   Query,
-  Request,
+  Request
 } from "@storyofams/next-api-decorators";
 import { promises as fs, readFileSync } from "fs";
 import type { NextApiRequest } from "next";
@@ -35,7 +35,7 @@ import type { ReportCategory } from "../../../components/ReportUser";
 import { AdminAction } from "../../../util/admin-action";
 import Authorized, {
   Account,
-  AdminAuthorized,
+  AdminAuthorized
 } from "../../../util/api/authorized";
 import { PREMIUM_PAYOUTS } from "../../../util/constants";
 import generateGiftCode from "../../../util/gift-codes";
@@ -47,7 +47,7 @@ import type { User } from "../../../util/prisma-types";
 import {
   articleSelect,
   nonCurrentUserSelect,
-  userSelect,
+  userSelect
 } from "../../../util/prisma-types";
 import { RateLimitMiddleware } from "../../../util/rate-limit";
 import { getOperatingSystem } from "../../../util/ua";
@@ -1814,8 +1814,8 @@ class AdminRouter {
       orderBy: {
         createdAt: sort === "newest" ? "desc" : "asc",
       },
-      skip: (page - 1) * 50,
-      take: 50,
+      skip: (page - 1) * 10,
+      take: 10,
       include: {
         redeemedBy: nonCurrentUserSelect,
         createdBy: nonCurrentUserSelect,
@@ -1828,7 +1828,7 @@ class AdminRouter {
 
     return {
       codes,
-      pages: Math.ceil(count / 50),
+      pages: Math.ceil(count / 10),
     };
   }
 

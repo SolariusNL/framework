@@ -3,6 +3,7 @@ import {
   Avatar,
   Badge,
   Button,
+  Code,
   Menu,
   Pagination,
   ScrollArea,
@@ -10,6 +11,7 @@ import {
   Table,
   Text
 } from "@mantine/core";
+import { openModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import { AdminPermission, GiftCode, GiftCodeGrant } from "@prisma/client";
 import { getCookie } from "cookies-next";
@@ -27,6 +29,7 @@ import giftGrants from "../../../data/giftGrants";
 import useAuthorizedUserStore from "../../../stores/useAuthorizedUser";
 import getMediaUrl from "../../../util/get-media";
 import { NonUser } from "../../../util/prisma-types";
+import Copy from "../../Copy";
 import ModernEmptyState from "../../ModernEmptyState";
 
 type Filter = "unused" | "used" | "all" | "premium" | "tickets";
@@ -61,6 +64,9 @@ const Gifts: React.FC = () => {
     const data = await res.json();
     setCodes(data.codes);
     setPages(data.pages);
+    if (activePage > data.pages) {
+      setActivePage(1);
+    }
   };
 
   const createCode = async (grant: GiftCodeGrant) => {
@@ -76,6 +82,22 @@ const Gifts: React.FC = () => {
         message: "Gift code created successfully",
         icon: <HiCheckCircle />,
       });
+
+      fetchCodes();
+      openModal({
+        title: "Key",
+        children: (
+          <>
+            <Text size="sm" color="dimmed">
+              Gift code created successfully. Here&apos;s the code:
+            </Text>
+            <div className="mt-2 flex items-center justify-center gap-2">
+              <Copy value={data.gift.code} />
+              <Code className="text-xl">{data.gift.code}</Code>
+            </div>
+          </>
+        ),
+      });
     } else {
       showNotification({
         title: "Error creating gift code",
@@ -85,9 +107,6 @@ const Gifts: React.FC = () => {
         icon: <HiXCircle />,
       });
     }
-
-    fetchCodes();
-    setActivePage(1);
   };
 
   useEffect(() => {
