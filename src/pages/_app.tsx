@@ -10,6 +10,7 @@ import {
   ColorSchemeProvider,
   Dialog,
   Divider,
+  Global,
   Group,
   MantineProvider,
   MantineTheme,
@@ -55,15 +56,16 @@ import "../styles/framework.css";
 import "../styles/tw.css";
 import logout from "../util/api/logout";
 
-const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
+const Framework = (
+  props: AppProps & { colorScheme: ColorScheme; highContrast: boolean }
+) => {
   const { Component, pageProps } = props;
   const [colorScheme, setColorScheme] = useState<ColorScheme>(
     props.colorScheme
   );
+  const [highContrast, setHighContrast] = useState<boolean>(props.highContrast);
   const [loading, setLoading] = useState(false);
   const { opened: ratingModal, setOpened: setRatingModal } = useFeedback();
-  const [feedback, setFeedback] = useState("");
-  const [rating, setRating] = useState(0);
   const [seen, setSeen] = useState(false);
 
   const submitRating = async (stars: number, feedback: string = "") => {
@@ -197,6 +199,7 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
               colorScheme,
               fontFamily: "Inter var",
               defaultRadius: "md",
+              fontFamilyMonospace: "Fira Code VF",
               components: {
                 Button: {
                   styles: (theme, params: ButtonStylesParams) => ({
@@ -337,6 +340,15 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
               },
             }}
           >
+            <Global
+              styles={(theme) => ({
+                ...(highContrast && {
+                  "*": {
+                    filter: "invert(1) !important",
+                  },
+                }),
+              })}
+            />
             <ModalsProvider>
               <UserInformationWrapper>
                 <SocketProvider>
@@ -725,6 +737,7 @@ const Framework = (props: AppProps & { colorScheme: ColorScheme }) => {
 
 Framework.getInitialProps = ({ ctx }: { ctx: GetServerSidePropsContext }) => ({
   colorScheme: getCookie("mantine-color-scheme", ctx) || "dark",
+  highContrast: getCookie("mantine-high-contrast", ctx),
 });
 
 export default Framework;
