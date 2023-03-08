@@ -1,6 +1,7 @@
 import {
   AdminPermission,
   EmployeeRole,
+  GiftCodeGrant,
   NotificationType,
   OperatingSystem,
   PremiumSubscriptionType,
@@ -1759,6 +1760,94 @@ class AdminRouter {
         },
       },
     });
+  }
+
+  @Get("/gifts")
+  @AdminAuthorized()
+  public async getGifts(
+    @Query("filter")
+    filter: "unused" | "used" | "all" | "premium" | "tickets" = "all",
+    @Query("sort") sort: "newest" | "oldest" = "newest",
+    @Query("page") page = 1
+  ) {
+    const where: Prisma.GiftCodeWhereInput = {
+      ...(filter === "unused"
+        ? {
+            redeemed: false,
+          }
+        : {}),
+      ...(filter === "used"
+        ? {
+            redeemed: true,
+          }
+        : {}),
+      ...(filter === "premium"
+        ? {
+            grant: {
+              in: [
+                GiftCodeGrant.PREMIUM_ONE_MONTH,
+                GiftCodeGrant.PREMIUM_SIX_MONTHS,
+                GiftCodeGrant.PREMIUM_ONE_YEAR,
+              ],
+            },
+          }
+        : {}),
+      ...(filter === "tickets"
+        ? {
+            grant: {
+              in: [
+                GiftCodeGrant.THOUSAND_TICKETS,
+                GiftCodeGrant.TWOTHOUSAND_TICKETS,
+                GiftCodeGrant.FIVETHOUSAND_TICKETS,
+                GiftCodeGrant.SIXTEENTHOUSAND_TICKETS,
+              ],
+            },
+          }
+        : {}),
+    };
+
+    const codes = await prisma.giftCode.findMany({
+      where,
+      orderBy: {
+        createdAt: sort === "newest" ? "desc" : "asc",
+      },
+      skip: (page - 1) * 50,
+      take: 50,
+      include: {
+        redeemedBy: nonCurrentUserSelect,
+      },
+    });
+
+    const count = await prisma.giftCode.count({
+      where,
+    });
+
+    return {
+      codes,
+      pages: Math.ceil(count / 50),
+    };
+  }
+
+  @Post("/gifts/:grant")
+  @AdminAuthorized()
+  public async createGiftCode(@Param("grant") grant: GiftCodeGrant) {
+    const code = Array(5)
+      .fill(0)
+      .map(() => Math.floor(Math.random() * 10000))
+      .map((n) => String(n).padStart(4, "0"))
+      .join("-");
+    const gift = await prisma.giftCode.create({
+      data: {
+        grant,
+        redeemedAt: new Date(),
+        code,
+      },
+    });
+
+    return {
+      success: true,
+      gift,
+    };
   }
 }
 

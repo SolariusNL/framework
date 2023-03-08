@@ -16,6 +16,7 @@ import { Invite } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
 import { HiCheck, HiPlus, HiTrash, HiX } from "react-icons/hi";
+import getMediaUrl from "../../../util/get-media";
 import { NonUser } from "../../../util/prisma-types";
 
 const EMAIL_REGEX =
@@ -149,7 +150,7 @@ const Invites = () => {
                   {key.createdBy ? (
                     <div className="flex items-center gap-2">
                       <Avatar
-                        src={key.createdBy.avatarUri}
+                        src={getMediaUrl(key.createdBy.avatarUri)}
                         radius={999}
                         size={24}
                       />

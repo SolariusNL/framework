@@ -29,6 +29,7 @@ import {
   HiCog,
   HiDocument,
   HiFolder,
+  HiGift,
   HiHome,
   HiIdentification,
   HiKey,
@@ -46,6 +47,7 @@ import Cosmic from "../../components/Admin/Pages/Cosmic";
 import Dashboard from "../../components/Admin/Pages/Dashboard";
 import Directory from "../../components/Admin/Pages/Directory";
 import Experiments from "../../components/Admin/Pages/Experiments";
+import Gifts from "../../components/Admin/Pages/Gifts";
 import Instance from "../../components/Admin/Pages/Instance";
 import Invites from "../../components/Admin/Pages/Invites";
 import Reports from "../../components/Admin/Pages/Reports";
@@ -201,6 +203,13 @@ const data = [
     href: "/admin/directory",
     render: <Directory />,
     subtitle: "View the directory of all employees",
+  },
+  {
+    label: "Gifts",
+    icon: HiGift,
+    href: "/admin/gifts",
+    render: <Gifts />,
+    subtitle: "Manage redeemable gift codes",
   },
   {
     label: "Tasks",
