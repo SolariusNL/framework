@@ -27,12 +27,12 @@ import { NonUser } from "../../../util/prisma-types";
 import ModernEmptyState from "../../ModernEmptyState";
 
 type Filter = "unused" | "used" | "all" | "premium" | "tickets";
-type Sort = "created" | "updated";
+type Sort = "oldest" | "newest";
 type GiftCodeWithRedeemer = GiftCode & { redeemedBy: NonUser };
 
 const Gifts: React.FC = () => {
   const [filter, setFilter] = useState<Filter>("all");
-  const [sort, setSort] = useState<Sort>("created");
+  const [sort, setSort] = useState<Sort>("newest");
   const [pages, setPages] = useState(1);
   const [activePage, setActivePage] = useState(1);
   const [codes, setCodes] = useState<GiftCodeWithRedeemer[]>();
@@ -116,8 +116,8 @@ const Gifts: React.FC = () => {
             onChange={(v) => setSort(v as Sort)}
             placeholder="Sort by"
             data={[
-              { label: "Created", value: "created" },
-              { label: "Updated", value: "updated" },
+              { label: "Newest", value: "newest" },
+              { label: "Oldest", value: "oldest" },
             ]}
           />
         </div>
