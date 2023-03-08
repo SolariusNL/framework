@@ -36,6 +36,7 @@ import Authorized, {
   AdminAuthorized,
 } from "../../../util/api/authorized";
 import { PREMIUM_PAYOUTS } from "../../../util/constants";
+import generateGiftCode from "../../../util/gift-codes";
 import { hashPass } from "../../../util/hash/password";
 import { sendMail } from "../../../util/mail";
 import createNotification from "../../../util/notifications";
@@ -1831,11 +1832,7 @@ class AdminRouter {
   @Post("/gifts/:grant")
   @AdminAuthorized()
   public async createGiftCode(@Param("grant") grant: GiftCodeGrant) {
-    const code = Array(5)
-      .fill(0)
-      .map(() => Math.floor(Math.random() * 10000))
-      .map((n) => String(n).padStart(4, "0"))
-      .join("-");
+    const code = generateGiftCode();
     const gift = await prisma.giftCode.create({
       data: {
         grant,
