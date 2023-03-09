@@ -2,6 +2,7 @@ import {
   NotificationType,
   PrivacyPreferences,
   ReceiveNotification,
+  TransactionType,
 } from "@prisma/client";
 import { render } from "@react-email/render";
 import {
@@ -300,6 +301,9 @@ class UserRouter {
     const transactions = await prisma.transaction.findMany({
       where: { userId: user.id },
       orderBy: { createdAt: "desc" },
+      include: {
+        to: nonCurrentUserSelect,
+      },
     });
 
     return transactions;
@@ -465,9 +469,17 @@ class UserRouter {
     });
 
     await logTransaction(
-      donatingUser.username,
       amount,
-      `Donation to ${donatingUser.username} (ID: ${donatingUser.id})`,
+      "Donation to " + donatingUser.username,
+      user.id,
+      TransactionType.OUTBOUND,
+      donatingUser.id
+    );
+    await logTransaction(
+      amount,
+      "Donation from " + user.username,
+      donatingUser.id,
+      TransactionType.INBOUND,
       user.id
     );
 
@@ -549,10 +561,12 @@ class UserRouter {
           });
 
           await logTransaction(
-            "Username change",
             500,
-            `Username change to ${value}`,
-            user.id
+            "Username change to " + value,
+            user.id,
+            TransactionType.OUTBOUND,
+            undefined,
+            "Username Change"
           );
 
           return true;

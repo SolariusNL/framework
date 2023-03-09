@@ -6,6 +6,7 @@ import {
   RatingCategory,
   RatingCategoryScore,
   RatingType,
+  TransactionType,
 } from "@prisma/client";
 import {
   Body,
@@ -1037,9 +1038,17 @@ class GameRouter {
     });
 
     await logTransaction(
-      "Game fund " + fund.name,
       amount,
-      "Donated to game fund for " + game.name + " (" + game.id + ")",
+      "Donation to game fund for game: " + game.name,
+      user.id,
+      TransactionType.OUTBOUND,
+      game.authorId
+    );
+    await logTransaction(
+      amount,
+      "Donation received for your game fund: " + fund.name,
+      game.authorId,
+      TransactionType.INBOUND,
       user.id
     );
 
@@ -1525,9 +1534,17 @@ class GameRouter {
     });
 
     await logTransaction(
-      `${game.author.username}`,
       gamepass.price,
-      `Purchase of gamepass ${gamepass.name} on game ID ${game.id}`,
+      "Purchase of gamepass " + gamepass.name,
+      user.id,
+      TransactionType.OUTBOUND,
+      game.author.id
+    );
+    await logTransaction(
+      gamepass.price,
+      "Sale of gamepass " + gamepass.name,
+      game.author.id,
+      TransactionType.INBOUND,
       user.id
     );
 

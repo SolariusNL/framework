@@ -15,6 +15,7 @@ import {
   MantineProvider,
   MantineTheme,
   Modal,
+  NavLinkStylesParams,
   PaginationStylesParams,
   PasswordInput,
   Stack,
@@ -221,6 +222,26 @@ const Framework = (
                             ? "inset 0 1.2px 0 0 hsla(0,0%,100%,.2);"
                             : "",
                       }),
+                    },
+                  }),
+                },
+                NavLink: {
+                  styles: (theme, params: NavLinkStylesParams) => ({
+                    root: {
+                      border: "1px solid",
+                      borderColor: "transparent",
+                      "&[data-active]": {
+                        borderColor:
+                          theme.colors[params.color || theme.primaryColor][
+                            theme.colorScheme == "dark" ? 2 : 9
+                          ] + "85",
+                        "&:hover": {
+                          borderColor:
+                            theme.colors[params.color || theme.primaryColor][
+                              theme.colorScheme == "dark" ? 2 : 9
+                            ] + "85",
+                        },
+                      },
                     },
                   }),
                 },

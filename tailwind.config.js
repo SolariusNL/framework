@@ -19,6 +19,10 @@ module.exports = {
         xl: "16px",
       },
     },
+    fontFamily: {
+      mono: ["Fira Code VF", "monospace"],
+      sans: ["Inter var", "sans-serif"],
+    },
   },
   plugins: [
     require("@tailwindcss/typography"),

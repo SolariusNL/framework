@@ -159,6 +159,8 @@ model User {
   lastSurvey                 DateTime?
   ratings                    Survey[]               @relation("userRatings")
   createdGiftCodes           GiftCode[]             @relation("createdGiftCodes")
+  outboundTransactions       Transaction[]          @relation("userTransactionsFrom")
+  inboundTransactions        Transaction[]          @relation("userTransactionsTo")
 }
 
 model ConnectedAccount {
@@ -449,13 +451,24 @@ model Update {
 }
 
 model Transaction {
-  id          String   @id @default(uuid())
-  user        User     @relation("userTransactions", fields: [userId], references: [id])
+  id          String          @id @default(uuid())
+  user        User            @relation("userTransactions", fields: [userId], references: [id])
   userId      Int
-  to          String
   tickets     Int
   description String
-  createdAt   DateTime @default(now())
+  createdAt   DateTime        @default(now())
+  type        TransactionType
+  from        User?           @relation("userTransactionsFrom", fields: [fromId], references: [id])
+  fromId      Int?
+  fromString  String?
+  to          User?           @relation("userTransactionsTo", fields: [toId], references: [id])
+  toId        Int?
+  toString    String?
+}
+
+enum TransactionType {
+  INBOUND
+  OUTBOUND
 }
 
 model UserReport {

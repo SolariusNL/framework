@@ -1,14 +1,16 @@
-import { Badge, Pagination, Stack, Text } from "@mantine/core";
-import { Transaction } from "@prisma/client";
+import { Avatar, Badge, Pagination, Stack, Text } from "@mantine/core";
+import { TransactionType } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
-import { HiArrowRight, HiShoppingCart } from "react-icons/hi";
+import { HiArrowRight, HiShoppingCart, HiTicket } from "react-icons/hi";
+import { TransactionWithUser } from "../../pages/tickets";
+import getMediaUrl from "../../util/get-media";
 import { User } from "../../util/prisma-types";
 import ShadedCard from "../ShadedCard";
 
 interface TransactionWidgetProps {
   user: User;
-  onTransactionsLoaded?: (transactions: Transaction[]) => void;
+  onTransactionsLoaded?: (transactions: TransactionWithUser[]) => void;
 }
 
 const TransactionsWidget = ({
@@ -16,7 +18,9 @@ const TransactionsWidget = ({
   onTransactionsLoaded,
 }: TransactionWidgetProps) => {
   const [loading, setLoading] = useState(true);
-  const [transactions, setTransactions] = useState<Transaction[] | null>(null);
+  const [transactions, setTransactions] = useState<
+    TransactionWithUser[] | null
+  >(null);
   const [page, setPage] = useState(1);
 
   const getTransactions = async () => {
@@ -68,14 +72,35 @@ const TransactionsWidget = ({
                   }}
                   color="green"
                 >
-                  <HiShoppingCart size={20} className="flex items-center justify-center" />
+                  {t.type === TransactionType.OUTBOUND ? (
+                    <HiShoppingCart
+                      size={20}
+                      className="flex items-center justify-center"
+                    />
+                  ) : (
+                    <HiTicket
+                      size={20}
+                      className="flex items-center justify-center"
+                    />
+                  )}
                 </Badge>
                 <div className="flex flex-col md:ml-4 mt-4 md:mt-0">
                   <div className="flex flex-row gap-2 items-center">
                     <HiArrowRight color="#868E96" />
-                    <Text size="lg" weight={600}>
-                      {t.to}
-                    </Text>
+                    {t.to ? (
+                      <div className="flex items-center gap-2">
+                        <Avatar
+                          size={24}
+                          radius={999}
+                          src={getMediaUrl(t.to.avatarUri)}
+                        />
+                        <Text size="lg">{t.to.username}</Text>
+                      </div>
+                    ) : (
+                      <Text size="lg" weight={600}>
+                        {t.toString}
+                      </Text>
+                    )}
                   </div>
                   <Text size="sm" color="dimmed">
                     {t.description}
@@ -83,9 +108,15 @@ const TransactionsWidget = ({
                 </div>
               </div>
               <div className="text-right">
-                <Text size="lg" weight={600} color="#FF6B6B">
-                  -{t.tickets}T$
-                </Text>
+                {t.type === TransactionType.OUTBOUND ? (
+                  <Text size="lg" weight={600} color="#FF6B6B">
+                    -{t.tickets}T$
+                  </Text>
+                ) : (
+                  <Text size="lg" weight={600} color="#3FC380">
+                    +{t.tickets}T$
+                  </Text>
+                )}
                 <Text color="dimmed">
                   {new Date(t.createdAt).toLocaleDateString("en-US", {
                     month: "short",
