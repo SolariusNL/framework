@@ -927,6 +927,7 @@ model OAuthApplication {
   redirectUri String
   clients     OAuthClient[] @relation("oauthCodeApplication")
   sessions    Session[]     @relation("oauthSessions")
+  verified    Boolean       @default(false)
 }
 
 model OAuthClient {

@@ -1,4 +1,4 @@
-import { Button, Container, Paper, Stack, Text, Title } from "@mantine/core";
+import { Button, Stack, Text, Title, Tooltip } from "@mantine/core";
 import { OAuthApplication, OAuthScope, User } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
@@ -13,6 +13,7 @@ import {
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import scopes from "../../data/scopes";
+import OuterUI from "../../layouts/OuterUI";
 import authorizedRoute from "../../util/auth";
 import { exclude } from "../../util/exclude";
 import prisma from "../../util/prisma";
@@ -37,86 +38,92 @@ const OAuth2Flow: NextPage<OAuth2FlowProps> = ({
   }, []);
 
   return (
-    <Container size={420} my={40}>
-      <Title align="center">Framework</Title>
-      <Text color="dimmed" size="sm" align="center" mt={5}>
-        {app.name} is requesting access to the scopes below.
-      </Text>
-
-      <Paper withBorder shadow="md" p={30} radius="md" mt="xl">
-        <Title order={4} mb={6}>
-          {app.name}
-        </Title>
+    <OuterUI
+      description={`${app.name} is requesting access to the scopes below.`}
+    >
+      <div className="text-center">
+        <div className="flex items-center gap-3 text-center justify-center">
+          <Title order={4} mb={6}>
+            {app.name}
+          </Title>
+          {app.verified && (
+            <Tooltip label="Verified by Soodam.re or is an official Soodam.re application.">
+              <div className="flex-shrink-0">
+                <HiCheckCircle className="text-teal-500" size={20} />
+              </div>
+            </Tooltip>
+          )}
+        </div>
         <Text color="dimmed" size="sm" mb={18}>
           {app.description}
         </Text>
 
-        <Text size="sm" mb={18}>
+        <Text size="sm" color="dimmed" weight={500}>
           If you trust {app.name}, it:
         </Text>
+      </div>
 
-        <Stack mb="xl">
-          {Object.values(OAuthScope).map((scope) => (
-            <div className="flex items-center gap-2" key={scope}>
-              <div className="flex-shrink-0">
-                {app.scopes.includes(scope) ? (
-                  <HiCheckCircle
-                    className="text-teal-500 items-center flex"
-                    size={20}
-                  />
-                ) : (
-                  <HiXCircle
-                    className="text-red-500 items-center flex"
-                    size={20}
-                  />
-                )}
-              </div>
-              <Text size="sm" weight={500}>
-                {app.scopes.includes(scope) ? "Can" : "Can't"} {scopes[scope]}
+      <Stack mb="xl" mt="xl">
+        {Object.values(OAuthScope).map((scope) => (
+          <div className="flex items-center gap-2" key={scope}>
+            <div className="flex-shrink-0">
+              {app.scopes.includes(scope) ? (
+                <HiCheckCircle
+                  className="text-teal-500 items-center flex"
+                  size={20}
+                />
+              ) : (
+                <HiXCircle
+                  className="text-red-500 items-center flex"
+                  size={20}
+                />
+              )}
+            </div>
+            <Text size="sm" weight={500}>
+              {app.scopes.includes(scope) ? "Can" : "Can't"} {scopes[scope]}
+            </Text>
+          </div>
+        ))}
+      </Stack>
+
+      <ReactNoSSR>
+        <a
+          href={`/api/oauth/authorize?client_id=${app.id}&redirect_uri=${providedRedirect}&auth=${cookie}`}
+          className="no-underline"
+        >
+          <Button fullWidth size="lg" leftIcon={<HiKey />}>
+            Allow access
+          </Button>
+        </a>
+
+        <Stack mt="xl" spacing="sm">
+          {[
+            {
+              icon: <HiExternalLink />,
+              text: `
+              You will be redirected to ${providedRedirect} to
+              complete the authorization process.
+            `,
+            },
+            {
+              icon: <HiLockClosed />,
+              text: "The developers privacy policy and terms of service apply to this application.",
+            },
+            {
+              icon: <HiShieldCheck />,
+              text: "This application cannot read your password or any other sensitive information.",
+            },
+          ].map((item, i) => (
+            <div className="flex items-center gap-4" key={i}>
+              <div className="flex-shrink-0">{item.icon}</div>
+              <Text size="sm" color="dimmed" className="break-word">
+                {item.text}
               </Text>
             </div>
           ))}
         </Stack>
-
-        <ReactNoSSR>
-          <a
-            href={`/api/oauth/authorize?client_id=${app.id}&redirect_uri=${providedRedirect}&auth=${cookie}`}
-            className="no-underline"
-          >
-            <Button fullWidth size="lg" leftIcon={<HiKey />}>
-              Allow access for {app.name}
-            </Button>
-          </a>
-
-          <Stack mt="xl" spacing="sm">
-            {[
-              {
-                icon: <HiExternalLink />,
-                text: `
-              You will be redirected to ${providedRedirect} to
-              complete the authorization process.
-            `,
-              },
-              {
-                icon: <HiLockClosed />,
-                text: "The developers privacy policy and terms of service apply to this application.",
-              },
-              {
-                icon: <HiShieldCheck />,
-                text: "This application cannot read your password or any other sensitive information.",
-              },
-            ].map((item, i) => (
-              <div className="flex items-center gap-4" key={i}>
-                <div className="flex-shrink-0">{item.icon}</div>
-                <Text size="sm" color="dimmed" className="break-all">
-                  {item.text}
-                </Text>
-              </div>
-            ))}
-          </Stack>
-        </ReactNoSSR>
-      </Paper>
-    </Container>
+      </ReactNoSSR>
+    </OuterUI>
   );
 };
 
