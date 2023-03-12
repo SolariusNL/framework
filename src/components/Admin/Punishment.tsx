@@ -2,12 +2,14 @@ import {
   Anchor,
   Avatar,
   Button,
+  Checkbox,
   Group,
   Modal,
   Select,
   Stack,
   Text,
   Textarea,
+  Tooltip,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
@@ -15,6 +17,7 @@ import { getCookie } from "cookies-next";
 import { useState } from "react";
 import { HiCheckCircle, HiShieldCheck } from "react-icons/hi";
 import banPresets from "../../data/banPresets";
+import clsx from "../../util/clsx";
 import getMediaUrl from "../../util/get-media";
 import { NonUser } from "../../util/prisma-types";
 import Stateful from "../Stateful";
@@ -23,6 +26,7 @@ interface IPunishmentForm {
   category: "warning" | "ban";
   reason: string;
   expires?: Date;
+  madeConfluenceReport?: boolean;
 }
 
 interface PunishmentProps {
@@ -81,6 +85,7 @@ const Punishment: React.FC<PunishmentProps> = ({
       category: "warning",
       reason: "",
       expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+      madeConfluenceReport: false,
     },
     validate: {
       reason: (value) => {
@@ -247,6 +252,53 @@ const Punishment: React.FC<PunishmentProps> = ({
                 },
               ]}
               {...punishmentForm.getInputProps("expires")}
+            />
+            <Checkbox
+              label={
+                <>
+                  I documented this punishment in Confluence
+                  <br />
+                  <Tooltip
+                    classNames={{
+                      tooltip: clsx(
+                        "max-w-xs break-words",
+                        "whitespace-pre-wrap"
+                      ),
+                    }}
+                    label={
+                      <>
+                        <span>
+                          You must be logged into Confluence to see the example,
+                          contact HR if you cannot access it.
+                        </span>
+                        <br />
+                        <br />
+                        <span>
+                          This example uses accordions to organize dates
+                          chronologically, along with
+                        </span>
+                        <br />
+                        <span>
+                          images showing violating content and the corresponding
+                          guideline in each alt text.
+                        </span>
+                      </>
+                    }
+                  >
+                    <Anchor
+                      href="https://soodamre.atlassian.net/wiki/spaces/~63937321de5cdaba3a6cd1a7/pages/2031617/user+C3O1L1T"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      See example
+                    </Anchor>
+                  </Tooltip>
+                </>
+              }
+              mt="md"
+              {...punishmentForm.getInputProps("madeConfluenceReport", {
+                type: "checkbox",
+              })}
             />
           </Stack>
 
