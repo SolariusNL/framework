@@ -154,7 +154,7 @@ class TeamsRouter {
       include: {
         members: {
           select: nonCurrentUserSelect.select,
-          take: 8,
+          take: p === "1" ? 9 : 8,
           skip: 8 * (Number(p) - 1),
         },
       },
