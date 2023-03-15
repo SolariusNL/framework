@@ -21,7 +21,7 @@ const Owner: React.FC<OwnerProps> = ({ user, size, ...props }) => {
       <Avatar
         src={getMediaUrl(user.avatarUri)}
         alt=""
-        className="mr-3 rounded-full"
+        className={clsx("mr-3 rounded-full")}
         size={size ?? 38}
       />
       <div className="text-sm leading-4">

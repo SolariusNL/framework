@@ -18,7 +18,6 @@ import {
   NavLinkStylesParams,
   PaginationStylesParams,
   PasswordInput,
-  Stack,
   Text,
   Textarea,
   TextInput,
@@ -55,7 +54,6 @@ import useFeedback from "../stores/useFeedback";
 import "../styles/fonts.css";
 import "../styles/framework.css";
 import "../styles/tw.css";
-import logout from "../util/api/logout";
 
 const Framework = (
   props: AppProps & { colorScheme: ColorScheme; highContrast: boolean }
@@ -338,6 +336,9 @@ const Framework = (
                   styles: (theme: MantineTheme) => ({
                     item: {
                       borderRadius: theme.radius.md,
+                    },
+                    dropdown: {
+                      borderRadius: theme.radius.md + " !important",
                     },
                   }),
                 },

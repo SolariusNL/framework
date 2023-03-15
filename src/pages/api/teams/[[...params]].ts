@@ -1,4 +1,10 @@
-import { NotificationType, TeamAccess } from "@prisma/client";
+import {
+  NotificationType,
+  Prisma,
+  TeamAccess,
+  TeamIssueEnvironmentType,
+  TeamIssueStatus,
+} from "@prisma/client";
 import {
   BadRequestException,
   Body,
@@ -22,7 +28,8 @@ import { nonCurrentUserSelect } from "../../../util/prisma-types";
 import { RateLimitMiddleware } from "../../../util/rate-limit";
 import { slugify } from "../../../util/slug";
 import type { FilterType, SortType } from "../../teams/discover";
-import { Prisma } from "./../../../../node_modules/.prisma/client/index.d";
+import { tags } from "../../teams/t/[slug]/issue/create";
+import type { IssueFilter, IssueSort } from "../../teams/t/[slug]/issues";
 
 const teamSanitization = {
   allowedTags: [
@@ -630,6 +637,317 @@ class TeamsRouter {
         success: true,
       };
     }
+  }
+
+  @Post("/:id/issue/:gameId/new")
+  @Authorized()
+  @RateLimitMiddleware(10)()
+  public async createIssueForGame(
+    @Account() user: User,
+    @Param("id") id: string,
+    @Param("gameId") gameId: number,
+    @Body() body: unknown
+  ) {
+    const schema = z.object({
+      title: z.string().min(1).max(100),
+      description: z.string().min(1).max(5000),
+      game: z.number(),
+      tags: z.array(z.string().min(1).max(25)).max(5),
+      environment: z.nativeEnum(TeamIssueEnvironmentType),
+      assignee: z.number(),
+    });
+
+    const values = schema.safeParse(body);
+
+    if (values.success) {
+      const team = await prisma.team.findFirst({
+        where: {
+          id,
+        },
+        include: {
+          games: true,
+        },
+      });
+
+      if (!team) {
+        throw new BadRequestException("Team does not exist");
+      }
+
+      const game = await prisma.game.findFirst({
+        where: {
+          id: Number(gameId),
+        },
+      });
+
+      if (!game) {
+        throw new BadRequestException("Game does not exist");
+      }
+
+      if (!team.games.some((g) => g.id === game.id)) {
+        throw new BadRequestException("Game is not part of this team");
+      }
+
+      const issue = await prisma.teamIssue.create({
+        data: {
+          title: values.data.title,
+          contentMd: values.data.description,
+          content: sanitize(parse(values.data.description), teamSanitization),
+          environment: values.data.environment,
+          assigneeId: values.data.assignee,
+          authorId: user.id,
+          gameId: game.id,
+          teamId: team.id,
+          tags: values.data.tags,
+          status: TeamIssueStatus.OPEN,
+        },
+      });
+
+      return {
+        issue,
+      };
+    } else {
+      throw new BadRequestException("Invalid form");
+    }
+  }
+
+  @Post("/:id/issue/:issueId/edit")
+  @Authorized()
+  @RateLimitMiddleware(10)()
+  public async updateIssue(
+    @Account() user: User,
+    @Param("id") id: string,
+    @Param("issueId") issueId: string,
+    @Body() body: unknown
+  ) {
+    type Updatable =
+      | "title"
+      | "contentMd"
+      | "tags"
+      | "assigneeId"
+      | "environment"
+      | "status";
+
+    const processes: Record<Updatable, (value: unknown) => unknown> = {
+      title: (value: unknown) => {
+        if (typeof value !== "string") {
+          throw new BadRequestException("Invalid title");
+        }
+        if (value.length < 1 || value.length > 100) {
+          throw new BadRequestException("Invalid title - invalid length");
+        }
+        return value;
+      },
+      contentMd: (value: unknown) => {
+        if (typeof value !== "string") {
+          throw new BadRequestException("Invalid content");
+        }
+        if (value.length < 1 || value.length > 5000) {
+          throw new BadRequestException("Invalid content - invalid length");
+        }
+        return value;
+      },
+      tags: (value: unknown) => {
+        if (!Array.isArray(value)) {
+          throw new BadRequestException("Invalid tags");
+        }
+        if (value.length > 5) {
+          throw new BadRequestException("Invalid tags - too many");
+        }
+        for (const tag of value) {
+          if (typeof tag !== "string") {
+            throw new BadRequestException("Invalid tags");
+          }
+          if (tag.length < 1 || tag.length > 25) {
+            throw new BadRequestException("Invalid tags - invalid length");
+          }
+          if (!tags.map((t) => t.label).includes(tag)) {
+            throw new BadRequestException("Invalid tags");
+          }
+        }
+        return value;
+      },
+      assigneeId: (value: unknown) => {
+        if (typeof value !== "number") {
+          throw new BadRequestException("Invalid assignee");
+        }
+        const user = prisma.user.findFirst({
+          where: {
+            id: value,
+          },
+        });
+        if (!user) {
+          throw new BadRequestException("Invalid assignee");
+        }
+        return value;
+      },
+      environment: (value: unknown) => {
+        if (typeof value !== "string") {
+          throw new BadRequestException("Invalid environment");
+        }
+        if (
+          !Object.values(TeamIssueEnvironmentType).includes(
+            value as TeamIssueEnvironmentType
+          )
+        ) {
+          throw new BadRequestException("Invalid environment");
+        }
+        return value;
+      },
+      status: (value: unknown) => {
+        if (typeof value !== "string") {
+          throw new BadRequestException("Invalid status");
+        }
+        if (
+          !Object.values(TeamIssueStatus).includes(value as TeamIssueStatus)
+        ) {
+          throw new BadRequestException("Invalid status");
+        }
+        return value;
+      },
+    };
+
+    let data: Partial<
+      Prisma.TeamIssueUpdateInput & {
+        assigneeId: number;
+      }
+    > = {};
+
+    for (const [key, value] of Object.entries(
+      body as Record<Updatable, unknown>
+    ) as [Updatable, unknown][]) {
+      if (key in processes) {
+        (data as Record<Updatable, unknown>)[key] = processes[key](value);
+      }
+    }
+
+    const issue = await prisma.teamIssue.findFirst({
+      where: {
+        id: issueId,
+        OR: [
+          {
+            authorId: user.id,
+          },
+          {
+            team: {
+              ownerId: user.id,
+            },
+          },
+        ],
+      },
+    });
+
+    if (!issue) {
+      throw new BadRequestException("Issue does not exist");
+    }
+
+    const updated = await prisma.teamIssue.update({
+      where: {
+        id: issueId,
+      },
+      data: {
+        ...(data as Prisma.TeamIssueUpdateInput),
+        ...(data.contentMd
+          ? {
+              content: sanitize(
+                parse(String(data.contentMd)),
+                teamSanitization
+              ),
+              contentMd: data.contentMd,
+            }
+          : {}),
+      },
+    });
+
+    return {
+      issue: updated,
+    };
+  }
+
+  @Get("/:id/issues")
+  @Authorized()
+  public async getIssues(
+    @Param("id") id: string,
+    @Query("filter") filter: IssueFilter = "all",
+    @Query("sort") sort: IssueSort = "title",
+    @Query("page") page: number = 1,
+    @Query("search") search: string = ""
+  ) {
+    const team = await prisma.team.findFirst({
+      where: {
+        id,
+      },
+      include: {
+        games: true,
+      },
+    });
+
+    if (!team) {
+      throw new BadRequestException("Team does not exist");
+    }
+
+    const issues = await prisma.teamIssue.findMany({
+      where: {
+        teamId: team.id,
+        status:
+          filter === "all" ? undefined : filter === "open" ? "OPEN" : "CLOSED",
+        title:
+          search.length > 0
+            ? {
+                contains: search,
+                mode: "insensitive",
+              }
+            : undefined,
+      },
+      orderBy: {
+        ...(sort === "title" ? { title: "asc" } : {}),
+        ...(sort === "date" ? { createdAt: "desc" } : {}),
+      },
+      include: {
+        game: {
+          select: {
+            id: true,
+            name: true,
+            iconUri: true,
+          },
+        },
+        assignee: {
+          select: {
+            id: true,
+            username: true,
+            avatarUri: true,
+          },
+        },
+        author: {
+          select: {
+            id: true,
+            username: true,
+            avatarUri: true,
+          },
+        },
+      },
+      skip: page > 0 ? (page - 1) * 10 : 0,
+      take: 10,
+    });
+
+    const count = await prisma.teamIssue.count({
+      where: {
+        teamId: team.id,
+        status:
+          filter === "all" ? undefined : filter === "open" ? "OPEN" : "CLOSED",
+        title:
+          search.length > 0
+            ? {
+                contains: search,
+                mode: "insensitive",
+              }
+            : undefined,
+      },
+    });
+
+    return {
+      issues,
+      pages: Math.ceil(count / 10),
+    };
   }
 }
 

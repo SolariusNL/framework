@@ -93,8 +93,10 @@ const RenderMarkdown: React.FC<
             WebkitBoxOrient: "vertical",
           }),
         }}
-        className={clsx(proseStyles, proseAddons)}
-        {...props}
+        className={clsx(proseStyles, proseAddons, props.className)}
+        {...Object.fromEntries(
+          Object.entries(props).filter(([key]) => key !== "className")
+        )}
       />
     </TypographyStylesProvider>
   );

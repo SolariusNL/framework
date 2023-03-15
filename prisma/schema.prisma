@@ -161,6 +161,9 @@ model User {
   createdGiftCodes           GiftCode[]             @relation("createdGiftCodes")
   outboundTransactions       Transaction[]          @relation("userTransactionsFrom")
   inboundTransactions        Transaction[]          @relation("userTransactionsTo")
+  authoredIssues             TeamIssue[]            @relation("teamIssues")
+  assignedIssues             TeamIssue[]            @relation("assignedIssues")
+  issueComments              TeamIssueComment[]     @relation("userIssueComments")
 }
 
 model ConnectedAccount {
@@ -358,6 +361,7 @@ model Game {
   envs                 GameEnvironmentVariable[] @relation("environmentVariables")
   team                 Team?                     @relation("teamGame", fields: [teamId], references: [id])
   teamId               String?
+  issues               TeamIssue[]               @relation("gameIssues")
 }
 
 model GameComment {
@@ -879,25 +883,26 @@ enum GameEnvironment {
 }
 
 model Team {
-  id                  String     @id @default(uuid())
+  id                  String      @id @default(uuid())
   name                String
-  createdAt           DateTime   @default(now())
-  members             User[]     @relation("teamMembers")
-  games               Game[]     @relation("teamGame")
-  iconUri             String     @default("")
-  description         String     @default("")
-  descriptionMarkdown String     @default("")
-  location            String?    @default("")
-  timezone            String?    @default("")
-  website             String?    @default("")
-  email               String?    @default("")
-  owner               User       @relation("teamOwner", fields: [ownerId], references: [id])
+  createdAt           DateTime    @default(now())
+  members             User[]      @relation("teamMembers")
+  games               Game[]      @relation("teamGame")
+  iconUri             String      @default("")
+  description         String      @default("")
+  descriptionMarkdown String      @default("")
+  location            String?     @default("")
+  timezone            String?     @default("")
+  website             String?     @default("")
+  email               String?     @default("")
+  owner               User        @relation("teamOwner", fields: [ownerId], references: [id])
   ownerId             Int
-  cakeDay             DateTime   @default(now())
-  updatedAt           DateTime   @default(now())
-  slug                String     @default("")
-  access              TeamAccess @default(OPEN)
-  invited             User[]     @relation("teamInvites")
+  cakeDay             DateTime    @default(now())
+  updatedAt           DateTime    @default(now())
+  slug                String      @default("")
+  access              TeamAccess  @default(OPEN)
+  invited             User[]      @relation("teamInvites")
+  issues              TeamIssue[] @relation("teamIssueRel")
 }
 
 enum TeamAccess {
@@ -957,4 +962,47 @@ model Survey {
   user      User     @relation("userRatings", fields: [userId], references: [id])
   userId    Int
   feedback  String?  @default("No feedback provided.")
+}
+
+model TeamIssue {
+  id          String                   @id @default(uuid())
+  createdAt   DateTime                 @default(now())
+  title       String
+  content     String
+  contentMd   String
+  team        Team                     @relation("teamIssueRel", fields: [teamId], references: [id])
+  teamId      String
+  status      TeamIssueStatus
+  game        Game?                    @relation("gameIssues", fields: [gameId], references: [id])
+  gameId      Int?
+  author      User                     @relation("teamIssues", fields: [authorId], references: [id])
+  authorId    Int
+  assignee    User?                    @relation("assignedIssues", fields: [assigneeId], references: [id])
+  assigneeId  Int?
+  comments    TeamIssueComment[]       @relation("issueComments")
+  environment TeamIssueEnvironmentType
+  tags        String[]
+}
+
+enum TeamIssueStatus {
+  OPEN
+  CLOSED
+  DUPLICATE
+}
+
+enum TeamIssueEnvironmentType {
+  DESKTOP
+  MOBILE
+  CONSOLE
+}
+
+model TeamIssueComment {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  content   String
+  contentMd String
+  author    User      @relation("userIssueComments", fields: [authorId], references: [id])
+  authorId  Int
+  issue     TeamIssue @relation("issueComments", fields: [issueId], references: [id])
+  issueId   String
 }
