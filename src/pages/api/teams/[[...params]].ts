@@ -845,7 +845,11 @@ class TeamsRouter {
         id: issueId,
       },
       data: {
-        ...(data as Prisma.TeamIssueUpdateInput),
+        ...(Object.fromEntries(
+          Object.entries(data).filter(
+            ([key]) => !["content", "contentMd"].includes(key)
+          )
+        ) as Prisma.TeamIssueUpdateInput),
         ...(data.contentMd
           ? {
               content: sanitize(
