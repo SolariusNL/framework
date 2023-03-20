@@ -99,17 +99,17 @@ const TeamsViewProvider: React.FC<TeamsViewProps> = ({
               />
             </Link>
           ))}
-          {team.ownerId === user.id ||
-            (team.staff.some((s) => s.id === user.id) && (
-              <Link href={`/teams/t/${team.slug}/settings`}>
-                <NavLink
-                  className="rounded-md"
-                  label="Settings"
-                  icon={<HiCog />}
-                  active={"settings" === active}
-                />
-              </Link>
-            ))}
+          {(team.owner.id === user.id ||
+            (team.staff && team.staff.map((s) => s.id).includes(user.id))) && (
+            <Link href={`/teams/t/${team.slug}/settings`}>
+              <NavLink
+                className="rounded-md"
+                label="Settings"
+                icon={<HiCog />}
+                active={"settings" === active}
+              />
+            </Link>
+          )}
         </SidebarTabNavigation.Sidebar>
         <SidebarTabNavigation.Content>{children}</SidebarTabNavigation.Content>
       </SidebarTabNavigation>
