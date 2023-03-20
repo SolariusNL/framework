@@ -165,6 +165,7 @@ model User {
   authoredIssues             TeamIssue[]            @relation("teamIssues")
   assignedIssues             TeamIssue[]            @relation("assignedIssues")
   issueComments              TeamIssueComment[]     @relation("userIssueComments")
+  auditLogs                  TeamAuditLog[]         @relation("audited")
 }
 
 model ConnectedAccount {
@@ -909,6 +910,7 @@ model Team {
   shoutUpdatedAt      DateTime?             @default(now())
   staff               User[]                @relation("teamStaff")
   staffPermissions    TeamStaffPermission[]
+  auditLogs           TeamAuditLog[]        @relation("teamAuditLogs")
 }
 
 enum TeamAccess {
@@ -1018,4 +1020,28 @@ enum TeamStaffPermission {
   EDIT_PRIVACY
   EDIT_MEMBERS
   EDIT_ISSUES
+}
+
+model TeamAuditLogKeyValuePair {
+  id      String       @id @default(uuid())
+  audit   TeamAuditLog @relation(references: [id], fields: [auditId])
+  auditId String
+}
+
+model TeamAuditLog {
+  id      String                     @id @default(uuid())
+  rows    TeamAuditLogKeyValuePair[]
+  type    TeamAuditLogType
+  content String
+  user    User                       @relation("audited", references: [id], fields: [userId])
+  userId  Int
+  team    Team?                      @relation("teamAuditLogs", references: [id], fields: [teamId])
+  teamId  String?
+}
+
+enum TeamAuditLogType {
+  UPDATE_TEAM_DETAILS
+  UPDAT_PRIVACY_STATUS
+  UPDATE_INVITED_USERS
+  UPDATE_SHOUT
 }

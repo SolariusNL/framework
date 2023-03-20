@@ -2,6 +2,7 @@ import {
   NotificationType,
   Prisma,
   TeamAccess,
+  TeamAuditLogType,
   TeamIssueEnvironmentType,
   TeamIssueStatus,
 } from "@prisma/client";
@@ -21,6 +22,7 @@ import { z } from "zod";
 import { parse } from "../../../components/RenderMarkdown";
 import getTimezones from "../../../data/timezones";
 import Authorized, { Account } from "../../../util/api/authorized";
+import { Teams } from "../../../util/audit-log";
 import createNotification from "../../../util/notifications";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
@@ -237,6 +239,23 @@ class TeamsRouter {
       },
     });
 
+    await Teams.createAuditLog(
+      TeamAuditLogType.UPDATE_TEAM_DETAILS,
+      [
+        { key: "Location", value: location! },
+        { key: "Timezone", value: timezone! },
+        { key: "Website", value: website! },
+        { key: "Email", value: email! },
+        {
+          key: "Access",
+          value: access === TeamAccess.OPEN ? "Open" : "Private",
+        },
+      ],
+      "Team updated, new values:",
+      user.id,
+      team.id
+    );
+
     return {
       success: true,
       team,
@@ -441,6 +460,14 @@ class TeamsRouter {
       },
     });
 
+    await Teams.createAuditLog(
+      TeamAuditLogType.UPDATE_INVITED_USERS,
+      [{ key: "New user", value: `User invited with ID ${userId}` }],
+      "A new user was invited to the team",
+      user.id,
+      team.id
+    );
+
     return {
       success: true,
     };
@@ -483,6 +510,14 @@ class TeamsRouter {
         },
       },
     });
+
+    await Teams.createAuditLog(
+      TeamAuditLogType.UPDATE_INVITED_USERS,
+      [{ key: "Removed user", value: `User invite revoked with ID ${userId}` }],
+      "Invite status for a user was revoked",
+      user.id,
+      team.id
+    );
 
     return {
       success: true,
@@ -927,6 +962,14 @@ class TeamsRouter {
         },
       });
 
+      await Teams.createAuditLog(
+        TeamAuditLogType.UPDATE_SHOUT,
+        [{ key: "Shout details", value: values.data.content }],
+        "The team shout was updated",
+        user.id,
+        team.id
+      );
+
       return {
         success: true,
       };
@@ -938,7 +981,7 @@ class TeamsRouter {
   @Get("/:id/issues")
   @Authorized()
   public async getIssues(
-    @Param("id") id: string,
+    @Param("id") id                                                                                                                                                                                                 : string,
     @Query("filter") filter: IssueFilter = "all",
     @Query("sort") sort: IssueSort = "title",
     @Query("page") page: number = 1,
