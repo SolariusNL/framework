@@ -1,8 +1,9 @@
-import { Avatar, NavLink, Text } from "@mantine/core";
+import { Avatar, Badge, NavLink, Text } from "@mantine/core";
 import Link from "next/link";
 import {
   HiCog,
   HiExclamation,
+  HiLockClosed,
   HiTicket,
   HiUsers,
   HiViewGrid,
@@ -19,7 +20,9 @@ type TeamsViewProps = {
   user: User;
   children: React.ReactNode;
   active: "details" | "members" | "games" | "issues" | "tickets" | "settings";
-  team: TeamType;
+  team: TeamType & {
+    staff: { username: string; id: number }[];
+  };
 };
 
 export const tabs = [
@@ -62,15 +65,27 @@ const TeamsViewProvider: React.FC<TeamsViewProps> = ({
         <SidebarTabNavigation.Sidebar>
           <Link href={`/teams/t/${team.slug}`}>
             <ShadedButton mb="md" className="col-span-full">
-              <div className="flex items-center gap-4">
+              <div className="flex items-start gap-4">
                 <Avatar
                   size={42}
                   src={getMediaUrl(team.iconUri)}
                   className="rounded-md"
                 />
-                <Text size="lg" weight={500}>
-                  {team.name}
-                </Text>
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <Text size="lg" weight={500}>
+                      {team.name}
+                    </Text>
+                    {team.access === "PRIVATE" && (
+                      <HiLockClosed className="dark:text-gray-300/50 text-gray-700/50" />
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge color="gray" leftSection={<HiUsers size={10} />}>
+                      {team._count.members + 1}
+                    </Badge>
+                  </div>
+                </div>
               </div>
             </ShadedButton>
           </Link>
@@ -84,16 +99,17 @@ const TeamsViewProvider: React.FC<TeamsViewProps> = ({
               />
             </Link>
           ))}
-          {team.ownerId === user.id && (
-            <Link href={`/teams/t/${team.slug}/settings`}>
-              <NavLink
-                className="rounded-md"
-                label="Settings"
-                icon={<HiCog />}
-                active={"settings" === active}
-              />
-            </Link>
-          )}
+          {team.ownerId === user.id ||
+            (team.staff.some((s) => s.id === user.id) && (
+              <Link href={`/teams/t/${team.slug}/settings`}>
+                <NavLink
+                  className="rounded-md"
+                  label="Settings"
+                  icon={<HiCog />}
+                  active={"settings" === active}
+                />
+              </Link>
+            ))}
         </SidebarTabNavigation.Sidebar>
         <SidebarTabNavigation.Content>{children}</SidebarTabNavigation.Content>
       </SidebarTabNavigation>

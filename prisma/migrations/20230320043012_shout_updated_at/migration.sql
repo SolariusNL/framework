@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Team" ADD COLUMN     "shoutUpdatedAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP;

@@ -504,6 +504,11 @@ class TeamsRouter {
             id: true,
           },
         },
+        staff: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
 
@@ -512,7 +517,9 @@ class TeamsRouter {
     }
 
     if (team.ownerId !== user.id) {
-      throw new BadRequestException("You are not the owner of this team");
+      if (!team.staff.some((s) => s.id === user.id)) {
+        throw new BadRequestException("You are not the owner of this team");
+      }
     }
 
     return team.invited;
@@ -865,6 +872,67 @@ class TeamsRouter {
     return {
       issue: updated,
     };
+  }
+
+  @Patch("/:id/shout")
+  @Authorized()
+  @RateLimitMiddleware(10)()
+  public async shout(
+    @Account() user: User,
+    @Param("id") id: string,
+    @Body() body: unknown
+  ) {
+    const schema = z.object({
+      content: z.string().min(1).max(256),
+    });
+
+    const values = schema.safeParse(body);
+
+    if (values.success) {
+      const team = await prisma.team.findFirst({
+        where: {
+          id,
+          OR: [
+            {
+              ownerId: user.id,
+            },
+            {
+              staff: {
+                some: {
+                  id: user.id,
+                },
+              },
+            },
+          ],
+        },
+      });
+
+      if (!team) {
+        throw new BadRequestException("Team does not exist");
+      }
+
+      await prisma.team.update({
+        where: {
+          id,
+        },
+        data: {
+          shoutMd: values.data.content,
+          shout: sanitize(parse(values.data.content), {
+            allowedTags: ["b", "i", "u", "a", "p", "br", "strong"],
+            allowedAttributes: {
+              a: ["href"],
+            },
+          }),
+          shoutUpdatedAt: new Date(),
+        },
+      });
+
+      return {
+        success: true,
+      };
+    }
+
+    throw new BadRequestException("Invalid body");
   }
 
   @Get("/:id/issues")

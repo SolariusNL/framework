@@ -1,4 +1,4 @@
-import { Button, FileButton, Modal } from "@mantine/core";
+import { Button, ButtonProps, FileButton, Modal } from "@mantine/core";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { HiUpload } from "react-icons/hi";
@@ -12,6 +12,7 @@ interface ImageUploaderProps {
   onFinished?: (img: string) => void;
   ratio?: number;
   modalSize?: "sm" | "md" | "lg" | "xl";
+  buttonProps?: ButtonProps;
 }
 
 const Cropper = dynamic(() => import("react-image-crop"), {
@@ -25,6 +26,7 @@ const ImageUploader = ({
   onFinished,
   ratio,
   modalSize,
+  buttonProps,
 }: ImageUploaderProps) => {
   const [img, setImg] = useState<File | null>(null);
   const [croppedImg, setCroppedImg] = useState<string | null>(null);
@@ -157,7 +159,7 @@ const ImageUploader = ({
               button ? (
                 button
               ) : (
-                <Button leftIcon={<HiUpload />} {...props}>
+                <Button leftIcon={<HiUpload />} {...props} {...buttonProps}>
                   Upload image
                 </Button>
               )

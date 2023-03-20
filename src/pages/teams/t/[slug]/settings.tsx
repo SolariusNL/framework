@@ -11,7 +11,7 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
-import { Rating, TeamAccess } from "@prisma/client";
+import { Rating, TeamAccess, TeamStaffPermission } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { GetServerSideProps } from "next";
 import { useEffect, useRef, useState } from "react";
@@ -58,6 +58,7 @@ export type TeamViewSettingsProps = {
       author: NonUser;
       rating: Rating;
     }[];
+    staff: { username: string; id: number; avatarUri: string }[];
   };
 };
 
@@ -74,12 +75,14 @@ type InvitedListProps = {
   loading: boolean;
   setLoading: (loading: boolean) => void;
   tid: string;
+  canEdit: boolean;
 };
 
 const InvitedList: React.FC<InvitedListProps> = ({
   loading,
   tid,
   setLoading,
+  canEdit,
 }) => {
   const [invited, setInvited] = useState<
     {
@@ -108,6 +111,7 @@ const InvitedList: React.FC<InvitedListProps> = ({
   return !loading ? (
     <div className="flex flex-col gap-2">
       <UserSelect
+        disabled={!canEdit}
         label="Add user"
         description="Invite a user to join your team."
         onUserSelect={async (user) => {
@@ -153,6 +157,7 @@ const InvitedList: React.FC<InvitedListProps> = ({
                     headers,
                   });
                 }}
+                disabled={!canEdit}
               />
             </div>
           ))}
@@ -161,6 +166,74 @@ const InvitedList: React.FC<InvitedListProps> = ({
   ) : (
     <div className="py-4 w-full flex justify-center">
       <Loader />
+    </div>
+  );
+};
+const StaffList: React.FC<{
+  staff: { id: number; username: string; avatarUri: string }[];
+  tid: string;
+  owner: boolean;
+}> = ({ staff, tid, owner }) => {
+  const [staffState, setStaff] = useState<
+    {
+      avatarUri: string;
+      username: string;
+      id: number;
+    }[]
+  >(staff);
+
+  return (
+    <div className="flex flex-col gap-2">
+      <UserSelect
+        disabled={!owner}
+        label="Add staff"
+        description="Add a user to your team's staff."
+        onUserSelect={async (user) => {
+          if (staff?.find((u) => u.id === user.id)) return;
+          setStaff((s) => [...(s || []), user]);
+
+          await fetch(`/api/teams/${tid}/staff/${user.id}`, {
+            method: "POST",
+            headers,
+          });
+        }}
+        key={tid}
+        id={tid}
+        filter={(_, user) => !staff?.find((u) => u.username === user.username)}
+        classNames={{
+          input: blackInput,
+          icon: "dark:text-white",
+        }}
+        icon={<HiPlus />}
+      />
+      <Stack spacing={2} mt="sm">
+        {staff &&
+          staff.map((user) => (
+            <div key={user.id} className="flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <Avatar
+                  src={getMediaUrl(user.avatarUri)}
+                  size={20}
+                  radius={999}
+                />
+                <Text size="sm" color="dimmed" weight={500}>
+                  @{user.username}
+                </Text>
+              </div>
+              <CloseButton
+                size="xs"
+                onClick={async () => {
+                  setStaff(staff?.filter((u) => u.id !== user.id));
+                  await fetch(`/api/teams/${tid}/staff/${user.id}`, {
+                    method: "DELETE",
+                    headers,
+                  });
+                }}
+                disabled={!owner}
+              />
+            </div>
+          ))}
+      </Stack>
     </div>
   );
 };
@@ -173,6 +246,7 @@ const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
     website?: string;
     email?: string;
     access?: TeamAccess;
+    staffPermissions?: TeamStaffPermission[];
   }>({
     initialValues: {
       description: team.descriptionMarkdown || "",
@@ -181,6 +255,7 @@ const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
       website: team.website || "",
       email: team.email || "",
       access: team.access || TeamAccess.OPEN,
+      staffPermissions: team.staffPermissions || [],
     },
     validate: {
       description: (value) => {
@@ -319,6 +394,7 @@ const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
                   ToolbarItem.H4,
                   ToolbarItem.Help,
                 ]}
+                disabled={team.ownerId !== user.id}
               />
             </Descriptive>
             <Descriptive title="Photo" description="Your team's photo.">
@@ -333,6 +409,9 @@ const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
                   imgRef={iconRef}
                   ratio={1}
                   onFinished={setUploadedUrl}
+                  buttonProps={{
+                    disabled: team.ownerId !== user.id,
+                  }}
                 />
               </div>
             </Descriptive>
@@ -350,6 +429,7 @@ const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
                 input: blackInput,
                 icon: "dark:text-white",
               }}
+              disabled={team.ownerId !== user.id}
               {...form.getInputProps("website")}
             />
             <TextInput
@@ -361,6 +441,7 @@ const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
                 input: blackInput,
                 icon: "dark:text-white",
               }}
+              disabled={team.ownerId !== user.id}
               {...form.getInputProps("email")}
             />
             <TextInput
@@ -372,6 +453,7 @@ const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
                 input: blackInput,
                 icon: "dark:text-white",
               }}
+              disabled={team.ownerId !== user.id}
               {...form.getInputProps("location")}
             />
             <Select
@@ -394,7 +476,15 @@ const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
                 icon: "dark:text-white",
               }}
               icon={<HiClock />}
+              disabled={team.ownerId !== user.id}
               {...form.getInputProps("timezone")}
+            />
+          </DetailCard>
+          <DetailCard title="Staff" description="Manage your team's staff.">
+            <StaffList
+              staff={team.staff}
+              tid={team.id}
+              owner={team.ownerId === user.id}
             />
           </DetailCard>
           <DetailCard
@@ -420,6 +510,7 @@ const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
                 {...form.getInputProps("access")}
                 value={t.value}
                 checked={form.values.access === t.value}
+                disabled={team.ownerId !== user.id}
               />
             ))}
           </DetailCard>
@@ -432,6 +523,15 @@ const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
                 tid={team.id}
                 loading={loadingInvited}
                 setLoading={setLoadingInvited}
+                canEdit={
+                  team.ownerId === user.id ||
+                  (team.staff.find((s) => s.id === user.id) &&
+                    team.staffPermissions &&
+                    team.staffPermissions.includes(
+                      TeamStaffPermission.EDIT_MEMBERS
+                    )) ||
+                  false
+                }
               />
             </DetailCard>
           )}
@@ -461,13 +561,16 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       },
     };
   }
-  if (team.ownerId !== auth.props.user?.id)
-    return {
-      redirect: {
-        destination: "/404",
-        permanent: false,
-      },
-    };
+  if (team.ownerId !== auth.props.user?.id) {
+    if (!team.staff.find((s) => s.id === auth.props.user?.id)) {
+      return {
+        redirect: {
+          destination: "/404",
+          permanent: false,
+        },
+      };
+    }
+  }
 
   return {
     props: {

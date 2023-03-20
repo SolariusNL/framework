@@ -16,6 +16,13 @@ const getTeam = async (slug: string, include?: Record<string, any>) => {
       owner: {
         select: nonCurrentUserSelect.select,
       },
+      staff: {
+        select: {
+          id: true,
+          username: true,
+          avatarUri: true,
+        },
+      },
       ...include,
     },
   });

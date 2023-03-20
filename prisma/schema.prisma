@@ -150,6 +150,7 @@ model User {
   createdInvites             Invite[]               @relation("userInvites")
   claimedSupportTickets      SupportTicket[]        @relation("claimedSupportTickets")
   apartOf                    Team[]                 @relation("teamMembers")
+  staffOf                    Team[]                 @relation("teamStaff")
   ownedTeams                 Team[]                 @relation("teamOwner")
   invitedToTeams             Team[]                 @relation("teamInvites")
   newsletterSubscribed       Boolean                @default(false)
@@ -883,26 +884,31 @@ enum GameEnvironment {
 }
 
 model Team {
-  id                  String      @id @default(uuid())
+  id                  String                @id @default(uuid())
   name                String
-  createdAt           DateTime    @default(now())
-  members             User[]      @relation("teamMembers")
-  games               Game[]      @relation("teamGame")
-  iconUri             String      @default("")
-  description         String      @default("")
-  descriptionMarkdown String      @default("")
-  location            String?     @default("")
-  timezone            String?     @default("")
-  website             String?     @default("")
-  email               String?     @default("")
-  owner               User        @relation("teamOwner", fields: [ownerId], references: [id])
+  createdAt           DateTime              @default(now())
+  members             User[]                @relation("teamMembers")
+  games               Game[]                @relation("teamGame")
+  iconUri             String                @default("")
+  description         String                @default("")
+  descriptionMarkdown String                @default("")
+  location            String?               @default("")
+  timezone            String?               @default("")
+  website             String?               @default("")
+  email               String?               @default("")
+  owner               User                  @relation("teamOwner", fields: [ownerId], references: [id])
   ownerId             Int
-  cakeDay             DateTime    @default(now())
-  updatedAt           DateTime    @default(now())
-  slug                String      @default("")
-  access              TeamAccess  @default(OPEN)
-  invited             User[]      @relation("teamInvites")
-  issues              TeamIssue[] @relation("teamIssueRel")
+  cakeDay             DateTime              @default(now())
+  updatedAt           DateTime              @default(now())
+  slug                String                @default("")
+  access              TeamAccess            @default(OPEN)
+  invited             User[]                @relation("teamInvites")
+  issues              TeamIssue[]           @relation("teamIssueRel")
+  shout               String?               @default("")
+  shoutMd             String?               @default("")
+  shoutUpdatedAt      DateTime?             @default(now())
+  staff               User[]                @relation("teamStaff")
+  staffPermissions    TeamStaffPermission[]
 }
 
 enum TeamAccess {
@@ -1005,4 +1011,11 @@ model TeamIssueComment {
   authorId  Int
   issue     TeamIssue @relation("issueComments", fields: [issueId], references: [id])
   issueId   String
+}
+
+enum TeamStaffPermission {
+  EDIT_SHOUT
+  EDIT_PRIVACY
+  EDIT_MEMBERS
+  EDIT_ISSUES
 }

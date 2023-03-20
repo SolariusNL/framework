@@ -23,6 +23,9 @@ interface MarkdownProps {
   value?: string;
   error?: string;
   className?: string;
+  minLen?: number;
+  maxLen?: number;
+  disabled?: boolean;
 }
 
 export enum ToolbarItem {
@@ -60,6 +63,9 @@ const Markdown: React.FC<MarkdownProps> = ({
   value,
   error,
   className,
+  minLen,
+  maxLen,
+  disabled,
 }) => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const insertText = (
@@ -348,6 +354,7 @@ const Markdown: React.FC<MarkdownProps> = ({
             }}
             value={value}
             minRows={5}
+            disabled={disabled}
             styles={(theme) => ({
               input: {
                 backgroundColor:
@@ -358,6 +365,8 @@ const Markdown: React.FC<MarkdownProps> = ({
               },
             })}
             error={error}
+            {...(minLen && { minLength: minLen })}
+            {...(maxLen && { maxLength: maxLen })}
           />
         </Tabs.Panel>
         <Tabs.Panel value="preview">
