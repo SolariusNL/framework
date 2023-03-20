@@ -23,6 +23,11 @@ const getTeam = async (slug: string, include?: Record<string, any>) => {
           avatarUri: true,
         },
       },
+      banned: {
+        select: {
+          id: true,
+        },
+      },
       ...include,
     },
   });

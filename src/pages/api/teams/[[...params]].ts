@@ -273,6 +273,7 @@ class TeamsRouter {
         members: { select: { id: true } },
         owner: true,
         invited: { select: { id: true } },
+        banned: { select: { id: true } },
       },
     });
 
@@ -282,6 +283,12 @@ class TeamsRouter {
 
     if (team.ownerId === user.id) {
       throw new BadRequestException("You are the owner of this team");
+    }
+
+    if (team.banned.some((b) => b.id === user.id)) {
+      throw new BadRequestException(
+        "You have been banned from this team therefore you cannot join"
+      );
     }
 
     if (
@@ -301,6 +308,11 @@ class TeamsRouter {
         },
         data: {
           members: {
+            disconnect: {
+              id: user.id,
+            },
+          },
+          staff: {
             disconnect: {
               id: user.id,
             },
@@ -978,10 +990,197 @@ class TeamsRouter {
     throw new BadRequestException("Invalid body");
   }
 
+  @Delete("/:id/users/:userId")
+  @Authorized()
+  public async removeUser(
+    @Account() user: User,
+    @Param("id") id: string,
+    @Param("userId") userId: number
+  ) {
+    const team = await prisma.team.findFirst({
+      where: {
+        id: String(id),
+        OR: [
+          {
+            ownerId: Number(user.id),
+          },
+          {
+            AND: [
+              {
+                staff: {
+                  some: {
+                    id: Number(user.id),
+                  },
+                },
+              },
+              {
+                staff: {
+                  none: {
+                    id: Number(userId),
+                  },
+                },
+              },
+              {
+                ownerId: {
+                  not: Number(userId),
+                },
+              },
+            ],
+          },
+        ],
+      },
+    });
+
+    if (!team) {
+      throw new BadRequestException("Team does not exist");
+    }
+
+    const userToRemove = await prisma.user.findFirst({
+      where: {
+        id: Number(userId),
+      },
+    });
+
+    if (!userToRemove) {
+      throw new BadRequestException("User does not exist");
+    }
+
+    await prisma.team.update({
+      where: {
+        id,
+      },
+      data: {
+        staff: {
+          disconnect: {
+            id: Number(userId),
+          },
+        },
+        members: {
+          disconnect: {
+            id: Number(userId),
+          },
+        },
+      },
+    });
+
+    await createNotification(
+      userToRemove.id,
+      NotificationType.ALERT,
+      `You have been removed from the team ${team.name}.`,
+      "Team removal"
+    );
+
+    // await Teams.createAuditLog(
+    //   TeamAuditLogType.REMOVE_USER,
+    //   [
+    //     { key: "User", value: userToRemove.username },
+    //     { key: "User ID", value: String(userToRemove.id) },
+    //   ],
+    //   `The user ${userToRemove.username} was removed from the team`,
+    //   user.id,
+    //   team.id
+    // );
+    // @TODO: Audit log
+
+    return {
+      success: true,
+    };
+  }
+
+  @Post("/:id/users/:userId/ban")
+  @Authorized()
+  public async banUser(
+    @Account() user: User,
+    @Param("id") id: string,
+    @Param("userId") userId: number
+  ) {
+    const team = await prisma.team.findFirst({
+      where: {
+        id: String(id),
+        OR: [
+          {
+            ownerId: Number(user.id),
+          },
+          {
+            AND: [
+              {
+                staff: {
+                  some: {
+                    id: Number(user.id),
+                  },
+                },
+              },
+              {
+                staff: {
+                  none: {
+                    id: Number(userId),
+                  },
+                },
+              },
+              {
+                ownerId: {
+                  not: Number(userId),
+                },
+              },
+            ],
+          },
+        ],
+      },
+    });
+
+    if (!team) {
+      throw new BadRequestException("Team does not exist");
+    }
+
+    const userToBan = await prisma.user.findFirst({
+      where: {
+        id: Number(userId),
+      },
+    });
+
+    if (!userToBan) {
+      throw new BadRequestException("User does not exist");
+    }
+
+    await prisma.team.update({
+      where: {
+        id,
+      },
+      data: {
+        staff: {
+          disconnect: {
+            id: Number(userId),
+          },
+        },
+        members: {
+          disconnect: {
+            id: Number(userId),
+          },
+        },
+        banned: {
+          connect: {
+            id: Number(userId),
+          },
+        },
+      },
+    });
+
+    await createNotification(
+      userToBan.id,
+      NotificationType.ALERT,
+      `You have been banned from the team ${team.name}.`,
+      "Team ban"
+    );
+
+    return {
+      success: true,
+    };
+  }
+
   @Get("/:id/issues")
   @Authorized()
   public async getIssues(
-    @Param("id") id                                                                                                                                                                                                 : string,
+    @Param("id") id: string,
     @Query("filter") filter: IssueFilter = "all",
     @Query("sort") sort: IssueSort = "title",
     @Query("page") page: number = 1,

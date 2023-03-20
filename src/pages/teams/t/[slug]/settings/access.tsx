@@ -3,40 +3,25 @@ import {
   Button,
   CloseButton,
   Loader,
-  Select,
   Stack,
   Text,
-  TextInput,
-  useMantineTheme,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { Rating, TeamAccess, TeamStaffPermission } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { GetServerSideProps } from "next";
-import { useEffect, useRef, useState } from "react";
-import {
-  HiCheck,
-  HiCheckCircle,
-  HiClock,
-  HiGlobe,
-  HiMail,
-  HiPlus,
-  HiXCircle,
-} from "react-icons/hi";
-import { TeamType } from "../..";
-import Descriptive from "../../../../components/Descriptive";
-import DetailCard from "../../../../components/DetailCard";
-import ImageUploader from "../../../../components/ImageUploader";
-import LabelledRadio from "../../../../components/LabelledRadio";
-import Markdown, { ToolbarItem } from "../../../../components/Markdown";
-import TeamsViewProvider from "../../../../components/Teams/TeamsView";
-import UserSelect from "../../../../components/UserSelect";
-import getTimezones from "../../../../data/timezones";
-import authorizedRoute from "../../../../util/auth";
-import getMediaUrl from "../../../../util/get-media";
-import { NonUser, User } from "../../../../util/prisma-types";
-import { getTeam } from "../../../../util/teams";
+import { useEffect, useState } from "react";
+import { HiCheck, HiCheckCircle, HiPlus, HiXCircle } from "react-icons/hi";
+import { TeamType } from "../../..";
+import DetailCard from "../../../../../components/DetailCard";
+import LabelledRadio from "../../../../../components/LabelledRadio";
+import TeamsViewProvider from "../../../../../components/Teams/TeamsView";
+import UserSelect from "../../../../../components/UserSelect";
+import authorizedRoute from "../../../../../util/auth";
+import getMediaUrl from "../../../../../util/get-media";
+import { NonUser, User } from "../../../../../util/prisma-types";
+import { getTeam } from "../../../../../util/teams";
 
 const headers = {
   "Content-Type": "application/json",
@@ -44,7 +29,7 @@ const headers = {
 };
 const blackInput = "dark:bg-black dark:text-white";
 
-export type TeamViewSettingsProps = {
+export type TeamViewSettingsAccessProps = {
   user: User;
   team: TeamType & {
     games: {
@@ -238,7 +223,10 @@ const StaffList: React.FC<{
   );
 };
 
-const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
+const TeamViewSettingsAccess: React.FC<TeamViewSettingsAccessProps> = ({
+  user,
+  team,
+}) => {
   const form = useForm<{
     description: string;
     location?: string;
@@ -295,9 +283,6 @@ const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
       },
     },
   });
-  const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
-  const iconRef = useRef<HTMLImageElement>(null);
-  const theme = useMantineTheme();
   const [loadingInvited, setLoadingInvited] = useState<boolean>(false);
 
   const updateTeam = async (values: Updatable) => {
@@ -315,38 +300,6 @@ const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
       .then(async (res) => res.json())
       .then(async (res) => {
         if (res.success) {
-          const formData = new FormData();
-          if (uploadedUrl) {
-            const file = new File(
-              [
-                Buffer.from(
-                  uploadedUrl?.replace(/^data:image\/\w+;base64,/, "")!,
-                  "base64"
-                ),
-              ],
-              "team.jpeg",
-              {
-                type: "image/jpeg",
-              }
-            );
-
-            formData.append("team", file);
-
-            await fetch(`/api/media/upload/team/${res.team.id}`, {
-              method: "POST",
-              headers: {
-                authorization: String(getCookie(".frameworksession")),
-              },
-              body: formData,
-            }).catch(() => {
-              showNotification({
-                title: "Failed to upload icon",
-                message: "Failed to upload icon. Please try again.",
-                icon: <HiXCircle />,
-              });
-            });
-          }
-
           showNotification({
             title: "Team updated",
             message: "Your team has been updated.",
@@ -363,123 +316,13 @@ const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
   };
 
   return (
-    <TeamsViewProvider user={user} team={team} active="settings">
+    <TeamsViewProvider user={user} team={team} active="settings-access">
       <form
         onSubmit={form.onSubmit(async (values) =>
           updateTeam(values as Updatable)
         )}
       >
         <DetailCard.Group>
-          <DetailCard
-            title="Details"
-            description="User-facing information about your team, such as its description
-                and avatar."
-          >
-            <Descriptive
-              title="Description"
-              description="A description of your team."
-            >
-              <Markdown
-                {...form.getInputProps("description")}
-                toolbar={[
-                  ToolbarItem.Bold,
-                  ToolbarItem.Italic,
-                  ToolbarItem.Code,
-                  ToolbarItem.Url,
-                  ToolbarItem.Table,
-                  ToolbarItem.BulletList,
-                  ToolbarItem.OrderedList,
-                  ToolbarItem.H2,
-                  ToolbarItem.H3,
-                  ToolbarItem.H4,
-                  ToolbarItem.Help,
-                ]}
-                disabled={team.ownerId !== user.id}
-              />
-            </Descriptive>
-            <Descriptive title="Photo" description="Your team's photo.">
-              <div className="mt-1 flex items-center space-x-5">
-                <Avatar
-                  src={uploadedUrl ? uploadedUrl : getMediaUrl(team.iconUri)}
-                  size={48}
-                  ref={iconRef}
-                />
-                <ImageUploader
-                  crop
-                  imgRef={iconRef}
-                  ratio={1}
-                  onFinished={setUploadedUrl}
-                  buttonProps={{
-                    disabled: team.ownerId !== user.id,
-                  }}
-                />
-              </div>
-            </Descriptive>
-          </DetailCard>
-          <DetailCard
-            title="Contact"
-            description="Contact information for your team, such as its email address and website."
-          >
-            <TextInput
-              icon={<HiGlobe />}
-              label="Website"
-              description="A website for your team to share with the world."
-              placeholder="https://framework.soodam.rocks"
-              classNames={{
-                input: blackInput,
-                icon: "dark:text-white",
-              }}
-              disabled={team.ownerId !== user.id}
-              {...form.getInputProps("website")}
-            />
-            <TextInput
-              icon={<HiMail />}
-              label="Email"
-              description="A way for people to reach your team."
-              placeholder="hi@soodam.rocks"
-              classNames={{
-                input: blackInput,
-                icon: "dark:text-white",
-              }}
-              disabled={team.ownerId !== user.id}
-              {...form.getInputProps("email")}
-            />
-            <TextInput
-              icon={<HiGlobe />}
-              label="Based in"
-              description="Share where your team is based, to grow your community."
-              placeholder="New York, NY"
-              classNames={{
-                input: blackInput,
-                icon: "dark:text-white",
-              }}
-              disabled={team.ownerId !== user.id}
-              {...form.getInputProps("location")}
-            />
-            <Select
-              data={getTimezones().map((t) => ({
-                label: t.value,
-                value: t.value,
-              }))}
-              searchable
-              label="Timezone"
-              placeholder="Select a timezone"
-              description="The timezone of your team."
-              className="md:w-1/2"
-              styles={{
-                root: {
-                  width: "100% !important",
-                },
-              }}
-              classNames={{
-                input: blackInput,
-                icon: "dark:text-white",
-              }}
-              icon={<HiClock />}
-              disabled={team.ownerId !== user.id}
-              {...form.getInputProps("timezone")}
-            />
-          </DetailCard>
           <DetailCard title="Staff" description="Manage your team's staff.">
             <StaffList
               staff={team.staff}
@@ -514,27 +357,28 @@ const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
               />
             ))}
           </DetailCard>
-          {team.access === TeamAccess.PRIVATE && (
-            <DetailCard
-              title="Invited"
-              description="People who have been invited to join your team."
-            >
-              <InvitedList
-                tid={team.id}
-                loading={loadingInvited}
-                setLoading={setLoadingInvited}
-                canEdit={
-                  team.ownerId === user.id ||
-                  (team.staff.find((s) => s.id === user.id) &&
-                    team.staffPermissions &&
-                    team.staffPermissions.includes(
-                      TeamStaffPermission.EDIT_MEMBERS
-                    )) ||
-                  false
-                }
-              />
-            </DetailCard>
-          )}
+          {team.access === TeamAccess.PRIVATE ||
+            (form.values.access === TeamAccess.PRIVATE && (
+              <DetailCard
+                title="Invited"
+                description="People who have been invited to join your team."
+              >
+                <InvitedList
+                  tid={team.id}
+                  loading={loadingInvited}
+                  setLoading={setLoadingInvited}
+                  canEdit={
+                    team.ownerId === user.id ||
+                    (team.staff.find((s) => s.id === user.id) &&
+                      team.staffPermissions &&
+                      team.staffPermissions.includes(
+                        TeamStaffPermission.EDIT_MEMBERS
+                      )) ||
+                    false
+                  }
+                />
+              </DetailCard>
+            ))}
         </DetailCard.Group>
         <div className="mt-8 flex justify-end">
           <Button leftIcon={<HiCheck />} type="submit">
@@ -580,4 +424,4 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   };
 };
 
-export default TeamViewSettings;
+export default TeamViewSettingsAccess;

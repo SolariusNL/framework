@@ -245,7 +245,10 @@ const TeamView: React.FC<TeamViewProps> = ({ user, team }) => {
                 <>
                   <Menu.Divider />
                   <Menu.Label>Administration</Menu.Label>
-                  <Link href={`/teams/t/${team.slug}/settings`} passHref>
+                  <Link
+                    href={`/teams/t/${team.slug}/settings/general`}
+                    passHref
+                  >
                     <Menu.Item icon={<HiCog />}>Manage team</Menu.Item>
                   </Link>
                   <Menu.Item
@@ -263,13 +266,16 @@ const TeamView: React.FC<TeamViewProps> = ({ user, team }) => {
             disabled={
               member === null ||
               team.owner.id === user.id ||
-              (team.access === TeamAccess.PRIVATE && !invited && !member)
+              (team.access === TeamAccess.PRIVATE && !invited && !member) ||
+              team.banned.some((b) => b.id === user.id)
             }
             onClick={joinTeam}
             className="ml-auto md:ml-0"
           >
             {member === null
               ? "..."
+              : team.banned.some((b) => b.id === user.id)
+              ? "Banned"
               : member
               ? "Leave team"
               : team.access === TeamAccess.PRIVATE

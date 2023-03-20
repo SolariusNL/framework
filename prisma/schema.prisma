@@ -151,6 +151,7 @@ model User {
   claimedSupportTickets      SupportTicket[]        @relation("claimedSupportTickets")
   apartOf                    Team[]                 @relation("teamMembers")
   staffOf                    Team[]                 @relation("teamStaff")
+  bannedFrom                 Team[]                 @relation("teamBans")
   ownedTeams                 Team[]                 @relation("teamOwner")
   invitedToTeams             Team[]                 @relation("teamInvites")
   newsletterSubscribed       Boolean                @default(false)
@@ -911,6 +912,7 @@ model Team {
   staff               User[]                @relation("teamStaff")
   staffPermissions    TeamStaffPermission[]
   auditLogs           TeamAuditLog[]        @relation("teamAuditLogs")
+  banned              User[]                @relation("teamBans")
 }
 
 enum TeamAccess {

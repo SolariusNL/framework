@@ -2,8 +2,11 @@ import { Avatar, Badge, NavLink, Text } from "@mantine/core";
 import Link from "next/link";
 import {
   HiCog,
+  HiDocumentText,
   HiExclamation,
+  HiEye,
   HiLockClosed,
+  HiServer,
   HiTicket,
   HiUsers,
   HiViewGrid,
@@ -19,7 +22,15 @@ import ShadedButton from "../ShadedButton";
 type TeamsViewProps = {
   user: User;
   children: React.ReactNode;
-  active: "details" | "members" | "games" | "issues" | "tickets" | "settings";
+  active:
+    | "details"
+    | "members"
+    | "games"
+    | "issues"
+    | "tickets"
+    | "settings-general"
+    | "settings-audit"
+    | "settings-access";
   team: TeamType & {
     staff: { username: string; id: number }[];
   };
@@ -101,13 +112,45 @@ const TeamsViewProvider: React.FC<TeamsViewProps> = ({
           ))}
           {(team.owner.id === user.id ||
             (team.staff && team.staff.map((s) => s.id).includes(user.id))) && (
-            <Link href={`/teams/t/${team.slug}/settings`}>
+            <Link href={`/teams/t/${team.slug}/settings/general`}>
               <NavLink
                 className="rounded-md"
                 label="Settings"
                 icon={<HiCog />}
-                active={"settings" === active}
-              />
+                active={active.startsWith("settings")}
+                opened={true}
+                classNames={{
+                  children: "col-span-full md:col-span-2",
+                  root: "col-span-full md:col-span-2",
+                }}
+                rightSection={<></>}
+              >
+                <Link href={`/teams/t/${team.slug}/settings/general`}>
+                  <NavLink
+                    className="rounded-md"
+                    label="General"
+                    icon={<HiDocumentText />}
+                    active={"settings-general" === active}
+                  />
+                </Link>
+                <Link href={`/teams/t/${team.slug}/settings/access`}>
+                  <NavLink
+                    className="rounded-md"
+                    label="Access"
+                    icon={<HiEye />}
+                    active={"settings-access" === active}
+                  />
+                </Link>
+                <Link href={`/teams/t/${team.slug}/settings/audit-log`}>
+                  <NavLink
+                    className="rounded-md"
+                    label="Audit Log"
+                    icon={<HiServer />}
+                    active={"settings-audit" === active}
+                    disabled
+                  />
+                </Link>
+              </NavLink>
             </Link>
           )}
         </SidebarTabNavigation.Sidebar>

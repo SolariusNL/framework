@@ -54,13 +54,16 @@ export const Section: React.FC<{
   );
 };
 
-export const Friend: React.FC<{ friend: NonUser }> = ({ friend }) => {
+export const Friend: React.FC<{
+  friend: NonUser;
+  children?: React.ReactNode;
+}> = ({ friend, children }) => {
   const { user } = useAuthorizedUserStore();
   const { colors } = useMantineTheme();
 
   return (
     <Link href={`/profile/${friend.username}`} passHref>
-      <ShadedButton className="w-full">
+      <ShadedButton className="w-full flex flex-col">
         <div className="flex items-start gap-4">
           <Indicator
             disabled={
@@ -108,6 +111,7 @@ export const Friend: React.FC<{ friend: NonUser }> = ({ friend }) => {
               )}
           </div>
         </div>
+        {children && <div className="mt-4 px-4 w-full">{children}</div>}
       </ShadedButton>
     </Link>
   );

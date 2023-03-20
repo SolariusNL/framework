@@ -25,6 +25,7 @@ export type TeamType = {
     games: number;
   };
   staff: { id: number; username: string; avatarUri: string }[];
+  banned: { id: number }[];
 } & Team;
 
 const Teams: React.FC<TeamsProps> = ({ user }) => {
