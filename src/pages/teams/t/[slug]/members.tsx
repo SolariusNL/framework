@@ -106,7 +106,7 @@ const TeamViewMembers: React.FC<TeamViewMembersProps> = ({ user, team }) => {
                               team.staff.map((s) => s.id).includes(user.id)) ||
                             member.id === user.id
                           }
-                          onClick={(e) => {
+                          onClick={(e: React.MouseEvent) => {
                             e.stopPropagation();
                             openConfirmModal({
                               title: "Confirm removal",
@@ -181,7 +181,7 @@ const TeamViewMembers: React.FC<TeamViewMembersProps> = ({ user, team }) => {
                                     .includes(user.id)) ||
                                 member.id === user.id
                               }
-                              onClick={(e) => {
+                              onClick={(e: React.MouseEvent) => {
                                 e.stopPropagation();
                                 openConfirmModal({
                                   title: "Confirm ban",
