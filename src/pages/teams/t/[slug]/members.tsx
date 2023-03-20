@@ -158,7 +158,9 @@ const TeamViewMembers: React.FC<TeamViewMembersProps> = ({ user, team }) => {
                           <Menu.Target>
                             <ActionIcon
                               size="lg"
-                              onClick={(e) => e.stopPropagation()}
+                              onClick={(e: React.MouseEvent) =>
+                                e.stopPropagation()
+                              }
                             >
                               <HiDotsVertical />
                             </ActionIcon>
