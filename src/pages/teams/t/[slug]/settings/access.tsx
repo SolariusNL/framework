@@ -357,28 +357,27 @@ const TeamViewSettingsAccess: React.FC<TeamViewSettingsAccessProps> = ({
               />
             ))}
           </DetailCard>
-          {team.access === TeamAccess.PRIVATE ||
-            (form.values.access === TeamAccess.PRIVATE && (
-              <DetailCard
-                title="Invited"
-                description="People who have been invited to join your team."
-              >
-                <InvitedList
-                  tid={team.id}
-                  loading={loadingInvited}
-                  setLoading={setLoadingInvited}
-                  canEdit={
-                    team.ownerId === user.id ||
-                    (team.staff.find((s) => s.id === user.id) &&
-                      team.staffPermissions &&
-                      team.staffPermissions.includes(
-                        TeamStaffPermission.EDIT_MEMBERS
-                      )) ||
-                    false
-                  }
-                />
-              </DetailCard>
-            ))}
+          {form.values.access === TeamAccess.PRIVATE && (
+            <DetailCard
+              title="Invited"
+              description="People who have been invited to join your team."
+            >
+              <InvitedList
+                tid={team.id}
+                loading={loadingInvited}
+                setLoading={setLoadingInvited}
+                canEdit={
+                  team.ownerId === user.id ||
+                  (team.staff.find((s) => s.id === user.id) &&
+                    team.staffPermissions &&
+                    team.staffPermissions.includes(
+                      TeamStaffPermission.EDIT_MEMBERS
+                    )) ||
+                  false
+                }
+              />
+            </DetailCard>
+          )}
         </DetailCard.Group>
         <div className="mt-8 flex justify-end">
           <Button leftIcon={<HiCheck />} type="submit">
