@@ -239,22 +239,23 @@ const TeamView: React.FC<TeamViewProps> = ({ user, team }) => {
               <Menu.Item icon={<HiClipboard />} onClick={() => copy(team.id)}>
                 Copy ID
               </Menu.Item>
-              {user.id === team.ownerId ||
-                (team.staff.map((s) => s.id).includes(user.id) && (
-                  <>
-                    <Menu.Divider />
-                    <Menu.Label>Administration</Menu.Label>
-                    <Link href={`/teams/t/${team.slug}/settings`} passHref>
-                      <Menu.Item icon={<HiCog />}>Manage team</Menu.Item>
-                    </Link>
-                    <Menu.Item
-                      icon={<HiChat />}
-                      onClick={() => setShoutEditOpened(true)}
-                    >
-                      Edit shout
-                    </Menu.Item>
-                  </>
-                ))}
+              {(team.owner.id === user.id ||
+                (team.staff &&
+                  team.staff.map((s) => s.id).includes(user.id))) && (
+                <>
+                  <Menu.Divider />
+                  <Menu.Label>Administration</Menu.Label>
+                  <Link href={`/teams/t/${team.slug}/settings`} passHref>
+                    <Menu.Item icon={<HiCog />}>Manage team</Menu.Item>
+                  </Link>
+                  <Menu.Item
+                    icon={<HiChat />}
+                    onClick={() => setShoutEditOpened(true)}
+                  >
+                    Edit shout
+                  </Menu.Item>
+                </>
+              )}
             </Menu.Dropdown>
           </Menu>
           <Button
