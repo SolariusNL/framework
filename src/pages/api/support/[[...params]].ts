@@ -7,6 +7,7 @@ import {
   Post,
 } from "@storyofams/next-api-decorators";
 import z, { ZodLiteral } from "zod";
+import AccountUpdate from "../../../../email/emails/account-update";
 import SupportTicketCreated from "../../../../email/emails/support-ticket-created";
 import Authorized, { Account } from "../../../util/api/authorized";
 import getMediaUrl from "../../../util/get-media";
@@ -170,6 +171,99 @@ class SupportRouter {
         tickets,
       },
       message: "Support tickets",
+    };
+  }
+
+  @Post("/dmca")
+  @RateLimitMiddleware(5)()
+  public async submitDMCAForm(@Body() body: unknown) {
+    const schema = z.object({
+      from: z.string().email(),
+      authorized: z.union([
+        z.literal("copyright-holder"),
+        z.literal("authorized-agent"),
+        z.literal("not-authorized"),
+      ]),
+      isOnFramework: z.boolean(),
+      descriptionOfCopyrightOwnership: z.string(),
+      descriptionOfInfringement: z.string(),
+      urls: z.array(z.string().url()),
+      desiredRemoved: z.array(z.string().url()),
+      hasAntiCircumvention: z.boolean(),
+      isViolatingOpenSource: z.boolean(),
+      solution: z.union([
+        z.literal("remove"),
+        z.literal("private"),
+        z.literal("other"),
+      ]),
+      infringerContactInformation: z.string(),
+      goodFaith: z.boolean(),
+      swearOfPerjury: z.boolean(),
+      fairUse: z.boolean(),
+      contactInformation: z.string(),
+      fullLegalName: z.string(),
+    });
+
+    const data = schema.parse(body);
+    const fields = [
+      ["From", data.from],
+      ["Authorized", data.authorized],
+      ["On Framework", data.isOnFramework],
+      [
+        "Description of Copyright Ownership",
+        data.descriptionOfCopyrightOwnership,
+      ],
+      ["Description of Infringement", data.descriptionOfInfringement],
+      ["URLs", data.urls.join(", ")],
+      ["Desired Removed", data.desiredRemoved.join(", ")],
+      ["Has Anti-Circumvention", data.hasAntiCircumvention],
+      ["Is Violating Open Source", data.isViolatingOpenSource],
+      ["Solution", data.solution],
+      ["Infringer Contact Information", data.infringerContactInformation],
+      ["Good Faith", data.goodFaith],
+      ["Swear of Perjury", data.swearOfPerjury],
+      ["Fair Use", data.fairUse],
+      ["Contact Information", data.contactInformation],
+      ["Full Legal Name", data.fullLegalName],
+    ];
+
+    const html = `
+      <div style="max-width: 600px; margin: 0 auto; padding: 20px; box-sizing: border-box;">
+        <h1 style="font-size: 24px; color: #333; margin-bottom: 20px;">New DMCA Form</h1>
+        <p style="font-size: 16px; color: #666;">A new DMCA form has been submitted on the website:</p>
+        <ul style="list-style: none; margin: 0; padding: 0;">
+          ${fields
+            .map(
+              ([key, value]) => `
+            <li style="margin-bottom: 10px;"> 
+              <strong style="display: block; font-size: 16px; color: #333;">${key}:</strong> ${value}
+            </li>
+          `
+            )
+            .join("")}
+        </ul>
+      </div>
+    `;
+
+    sendMail(String(process.env.SUPPORT_EMAIL), "New DMCA Form", html);
+
+    sendMail(
+      data.from,
+      "DMCA Form Submitted",
+      render(
+        AccountUpdate({
+          content:
+            "Your DMCA form has been submitted. We will review it shortly. Thank you!",
+        }) as React.ReactElement
+      )
+    );
+
+    return {
+      status: 200,
+      data: {
+        message: "DMCA form submitted",
+      },
+      message: "DMCA form submitted",
     };
   }
 }

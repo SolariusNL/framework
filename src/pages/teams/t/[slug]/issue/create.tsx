@@ -81,7 +81,7 @@ type CreateIssueForm = {
   assignee: number;
 };
 
-const BLACK = {
+export const BLACK = {
   icon: "dark:text-white",
   input: "dark:bg-black dark:text-white",
 };

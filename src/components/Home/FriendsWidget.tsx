@@ -24,10 +24,18 @@ export const Section: React.FC<{
   right?: React.ReactNode;
   titleClassName?: string;
   descriptionClassName?: string;
-}> = ({ title, description, right, titleClassName, descriptionClassName }) => {
+  sm?: boolean;
+}> = ({
+  title,
+  description,
+  right,
+  titleClassName,
+  descriptionClassName,
+  sm,
+}) => {
   const meta = (
     <>
-      <Title order={3} mb={4} className={titleClassName}>
+      <Title order={sm ? 4 : 3} mb={4} className={titleClassName}>
         {title}
       </Title>
       <Text
