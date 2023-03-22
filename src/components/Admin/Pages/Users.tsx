@@ -3,6 +3,7 @@ import {
   Badge,
   Button,
   Group,
+  Menu,
   Modal,
   Pagination,
   Text,
@@ -21,12 +22,21 @@ import {
 } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { HiBell, HiCheckCircle, HiSearch } from "react-icons/hi";
+import {
+  HiArrowRight,
+  HiBell,
+  HiCheckCircle,
+  HiRefresh,
+  HiSearch,
+  HiUser,
+} from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import getMediaUrl from "../../../util/get-media";
 import useMediaQuery from "../../../util/media-query";
 import { NonUser, User } from "../../../util/prisma-types";
+import ContextMenu from "../../ContextMenu";
 import Stateful from "../../Stateful";
 import UserSelect from "../../UserSelect";
 import UserView from "../UserView";
@@ -53,6 +63,7 @@ const Users = () => {
   const [selectedUser, setSelectedUser] = useState<AdminViewUser | null>(null);
   const mobile = useMediaQuery("768");
   const [page, setPage] = useState(0);
+  const router = useRouter();
   const [pages, setPages] = useState(0);
 
   const fetchUsers = async () => {
@@ -326,45 +337,81 @@ const Users = () => {
             {users &&
               users.length > 0 &&
               users.map((u) => (
-                <UnstyledButton
-                  sx={(theme) => ({
-                    padding: theme.spacing.xs,
-                    borderRadius: theme.radius.md,
-                    color:
-                      theme.colorScheme === "dark"
-                        ? theme.colors.dark[0]
-                        : theme.black,
-                    "&:hover": {
-                      backgroundColor:
-                        theme.colorScheme === "dark"
-                          ? theme.colors.dark[6]
-                          : theme.colors.gray[0],
-                    },
-                    width: "100%",
-                    display: "flex",
-                  })}
-                  onClick={() => {
-                    setSelectedUserId(u.id);
-                    setSelectedUser(u);
-                  }}
+                <ContextMenu
+                  className="w-full"
+                  dropdown={
+                    <>
+                      <Menu.Item
+                        icon={<HiUser />}
+                        onClick={() => router.push(`/profile/${u.username}`)}
+                      >
+                        View profile
+                      </Menu.Item>
+                      <Menu.Item
+                        icon={<HiArrowRight />}
+                        onClick={() => {
+                          setSelectedUserId(u.id);
+                          setSelectedUser(u);
+                        }}
+                      >
+                        Select user
+                      </Menu.Item>
+                      <Menu.Divider />
+                      <Menu.Item
+                        icon={<HiRefresh />}
+                        onClick={() => fetchUsers()}
+                      >
+                        Refresh
+                      </Menu.Item>
+                    </>
+                  }
                   key={u.id}
+                  width={160}
                 >
-                  <Avatar src={getMediaUrl(u.avatarUri)} className="mr-3" />
-                  <div>
-                    <div className="flex items-center">
-                      <Text weight={600} className="mr-2">
-                        {u.username}
+                  <UnstyledButton
+                    sx={(theme) => ({
+                      padding: theme.spacing.xs,
+                      borderRadius: theme.radius.md,
+                      color:
+                        theme.colorScheme === "dark"
+                          ? theme.colors.dark[0]
+                          : theme.black,
+                      "&:hover": {
+                        backgroundColor:
+                          theme.colorScheme === "dark"
+                            ? theme.colors.dark[6]
+                            : theme.colors.gray[0],
+                      },
+                      width: "100%",
+                      display: "flex",
+                    })}
+                    onClick={() => {
+                      setSelectedUserId(u.id);
+                      setSelectedUser(u);
+                    }}
+                    key={u.id}
+                  >
+                    <Avatar src={getMediaUrl(u.avatarUri)} className="mr-3" />
+                    <div>
+                      <div className="flex items-center">
+                        <Text weight={600} className="mr-2">
+                          {u.username}
+                        </Text>
+                        {u.role === "ADMIN" && (
+                          <Image
+                            src="/brand/white.png"
+                            width={16}
+                            height={16}
+                          />
+                        )}
+                        {u.banned && <Badge color="red">Banned</Badge>}
+                      </div>
+                      <Text size="sm" color="dimmed">
+                        {u.email}
                       </Text>
-                      {u.role === "ADMIN" && (
-                        <Image src="/brand/white.png" width={16} height={16} />
-                      )}
-                      {u.banned && <Badge color="red">Banned</Badge>}
                     </div>
-                    <Text size="sm" color="dimmed">
-                      {u.email}
-                    </Text>
-                  </div>
-                </UnstyledButton>
+                  </UnstyledButton>
+                </ContextMenu>
               ))}
           </div>
         </div>

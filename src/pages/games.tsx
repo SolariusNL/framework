@@ -1,5 +1,6 @@
 import {
   Divider,
+  Menu,
   NavLink,
   RangeSlider,
   Select,
@@ -8,8 +9,16 @@ import {
 import { GameGenre } from "@prisma/client";
 import { GetServerSidePropsContext, NextPage } from "next";
 import React, { useEffect } from "react";
-import { HiClock, HiFire, HiGift, HiSearch, HiSparkles } from "react-icons/hi";
+import {
+  HiClipboard,
+  HiClock,
+  HiFire,
+  HiGift,
+  HiSearch,
+  HiSparkles,
+} from "react-icons/hi";
 import InfiniteScroll from "react-infinite-scroller";
+import ContextMenu from "../components/ContextMenu";
 import Descriptive from "../components/Descriptive";
 import Framework from "../components/Framework";
 import GameCard from "../components/GameCard";
@@ -294,7 +303,28 @@ const Games: NextPage<GamesProps> = ({ user }) => {
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-8">
                   {games &&
                     games.length > 0 &&
-                    games.map((game) => <GameCard game={game} key={game.id} />)}
+                    games.map((game) => (
+                      <ContextMenu
+                        width={170}
+                        dropdown={
+                          <>
+                            <Menu.Item
+                              icon={<HiClipboard />}
+                              onClick={() => {
+                                window.navigator.clipboard.writeText(
+                                  `${window.location.origin}/game/${game.id}`
+                                );
+                              }}
+                            >
+                              Copy game ID
+                            </Menu.Item>
+                          </>
+                        }
+                        key={game.id}
+                      >
+                        <GameCard game={game} />
+                      </ContextMenu>
+                    ))}
                   {games && games.length === 0 && (
                     <div className="col-span-full">
                       <ModernEmptyState

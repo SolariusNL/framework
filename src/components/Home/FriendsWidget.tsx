@@ -3,18 +3,23 @@ import {
   Divider,
   Indicator,
   Loader,
+  Menu,
   Text,
   Title,
   useMantineTheme,
 } from "@mantine/core";
+import { useClipboard } from "@mantine/hooks";
 import { getCookie } from "cookies-next";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { HiPlus } from "react-icons/hi";
+import { HiClipboard, HiFlag, HiPlus, HiUser } from "react-icons/hi";
 import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
 import getMediaUrl from "../../util/get-media";
 import { NonUser } from "../../util/prisma-types";
+import ContextMenu from "../ContextMenu";
 import ModernEmptyState from "../ModernEmptyState";
+import ReportUser from "../ReportUser";
 import ShadedButton from "../ShadedButton";
 import ShadedCard from "../ShadedCard";
 
@@ -68,60 +73,95 @@ export const Friend: React.FC<{
 }> = ({ friend, children }) => {
   const { user } = useAuthorizedUserStore();
   const { colors } = useMantineTheme();
+  const router = useRouter();
+  const [reportOpened, setReportOpened] = useState(false);
+  const { copy } = useClipboard();
 
   return (
-    <Link href={`/profile/${friend.username}`} passHref>
-      <ShadedButton className="w-full flex flex-col">
-        <div className="flex items-start gap-4">
-          <Indicator
-            disabled={
-              !friend.lastSeen ||
-              new Date(friend.lastSeen) <
-                new Date(new Date().getTime() - 5 * 60 * 1000)
-            }
-            color="green"
-            inline
-          >
-            <Avatar
-              size={32}
-              src={getMediaUrl(friend.avatarUri)}
-              radius={999}
-            />
-          </Indicator>
-          <div>
-            <div className="flex items-center gap-2">
-              <Text size="lg">{friend.username}</Text>
-              {friend.alias && (
-                <Text size="sm" color="dimmed">
-                  {friend.alias}
-                </Text>
-              )}
-            </div>
-            <Text size="sm" lineClamp={2} color="dimmed">
-              {friend.bio}
-            </Text>
-            {(
-              friend as NonUser & {
-                following: { id: number }[];
-              }
-            ).following &&
-              (
-                friend as NonUser & {
-                  following: { id: number }[];
+    <>
+      <ReportUser
+        opened={reportOpened}
+        setOpened={setReportOpened}
+        user={friend}
+      />
+      <ContextMenu
+        width={160}
+        dropdown={
+          <>
+            <Menu.Item
+              onClick={() => router.push(`/profile/${friend.username}`)}
+              icon={<HiUser />}
+            >
+              View profile
+            </Menu.Item>
+            <Menu.Item
+              icon={<HiFlag />}
+              color="red"
+              onClick={() => setReportOpened(true)}
+            >
+              Report
+            </Menu.Item>
+            <Menu.Divider />
+            <Menu.Item icon={<HiClipboard />} onClick={() => copy(friend.id)}>
+              Copy ID
+            </Menu.Item>
+          </>
+        }
+      >
+        <Link href={`/profile/${friend.username}`} passHref>
+          <ShadedButton className="w-full flex flex-col">
+            <div className="flex items-start gap-4">
+              <Indicator
+                disabled={
+                  !friend.lastSeen ||
+                  new Date(friend.lastSeen) <
+                    new Date(new Date().getTime() - 5 * 60 * 1000)
                 }
-              ).following.find((f) => f.id === user?.id) && (
-                <div className="flex items-center gap-2 mt-2">
-                  <HiPlus color={colors.gray[6]} />
-                  <Text size="sm" color="dimmed" weight={500}>
-                    Follows you
-                  </Text>
+                color="green"
+                inline
+              >
+                <Avatar
+                  size={32}
+                  src={getMediaUrl(friend.avatarUri)}
+                  radius={999}
+                />
+              </Indicator>
+              <div>
+                <div className="flex items-center gap-2">
+                  <Text size="lg">{friend.username}</Text>
+                  {friend.alias && (
+                    <Text size="sm" color="dimmed">
+                      {friend.alias}
+                    </Text>
+                  )}
                 </div>
-              )}
-          </div>
-        </div>
-        {children && <div className="mt-4 px-4 w-full">{children}</div>}
-      </ShadedButton>
-    </Link>
+                <Text size="sm" lineClamp={2} color="dimmed">
+                  {friend.bio}
+                </Text>
+                {(
+                  friend as NonUser & {
+                    following: { id: number }[];
+                  }
+                ).following &&
+                  (
+                    friend as NonUser & {
+                      following: { id: number }[];
+                    }
+                  ).following.find((f) => f.id === user?.id) && (
+                    <div className="flex items-center gap-2 mt-2">
+                      <HiPlus color={colors.gray[6]} />
+                      <Text size="sm" color="dimmed" weight={500}>
+                        Follows you
+                      </Text>
+                    </div>
+                  )}
+              </div>
+            </div>
+            {children && <div className="mt-4 px-4 w-full">{children}</div>}
+          </ShadedButton>
+        </Link>
+      </ContextMenu>
+    </>
   );
 };
 
