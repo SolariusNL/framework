@@ -147,7 +147,6 @@ const TeamsViewProvider: React.FC<TeamsViewProps> = ({
                     label="Audit Log"
                     icon={<HiServer />}
                     active={"settings-audit" === active}
-                    disabled
                   />
                 </Link>
               </NavLink>

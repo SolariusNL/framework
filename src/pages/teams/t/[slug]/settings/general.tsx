@@ -188,7 +188,9 @@ const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
         } else {
           showNotification({
             title: "Failed to update team",
-            message: "Failed to update team. Please try again.",
+            message:
+              "Failed to update team. Please try again. Error: " + res.error ||
+              "Unexpected error",
             icon: <HiXCircle />,
           });
         }

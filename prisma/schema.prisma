@@ -1028,22 +1028,26 @@ model TeamAuditLogKeyValuePair {
   id      String       @id @default(uuid())
   audit   TeamAuditLog @relation(references: [id], fields: [auditId])
   auditId String
+  key     String
+  value   String
 }
 
 model TeamAuditLog {
-  id      String                     @id @default(uuid())
-  rows    TeamAuditLogKeyValuePair[]
-  type    TeamAuditLogType
-  content String
-  user    User                       @relation("audited", references: [id], fields: [userId])
-  userId  Int
-  team    Team?                      @relation("teamAuditLogs", references: [id], fields: [teamId])
-  teamId  String?
+  id        String                     @id @default(uuid())
+  rows      TeamAuditLogKeyValuePair[]
+  type      TeamAuditLogType
+  content   String
+  user      User                       @relation("audited", references: [id], fields: [userId])
+  userId    Int
+  team      Team?                      @relation("teamAuditLogs", references: [id], fields: [teamId])
+  teamId    String?
+  createdAt DateTime?                  @default(now())
 }
 
 enum TeamAuditLogType {
   UPDATE_TEAM_DETAILS
-  UPDAT_PRIVACY_STATUS
+  UPDATE_PRIVACY_STATUS
   UPDATE_INVITED_USERS
   UPDATE_SHOUT
+  REMOVE_USER
 }

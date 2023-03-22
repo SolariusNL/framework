@@ -32,6 +32,7 @@ import { slugify } from "../../../util/slug";
 import type { FilterType, SortType } from "../../teams/discover";
 import { tags } from "../../teams/t/[slug]/issue/create";
 import type { IssueFilter, IssueSort } from "../../teams/t/[slug]/issues";
+import type { AuditLogType } from "../../teams/t/[slug]/settings/audit-log";
 
 const teamSanitization = {
   allowedTags: [
@@ -242,13 +243,13 @@ class TeamsRouter {
     await Teams.createAuditLog(
       TeamAuditLogType.UPDATE_TEAM_DETAILS,
       [
-        { key: "Location", value: location! },
-        { key: "Timezone", value: timezone! },
-        { key: "Website", value: website! },
-        { key: "Email", value: email! },
+        { key: "Location", value: team.location! || "Unprovided" },
+        { key: "Timezone", value: team.timezone! || "Unprovided" },
+        { key: "Website", value: team.website! || "Unprovided" },
+        { key: "Email", value: team.email! || "Unprovided" },
         {
           key: "Access",
-          value: access === TeamAccess.OPEN ? "Open" : "Private",
+          value: team.access === TeamAccess.OPEN ? "Open" : "Private",
         },
       ],
       "Team updated, new values:",
@@ -570,6 +571,65 @@ class TeamsRouter {
     }
 
     return team.invited;
+  }
+
+  @Get("/:tid/audit/:page")
+  @Authorized()
+  public async getAuditLog(
+    @Account() user: User,
+    @Query("type") type: AuditLogType = "ALL",
+    @Param("page") page: number,
+    @Param("tid") teamId: string
+  ) {
+    const query: Prisma.TeamAuditLogFindManyArgs = {
+      where: {
+        team: {
+          id: teamId,
+          OR: [
+            {
+              ownerId: user.id,
+            },
+            {
+              staff: {
+                some: {
+                  id: user.id,
+                },
+              },
+            },
+          ],
+        },
+        ...(type === "ALL" ? {} : { type }),
+      },
+    };
+
+    const audits = await prisma.teamAuditLog.findMany({
+      where: query.where,
+      include: {
+        user: {
+          select: {
+            id: true,
+            username: true,
+            alias: true,
+            avatarUri: true,
+          },
+        },
+        rows: true,
+      },
+      skip: page > 0 ? (page - 1) * 25 : 0,
+      take: 25,
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    const count = await prisma.teamAuditLog.count({
+      where: query.where,
+    });
+
+    return {
+      audits,
+      pages: Math.ceil(count / 25),
+    };
   }
 
   @Get("/discover/:page")
@@ -1070,17 +1130,16 @@ class TeamsRouter {
       "Team removal"
     );
 
-    // await Teams.createAuditLog(
-    //   TeamAuditLogType.REMOVE_USER,
-    //   [
-    //     { key: "User", value: userToRemove.username },
-    //     { key: "User ID", value: String(userToRemove.id) },
-    //   ],
-    //   `The user ${userToRemove.username} was removed from the team`,
-    //   user.id,
-    //   team.id
-    // );
-    // @TODO: Audit log
+    await Teams.createAuditLog(
+      TeamAuditLogType.REMOVE_USER,
+      [
+        { key: "User", value: userToRemove.username },
+        { key: "User ID", value: String(userToRemove.id) },
+      ],
+      `The user ${userToRemove.username} was removed from the team`,
+      user.id,
+      team.id
+    );
 
     return {
       success: true,
