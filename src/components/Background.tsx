@@ -1,4 +1,5 @@
 import clsx from "../util/clsx";
+import BackgroundImg from "../assets/subtlebackground.png";
 
 const Background: React.FC = () => (
   <>
@@ -6,8 +7,7 @@ const Background: React.FC = () => (
     <span
       className="fixed inset-0"
       style={{
-        backgroundImage:
-          "url('https://mintlify.s3-us-west-1.amazonaws.com/frpc/images/lightbackground.png')",
+        backgroundImage: `url(${BackgroundImg.src})`,
         backgroundRepeat: "no-repeat",
         backgroundPosition: "top right",
         backgroundAttachment: "fixed",
