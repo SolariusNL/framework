@@ -1,12 +1,21 @@
+import { Group, Pagination, Select, Text } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { Rating, TeamAuditLog, TeamAuditLogType } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { GetServerSideProps } from "next";
-import { useEffect, useState } from "react";
-import { HiXCircle } from "react-icons/hi";
+import React, {
+  forwardRef,
+  FunctionComponent,
+  useEffect,
+  useState,
+} from "react";
+import { HiGlobe, HiXCircle } from "react-icons/hi";
+import { IconBaseProps, IconType } from "react-icons/lib";
 import { TeamType } from "../../..";
 import TeamsViewProvider from "../../../../../components/Teams/TeamsView";
+import auditLogMeta from "../../../../../data/auditLog";
 import authorizedRoute from "../../../../../util/auth";
+import clsx from "../../../../../util/clsx";
 import { NonUser, User } from "../../../../../util/prisma-types";
 import { getTeam } from "../../../../../util/teams";
 
@@ -44,14 +53,44 @@ type Audit = TeamAuditLog & {
   rows: {
     key: string;
     value: string;
-  }
+  };
 };
+
+interface ItemProps extends React.ComponentPropsWithoutRef<"div"> {
+  icon: IconType;
+  label: string;
+  active: boolean;
+  type: "add" | "remove" | "change" | "all";
+}
+
+const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
+  ({ icon, label, active, type, ...others }: ItemProps, ref) => (
+    <div ref={ref} {...others}>
+      <Group noWrap>
+        <>
+          {React.createElement(icon, {
+            className: clsx(
+              type === "add"
+                ? "dark:text-teal-500/50"
+                : type === "remove"
+                ? "dark:text-red-500/50"
+                : "dark:text-orange-500/50",
+              active && "!text-white",
+              type === "all" && "!text-white"
+            ),
+          })}
+          <Text size="sm">{label}</Text>
+        </>
+      </Group>
+    </div>
+  )
+);
 
 const TeamViewSettingsAuditLog: React.FC<TeamViewSettingsAuditLogProps> = ({
   user,
   team,
 }) => {
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1);
   const [pages, setPages] = useState(0);
   const [type, setType] = useState<AuditLogType>("ALL");
   const [audits, setAudits] = useState<Audit[]>();
@@ -86,7 +125,38 @@ const TeamViewSettingsAuditLog: React.FC<TeamViewSettingsAuditLogProps> = ({
 
   return (
     <TeamsViewProvider user={user} team={team} active="settings-audit">
-      {JSON.stringify(audits)}
+      <div className="flex items-center justify-between">
+        <Pagination total={pages} page={page} radius="md" onChange={setPage} />
+        <Select
+          data={[
+            ...Object.values(TeamAuditLogType).map((v) => ({
+              label: auditLogMeta.get(v)?.label,
+              value: v,
+              icon: auditLogMeta.get(v)?.icon,
+              active: type === v,
+              type: auditLogMeta.get(v)?.type,
+            })),
+            {
+              label: "All",
+              value: "ALL",
+              icon: HiGlobe,
+              active: type === "ALL",
+              type: "all",
+            },
+          ]}
+          styles={(theme) => ({
+            item: {
+              "&[data-selected]": {
+                color: "rgb(255 255 255 / var(--tw-text-opacity)) !important",
+                fontWeight: 500,
+              },
+            },
+          })}
+          itemComponent={SelectItem}
+          value={type}
+          onChange={(t) => setType(t as AuditLogType)}
+        />
+      </div>
     </TeamsViewProvider>
   );
 };

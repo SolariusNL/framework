@@ -439,6 +439,13 @@ class UserRouter {
       };
     }
 
+    if (!Number.isInteger(amount)) {
+      return {
+        success: false,
+        message: "Invalid number",
+      };
+    }
+
     if (user.tickets < amount) {
       return {
         success: false,
