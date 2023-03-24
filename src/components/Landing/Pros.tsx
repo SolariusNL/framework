@@ -1,23 +1,19 @@
 import {
+  Col,
   createStyles,
-  Title,
+  Grid,
   SimpleGrid,
   Text,
-  Button,
   ThemeIcon,
-  Grid,
-  Col,
+  Title,
 } from "@mantine/core";
-import Link from "next/link";
 import { HiEyeOff, HiLockOpen, HiServer, HiXCircle } from "react-icons/hi";
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
     padding: `${theme.spacing.xl * 2}px ${theme.spacing.xl}px`,
     backgroundColor:
-      theme.colorScheme === "dark"
-        ? theme.colors.dark[9]
-        : theme.colors.gray[1],
+      theme.colorScheme === "dark" ? "#000" : theme.colors.gray[1],
     borderRadius: theme.radius.md,
   },
 
