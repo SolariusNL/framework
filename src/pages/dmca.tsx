@@ -253,6 +253,7 @@ const DMCA: React.FC<DMCAProps> = ({ user }) => {
                 icon={<HiAtSymbol />}
                 type="email"
                 label="From"
+                placeholder="Enter a contact email"
                 required
                 description="The email address of the authorized agent submitting this request."
                 mb="sm"
@@ -382,7 +383,8 @@ const DMCA: React.FC<DMCAProps> = ({ user }) => {
                           If the content you are reporting is violating open
                           source licenses, please include how the content is
                           being used in violation of the license in the field
-                          below.
+                          below. Include the name of the license and the
+                          infracted guidelines
                         </Alert>
                       ) : null}
                       <Textarea
