@@ -70,7 +70,9 @@ export const Section: React.FC<{
 export const Friend: React.FC<{
   friend: NonUser;
   children?: React.ReactNode;
-}> = ({ friend, children }) => {
+  dropdown?: React.ReactNode;
+  dropdownWidth?: number;
+}> = ({ friend, children, dropdown, dropdownWidth }) => {
   const { user } = useAuthorizedUserStore();
   const { colors } = useMantineTheme();
   const router = useRouter();
@@ -85,7 +87,7 @@ export const Friend: React.FC<{
         user={friend}
       />
       <ContextMenu
-        width={160}
+        width={dropdownWidth || 160}
         dropdown={
           <>
             <Menu.Item
@@ -98,10 +100,17 @@ export const Friend: React.FC<{
               icon={<HiFlag />}
               color="red"
               onClick={() => setReportOpened(true)}
+              disabled={user?.id === friend.id}
             >
               Report
             </Menu.Item>
             <Menu.Divider />
+            {dropdown && (
+              <>
+                {dropdown}
+                <Menu.Divider />
+              </>
+            )}
             <Menu.Item icon={<HiClipboard />} onClick={() => copy(friend.id)}>
               Copy ID
             </Menu.Item>
@@ -157,7 +166,7 @@ export const Friend: React.FC<{
                   )}
               </div>
             </div>
-            {children && <div className="mt-4 px-4 w-full">{children}</div>}
+            {children && <div className="w-full">{children}</div>}
           </ShadedButton>
         </Link>
       </ContextMenu>

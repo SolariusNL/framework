@@ -1,6 +1,6 @@
 import { ActionIcon, Skeleton, Tabs, Textarea, Tooltip } from "@mantine/core";
 import dynamic from "next/dynamic";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { RiHeading, RiNumber2, RiNumber3, RiNumber4 } from "react-icons/ri";
 import {
   VscBold,
@@ -255,22 +255,24 @@ const Markdown: React.FC<MarkdownProps> = ({
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      toolbar.forEach((item) => {
-        const action = getAction(item);
-        if (
-          action &&
-          action.keybind === e.key.toUpperCase() &&
-          (e.metaKey || e.ctrlKey)
-        ) {
-          e.preventDefault();
-          action.onClick();
-        }
-      });
+      if (document.activeElement !== inputRef.current) return;
+      else
+        toolbar.forEach((item) => {
+          const action = getAction(item);
+          if (
+            action &&
+            action.keybind === e.key.toUpperCase() &&
+            (e.metaKey || e.ctrlKey)
+          ) {
+            e.preventDefault();
+            action.onClick();
+          }
+        });
     };
 
     const input = inputRef.current;
     const inputKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Tab" && input) {
+      if (e.key === "Tab" && document.activeElement === input && input) {
         e.preventDefault();
         const start = input.selectionStart;
         const end = input.selectionEnd;
@@ -279,38 +281,6 @@ const Markdown: React.FC<MarkdownProps> = ({
         input.value = before + "  " + after;
         input.selectionStart = input.selectionEnd = start + 2;
       }
-
-      // if (e.key === "Enter" && input) {
-      //   if (e.shiftKey) return;
-      //   e.preventDefault();
-
-      //   const v = input.value;
-      //   const lines = v.split("\n");
-      //   const lastLine = lines[lines.length - 1];
-
-      //   const BULLET = /^- (.*)/;
-      //   const ORDERED = /^\d+\. (.*)/;
-
-      //   if (BULLET.test(lastLine)) {
-      //     if (lastLine === "- ") {
-      //       input.value = v.substring(0, v.length - 3) + "\n\n";
-      //       return;
-      //     }
-      //     input.value += "\n- ";
-      //   } else if (ORDERED.test(lastLine)) {
-      //     const lastNumber = parseInt(String(lastLine.match(/^\d+/)));
-      //     let nextNumber = lastNumber + 1;
-
-      //     if (lastLine === `${lastNumber}. `) {
-      //       input.value = v.substring(0, v.length - 3) + "\n";
-      //       return;
-      //     }
-
-      //     input.value += "\n" + nextNumber + ". ";
-      //   } else {
-      //     input.value += "\n";
-      //   }
-      // }
     };
 
     document.addEventListener("keydown", handleKeyDown);
