@@ -7,6 +7,7 @@ import {
 } from "@mantine/core";
 import { FC, ReactNode } from "react";
 import MinimalFooter from "../components/MinimalFooter";
+import Background from "../assets/subtlebackground.png";
 
 type OuterUIProps = {
   description: ReactNode;
@@ -20,20 +21,21 @@ const OuterUI: FC<OuterUIProps> = (props) => {
       <style jsx global>
         {`
           body {
-            background-color: ${colorScheme === "dark" ? "#121212" : "000"} !important;
+            background-color: ${colorScheme === "dark"
+              ? "#121212"
+              : "000"} !important;
           }
         `}
       </style>
       <span className="fixed inset-0 bg-background" />
       <span
-        className="fixed inset-0"
         style={{
-          backgroundImage:
-            "url('https://mintlify.s3-us-west-1.amazonaws.com/frpc/images/lightbackground.png')",
           backgroundRepeat: "no-repeat",
           backgroundPosition: "top right",
           backgroundAttachment: "fixed",
+          backgroundImage: `url(${Background.src})`,
         }}
+        className="fixed inset-0"
       />
       <div className="relative">
         <Container size={420} my={40}>

@@ -11,6 +11,7 @@ import {
   createStyles,
   Drawer,
   Group,
+  Menu,
   NavLink,
   Popover,
   Stack,
@@ -34,11 +35,14 @@ import {
   HiCode,
   HiCog,
   HiDocumentText,
+  HiExternalLink,
   HiGift,
+  HiGlobe,
   HiHome,
   HiLightBulb,
   HiLogin,
   HiMail,
+  HiOfficeBuilding,
   HiSearch,
   HiShieldCheck,
   HiShoppingBag,
@@ -47,18 +51,21 @@ import {
   HiTicket,
   HiUser,
   HiViewGrid,
+  HiXCircle,
 } from "react-icons/hi";
 import SocketContext from "../contexts/Socket";
 import useAuthorizedUserStore from "../stores/useAuthorizedUser";
 import useExperimentsStore, {
   ExperimentId,
 } from "../stores/useExperimentsStore";
+import useFeedback from "../stores/useFeedback";
 import useSidebar from "../stores/useSidebar";
 import logout from "../util/api/logout";
 import { getIpcRenderer } from "../util/electron";
 import useMediaQuery from "../util/media-query";
 import { User } from "../util/prisma-types";
 import Chat from "./Chat";
+import ContextMenu from "./ContextMenu";
 import EmailReminder from "./EmailReminder";
 import Footer from "./Footer";
 import CurrencyMenu from "./Framework/CurrencyMenu";
@@ -178,6 +185,7 @@ const Framework = ({
   const oldCookie = getCookie(".frameworksession.old");
   const [impersonating, setImpersonating] = useState(false);
   const [mobileSearchOpened, _setMobileSearchOpened] = useState(false);
+  const { setOpened } = useFeedback();
 
   useEffect(() => {
     if (sidebarOpened) {
@@ -487,9 +495,81 @@ const Framework = ({
         >
           <Group position="apart">
             <Group spacing={12}>
-              <Link href="/" passHref>
-                <FrameworkLogo square={mobile} />
-              </Link>
+              <ContextMenu
+                width={200}
+                dropdown={
+                  <>
+                    <Menu.Label>
+                      Framework {process.env.NEXT_PUBLIC_VERSION} - you found a
+                      secret place!
+                    </Menu.Label>
+                    <Menu.Item
+                      color="pink"
+                      icon={<HiGlobe />}
+                      onClick={() => setOpened(true)}
+                    >
+                      Send feedback
+                    </Menu.Item>
+                    <Menu.Item
+                      color="grape"
+                      icon={<HiCode />}
+                      onClick={() => {
+                        try {
+                          getIpcRenderer().send("@app/preview");
+                        } catch {
+                          showNotification({
+                            title: "Error",
+                            message:
+                              "Could not initiate preview mode. Are you running Framework in a browser? This feature is only functional in the desktop app.",
+                            icon: <HiXCircle />,
+                            color: "red",
+                          });
+                        }
+                      }}
+                    >
+                      Enable preview mode
+                    </Menu.Item>
+                    <Menu.Item
+                      color="violet"
+                      icon={<HiOfficeBuilding />}
+                      onClick={() => {
+                        try {
+                          getIpcRenderer().send("@app/devtools");
+                        } catch {
+                          showNotification({
+                            title: "Error",
+                            message:
+                              "Could not open devtools. Are you running Framework in a browser? This feature is only functional in the desktop app.",
+                            icon: <HiXCircle />,
+                            color: "red",
+                          });
+                        }
+                      }}
+                    >
+                      Open DevTools
+                    </Menu.Item>
+                    <Menu.Divider />
+                    <Link href="https://invent.soodam.rocks/Soodam.re/framework" passHref>
+                      <Menu.Item
+                        icon={<HiExternalLink />}
+                      >
+                        View on GitLab
+                      </Menu.Item>
+                    </Link>
+                    <Link href="https://invent.soodam.rocks/Soodam.re/framework/-/issues/new" passHref>
+                      <Menu.Item
+                        icon={<HiExternalLink />}
+                      >
+                        Report an issue
+                      </Menu.Item>
+                    </Link>
+                  </>
+                }
+              >
+                <Link href="/" passHref>
+                  <FrameworkLogo square={mobile} />
+                </Link>
+              </ContextMenu>
               {process.env.NODE_ENV === "development" && <Badge>Dev</Badge>}
             </Group>
 
