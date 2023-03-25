@@ -1,10 +1,14 @@
 import { ButtonProps, UnstyledButton } from "@mantine/core";
+import useAmoled from "../stores/useAMoled";
+import { AMOLED_COLORS } from "../util/constants";
 
 const ShadedButton: React.FC<
   ButtonProps & {
     onClick?: () => void;
   }
 > = (props) => {
+  const { enabled: amoled } = useAmoled();
+
   return (
     <UnstyledButton
       sx={(theme) => ({
@@ -15,7 +19,9 @@ const ShadedButton: React.FC<
         "&:hover": {
           backgroundColor:
             theme.colorScheme === "dark"
-              ? theme.colors.dark[6]
+              ? amoled
+                ? AMOLED_COLORS.paper
+                : theme.colors.dark[6]
               : theme.colors.gray[0],
         },
         width: "100%",

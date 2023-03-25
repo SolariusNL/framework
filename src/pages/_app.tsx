@@ -50,22 +50,30 @@ import Stateful from "../components/Stateful";
 import { FrameworkUserProvider } from "../contexts/FrameworkUser";
 import SocketProvider from "../contexts/SocketContextProvider";
 import { UserInformationWrapper } from "../contexts/UserInformationDialog";
+import useAmoled from "../stores/useAMoled";
 import useFeedback from "../stores/useFeedback";
 import "../styles/fonts.css";
 import "../styles/framework.css";
 import "../styles/tw.css";
+import { AMOLED_COLORS } from "../util/constants";
 
 const Framework = (
-  props: AppProps & { colorScheme: ColorScheme; highContrast: boolean }
+  props: AppProps & {
+    colorScheme: ColorScheme;
+    highContrast: boolean;
+    amoled: boolean;
+  }
 ) => {
   const { Component, pageProps } = props;
   const [colorScheme, setColorScheme] = useState<ColorScheme>(
     props.colorScheme
   );
   const [highContrast, setHighContrast] = useState<boolean>(props.highContrast);
+  const [amoled, setAmoled] = useState<boolean>(props.amoled);
   const [loading, setLoading] = useState(false);
   const { opened: ratingModal, setOpened: setRatingModal } = useFeedback();
   const [seen, setSeen] = useState(false);
+  const { setEnabled } = useAmoled();
 
   const submitRating = async (stars: number, feedback: string = "") => {
     setLoading(true);
@@ -155,6 +163,14 @@ const Framework = (
     }
   }, []);
 
+  useEffect(() => {
+    if (amoled) {
+      setEnabled(true);
+    } else {
+      setEnabled(false);
+    }
+  }, [amoled]);
+
   return (
     <>
       <Head>
@@ -240,6 +256,11 @@ const Framework = (
                             ] + "85",
                         },
                       },
+                      "&:hover": {
+                        ...(amoled && {
+                          backgroundColor: AMOLED_COLORS.paper,
+                        }),
+                      },
                     },
                   }),
                 },
@@ -252,10 +273,24 @@ const Framework = (
                     },
                   }),
                 },
+                Menu: {
+                  styles: (theme: MantineTheme) => ({
+                    dropdown: {
+                      ...(amoled && {
+                        backgroundColor: "#000",
+                      }),
+                    },
+                  }),
+                },
                 Modal: {
                   styles: () => ({
                     root: {
                       zIndex: 1000,
+                    },
+                    modal: {
+                      ...(amoled && {
+                        backgroundColor: AMOLED_COLORS.paper,
+                      }),
                     },
                   }),
                 },
@@ -367,6 +402,11 @@ const Framework = (
                 ...(highContrast && {
                   "*": {
                     filter: "invert(1) !important",
+                  },
+                }),
+                ...(amoled && {
+                  "body, html": {
+                    backgroundColor: "#000",
                   },
                 }),
               })}
@@ -673,6 +713,7 @@ const Framework = (
 Framework.getInitialProps = ({ ctx }: { ctx: GetServerSidePropsContext }) => ({
   colorScheme: getCookie("mantine-color-scheme", ctx) || "dark",
   highContrast: getCookie("mantine-high-contrast", ctx),
+  amoled: getCookie("mantine-amoled", ctx),
 });
 
 export default Framework;

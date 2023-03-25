@@ -1,9 +1,11 @@
+import { deleteCookie, setCookie } from "cookies-next";
 import create from "zustand";
 import { combine } from "zustand/middleware";
 
 export const EXPERIMENTS_KEY = "experiments";
 export enum ExperimentId {
   LiveChat = "live-chat",
+  AmoledDarkMode = "amoled-dark-mode",
 }
 export enum ExperimentStage {
   Alpha = "alpha",
@@ -16,6 +18,18 @@ export const EXPERIMENTS = [
     description: "A live chat based on websockets",
     stage: ExperimentStage.Candidate,
     id: ExperimentId.LiveChat,
+    refreshNecessary: false,
+  },
+  {
+    name: "AMOLED Theme",
+    description: "An experimental pitch-black theme for the app",
+    stage: ExperimentStage.Alpha,
+    id: ExperimentId.AmoledDarkMode,
+    refreshNecessary: true,
+    additionalSetup: (value: boolean) => {
+      if (value) deleteCookie("mantine-amoled");
+      else setCookie("mantine-amoled", "true");
+    },
   },
 ];
 

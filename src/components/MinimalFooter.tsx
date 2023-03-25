@@ -8,12 +8,14 @@ import {
 } from "@mantine/core";
 import Link from "next/link";
 import { HiMoon, HiSun } from "react-icons/hi";
+import useAmoled from "../stores/useAMoled";
 
 const MinimalFooter: React.FC<{
   noLinks?: boolean;
 }> = ({ noLinks }) => {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const dark = colorScheme === "dark";
+  const { enabled: amoled } = useAmoled();
 
   return (
     <>
@@ -59,6 +61,7 @@ const MinimalFooter: React.FC<{
               borderColor: dark ? theme.colors.yellow[5] : theme.colors.blue[5],
             })}
             onClick={() => toggleColorScheme()}
+            disabled={amoled}
           >
             {dark ? <HiSun /> : <HiMoon />}
           </ActionIcon>

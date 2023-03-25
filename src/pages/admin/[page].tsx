@@ -19,7 +19,6 @@ import { useLocalStorage } from "@mantine/hooks";
 import { openModal } from "@mantine/modals";
 import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import {
   HiArrowLeft,
@@ -57,6 +56,7 @@ import Settings from "../../components/Admin/Settings";
 import Footer from "../../components/Footer";
 import FrameworkLogo from "../../components/FrameworkLogo";
 import ShadedCard from "../../components/ShadedCard";
+import useAmoled from "../../stores/useAMoled";
 import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
 import authorizedRoute from "../../util/auth";
 import getMediaUrl from "../../util/get-media";
@@ -277,7 +277,6 @@ const AdminDashboard: React.FC<{
   const { classes, cx, theme } = useStyles();
   const [active, setActive] = useState(activePage || "home");
   const { setUser } = useAuthorizedUserStore()!;
-  const router = useRouter();
   const page =
     data.find((item) => item.label.toLowerCase() === active) || data[0];
   const mobile = useMediaQuery("768");
@@ -286,6 +285,7 @@ const AdminDashboard: React.FC<{
     key: "admin-mobile-warning",
     defaultValue: false,
   });
+  const { enabled: amoled } = useAmoled();
 
   useEffect(() => {
     if (user) {
@@ -366,6 +366,11 @@ const AdminDashboard: React.FC<{
             p="md"
             hiddenBreakpoint="sm"
             hidden={!opened}
+            sx={{
+              ...(amoled && {
+                backgroundColor: "black",
+              }),
+            }}
           >
             <Navbar.Section>
               <Group className={classes.header} position="apart">

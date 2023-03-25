@@ -54,6 +54,7 @@ import {
   HiXCircle,
 } from "react-icons/hi";
 import SocketContext from "../contexts/Socket";
+import useAmoled from "../stores/useAMoled";
 import useAuthorizedUserStore from "../stores/useAuthorizedUser";
 import useExperimentsStore, {
   ExperimentId,
@@ -186,6 +187,7 @@ const Framework = ({
   const [impersonating, setImpersonating] = useState(false);
   const [mobileSearchOpened, _setMobileSearchOpened] = useState(false);
   const { setOpened } = useFeedback();
+  const { enabled: amoled } = useAmoled();
 
   useEffect(() => {
     if (sidebarOpened) {
@@ -330,6 +332,7 @@ const Framework = ({
       icon: <HiSun />,
       description: "Change the UI color scheme.",
       onTrigger: () => toggleColorScheme(),
+      disabled: amoled,
     },
     {
       title: "Browse snippets",
@@ -363,11 +366,7 @@ const Framework = ({
   const [searchPopoverOpen, setSearchPopoverOpen] = useState(false);
   const { flags } = useFlags();
   const { experiments } = useExperimentsStore();
-  const {
-    user: userStore,
-    setUser: setUserStore,
-    setProperty,
-  } = useAuthorizedUserStore()!;
+  const { user: userStore, setUser: setUserStore } = useAuthorizedUserStore()!;
 
   React.useEffect(() => {
     setIsSSR(false);
@@ -411,7 +410,7 @@ const Framework = ({
 
   return (
     <SpotlightProvider
-      actions={spotlight}
+      actions={spotlight.filter((s) => !s.disabled)}
       searchIcon={<HiSearch size={18} />}
       searchPlaceholder="Search..."
       shortcut="mod + space"
@@ -477,6 +476,9 @@ const Framework = ({
           position: immersive ? "sticky" : "relative",
           top: 0,
           zIndex: 1000,
+          ...(amoled && {
+            backgroundColor: "#000",
+          }),
         }}
         onDoubleClick={() => {
           if (isElectron()) {
@@ -497,6 +499,7 @@ const Framework = ({
             <Group spacing={12}>
               <ContextMenu
                 width={200}
+                className="items-center flex"
                 dropdown={
                   <>
                     <Menu.Label>
@@ -549,17 +552,19 @@ const Framework = ({
                       Open DevTools
                     </Menu.Item>
                     <Menu.Divider />
-                    <Link href="https://invent.soodam.rocks/Soodam.re/framework" passHref>
-                      <Menu.Item
-                        icon={<HiExternalLink />}
-                      >
+                    <Link
+                      href="https://invent.soodam.rocks/Soodam.re/framework"
+                      passHref
+                    >
+                      <Menu.Item icon={<HiExternalLink />}>
                         View on GitLab
                       </Menu.Item>
                     </Link>
-                    <Link href="https://invent.soodam.rocks/Soodam.re/framework/-/issues/new" passHref>
-                      <Menu.Item
-                        icon={<HiExternalLink />}
-                      >
+                    <Link
+                      href="https://invent.soodam.rocks/Soodam.re/framework/-/issues/new"
+                      passHref
+                    >
+                      <Menu.Item icon={<HiExternalLink />}>
                         Report an issue
                       </Menu.Item>
                     </Link>

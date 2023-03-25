@@ -6,6 +6,7 @@ import {
   Menu,
   Modal,
   Text,
+  Tooltip,
   UnstyledButton,
   useMantineColorScheme,
 } from "@mantine/core";
@@ -29,6 +30,7 @@ import {
   HiUser,
   HiUsers,
 } from "react-icons/hi";
+import useAmoled from "../../stores/useAMoled";
 import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
 import useFeedback from "../../stores/useFeedback";
 import useSidebar from "../../stores/useSidebar";
@@ -58,6 +60,7 @@ const UserMenu = ({
   const mobile = useMediaQuery("768");
   const [quickLoginOpened, setQuickLoginOpened] = React.useState(false);
   const [qrDataUrl, setQrDataUrl] = React.useState("");
+  const { enabled: amoled } = useAmoled();
 
   const refetch = async () => {
     await fetch("/api/auth/loginqr/generate", {
@@ -189,13 +192,21 @@ const UserMenu = ({
           >
             Teams
           </Menu.Item>
-          <Menu.Item
-            icon={colorScheme === "dark" ? <HiMoon /> : <HiSun />}
-            color={colorScheme === "dark" ? "yellow" : "blue"}
-            onClick={() => toggleColorScheme()}
+          <Tooltip
+            label="Cannot switch themes while AMOLED mode is enabled"
+            hidden={!amoled}
           >
-            Change theme
-          </Menu.Item>
+            <div>
+              <Menu.Item
+                icon={colorScheme === "dark" ? <HiMoon /> : <HiSun />}
+                color={colorScheme === "dark" ? "yellow" : "blue"}
+                onClick={() => toggleColorScheme()}
+                disabled={amoled}
+              >
+                Change theme
+              </Menu.Item>
+            </div>
+          </Tooltip>
           <Menu.Divider />
           <Menu.Item
             icon={<HiCog />}

@@ -18,5 +18,8 @@ const SOCKETS = {
     SOCKETS.data.set(id, socket);
   },
 };
+const AMOLED_COLORS = {
+  paper: "#0c0c0d",
+};
 
-export { PREMIUM_PAYOUTS, SOCKETS };
+export { PREMIUM_PAYOUTS, SOCKETS, AMOLED_COLORS };

@@ -1,12 +1,13 @@
 import { Anchor, Badge, Button, ScrollArea, Table, Text } from "@mantine/core";
+import { openConfirmModal } from "@mantine/modals";
 import { getCookie } from "cookies-next";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import { HiGift } from "react-icons/hi";
 import useExperimentsStore, {
   EXPERIMENTS,
 } from "../../stores/useExperimentsStore";
 import { User } from "../../util/prisma-types";
-import ModernEmptyState from "../ModernEmptyState";
 import SettingsTab from "./SettingsTab";
 
 interface BetaTabProps {
@@ -18,6 +19,7 @@ const BetaTab = ({ user }: BetaTabProps) => {
   const [loading, setLoading] = useState(false);
   const { experiments, addExperiment, removeExperiment } =
     useExperimentsStore();
+  const router = useRouter();
 
   const enroll = async () => {
     setLoading(true);
@@ -59,14 +61,16 @@ const BetaTab = ({ user }: BetaTabProps) => {
                   <th>Name</th>
                   <th>Description</th>
                   <th>Status</th>
-                  <th>Actions</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
                 {EXPERIMENTS.map((experiment) => (
                   <tr key={experiment.name}>
-                    <td>{experiment.name}</td>
-                    <td>{experiment.description}</td>
+                    <td className="font-semibold">{experiment.name}</td>
+                    <td>
+                      <Text color="dimmed">{experiment.description}</Text>
+                    </td>
                     <td>
                       <Badge>{experiment.stage}</Badge>
                     </td>
@@ -78,6 +82,24 @@ const BetaTab = ({ user }: BetaTabProps) => {
                           } else {
                             addExperiment(experiment.id);
                           }
+                          if (experiment.refreshNecessary)
+                            openConfirmModal({
+                              title: "Refresh required",
+                              children: (
+                                <Text size="sm" color="dimmed">
+                                  In order to apply changes, you must refresh
+                                  the page. Would you like to do that now?
+                                </Text>
+                              ),
+                              labels: { confirm: "Refresh", cancel: "Later" },
+                              onConfirm: () => {
+                                router.reload();
+                              },
+                            });
+                          if (experiment.additionalSetup)
+                            experiment.additionalSetup(
+                              experiments.includes(experiment.id)
+                            );
                         }}
                       >
                         {experiments.includes(experiment.id)
