@@ -28,7 +28,12 @@ export const EXPERIMENTS = [
     refreshNecessary: true,
     additionalSetup: (value: boolean) => {
       if (value) deleteCookie("mantine-amoled");
-      else setCookie("mantine-amoled", "true");
+      else {
+        setCookie("mantine-amoled", "true");
+        setCookie("mantine-color-scheme", "dark", {
+          maxAge: 60 * 60 * 24 * 30,
+        });
+      }
     },
   },
 ];

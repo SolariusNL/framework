@@ -6,7 +6,7 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 import { HiMoon, HiSun } from "react-icons/hi";
-import useAmoled from "../../stores/useAMoled";
+import useAmoled from "../../stores/useAmoled";
 import useMediaQuery from "../../util/media-query";
 import { User } from "../../util/prisma-types";
 import ModernEmptyState from "../ModernEmptyState";

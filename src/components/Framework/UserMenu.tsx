@@ -30,7 +30,7 @@ import {
   HiUser,
   HiUsers,
 } from "react-icons/hi";
-import useAmoled from "../../stores/useAMoled";
+import useAmoled from "../../stores/useAmoled";
 import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
 import useFeedback from "../../stores/useFeedback";
 import useSidebar from "../../stores/useSidebar";

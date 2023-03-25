@@ -54,7 +54,7 @@ import {
   HiXCircle,
 } from "react-icons/hi";
 import SocketContext from "../contexts/Socket";
-import useAmoled from "../stores/useAMoled";
+import useAmoled from "../stores/useAmoled";
 import useAuthorizedUserStore from "../stores/useAuthorizedUser";
 import useExperimentsStore, {
   ExperimentId,

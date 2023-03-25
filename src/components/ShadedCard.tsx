@@ -1,5 +1,5 @@
 import { Card, CardProps, Text } from "@mantine/core";
-import useAmoled from "../stores/useAMoled";
+import useAmoled from "../stores/useAmoled";
 import { AMOLED_COLORS } from "../util/constants";
 
 const ShadedCard = (

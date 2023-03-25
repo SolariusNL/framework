@@ -56,7 +56,7 @@ import Settings from "../../components/Admin/Settings";
 import Footer from "../../components/Footer";
 import FrameworkLogo from "../../components/FrameworkLogo";
 import ShadedCard from "../../components/ShadedCard";
-import useAmoled from "../../stores/useAMoled";
+import useAmoled from "../../stores/useAmoled";
 import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
 import authorizedRoute from "../../util/auth";
 import getMediaUrl from "../../util/get-media";

@@ -8,7 +8,7 @@ import {
 } from "@mantine/core";
 import Link from "next/link";
 import { HiMoon, HiSun } from "react-icons/hi";
-import useAmoled from "../stores/useAMoled";
+import useAmoled from "../stores/useAmoled";
 
 const MinimalFooter: React.FC<{
   noLinks?: boolean;
