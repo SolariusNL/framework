@@ -10,11 +10,13 @@ import {
   Stack,
   Text,
   TextInput,
+  useMantineColorScheme,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useHotkeys } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import { getCookie } from "cookies-next";
+import { AnimatePresence, motion } from "framer-motion";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   HiArrowLeft,
@@ -209,289 +211,389 @@ const Chat: React.FC = () => {
     };
   }, [socket, currentConversation]);
 
+  const { colorScheme } = useMantineColorScheme();
+
   return (
-    <Card
-      sx={{
-        borderBottomLeftRadius: "0 !important",
-        borderBottomRightRadius: "0 !important",
-        width: 280,
-        ...(chatOpened && {
-          paddingBottom: "0 !important",
-        }),
-        overflow: "visible",
+    <motion.div
+      className={colorScheme}
+      initial={{
+        height: "100%",
       }}
-      withBorder
-      p="md"
+      animate={{
+        height: "auto",
+      }}
+      transition={{
+        type: "spring",
+        stiffness: 500,
+        damping: 30,
+      }}
     >
-      <Card.Section px={10} py={6} withBorder={chatOpened}>
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <HiChatAlt2 size={18} />
-            <Text weight={600} size="sm">
-              Chat
-            </Text>
-            {Object.values(unreadMessages).reduce(
-              (prev, curr) => prev + curr,
-              0
-            ) > 0 && (
-              <Indicator
-                inline
-                label={String(
-                  Object.values(unreadMessages).reduce(
-                    (prev, curr) => prev + curr,
-                    0
-                  )
-                )}
-                size={16}
-                color="red"
-                ml={10}
-              >
-                <></>
-              </Indicator>
-            )}
-          </div>
-          <ActionIcon onClick={() => setChatOpened(!chatOpened)}>
-            {chatOpened ? <HiChevronDown /> : <HiChevronUp />}
-          </ActionIcon>
-        </div>
-      </Card.Section>
-      {chatOpened && (
-        <>
-          {conversationOpen && (
-            <Card.Section px={16} py={10}>
-              <div className="flex justify-between items-center">
-                <Anchor
-                  className="flex gap-1 items-center"
-                  size="sm"
-                  onClick={() => {
-                    setConversationOpen(false);
-                    setConversating(null);
-                    setCurrentConversation(null);
-                  }}
-                >
-                  <HiArrowLeft />
-                  Go back
-                </Anchor>
-                <div className="flex gap-2 items-center">
-                  <Text color="dimmed" size="sm">
-                    @{conversating?.username}
-                  </Text>
-                  <Avatar src={conversating?.avatarUri} size="sm" radius="xl" />
-                </div>
-              </div>
-            </Card.Section>
-          )}
-          {!conversationOpen && (
-            <Card.Section
-              sx={(theme) => ({
-                backgroundColor:
-                  theme.colorScheme === "dark"
-                    ? theme.colors.dark[9]
-                    : theme.colors.gray[1],
-              })}
-              px={4}
-              py={2}
-            >
-              <TextInput
-                placeholder="Search for friends..."
-                className="flex-1"
-                variant="unstyled"
-                sx={(theme) => ({
-                  lineHeight: "0px",
-                  "& input": {
-                    paddingLeft: theme.spacing.sm,
-                    paddingRight: theme.spacing.sm,
-                  },
-                  "&::placeholder": {
-                    paddingLeft: theme.spacing.sm,
-                    paddingRight: theme.spacing.sm,
-                  },
-                })}
-                autoComplete="off"
-                value={friendsSearch}
-                onChange={(e) => setFriendsSearch(e.target.value)}
-              />
-            </Card.Section>
-          )}
-          <Card.Section
-            sx={(theme) => ({
-              backgroundColor:
-                theme.colorScheme === "dark"
-                  ? theme.colors.dark[9]
-                  : theme.colors.gray[1],
-            })}
-            p={conversationOpen ? "md" : 0}
-            withBorder={conversationOpen}
-          >
-            {conversationOpen ? (
-              <div
-                style={{
-                  height: 210,
-                  display: "flex",
-                  flexDirection: "column-reverse",
-                  overflowX: "hidden",
-                  overflowY: "auto",
-                }}
-                ref={messagesRef}
-              >
-                <Stack spacing={12}>
-                  {conversationData &&
-                    conversationData.map((message) =>
-                      message.authorId === user?.id ? (
-                        <Paper
-                          sx={(theme) => ({
-                            backgroundColor:
-                              theme.colorScheme === "dark"
-                                ? theme.colors.blue[9]
-                                : theme.colors.blue[1],
-                            textAlign: "right",
-                            width: "fit-content",
-                            alignSelf: "flex-end",
-                          })}
-                          p="sm"
-                        >
-                          <Text size="sm">{message.content}</Text>
-                        </Paper>
-                      ) : (
-                        <Paper
-                          sx={(theme) => ({
-                            backgroundColor:
-                              theme.colorScheme === "dark"
-                                ? theme.colors.dark[8]
-                                : theme.colors.gray[1],
-                            textAlign: "left",
-                            width: "fit-content",
-                            alignSelf: "flex-start",
-                          })}
-                          p="sm"
-                        >
-                          <Text size="sm">{message.content}</Text>
-                        </Paper>
-                      )
-                    )}
-                </Stack>
-              </div>
-            ) : (
-              <>
-                <Stack spacing={5} p={0}>
-                  {friends.map((friend) => (
-                    <ShadedButton
-                      key={friend.id}
-                      onClick={() => {
-                        setConversating(friend);
-                        setConversationOpen(true);
-                        setCurrentConversation(friend.id);
-                      }}
-                      className="rounded-none px-4"
-                    >
-                      <div className="flex items-center">
-                        <Avatar
-                          src={getMediaUrl(friend.avatarUri)}
-                          size={24}
-                          className="mr-2 rounded-full"
-                        />
-                        <div className="flex items-center">
-                          <Text size="sm" mr={6}>
-                            {friend.alias || friend.username}
-                          </Text>
-                          <Text size="sm" color="dimmed" mr={16}>
-                            @{friend.username}
-                          </Text>
-                        </div>
-                        {unreadMessages[friend.id] > 0 && (
-                          <Indicator
-                            inline
-                            label={String(unreadMessages[friend.id])}
-                            size={16}
-                            color="red"
-                          >
-                            <></>
-                          </Indicator>
-                        )}
-                      </div>
-                    </ShadedButton>
-                  ))}
-                  {friends.length === 0 && (
-                    <div className="flex justify-center">
-                      <div className="flex items-center gap-2 p-8">
-                        <HiXCircle size={12} className="flex-shrink-0" />
-                        <Text size="sm" color="dimmed">
-                          No friends found
-                        </Text>
-                      </div>
-                    </div>
+      <Card
+        sx={{
+          borderBottomLeftRadius: "0 !important",
+          borderBottomRightRadius: "0 !important",
+          width: 300,
+          paddingBottom: "0 !important",
+          overflow: "visible",
+          borderBottom: "none",
+        }}
+        withBorder
+        p="md"
+      >
+        <Card.Section
+          px={10}
+          py={6}
+          withBorder={chatOpened}
+          className="dark:hover:bg-zinc-900 hover:bg-gray-300 transition-all cursor-pointer rounded-t-md"
+          onClick={() => setChatOpened(!chatOpened)}
+        >
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              {Object.values(unreadMessages).reduce(
+                (prev, curr) => prev + curr,
+                0
+              ) > 0 && (
+                <Indicator
+                  inline
+                  label={String(
+                    Object.values(unreadMessages).reduce(
+                      (prev, curr) => prev + curr,
+                      0
+                    )
                   )}
-                </Stack>
-              </>
-            )}
-          </Card.Section>
-          {conversationOpen && (
-            <Card.Section
-              sx={(theme) => ({
-                backgroundColor:
-                  theme.colorScheme === "dark"
-                    ? theme.colors.dark[9]
-                    : theme.colors.gray[1],
-              })}
+                  size={16}
+                  zIndex={1}
+                  color="red"
+                  ml={10}
+                  mr={10}
+                >
+                  <></>
+                </Indicator>
+              )}
+              <Text weight={600} size="sm">
+                Messages
+              </Text>
+            </div>
+            <ActionIcon onClick={() => setChatOpened(!chatOpened)}>
+              {chatOpened ? <HiChevronDown /> : <HiChevronUp />}
+            </ActionIcon>
+          </div>
+        </Card.Section>
+        <AnimatePresence>
+          {chatOpened && (
+            <motion.div
+              initial={{ height: 0 }}
+              animate={{ height: "auto" }}
+              exit={{ height: 0 }}
+              transition={{
+                type: "spring",
+                damping: 20,
+                stiffness: 100,
+              }}
             >
-              <form onSubmit={messageForm.onSubmit(sendMessage)}>
-                <TextInput
-                  placeholder="Type a message..."
-                  className="flex-1"
-                  variant="unstyled"
-                  sx={(theme) => ({
-                    lineHeight: "0px",
-                    "& input": {
-                      paddingLeft: theme.spacing.sm,
-                      paddingRight: theme.spacing.md,
-                      width: "calc(100% - 20px)",
-                    },
-                    "&::placeholder": {
-                      paddingLeft: theme.spacing.sm,
-                      paddingRight: theme.spacing.md,
-                    },
-                  })}
-                  autoComplete="off"
-                  ref={messageInputRef}
-                  rightSection={
-                    <>
-                      <div ref={pickerRef} style={{ position: "relative" }}>
-                        <Box
-                          style={{
-                            position: "absolute",
-                            right: 0,
-                            bottom: 50,
+              <AnimatePresence>
+                {conversationOpen ? (
+                  <motion.div
+                    initial={{ height: 0 }}
+                    animate={{ height: "auto" }}
+                    exit={{ height: 0 }}
+                    transition={{
+                      type: "spring",
+                      damping: 20,
+                      stiffness: 100,
+                    }}
+                  >
+                    <Card.Section px={16} py={10}>
+                      <div className="flex justify-between items-center">
+                        <Anchor
+                          className="flex gap-1 items-center"
+                          size="sm"
+                          onClick={() => {
+                            setConversationOpen(false);
+                            setConversating(null);
+                            setCurrentConversation(null);
                           }}
                         >
-                          {picker && (
-                            <Picker
-                              navPosition="bottom"
-                              native
-                              onEmojiSelect={(emoji: any) => {
-                                messageForm.setFieldValue(
-                                  "message",
-                                  messageForm.values.message + emoji.native
-                                );
-                              }}
-                              previewPosition="none"
-                              autoFocus
-                            />
-                          )}
-                        </Box>
-                        <ActionIcon onClick={() => setPicker(!picker)}>
-                          <HiEmojiHappy />
-                        </ActionIcon>
+                          <HiArrowLeft />
+                          Go back
+                        </Anchor>
+                        <div className="flex gap-2 items-center">
+                          <Text color="dimmed" size="sm">
+                            @{conversating?.username}
+                          </Text>
+                          <Avatar
+                            src={conversating?.avatarUri}
+                            size="sm"
+                            radius="xl"
+                          />
+                        </div>
                       </div>
-                    </>
-                  }
-                  {...messageForm.getInputProps("message")}
-                />
-              </form>
-            </Card.Section>
+                    </Card.Section>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    initial={{ height: 0 }}
+                    animate={{ height: "auto" }}
+                    exit={{ height: 0 }}
+                    transition={{
+                      type: "spring",
+                      damping: 20,
+                      stiffness: 100,
+                    }}
+                  >
+                    <Card.Section
+                      sx={(theme) => ({
+                        backgroundColor:
+                          theme.colorScheme === "dark"
+                            ? theme.colors.dark[9]
+                            : "#FFF",
+                      })}
+                      px={4}
+                      py={2}
+                    >
+                      <TextInput
+                        placeholder="Search for friends..."
+                        className="flex-1"
+                        variant="unstyled"
+                        sx={(theme) => ({
+                          lineHeight: "0px",
+                          "& input": {
+                            paddingLeft: theme.spacing.sm,
+                            paddingRight: theme.spacing.sm,
+                          },
+                          "&::placeholder": {
+                            paddingLeft: theme.spacing.sm,
+                            paddingRight: theme.spacing.sm,
+                          },
+                        })}
+                        autoComplete="off"
+                        value={friendsSearch}
+                        onChange={(e) => setFriendsSearch(e.target.value)}
+                      />
+                    </Card.Section>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              <Card.Section
+                sx={(theme) => ({
+                  backgroundColor:
+                    theme.colorScheme === "dark"
+                      ? theme.colors.dark[9]
+                      : "#FFF",
+                })}
+                p={conversationOpen ? "md" : 0}
+                withBorder={conversationOpen}
+              >
+                <AnimatePresence mode="wait" initial={false}>
+                  {conversationOpen ? (
+                    <motion.div
+                      initial={{ y: 20 }}
+                      animate={{ y: 0 }}
+                      exit={{
+                        y: 0,
+                      }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 500,
+                        damping: 30,
+                      }}
+                      key="conversation"
+                    >
+                      <div
+                        style={{
+                          height: 290,
+                          display: "flex",
+                          flexDirection: "column-reverse",
+                          overflowX: "hidden",
+                          overflowY: "auto",
+                        }}
+                        ref={messagesRef}
+                      >
+                        <Stack spacing={12}>
+                          {conversationData &&
+                            conversationData.map((message) =>
+                              message.authorId === user?.id ? (
+                                <Paper
+                                  sx={(theme) => ({
+                                    backgroundColor:
+                                      theme.colorScheme === "dark"
+                                        ? theme.colors.blue[9]
+                                        : theme.colors.blue[1],
+                                    textAlign: "right",
+                                    width: "fit-content",
+                                    alignSelf: "flex-end",
+                                  })}
+                                  px="sm"
+                                  py={8}
+                                >
+                                  <Text size="sm">{message.content}</Text>
+                                </Paper>
+                              ) : (
+                                <Paper
+                                  sx={(theme) => ({
+                                    backgroundColor:
+                                      theme.colorScheme === "dark"
+                                        ? theme.colors.dark[8]
+                                        : theme.colors.gray[1],
+                                    textAlign: "left",
+                                    width: "fit-content",
+                                    alignSelf: "flex-start",
+                                  })}
+                                  px="sm"
+                                  py={8}
+                                >
+                                  <Text size="sm">{message.content}</Text>
+                                </Paper>
+                              )
+                            )}
+                        </Stack>
+                      </div>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      initial={{
+                        y: conversationOpen ? 20 : 0,
+                      }}
+                      animate={{ x: 0 }}
+                      exit={{
+                        y: conversationOpen ? 20 : 0,
+                      }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 500,
+                        damping: 30,
+                      }}
+                      key="friends"
+                    >
+                      <Stack spacing={5} p={0}>
+                        {friends.map((friend) => (
+                          <ShadedButton
+                            key={friend.id}
+                            onClick={() => {
+                              setConversating(friend);
+                              setConversationOpen(true);
+                              setCurrentConversation(friend.id);
+                            }}
+                            className="rounded-none px-4"
+                          >
+                            <div className="flex items-center">
+                              <Avatar
+                                src={getMediaUrl(friend.avatarUri)}
+                                size={24}
+                                className="mr-2 rounded-full"
+                              />
+                              <div className="flex items-center">
+                                <Text size="sm" mr={6}>
+                                  {friend.alias || friend.username}
+                                </Text>
+                                <Text size="sm" color="dimmed" mr={16}>
+                                  @{friend.username}
+                                </Text>
+                              </div>
+                              {unreadMessages[friend.id] > 0 && (
+                                <Indicator
+                                  inline
+                                  label={String(unreadMessages[friend.id])}
+                                  size={16}
+                                  color="red"
+                                >
+                                  <></>
+                                </Indicator>
+                              )}
+                            </div>
+                          </ShadedButton>
+                        ))}
+                        {friends.length === 0 && (
+                          <div className="flex justify-center">
+                            <div className="flex items-center gap-2 p-8">
+                              <HiXCircle size={12} className="flex-shrink-0" />
+                              <Text size="sm" color="dimmed">
+                                No friends found
+                              </Text>
+                            </div>
+                          </div>
+                        )}
+                      </Stack>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </Card.Section>
+              {conversationOpen && (
+                <Card.Section
+                  sx={(theme) => ({
+                    backgroundColor:
+                      theme.colorScheme === "dark"
+                        ? theme.colors.dark[9]
+                        : "#FFF",
+                  })}
+                >
+                  <form onSubmit={messageForm.onSubmit(sendMessage)}>
+                    <TextInput
+                      placeholder="Type a message..."
+                      className="flex-1 h-12 items-center flex justify-between w-full"
+                      classNames={{
+                        wrapper: "w-full flex",
+                      }}
+                      variant="unstyled"
+                      sx={(theme) => ({
+                        lineHeight: "0px",
+                        "& input": {
+                          paddingLeft: theme.spacing.sm,
+                          paddingRight: theme.spacing.md,
+                          width: "calc(100% - 20px)",
+                        },
+                        "&::placeholder": {
+                          paddingLeft: theme.spacing.sm,
+                          paddingRight: theme.spacing.md,
+                        },
+                      })}
+                      autoComplete="off"
+                      ref={messageInputRef}
+                      rightSection={
+                        <>
+                          <div
+                            ref={pickerRef}
+                            style={{ position: "relative" }}
+                            className="pr-2"
+                          >
+                            <Box
+                              style={{
+                                position: "absolute",
+                                right: 0,
+                                bottom: 50,
+                              }}
+                            >
+                              {picker && (
+                                <Picker
+                                  navPosition="bottom"
+                                  native
+                                  onEmojiSelect={(emoji: any) => {
+                                    messageForm.setFieldValue(
+                                      "message",
+                                      messageForm.values.message + emoji.native
+                                    );
+                                  }}
+                                  previewPosition="none"
+                                  autoFocus
+                                />
+                              )}
+                            </Box>
+                            <ActionIcon onClick={() => setPicker(!picker)}>
+                              <HiEmojiHappy />
+                            </ActionIcon>
+                          </div>
+                        </>
+                      }
+                      {...messageForm.getInputProps("message")}
+                    />
+                  </form>
+                </Card.Section>
+              )}
+            </motion.div>
           )}
-        </>
-      )}
-    </Card>
+        </AnimatePresence>
+      </Card>
+    </motion.div>
   );
 };
 
