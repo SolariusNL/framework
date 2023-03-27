@@ -418,6 +418,7 @@ const Framework = ({
       disabled={user === null}
       radius="md"
       limit={7}
+      transition="slide-up"
       className={relative ? "relative" : ""}
     >
       {experiments.includes(ExperimentId.LiveChat) && (
