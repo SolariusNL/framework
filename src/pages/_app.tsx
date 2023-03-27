@@ -333,6 +333,15 @@ const Framework = (
                     },
                   }),
                 },
+                Input: {
+                  styles: {
+                    input: {
+                      ...(amoled && {
+                        backgroundColor: "#000"
+                      })
+                    }
+                  }
+                },
                 Pagination: {
                   styles: (
                     theme: MantineTheme,
@@ -371,9 +380,25 @@ const Framework = (
                   styles: (theme: MantineTheme) => ({
                     item: {
                       borderRadius: theme.radius.md,
+                      "&[data-hovered]": {
+                        ...(amoled && {
+                          backgroundColor: AMOLED_COLORS.paper,
+                        })
+                      },
+                      "&[data-selected]": {
+                        "&, &:hover": {
+                          ...(amoled && {
+                            backgroundColor: AMOLED_COLORS.paper,
+                            fontWeight: "bold"
+                          })
+                        },
+                      },
                     },
                     dropdown: {
                       borderRadius: theme.radius.md + " !important",
+                      ...(amoled && {
+                        backgroundColor: "#000"
+                      })
                     },
                   }),
                 },

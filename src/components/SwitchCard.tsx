@@ -1,4 +1,6 @@
 import { Card, createStyles, Group, Switch, Text } from "@mantine/core";
+import useAmoled from "../stores/useAmoled";
+import { AMOLED_COLORS } from "../util/constants";
 
 const useStyles = createStyles((theme) => ({
   card: {
@@ -50,6 +52,7 @@ const SwitchCard: React.FC<SwitchesCardProps> = ({
   dark,
 }) => {
   const { classes } = useStyles();
+  const { enabled: amoled } = useAmoled();
 
   const items = data.map((item) => (
     <Group
@@ -90,10 +93,11 @@ const SwitchCard: React.FC<SwitchesCardProps> = ({
       className={classes.card}
       sx={(theme) => ({
         ...(dark && {
-          backgroundColor:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[8]
-              : theme.colors.light,
+          backgroundColor: amoled
+            ? AMOLED_COLORS.paper
+            : theme.colorScheme === "dark"
+            ? theme.colors.dark[8]
+            : theme.colors.gray[1],
         }),
       })}
     >

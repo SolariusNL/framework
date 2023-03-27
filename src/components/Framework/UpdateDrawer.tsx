@@ -20,6 +20,27 @@ const UpdateDrawer: React.FC = () => {
     href?: string;
   }> = [
     {
+      title: "AMOLED Dark Mode",
+      description: "An AMOLED Dark Mode experiment is now available.",
+      badge: BadgeType.EXPERIMENT,
+      href: "/settings/preview-program",
+      date: new Date("2023-03-26"),
+    },
+    {
+      title: "DMCA Form",
+      description: "We've released a dedicated DMCA takedown request form.",
+      badge: BadgeType.NEW,
+      href: "/dmca",
+      date: new Date("2023-03-21"),
+    },
+    {
+      title: "Team moderation",
+      description:
+        "We've added the ability to remove and ban users from your teams.",
+      badge: BadgeType.NEW,
+      date: new Date("2023-03-21"),
+    },
+    {
       title: "New Font",
       description:
         "We've switched to a new font, GitLab Sans, to improve readability and accessibility.",
@@ -116,7 +137,7 @@ const UpdateDrawer: React.FC = () => {
       description:
         "You can now manage your API keys in the new Developer Dashboard.",
       badge: BadgeType.NEW,
-      href: "/developer",
+      href: "/developer/servers",
       date: new Date("2023-01-06"),
     },
     {

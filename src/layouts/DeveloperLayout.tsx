@@ -12,11 +12,10 @@ type DeveloperLayoutProps = {
 };
 
 const tabs = [
-  [HiHome, "/developer", "Dashboard"],
+  [HiServer, "/developer/servers", "Servers"],
   [HiKey, "/developer/api-keys", "API Keys"],
   [HiUser, "/developer/profile", "Developer Profile"],
   [HiViewList, "/developer/activity", "Activity"],
-  [HiServer, "/developer/servers", "Servers"],
 ];
 
 const Developer: React.FC<DeveloperLayoutProps> = ({

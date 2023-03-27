@@ -1,4 +1,6 @@
 import { Divider, Text, Title, useMantineTheme } from "@mantine/core";
+import useAmoled from "../../stores/useAmoled";
+import { AMOLED_COLORS } from "../../util/constants";
 import useMediaQuery from "../../util/media-query";
 
 interface SideBySideProps {
@@ -22,6 +24,7 @@ const SideBySide = ({
 }: SideBySideProps) => {
   const mobile = useMediaQuery("768");
   const theme = useMantineTheme();
+  const { enabled: amoled } = useAmoled();
 
   return (
     <>
@@ -31,10 +34,11 @@ const SideBySide = ({
           display: mobile ? "block" : "flex",
           gap: 32,
           ...(shaded && {
-            backgroundColor:
-              theme.colorScheme == "dark"
-                ? theme.colors.dark[8]
-                : theme.colors.gray[0],
+            backgroundColor: amoled
+              ? AMOLED_COLORS.paper
+              : theme.colorScheme == "dark"
+              ? theme.colors.dark[8]
+              : theme.colors.gray[0],
             padding: 16,
           }),
           borderRadius: theme.radius.md,

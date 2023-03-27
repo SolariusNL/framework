@@ -167,7 +167,7 @@ const UserMenu = ({
           </Menu.Item>
           <Menu.Item
             icon={<HiCloud />}
-            onClick={() => router.push("/developer")}
+            onClick={() => router.push("/developer/servers")}
           >
             Developers
           </Menu.Item>
