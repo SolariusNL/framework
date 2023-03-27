@@ -27,7 +27,7 @@ namespace Teams {
           rows: {
             create: pairs.map((p) => ({
               key: p.key,
-              value: p.key,
+              value: p.value,
             })),
           },
           type,

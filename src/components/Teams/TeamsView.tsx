@@ -2,12 +2,12 @@ import { Avatar, Badge, NavLink, Text } from "@mantine/core";
 import Link from "next/link";
 import {
   HiCog,
-  HiDocumentText,
+  HiCollection,
   HiExclamation,
-  HiEye,
+  HiFolder,
   HiLockClosed,
-  HiServer,
   HiTicket,
+  HiUserGroup,
   HiUsers,
   HiViewGrid,
   HiViewList,
@@ -129,7 +129,7 @@ const TeamsViewProvider: React.FC<TeamsViewProps> = ({
                   <NavLink
                     className="rounded-md"
                     label="General"
-                    icon={<HiDocumentText />}
+                    icon={<HiCollection />}
                     active={"settings-general" === active}
                   />
                 </Link>
@@ -137,7 +137,7 @@ const TeamsViewProvider: React.FC<TeamsViewProps> = ({
                   <NavLink
                     className="rounded-md"
                     label="Access"
-                    icon={<HiEye />}
+                    icon={<HiUserGroup />}
                     active={"settings-access" === active}
                   />
                 </Link>
@@ -145,7 +145,7 @@ const TeamsViewProvider: React.FC<TeamsViewProps> = ({
                   <NavLink
                     className="rounded-md"
                     label="Audit Log"
-                    icon={<HiServer />}
+                    icon={<HiFolder />}
                     active={"settings-audit" === active}
                   />
                 </Link>

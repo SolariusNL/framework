@@ -1,23 +1,31 @@
-import { Group, Pagination, Select, Text } from "@mantine/core";
+import {
+  Divider,
+  Group,
+  Pagination,
+  ScrollArea,
+  Select,
+  Text,
+  Title,
+} from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { Rating, TeamAuditLog, TeamAuditLogType } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { GetServerSideProps } from "next";
-import React, {
-  forwardRef,
-  FunctionComponent,
-  useEffect,
-  useState,
-} from "react";
+import React, { forwardRef, useEffect, useState } from "react";
 import { HiGlobe, HiXCircle } from "react-icons/hi";
-import { IconBaseProps, IconType } from "react-icons/lib";
+import { IconType } from "react-icons/lib";
 import { TeamType } from "../../..";
+import ModernEmptyState from "../../../../../components/ModernEmptyState";
+import ShadedCard from "../../../../../components/ShadedCard";
+import Stateful from "../../../../../components/Stateful";
 import TeamsViewProvider from "../../../../../components/Teams/TeamsView";
 import auditLogMeta from "../../../../../data/auditLog";
 import authorizedRoute from "../../../../../util/auth";
 import clsx from "../../../../../util/clsx";
 import { NonUser, User } from "../../../../../util/prisma-types";
 import { getTeam } from "../../../../../util/teams";
+import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
+import Owner from "../../../../../components/Owner";
 
 const headers = {
   "Content-Type": "application/json",
@@ -53,7 +61,7 @@ type Audit = TeamAuditLog & {
   rows: {
     key: string;
     value: string;
-  };
+  }[];
 };
 
 interface ItemProps extends React.ComponentPropsWithoutRef<"div"> {
@@ -71,12 +79,13 @@ const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
           {React.createElement(icon, {
             className: clsx(
               type === "add"
-                ? "dark:text-teal-500/50"
+                ? "dark:text-teal-500/70"
                 : type === "remove"
-                ? "dark:text-red-500/50"
-                : "dark:text-orange-500/50",
+                ? "dark:text-red-500/70"
+                : "dark:text-orange-500/70",
               active && "!text-white",
-              type === "all" && "!text-white"
+              type === "all" && "!text-white",
+              "flex-shrink-0"
             ),
           })}
           <Text size="sm">{label}</Text>
@@ -98,7 +107,9 @@ const TeamViewSettingsAuditLog: React.FC<TeamViewSettingsAuditLogProps> = ({
   const fetchAudits = async () => {
     await fetch(
       `/api/teams/${team.id}/audit/${page.toString()}?` +
-        new URLSearchParams().append("type", type),
+        new URLSearchParams({
+          type,
+        }).toString(),
       {
         method: "GET",
         headers,
@@ -125,7 +136,7 @@ const TeamViewSettingsAuditLog: React.FC<TeamViewSettingsAuditLogProps> = ({
 
   return (
     <TeamsViewProvider user={user} team={team} active="settings-audit">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-col gap-y-2 md:gap-y-0 md:flex-row">
         <Pagination total={pages} page={page} radius="md" onChange={setPage} />
         <Select
           data={[
@@ -144,7 +155,7 @@ const TeamViewSettingsAuditLog: React.FC<TeamViewSettingsAuditLogProps> = ({
               type: "all",
             },
           ]}
-          styles={(theme) => ({
+          styles={() => ({
             item: {
               "&[data-selected]": {
                 color: "rgb(255 255 255 / var(--tw-text-opacity)) !important",
@@ -156,6 +167,111 @@ const TeamViewSettingsAuditLog: React.FC<TeamViewSettingsAuditLogProps> = ({
           value={type}
           onChange={(t) => setType(t as AuditLogType)}
         />
+      </div>
+      <div className="mt-6 flex flex-col gap-4">
+        {audits &&
+        audits.filter((a) => {
+          if (type === "ALL") return true;
+          return a.type === type;
+        }).length === 0 ? (
+          <ShadedCard className="col-span-full">
+            <ModernEmptyState
+              title="No entries"
+              body="There are no audit log entries with the provided filters."
+            />
+          </ShadedCard>
+        ) : (
+          audits
+            ?.filter((a) => {
+              if (type === "ALL") return true;
+              return a.type === type;
+            })
+            .map((a, i) => (
+              <Stateful key={i}>
+                {(open, setOpen) => (
+                  <motion.div
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
+                    layout="position"
+                  >
+                    <ShadedCard
+                      className="cursor-pointer"
+                      onClick={() => setOpen(!open)}
+                    >
+                      <Title order={4} className="!font-mono">
+                        {auditLogMeta.get(a.type)?.label}
+                      </Title>
+                      <Text size="sm" color="dimmed" mt="xs">
+                        {a.content}
+                      </Text>
+                      <AnimatePresence mode="wait" initial={false}>
+                        {open && (
+                          <motion.div
+                            initial={{
+                              opacity: 0,
+                              y: -20,
+                              height: 0,
+                              marginTop: 8,
+                            }}
+                            animate={{
+                              opacity: 1,
+                              y: 0,
+                              height: "auto",
+                              marginTop: 12,
+                            }}
+                            exit={{
+                              opacity: 0,
+                              y: -20,
+                              height: 0,
+                              marginTop: 0,
+                            }}
+                            transition={{
+                              type: "spring",
+                              stiffness: 500,
+                              damping: 30,
+                              delay: 0.05,
+                            }}
+                          >
+                            <ShadedCard
+                              sx={(theme) => ({
+                                backgroundColor:
+                                  theme.colorScheme === "dark"
+                                    ? "#000"
+                                    : "#FFF",
+                              })}
+                              className="grid grid-cols-2 gap-6"
+                            >
+                              {a.rows.map((r, i) => (
+                                <div
+                                  className={clsx(
+                                    "flex flex-col col-span-full md:col-span-1"
+                                  )}
+                                  key={i}
+                                >
+                                  <Text color="dimmed">{r.key}</Text>
+                                  <Text weight={500}>{r.value}</Text>
+                                </div>
+                              ))}
+                            </ShadedCard>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                      <Text color="dimmed" weight={500} mt="lg" mb="md">
+                        {new Date(a.createdAt as Date).toLocaleString("en-US", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                          hour: "numeric",
+                          minute: "numeric",
+                        })}
+                      </Text>
+                      <Owner user={a.user} />
+                    </ShadedCard>
+                  </motion.div>
+                )}
+              </Stateful>
+            ))
+        )}
       </div>
     </TeamsViewProvider>
   );

@@ -37,7 +37,7 @@ import {
 import { TeamType } from "../..";
 import Markdown, { ToolbarItem } from "../../../../components/Markdown";
 import Owner from "../../../../components/Owner";
-import RenderMarkdown from "../../../../components/RenderMarkdown";
+import RenderMarkdown, { parse } from "../../../../components/RenderMarkdown";
 import ShadedCard from "../../../../components/ShadedCard";
 import Stateful from "../../../../components/Stateful";
 import TeamsViewProvider from "../../../../components/Teams/TeamsView";
@@ -68,16 +68,21 @@ export type TeamViewProps = {
   };
 };
 
-const TeamView: React.FC<TeamViewProps> = ({ user, team }) => {
+const TeamView: React.FC<TeamViewProps> = ({ user, team: teamInitial }) => {
   const { colorScheme, colors } = useMantineTheme();
   const [member, setMember] = useState<boolean | null>(null);
   const [invited, setInvited] = useState<boolean>(false);
   const { copy } = useClipboard();
   const [shoutEditOpened, setShoutEditOpened] = useState(false);
+  const [team, setTeam] = useState(teamInitial);
 
   const headers = {
     "Content-Type": "application/json",
     Authorization: String(getCookie(".frameworksession")),
+  };
+
+  const updateTeam = (property: keyof TeamType, value: any) => {
+    setTeam((prev) => ({ ...prev, [property]: value }));
   };
 
   const joinTeam = async () => {
@@ -185,6 +190,9 @@ const TeamView: React.FC<TeamViewProps> = ({ user, team }) => {
                           message: "Shout updated successfully.",
                           icon: <HiCheckCircle />,
                         });
+                        updateTeam("shout", parse(state));
+                        updateTeam("shoutMd", state);
+                        updateTeam("shoutUpdatedAt", new Date());
                       } else {
                         showNotification({
                           title: "Error",

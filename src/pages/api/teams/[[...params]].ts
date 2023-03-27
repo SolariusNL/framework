@@ -615,8 +615,8 @@ class TeamsRouter {
         },
         rows: true,
       },
-      skip: page > 0 ? (page - 1) * 25 : 0,
-      take: 25,
+      skip: (page - 1) * 8,
+      take: 8,
       orderBy: {
         createdAt: "desc",
       },
@@ -628,7 +628,7 @@ class TeamsRouter {
 
     return {
       audits,
-      pages: Math.ceil(count / 25),
+      pages: Math.ceil(count / 8),
     };
   }
 
