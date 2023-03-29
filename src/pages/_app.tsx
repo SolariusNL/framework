@@ -235,7 +235,11 @@ const Framework = (
                           colorScheme === "light"
                             ? "inset 0 1.2px 0 0 hsla(0,0%,100%,.2);"
                             : "",
+                        
                       }),
+                      ...(amoled && params.variant === "default" && {
+                        backgroundColor: "#000 !important"
+                      })
                     },
                   }),
                 },
@@ -362,6 +366,9 @@ const Framework = (
                             theme.colorScheme === "dark" ? 2 : 9
                           ],
                       },
+                      ...(amoled && {
+                        backgroundColor: "#000"
+                      })
                     },
                   }),
                 },
@@ -419,6 +426,38 @@ const Framework = (
                     },
                   }),
                 },
+                Checkbox: {
+                  styles: () => ({
+                    input: {
+                      ...(amoled && {
+                        backgroundColor: "#000"
+                      })
+                    }
+                  })
+                },
+                Table: {
+                  styles: () => ({
+                    root: {
+                      ...(amoled && {
+                        "&[data-striped] tbody tr:nth-of-type(odd)": {
+                          backgroundColor:
+                            AMOLED_COLORS.paper
+                        },
+                      })
+                    }
+                  })
+                },
+                Accordion: {
+                  styles: () => ({
+                    control: {
+                      ...(amoled && {
+                        "&:hover": {
+                          backgroundColor: AMOLED_COLORS.paper + " !important"
+                        }
+                      })
+                    }
+                  })
+                }
               },
             }}
           >

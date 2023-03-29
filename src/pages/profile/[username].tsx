@@ -355,13 +355,7 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
           </Stack>
         </Center>
 
-        <Paper
-          sx={(theme) => ({
-            backgroundColor:
-              theme.colorScheme == "dark"
-                ? theme.colors.dark[9]
-                : theme.colors.gray[1],
-          })}
+        <ShadedCard
           p={16}
           mt={50}
           {...(viewing.banned && {
@@ -627,7 +621,7 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
               </Grid>
             </>
           )}
-        </Paper>
+        </ShadedCard>
       </Framework>
     </>
   );

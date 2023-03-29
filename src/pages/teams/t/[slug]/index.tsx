@@ -8,7 +8,7 @@ import {
   Text,
   Title,
   Tooltip,
-  useMantineTheme,
+  useMantineTheme
 } from "@mantine/core";
 import { useClipboard } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
@@ -32,7 +32,7 @@ import {
   HiMail,
   HiOfficeBuilding,
   HiUsers,
-  HiViewGrid,
+  HiViewGrid
 } from "react-icons/hi";
 import { TeamType } from "../..";
 import Markdown, { ToolbarItem } from "../../../../components/Markdown";
@@ -374,11 +374,16 @@ const TeamView: React.FC<TeamViewProps> = ({ user, team: teamInitial }) => {
               <Tooltip
                 label={`${tooltip}: ${value}`}
                 key={tooltip}
-                position="right"
+                withinPortal
               >
                 <div className="flex items-center gap-3">
                   <Icon color={colors.gray[5]} className="flex-shrink-0" />
-                  <Text weight={500} color="dimmed" lineClamp={1}>
+                  <Text
+                    weight={500}
+                    color="dimmed"
+                    className="break-words"
+                    lineClamp={1}
+                  >
                     {value.startsWith("http") ? (
                       <Anchor href={value} target="_blank" rel="noreferrer">
                         {value}

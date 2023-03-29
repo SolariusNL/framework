@@ -37,6 +37,7 @@ import getMediaUrl from "../../../util/get-media";
 import useMediaQuery from "../../../util/media-query";
 import { NonUser, User } from "../../../util/prisma-types";
 import ContextMenu from "../../ContextMenu";
+import ShadedButton from "../../ShadedButton";
 import Stateful from "../../Stateful";
 import UserSelect from "../../UserSelect";
 import UserView from "../UserView";
@@ -368,23 +369,7 @@ const Users = () => {
                   key={u.id}
                   width={160}
                 >
-                  <UnstyledButton
-                    sx={(theme) => ({
-                      padding: theme.spacing.xs,
-                      borderRadius: theme.radius.md,
-                      color:
-                        theme.colorScheme === "dark"
-                          ? theme.colors.dark[0]
-                          : theme.black,
-                      "&:hover": {
-                        backgroundColor:
-                          theme.colorScheme === "dark"
-                            ? theme.colors.dark[6]
-                            : theme.colors.gray[0],
-                      },
-                      width: "100%",
-                      display: "flex",
-                    })}
+                  <ShadedButton
                     onClick={() => {
                       setSelectedUserId(u.id);
                       setSelectedUser(u);
@@ -410,7 +395,7 @@ const Users = () => {
                         {u.email}
                       </Text>
                     </div>
-                  </UnstyledButton>
+                  </ShadedButton>
                 </ContextMenu>
               ))}
           </div>

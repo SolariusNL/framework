@@ -1,5 +1,6 @@
 import { Avatar, Badge, NavLink, Text } from "@mantine/core";
 import Link from "next/link";
+import { useState } from "react";
 import {
   HiCog,
   HiCollection,
@@ -70,6 +71,9 @@ const TeamsViewProvider: React.FC<TeamsViewProps> = ({
   active,
   team,
 }) => {
+  const [settingsOpened, setSettingsOpened] = useState(
+    active.startsWith("settings") || false
+  );
   return (
     <Framework user={user} activeTab="none">
       <SidebarTabNavigation>
@@ -118,12 +122,12 @@ const TeamsViewProvider: React.FC<TeamsViewProps> = ({
                 label="Settings"
                 icon={<HiCog />}
                 active={active.startsWith("settings")}
-                opened={true}
+                opened={settingsOpened}
+                onClick={() => setSettingsOpened(!settingsOpened)}
                 classNames={{
                   children: "col-span-full md:col-span-2",
                   root: "col-span-full md:col-span-2",
                 }}
-                rightSection={<></>}
               >
                 <Link href={`/teams/t/${team.slug}/settings/general`}>
                   <NavLink

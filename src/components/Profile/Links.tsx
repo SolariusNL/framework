@@ -2,6 +2,7 @@ import { Anchor, Card, CardProps, Text } from "@mantine/core";
 import { ProfileLink } from "@prisma/client";
 import { NonUser } from "../../util/prisma-types";
 import ModernEmptyState from "../ModernEmptyState";
+import ShadedCard from "../ShadedCard";
 
 interface LinksProps {
   user: NonUser & {
@@ -14,7 +15,7 @@ const Links = ({
   ...props
 }: LinksProps & Omit<CardProps, "children">) => {
   return (
-    <Card withBorder p="md" {...props}>
+    <ShadedCard p="md" className="bg-transparent" {...props}>
       {user.profileLinks.map((link, i) => (
         <Card.Section key={i} p="md" withBorder>
           <Text weight={700} size="sm" color="dimmed" mb={4}>
@@ -30,7 +31,7 @@ const Links = ({
           <ModernEmptyState title="No links" body="This user has no links." />
         </div>
       )}
-    </Card>
+    </ShadedCard>
   );
 };
 

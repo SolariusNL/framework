@@ -192,7 +192,6 @@ const TeamViewSettingsAuditLog: React.FC<TeamViewSettingsAuditLogProps> = ({
                   <motion.div
                     whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.99 }}
-                    layout="position"
                   >
                     <ShadedCard
                       className="cursor-pointer"

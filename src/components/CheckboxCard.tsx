@@ -1,5 +1,7 @@
 import { Checkbox, createStyles, Text, UnstyledButton } from "@mantine/core";
 import { useUncontrolled } from "@mantine/hooks";
+import useAmoled from "../stores/useAmoled";
+import { AMOLED_COLORS } from "../util/constants";
 
 const useStyles = createStyles((theme) => ({
   button: {
@@ -41,6 +43,7 @@ const CheckboxCard = ({
 }: CheckboxCardProps &
   Omit<React.ComponentPropsWithoutRef<"button">, keyof CheckboxCardProps>) => {
   const { classes, cx } = useStyles();
+  const { enabled: amoled } = useAmoled();
 
   const [value, handleChange] = useUncontrolled({
     value: checked,
@@ -54,6 +57,11 @@ const CheckboxCard = ({
       {...others}
       onClick={() => handleChange(!value)}
       className={cx(classes.button, className)}
+      sx={{
+        ...(amoled && {
+          backgroundColor: AMOLED_COLORS.paper
+        })
+      }}
     >
       <Checkbox
         checked={value}
