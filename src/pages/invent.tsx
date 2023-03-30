@@ -1,9 +1,12 @@
+import { useLocalStorage } from "@mantine/hooks";
 import { GetServerSidePropsContext, NextPage } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   HiClipboardCheck,
   HiCloud,
+  HiDownload,
   HiFilm,
   HiIdentification,
   HiKey,
@@ -33,6 +36,7 @@ import authorizedRoute from "../util/auth";
 import useMediaQuery from "../util/media-query";
 import prisma from "../util/prisma";
 import { gameSelect, User } from "../util/prisma-types";
+import StudioPromptBackground from "../assets/subtlebackground.png";
 
 interface InventProps {
   user: User;
@@ -41,6 +45,10 @@ interface InventProps {
 const Invent: NextPage<InventProps> = ({ user }) => {
   const mobile = useMediaQuery("768");
   const [tab, setTab] = useState("games");
+  const [studioHidden] = useLocalStorage({
+    key: "studio-prompt-seen",
+    defaultValue: false,
+  });
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -113,6 +121,27 @@ const Invent: NextPage<InventProps> = ({ user }) => {
           <TabNav.Tab value="secrets" icon={<HiLockClosed />}>
             Secrets
           </TabNav.Tab>
+
+          {studioHidden && (
+            <Link href="/studio/activate">
+              <TabNav.Tab
+                value="studio"
+                icon={<HiDownload />}
+                classNames={{ root: "relative !rounded-md" }}
+                className="rounded-md"
+              >
+                <Image
+                  src={StudioPromptBackground.src}
+                  alt="Subtle background"
+                  layout="fill"
+                  objectFit="cover"
+                  objectPosition="left"
+                  className="absolute inset-0 !rounded-md scale-x-150"
+                />
+                Download Studio
+              </TabNav.Tab>
+            </Link>
+          )}
         </TabNav.List>
 
         {[
