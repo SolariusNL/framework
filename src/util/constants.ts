@@ -21,5 +21,6 @@ const SOCKETS = {
 const AMOLED_COLORS = {
   paper: "#0c0c0d",
 };
+const REDLOCK = "https://redlock.soodam.rocks";
 
-export { PREMIUM_PAYOUTS, SOCKETS, AMOLED_COLORS };
+export { PREMIUM_PAYOUTS, SOCKETS, AMOLED_COLORS, REDLOCK };

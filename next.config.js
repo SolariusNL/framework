@@ -9,10 +9,23 @@ const nextConfig = {
     });
     return config;
   },
+  // allow requests to *.soodam.rocks
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          {
+            key: "Access-Control-Allow-Origin",
+            value: "https://soodam.rocks",
+          },
+        ],
+      },
+    ];
+  },
 };
 
 const withMDX = require("@next/mdx")({
-  // get mdx files in src/pages
   extension: /\.mdx?$/,
   options: {
     remarkPlugins: [],
