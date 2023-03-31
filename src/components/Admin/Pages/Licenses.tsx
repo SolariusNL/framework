@@ -5,7 +5,7 @@ import {
   Stack,
   Text,
   TextInput,
-  Title,
+  Title
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { openConfirmModal } from "@mantine/modals";
@@ -14,6 +14,7 @@ import { BLACK } from "../../../pages/teams/t/[slug]/issue/create";
 import { REDLOCK } from "../../../util/constants";
 import fetchJson from "../../../util/fetch";
 import Copy from "../../Copy";
+import { Section } from "../../Home/FriendsWidget";
 import ShadedCard from "../../ShadedCard";
 
 type StudioLicenseForm = {
@@ -70,6 +71,11 @@ const Licenses: React.FC = () => {
       </div>
       <div className="flex-1">
         <ShadedCard>
+          <Section
+            title="License information"
+            description="Please fill out the license information."
+            sm
+          />
           <form
             onSubmit={form.onSubmit(async (v) => {
               await fetchJson(REDLOCK + "/api/v1/create", {

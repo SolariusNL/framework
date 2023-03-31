@@ -21,6 +21,7 @@ import {
   useMantineColorScheme,
 } from "@mantine/core";
 import { useLocalStorage } from "@mantine/hooks";
+import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import { SpotlightProvider } from "@mantine/spotlight";
 import { deleteCookie, getCookie, setCookie } from "cookies-next";
@@ -49,6 +50,7 @@ import {
   HiSpeakerphone,
   HiSun,
   HiTicket,
+  HiTrash,
   HiUser,
   HiViewGrid,
   HiXCircle,
@@ -504,8 +506,7 @@ const Framework = ({
                 dropdown={
                   <>
                     <Menu.Label>
-                      Framework {process.env.NEXT_PUBLIC_VERSION} - you found a
-                      secret place!
+                      Developer utilities - you found a secret place!
                     </Menu.Label>
                     <Menu.Item
                       color="pink"
@@ -551,6 +552,38 @@ const Framework = ({
                       }}
                     >
                       Open DevTools
+                    </Menu.Item>
+                    <Menu.Divider />
+                    <Menu.Item
+                      color="red"
+                      icon={<HiTrash />}
+                      onClick={() => {
+                        localStorage.clear();
+                        openConfirmModal({
+                          title: "LocalStorage cleared",
+                          children: (
+                            <Text size="sm" color="dimmed">
+                              LocalStorage has been reset. Please reload the
+                              application.
+                            </Text>
+                          ),
+                          labels: { confirm: "Refresh", cancel: "Not now" },
+                          onConfirm: () => router.reload(),
+                        });
+                      }}
+                    >
+                      Clear LocalStorage
+                    </Menu.Item>
+                    <Menu.Item
+                      color="red"
+                      icon={<HiTrash />}
+                      onClick={() => {
+                        const cookies = document.cookie.split(";");
+                        for (var i = 0; i < cookies.length; i++)
+                          deleteCookie(cookies[i].split("=")[0]);
+                      }}
+                    >
+                      Clear Cookies
                     </Menu.Item>
                     <Menu.Divider />
                     <Link

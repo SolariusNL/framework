@@ -1,10 +1,9 @@
 import {
-  Button,
-  FileInput,
+  Button, FileInput,
   Text,
   Textarea,
   TextInput,
-  Title,
+  Title
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
@@ -12,19 +11,17 @@ import { GetServerSideProps } from "next";
 import { useEffect, useState } from "react";
 import {
   HiArrowRight,
-  HiCheckCircle,
-  HiDownload,
-  HiMail,
+  HiCheckCircle, HiMail,
   HiUpload,
   HiUser,
-  HiXCircle,
+  HiXCircle
 } from "react-icons/hi";
 import Framework from "../../components/Framework";
 import { Section } from "../../components/Home/FriendsWidget";
 import ShadedCard from "../../components/ShadedCard";
 import {
   IRedlockVerifyLicenseResponse,
-  StudioKeyType,
+  StudioKeyType
 } from "../../types/api/IRedlockVerifyLicenseResponse";
 import authorizedRoute from "../../util/auth";
 import { REDLOCK } from "../../util/constants";
@@ -265,10 +262,10 @@ const ActivateStudio: React.FC<ActivateStudioProps> = ({ user }) => {
                 >
                   Return to Studio
                 </Button>
-                <Text size="sm" color="dimmed" weight={500} mt={8} mb={8}>
-                  or
+                <Text size="sm" color="dimmed" weight={500} mt="lg" mb={8}>
+                  if you don&apos;t have Studio installed
                 </Text>
-                <Button leftIcon={<HiDownload />} variant="subtle">
+                <Button leftIcon={<HiArrowRight />} variant="subtle">
                   Download Studio
                 </Button>
               </div>
