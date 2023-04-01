@@ -58,7 +58,11 @@ async function fetchJson<T>(
 
   if (!response.ok) {
     if (throwOnFail) {
-      throw new Error(`Request failed with status ${response.status}`);
+      throw new Error(
+        `Request failed with status ${response.status}: ${response.statusText}${
+          responseData && `\n${responseData}`
+        }`
+      );
     } else {
       return responseData;
     }

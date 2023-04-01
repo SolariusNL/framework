@@ -3,6 +3,7 @@ import { useLocalStorage } from "@mantine/hooks";
 import Image from "next/image";
 import Link from "next/link";
 import StudioPromptBackground from "../../assets/subtlebackground.png";
+import clsx from "../../util/clsx";
 import useMediaQuery from "../../util/media-query";
 import ModernEmptyState from "../ModernEmptyState";
 import ShadedCard from "../ShadedCard";
@@ -76,7 +77,11 @@ const InventTab = ({
                     marginTop: "auto",
                   }}
                   onClick={() => setSeen(true)}
-                  className="bg-slate-900 hover:bg-slate-700 focus:outline-none focus:ring-0 text-pink-200/95 transition-all font-semibold h-10 px-4 rounded-lg w-full text-sm flex items-center justify-center sm:w-auto dark:bg-pink-800 dark:highlight-white/20 dark:hover:bg-pink-700 no-underline"
+                  className={clsx(
+                    "bg-slate-900 hover:bg-slate-700 focus:ring-0 text-pink-200/95 transition-all font-semibold h-10",
+                    "px-4 rounded-lg w-full text-sm flex items-center justify-center sm:w-auto dark:bg-pink-800",
+                    "dark:highlight-white/20 dark:hover:bg-pink-700 no-underline"
+                  )}
                 >
                   Activate now
                 </a>

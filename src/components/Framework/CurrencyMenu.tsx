@@ -6,7 +6,7 @@ import {
   HiShoppingBag,
   HiStar,
   HiTicket,
-  HiViewList,
+  HiViewList
 } from "react-icons/hi";
 import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
 import abbreviateNumber from "../../util/abbreviate";
@@ -62,19 +62,21 @@ const CurrencyMenu = ({
         >
           Your Tickets
         </Menu.Item>
-        <Menu.Divider />
-        <Menu.Item
-          icon={<HiShoppingBag />}
-          onClick={() => router.push("/tickets/buy")}
-        >
-          Purchase tickets
-        </Menu.Item>
         <Menu.Item
           icon={<HiViewList />}
           onClick={() => router.push("/tickets/transactions")}
         >
           Transaction history
         </Menu.Item>
+        <Menu.Divider />
+        <Menu.Label>Store</Menu.Label>
+        <Menu.Item
+          icon={<HiShoppingBag />}
+          onClick={() => router.push("/tickets/buy")}
+        >
+          Purchase Tickets
+        </Menu.Item>
+        <Menu.Item icon={<HiShoppingBag />}>Purchase Studio</Menu.Item>
         {!user?.premium && (
           <>
             <Menu.Divider />

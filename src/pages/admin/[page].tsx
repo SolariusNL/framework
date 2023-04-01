@@ -26,12 +26,14 @@ import {
   HiBookmark,
   HiCheck,
   HiCog,
+  HiDatabase,
   HiDocument,
   HiFolder,
   HiGift,
   HiHome,
   HiIdentification,
   HiKey,
+  HiOutlineKey,
   HiServer,
   HiTicket,
   HiUsers,
@@ -49,6 +51,7 @@ import Experiments from "../../components/Admin/Pages/Experiments";
 import Gifts from "../../components/Admin/Pages/Gifts";
 import Instance from "../../components/Admin/Pages/Instance";
 import Invites from "../../components/Admin/Pages/Invites";
+import Licenses from "../../components/Admin/Pages/Licenses";
 import Reports from "../../components/Admin/Pages/Reports";
 import Tickets from "../../components/Admin/Pages/Tickets";
 import Users from "../../components/Admin/Pages/Users";
@@ -210,6 +213,13 @@ const data = [
     href: "/admin/gifts",
     render: <Gifts />,
     subtitle: "Manage redeemable gift codes",
+  },
+  {
+    label: "Licenses",
+    icon: HiDatabase,
+    href: "/admin/licenses",
+    render: <Licenses />,
+    subtitle: "Manage Studio license keys"
   },
   {
     label: "Tasks",
