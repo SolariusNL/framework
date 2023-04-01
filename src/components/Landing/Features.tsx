@@ -1,5 +1,6 @@
 import { Col, createStyles, Grid, Text, Title } from "@mantine/core";
 import { HiCheckCircle } from "react-icons/hi";
+import clsx from "../../util/clsx";
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -65,7 +66,13 @@ const Features = () => {
   const { classes } = useStyles();
 
   return (
-    <div className={classes.wrapper}>
+    <div
+      className={clsx(classes.wrapper, "bg-black bg-opacity-50")}
+      style={{
+        backdropFilter: "blur(10px)",
+        WebkitBackdropFilter: "blur(10px)",
+      }}
+    >
       <Grid gutter={80}>
         <Col span={12} md={5}>
           <Title className={classes.title} order={2}>

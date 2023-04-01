@@ -49,7 +49,7 @@ const useStyles = createStyles((theme) => ({
     ...theme.fn.hover({
       backgroundColor:
         theme.colorScheme === "dark"
-          ? theme.colors.dark[6]
+          ? theme.colors.dark[9]
           : theme.colors.gray[0],
     }),
   },
@@ -243,7 +243,11 @@ const LandingHeader = () => {
         <Header
           height={60}
           px="md"
-          className="flex items-center justify-between w-full"
+          className="flex items-center justify-between w-full bg-black bg-opacity-60"
+          sx={{
+            backdropFilter: "blur(10px)",
+            WebkitBackdropFilter: "blur(10px)",
+          }}
         >
           <Container className="flex justify-between w-full">
             <div className="flex justify-between w-full items-center">

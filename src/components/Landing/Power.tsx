@@ -17,42 +17,13 @@ const useStyles = createStyles((theme) => ({
 
 const Power = () => {
   const { classes } = useStyles();
-  const codeExamples = [
-    [
-      "Greeting",
-      `import { players, chat } from "@frameworkts/services";
-import { JoinEvent } from "@frameworkts/types/events";
 
-players.on<JoinEvent>("join", ({ username }) => {
-  chat.broadcast(\`Welcome to the server, \${username}!\`);
-});`,
-    ],
-    [
-      "Tools",
-      `import { tool, interactable, part } from "@frameworkts/services";
-import Tools from "@frameworkts/tools";
-import { getOreTool } from "./ores";
-
-const pickaxe = new Tools.Held("pickaxe-tool", {
-  cooldown: 0.5,
-  onUse: (plr, pickaxe, target) => {
-    if (part.hasTag(target, "minable")) {
-      const { ore } = part.getMetadata(target);
-      plr.inventory.add(getOreTool(ore), 1);
-    }
-  },
-  durability: {
-    max: 100,
-    current: 100,
-    type: Tools.DurabilityType.USES,
-  }
-);
-
-tool.registerGlobal(pickaxe);`,
-    ],
-    [
-      "Datastores",
-      `import { datastore, players } from "@frameworkts/services";
+  return (
+    <div className={classes.wrapper}>
+      <Grid gutter={80}>
+        <Col span={12} md={7}>
+          <Prism language="typescript">
+            {`import { datastore, players } from "@frameworkts/services";
 import type { DatastoreBase } from "@frameworkts/services/datastore";
 const master = datastore.createMaster<{
   xp: number;
@@ -81,29 +52,8 @@ players.on("exit", async (plr) => {
     gold: plr.getTag<number>("gold"),
   });
 });
-      `
-    ]
-  ];
-
-  return (
-    <div className={classes.wrapper}>
-      <Grid gutter={80}>
-        <Col span={12} md={7}>
-          <Prism.Tabs defaultValue={codeExamples[0][0]}>
-            <Prism.TabsList>
-              {codeExamples.map(([name], index) => (
-                <Prism.Tab key={index} value={name}>
-                  {name}
-                </Prism.Tab>
-              ))}
-            </Prism.TabsList>
-
-            {codeExamples.map(([name, code], index) => (
-              <Prism.Panel key={index} value={name} language="tsx">
-                {code}
-              </Prism.Panel>
-            ))}
-          </Prism.Tabs>
+      `}
+          </Prism>
         </Col>
         <Col span={12} md={5}>
           <Title className={classes.title} order={2}>

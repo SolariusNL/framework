@@ -7,14 +7,15 @@ import {
   ThemeIcon,
   Title,
 } from "@mantine/core";
-import { HiEyeOff, HiLockOpen, HiServer, HiXCircle } from "react-icons/hi";
+import { HiEyeOff, HiLockOpen, HiServer, HiShieldCheck } from "react-icons/hi";
+import clsx from "../../util/clsx";
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
     padding: `${theme.spacing.xl * 2}px ${theme.spacing.xl}px`,
-    backgroundColor:
-      theme.colorScheme === "dark" ? "#000" : theme.colors.gray[1],
     borderRadius: theme.radius.md,
+    backdropFilter: "blur(20px)",
+    WebkitBackdropFilter: "blur(20px)",
   },
 
   title: {
@@ -42,7 +43,7 @@ const features = [
     gradient: { from: "teal", to: "cyan" },
   },
   {
-    icon: HiXCircle,
+    icon: HiShieldCheck,
     title: "Safe community",
     description:
       "Our staff is committed to providing a safe and friendly community for everyone to enjoy. Being federated, moderation is decentralized and generally more effective.",
@@ -65,7 +66,7 @@ const Pros = () => {
       <ThemeIcon
         size={44}
         radius="md"
-        className="bg-purple-500 dark:highlight-white/40"
+        className="bg-pink-700 dark:highlight-white/20"
       >
         <feature.icon size={26} stroke={"1.5"} />
       </ThemeIcon>
@@ -79,11 +80,14 @@ const Pros = () => {
   ));
 
   return (
-    <div className={classes.wrapper}>
+    <div className={clsx(classes.wrapper, "bg-black bg-opacity-50")}>
       <Grid gutter={80}>
         <Col span={12} md={5}>
-          <p className="text-purple-500 font-bold text-sm">Why Framework?</p>
-          <Title className={classes.title} order={2}>
+          <p className="text-pink-700 font-bold text-sm">Why Framework?</p>
+          <Title
+            className={clsx(classes.title, "tracking-tight font-extrabold")}
+            order={2}
+          >
             Our standards
           </Title>
           <Text color="dimmed">
