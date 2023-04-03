@@ -8,12 +8,12 @@ import { render } from "@react-email/render";
 import {
   BadRequestException,
   Body,
-  createHandler,
   Delete,
   Get,
   Param,
   Post,
   Query,
+  createHandler,
 } from "@storyofams/next-api-decorators";
 import sanitize from "sanitize-html";
 import AccountUpdate from "../../../../email/emails/account-update";
@@ -439,7 +439,7 @@ class UserRouter {
       };
     }
 
-    if (!Number.isInteger(amount)) {
+    if (!Number.isInteger(Number(amount))) {
       return {
         success: false,
         message: "Invalid number",
