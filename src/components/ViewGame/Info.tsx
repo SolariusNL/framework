@@ -78,7 +78,7 @@ const InfoTab = ({ game }: InfoTabProps) => {
           },
           {
             icon: <HiCode />,
-            item: <Badge>{game.updateLogs[0].tag}</Badge>,
+            item: <Badge>{game.updateLogs[0].tag || "1.0.0"}</Badge>,
             label: "Latest version",
           },
         ].map((x, i) => (
