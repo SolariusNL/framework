@@ -63,7 +63,7 @@ import { getIpcRenderer } from "../../../util/electron";
 import getMediaUrl from "../../../util/get-media";
 import useMediaQuery from "../../../util/media-query";
 import prisma from "../../../util/prisma";
-import { Game, gameSelect, NonUser, User } from "../../../util/prisma-types";
+import { Game, NonUser, User, gameSelect } from "../../../util/prisma-types";
 
 type GameWithGamepass = Game & {
   gamepasses: Gamepass[];
@@ -186,7 +186,14 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
               slides={
                 game.gallery.length > 0
                   ? game.gallery.map((image, i) => (
-                      <Image src={getMediaUrl(image)} key={i} alt={game.name} />
+                      <AspectRatio ratio={16 / 9} key={i}>
+                        <Image
+                          src={getMediaUrl(image)}
+                          key={i}
+                          alt={game.name}
+                          className="rounded-md"
+                        />
+                      </AspectRatio>
                     ))
                   : Array(3)
                       .fill(0)
@@ -432,20 +439,25 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                           <Group spacing={12}>
                             <Image
                               src={getMediaUrl(game.iconUri)}
-                              width={50}
-                              height={50}
-                              className="rounded-md"
                               withPlaceholder
+                              className="rounded-md"
+                              width={48}
+                              height={48}
+                              radius="md"
                             />
                             <Stack spacing={4}>
                               <Text weight={700}>{game.name}</Text>
                               <Group spacing={6}>
                                 <UserContext user={game.author}>
                                   <Image
-                                    src={getMediaUrl(game.author.avatarUri)}
+                                    src={
+                                      game.author.avatarUri
+                                        ? getMediaUrl(game.author.avatarUri)
+                                        : `https://avatars.dicebear.com/api/identicon/${game.authorId}.png`
+                                    }
                                     width={20}
                                     height={20}
-                                    className="rounded-full"
+                                    radius={999}
                                     withPlaceholder
                                   />
                                 </UserContext>

@@ -1,13 +1,19 @@
 import {
   Badge,
   Card,
-  Grid,
   Stack,
   Text,
   Title,
   TypographyStylesProvider,
 } from "@mantine/core";
-import { HiServer, HiUsers, HiViewGrid, HiViewList } from "react-icons/hi";
+import {
+  HiCode,
+  HiServer,
+  HiShoppingBag,
+  HiUsers,
+  HiViewGrid,
+  HiViewList,
+} from "react-icons/hi";
 import sanitize from "sanitize-html";
 import { Game } from "../../util/prisma-types";
 import { getGenreText } from "../../util/universe/genre";
@@ -43,7 +49,7 @@ const InfoTab = ({ game }: InfoTabProps) => {
         />
       </TypographyStylesProvider>
 
-      <Grid>
+      <div className="grid md:grid-cols-3 grid-cols-2 gap-6 gap-y-12">
         {[
           {
             icon: <HiViewList />,
@@ -53,7 +59,7 @@ const InfoTab = ({ game }: InfoTabProps) => {
           {
             icon: <HiUsers />,
             item: game.maxPlayersPerSession,
-            label: "Max Players",
+            label: "Max players",
           },
           {
             icon: <HiServer />,
@@ -65,8 +71,18 @@ const InfoTab = ({ game }: InfoTabProps) => {
             item: game.visits,
             label: "Visits",
           },
+          {
+            icon: <HiShoppingBag />,
+            item: game.paywall ? "Paid access" : "Free access",
+            label: "Paywall",
+          },
+          {
+            icon: <HiCode />,
+            item: <Badge>{game.updateLogs[0].tag}</Badge>,
+            label: "Latest version",
+          },
         ].map((x, i) => (
-          <Grid.Col md={6} sm={6} xs={4} span={6} key={i}>
+          <div key={i} className="flex flex-col gap-2">
             <Stack spacing={10} align="center">
               {x.icon}
               <Text weight={550} mb={6}>
@@ -78,9 +94,9 @@ const InfoTab = ({ game }: InfoTabProps) => {
                 <Text>{x.item}</Text>
               )}
             </Stack>
-          </Grid.Col>
+          </div>
         ))}
-      </Grid>
+      </div>
 
       {game.copyrightMetadata.length > 0 && (
         <>

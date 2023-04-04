@@ -15,6 +15,7 @@ import getMediaUrl from "../util/get-media";
 import { Game, NonUser, User } from "../util/prisma-types";
 import Comment from "./Comment";
 import ModernEmptyState from "./ModernEmptyState";
+import ShadedCard from "./ShadedCard";
 
 interface GameCommentsProps {
   user: User;
@@ -71,6 +72,8 @@ const GameComments = ({ user, game }: GameCommentsProps) => {
 
   return (
     <>
+      <Divider mt={24} mb={24} />
+
       <Group
         sx={{
           alignItems: "flex-start",
@@ -121,10 +124,12 @@ const GameComments = ({ user, game }: GameCommentsProps) => {
       <Divider mt={24} mb={24} />
 
       {comments.length == 0 ? (
-        <ModernEmptyState
-          title="No comments"
-          body="No one has commented on this game yet."
-        />
+        <ShadedCard>
+          <ModernEmptyState
+            title="No comments"
+            body="No one has commented on this game yet."
+          />
+        </ShadedCard>
       ) : (
         <>
           <Pagination
