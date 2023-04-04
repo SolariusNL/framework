@@ -278,8 +278,8 @@ const Users = () => {
         <div style={{ width: mobile ? "100%" : "38%" }}>
           <div
             className={clsx(
-              "flex-initial flex-col md:flex-row flex items-center gap-4",
-              "items-stretch md:items-center justify-between mb-4"
+              "flex-initial md:flex-row flex items-center gap-4",
+              "items-stretch justify-between mb-4"
             )}
           >
             <TextInput
