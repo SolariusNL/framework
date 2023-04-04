@@ -3,14 +3,12 @@ import {
   Avatar,
   Badge,
   Button,
-  Group,
   Menu,
   Modal,
   Pagination,
   Text,
   Textarea,
   TextInput,
-  UnstyledButton,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
@@ -35,15 +33,14 @@ import {
   HiUser,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
+import clsx from "../../../util/clsx";
 import getMediaUrl from "../../../util/get-media";
 import useMediaQuery from "../../../util/media-query";
 import { NonUser, User } from "../../../util/prisma-types";
 import ContextMenu from "../../ContextMenu";
 import ShadedButton from "../../ShadedButton";
-import Stateful from "../../Stateful";
 import UserSelect from "../../UserSelect";
 import UserView from "../UserView";
-import clsx from "../../../util/clsx";
 
 export type AdminViewUser = User & {
   sessions: Session[];
@@ -292,14 +289,12 @@ const Users = () => {
             />
             <Menu>
               <Menu.Target>
-                <ActionIcon size="lg" variant="default">
+                <ActionIcon className="w-9 h-9" variant="default">
                   <HiDotsVertical />
                 </ActionIcon>
               </Menu.Target>
               <Menu.Dropdown>
-                <Menu.Label>
-                  Notifications
-                </Menu.Label>
+                <Menu.Label>Notifications</Menu.Label>
                 <Menu.Item icon={<HiBell />} onClick={() => setOpened(true)}>
                   Send notification to user
                 </Menu.Item>
