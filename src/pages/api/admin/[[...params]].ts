@@ -309,6 +309,7 @@ class AdminRouter {
         otpBase32: true,
         otpEnabled: true,
         otpHex: true,
+        previousEmails: true,
       },
       take: 8,
       skip: Number(page) * 8,

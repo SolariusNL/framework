@@ -12,7 +12,8 @@ import {
   Table,
   Tabs,
   Text,
-  Title
+  Title,
+  Tooltip,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
@@ -21,7 +22,7 @@ import { getCookie, setCookie } from "cookies-next";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
-import { HiCheckCircle } from "react-icons/hi";
+import { HiCheck, HiCheckCircle } from "react-icons/hi";
 import { useFrameworkUser } from "../../contexts/FrameworkUser";
 import { useUserInformationDialog } from "../../contexts/UserInformationDialog";
 import employeeRoleMeta from "../../data/employeeRoles";
@@ -33,6 +34,9 @@ import NoteTable, { NoteUser } from "./NoteTable";
 import { AdminViewUser } from "./Pages/Users";
 import Punishment from "./Punishment";
 import UserActions from "./UserActions";
+import { Section } from "../Home/FriendsWidget";
+import ShadedCard from "../ShadedCard";
+import clsx from "../../util/clsx";
 
 interface UserViewProps {
   user: AdminViewUser;
@@ -228,6 +232,7 @@ const UserView = ({ user }: UserViewProps) => {
         >
           <Tabs.Tab value="info">Info</Tabs.Tab>
           <Tabs.Tab value="sessions">Sessions</Tabs.Tab>
+          <Tabs.Tab value="security">Security</Tabs.Tab>
           <Tabs.Tab value="punishment">Punishment</Tabs.Tab>
           <Tabs.Tab value="notifications">Notifications</Tabs.Tab>
           <Tabs.Tab value="secrets">Secrets</Tabs.Tab>
@@ -477,6 +482,51 @@ const UserView = ({ user }: UserViewProps) => {
               ))}
             </tbody>
           </Table>
+        </Tabs.Panel>
+
+        <Tabs.Panel value="security">
+          <Section
+            title="Emails"
+            description="Emails used by this account since its tracking"
+          />
+          <ShadedCard className="flex flex-col gap-2 items-center">
+            <div className="flex items-center gap-2 mb-2">
+              <Tooltip label="Current email address">
+                <div className={clsx("w-3 h-3 rounded-full bg-green-500/50")} />
+              </Tooltip>
+              <Text size="sm" color="dimmed" weight={500}>
+                {user.email}
+              </Text>
+              {user.emailVerified && (
+                <Tooltip label="Verified">
+                  <div className="flex items-center justify-center">
+                    <HiCheck className="text-green-500/50" />
+                  </div>
+                </Tooltip>
+              )}
+            </div>
+            {user.previousEmails.length > 0 ? (
+              user.previousEmails.map((e) => (
+                <div className="flex items-center gap-2" key={e}>
+                  <Tooltip label="Previous email address">
+                    <div
+                      className={clsx("w-3 h-3 rounded-full bg-red-500/50")}
+                    />
+                  </Tooltip>
+                  <Text color="dimmed" size="sm">
+                    {e}
+                  </Text>
+                </div>
+              ))
+            ) : (
+              <div className="w-full flex justify-center items-center">
+                <ModernEmptyState
+                  title="No previous emails"
+                  body="This user has never changed their email."
+                />
+              </div>
+            )}
+          </ShadedCard>
         </Tabs.Panel>
 
         <Tabs.Panel value="punishment">

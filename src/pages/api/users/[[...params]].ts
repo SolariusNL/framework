@@ -179,6 +179,9 @@ class UserRouter {
         email: newEmail,
         emailVerified: false,
         emailResetRequired: false,
+        previousEmails: {
+          push: user.email,
+        }
       },
     });
 

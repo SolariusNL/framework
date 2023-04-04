@@ -1,4 +1,5 @@
 import {
+  ActionIcon,
   Avatar,
   Badge,
   Button,
@@ -28,6 +29,7 @@ import {
   HiArrowRight,
   HiBell,
   HiCheckCircle,
+  HiDotsVertical,
   HiRefresh,
   HiSearch,
   HiUser,
@@ -41,6 +43,7 @@ import ShadedButton from "../../ShadedButton";
 import Stateful from "../../Stateful";
 import UserSelect from "../../UserSelect";
 import UserView from "../UserView";
+import clsx from "../../../util/clsx";
 
 export type AdminViewUser = User & {
   sessions: Session[];
@@ -66,6 +69,8 @@ const Users = () => {
   const [page, setPage] = useState(0);
   const router = useRouter();
   const [pages, setPages] = useState(0);
+  const [opened, setOpened] = useState(false);
+  const [bulkOpened, setBulkOpened] = useState(false);
 
   const fetchUsers = async () => {
     await fetch(`/api/admin/users/${page}`, {
@@ -145,6 +150,124 @@ const Users = () => {
 
   return (
     <>
+      <Modal
+        title="Send bulk notification"
+        opened={bulkOpened}
+        onClose={() => setBulkOpened(false)}
+      >
+        <Text mb={16}>
+          Send a notification to all users. This is useful for announcing new
+          features or updates.
+        </Text>
+
+        <form
+          onSubmit={bulkNotificationForm.onSubmit(
+            async (values) =>
+              await fetch("/api/admin/notifications/send/all", {
+                method: "POST",
+                headers: {
+                  Authorization: String(getCookie(".frameworksession")),
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(values),
+              })
+                .then((res) => res.json())
+                .then((res) => {
+                  if (res.error) {
+                    bulkNotificationForm.setFieldError("message", res.error);
+                  } else {
+                    setOpened(false);
+                    showNotification({
+                      title: "Success",
+                      message: "Notification sent",
+                      icon: <HiCheckCircle />,
+                    });
+                  }
+                })
+          )}
+        >
+          <TextInput
+            label="Title"
+            description="Title of the notification"
+            mb={7}
+            {...bulkNotificationForm.getInputProps("title")}
+          />
+          <Textarea
+            label="Message"
+            description="Message of the notification"
+            mb={16}
+            {...bulkNotificationForm.getInputProps("message")}
+          />
+          <Button type="submit" fullWidth>
+            Send notifications
+          </Button>
+        </form>
+      </Modal>
+      <Modal
+        title="Send single notification"
+        opened={opened}
+        onClose={() => setOpened(false)}
+      >
+        <Text mb={16}>
+          Send a notification to a single user. This is useful for notifying a
+          user about a report or a ban, or for sending them a message.
+        </Text>
+
+        <form
+          onSubmit={singleNotificationForm.onSubmit(
+            async (values) =>
+              await fetch(`/api/admin/notifications/send/${values.userid}`, {
+                method: "POST",
+                headers: {
+                  Authorization: String(getCookie(".frameworksession")),
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  title: values.title,
+                  message: values.message,
+                }),
+              })
+                .then((res) => res.json())
+                .then((res) => {
+                  if (res.error) {
+                    singleNotificationForm.setFieldError("message", res.error);
+                  } else {
+                    setOpened(false);
+                    showNotification({
+                      title: "Success",
+                      message: "Notification sent",
+                      icon: <HiCheckCircle />,
+                    });
+                  }
+                })
+          )}
+        >
+          <UserSelect
+            onUserSelect={(user) => {
+              singleNotificationForm.setFieldValue("userid", user.id);
+            }}
+            label="User"
+            description="User to send the notification to"
+            mb={7}
+            {...singleNotificationForm.getInputProps("userid")}
+          />
+          <TextInput
+            label="Title"
+            description="Title of the notification"
+            mb={7}
+            {...singleNotificationForm.getInputProps("title")}
+          />
+          <Textarea
+            label="Message"
+            description="Message of the notification"
+            mb={16}
+            {...singleNotificationForm.getInputProps("message")}
+          />
+          <Button type="submit" fullWidth>
+            Send notifications
+          </Button>
+        </form>
+      </Modal>
       <div
         style={{
           display: "flex",
@@ -153,180 +276,42 @@ const Users = () => {
         }}
       >
         <div style={{ width: mobile ? "100%" : "38%" }}>
-          <Group mb={12}>
+          <div
+            className={clsx(
+              "flex-initial flex-col md:flex-row flex items-center gap-4",
+              "items-stretch md:items-center justify-between mb-4"
+            )}
+          >
             <TextInput
               icon={<HiSearch />}
               placeholder="Search users"
               className="w-full"
+              sx={{
+                flex: "0 0 85%",
+              }}
             />
-          </Group>
-          <ReactNoSSR>
-            <Button.Group mb={12}>
-              <Stateful>
-                {(opened, setOpened) => (
-                  <>
-                    <Button
-                      leftIcon={<HiBell />}
-                      onClick={() => setOpened(true)}
-                      fullWidth
-                    >
-                      Bulk notification
-                    </Button>
-
-                    <Modal
-                      title="Send bulk notification"
-                      opened={opened}
-                      onClose={() => setOpened(false)}
-                    >
-                      <Text mb={16}>
-                        Send a notification to all users. This is useful for
-                        announcing new features or updates.
-                      </Text>
-
-                      <form
-                        onSubmit={bulkNotificationForm.onSubmit(
-                          async (values) =>
-                            await fetch("/api/admin/notifications/send/all", {
-                              method: "POST",
-                              headers: {
-                                Authorization: String(
-                                  getCookie(".frameworksession")
-                                ),
-                                "Content-Type": "application/json",
-                              },
-                              body: JSON.stringify(values),
-                            })
-                              .then((res) => res.json())
-                              .then((res) => {
-                                if (res.error) {
-                                  bulkNotificationForm.setFieldError(
-                                    "message",
-                                    res.error
-                                  );
-                                } else {
-                                  setOpened(false);
-                                  showNotification({
-                                    title: "Success",
-                                    message: "Notification sent",
-                                    icon: <HiCheckCircle />,
-                                  });
-                                }
-                              })
-                        )}
-                      >
-                        <TextInput
-                          label="Title"
-                          description="Title of the notification"
-                          mb={7}
-                          {...bulkNotificationForm.getInputProps("title")}
-                        />
-                        <Textarea
-                          label="Message"
-                          description="Message of the notification"
-                          mb={16}
-                          {...bulkNotificationForm.getInputProps("message")}
-                        />
-                        <Button type="submit" fullWidth>
-                          Send notifications
-                        </Button>
-                      </form>
-                    </Modal>
-                  </>
-                )}
-              </Stateful>
-              <Stateful>
-                {(opened, setOpened) => (
-                  <>
-                    <Button
-                      leftIcon={<HiBell />}
-                      onClick={() => setOpened(true)}
-                      fullWidth
-                    >
-                      Send notification
-                    </Button>
-
-                    <Modal
-                      title="Send single notification"
-                      opened={opened}
-                      onClose={() => setOpened(false)}
-                    >
-                      <Text mb={16}>
-                        Send a notification to a single user. This is useful for
-                        notifying a user about a report or a ban, or for sending
-                        them a message.
-                      </Text>
-
-                      <form
-                        onSubmit={singleNotificationForm.onSubmit(
-                          async (values) =>
-                            await fetch(
-                              `/api/admin/notifications/send/${values.userid}`,
-                              {
-                                method: "POST",
-                                headers: {
-                                  Authorization: String(
-                                    getCookie(".frameworksession")
-                                  ),
-                                  "Content-Type": "application/json",
-                                },
-                                body: JSON.stringify({
-                                  title: values.title,
-                                  message: values.message,
-                                }),
-                              }
-                            )
-                              .then((res) => res.json())
-                              .then((res) => {
-                                if (res.error) {
-                                  singleNotificationForm.setFieldError(
-                                    "message",
-                                    res.error
-                                  );
-                                } else {
-                                  setOpened(false);
-                                  showNotification({
-                                    title: "Success",
-                                    message: "Notification sent",
-                                    icon: <HiCheckCircle />,
-                                  });
-                                }
-                              })
-                        )}
-                      >
-                        <UserSelect
-                          onUserSelect={(user) => {
-                            singleNotificationForm.setFieldValue(
-                              "userid",
-                              user.id
-                            );
-                          }}
-                          label="User"
-                          description="User to send the notification to"
-                          mb={7}
-                          {...singleNotificationForm.getInputProps("userid")}
-                        />
-                        <TextInput
-                          label="Title"
-                          description="Title of the notification"
-                          mb={7}
-                          {...singleNotificationForm.getInputProps("title")}
-                        />
-                        <Textarea
-                          label="Message"
-                          description="Message of the notification"
-                          mb={16}
-                          {...singleNotificationForm.getInputProps("message")}
-                        />
-                        <Button type="submit" fullWidth>
-                          Send notifications
-                        </Button>
-                      </form>
-                    </Modal>
-                  </>
-                )}
-              </Stateful>
-            </Button.Group>
-          </ReactNoSSR>
+            <Menu>
+              <Menu.Target>
+                <ActionIcon size="lg" variant="default">
+                  <HiDotsVertical />
+                </ActionIcon>
+              </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Label>
+                  Notifications
+                </Menu.Label>
+                <Menu.Item icon={<HiBell />} onClick={() => setOpened(true)}>
+                  Send notification to user
+                </Menu.Item>
+                <Menu.Item
+                  icon={<HiBell />}
+                  onClick={() => setBulkOpened(true)}
+                >
+                  Send all users notification
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
+          </div>
           <Pagination
             className="w-full flex justify-center mb-6"
             radius="xl"

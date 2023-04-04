@@ -101,6 +101,7 @@ model User {
   discordAccount             DiscordConnectCode?    @relation("discordAccount")
   alias                      String?
   previousUsernames          String[]
+  previousEmails             String[]
   emailRequiredLogin         Boolean                @default(false)
   emailLoginRequests         EmailLoginRequest[]    @relation("emailLoginRequests")
   lastUsernameChange         DateTime?
