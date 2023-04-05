@@ -9,13 +9,13 @@ import {
 import {
   BadRequestException,
   Body,
-  createHandler,
   Delete,
   Get,
   Param,
   Patch,
   Post,
   Query,
+  createHandler,
 } from "@storyofams/next-api-decorators";
 import sanitize from "sanitize-html";
 import { z } from "zod";
@@ -1243,8 +1243,11 @@ class TeamsRouter {
     @Query("filter") filter: IssueFilter = "all",
     @Query("sort") sort: IssueSort = "title",
     @Query("page") page: number = 1,
-    @Query("search") search: string = ""
+    @Query("search") search: string = "",
+    @Query("tags") tags: string = "[]"
   ) {
+    const parsedTags = JSON.parse(tags || "[]");
+
     const team = await prisma.team.findFirst({
       where: {
         id,
@@ -1268,6 +1271,12 @@ class TeamsRouter {
             ? {
                 contains: search,
                 mode: "insensitive",
+              }
+            : undefined,
+        tags:
+          parsedTags.length > 0
+            ? {
+                hasSome: parsedTags,
               }
             : undefined,
       },
@@ -1312,6 +1321,12 @@ class TeamsRouter {
             ? {
                 contains: search,
                 mode: "insensitive",
+              }
+            : undefined,
+        tags:
+          parsedTags.length > 0
+            ? {
+                hasSome: parsedTags,
               }
             : undefined,
       },

@@ -3,9 +3,13 @@ import {
   Avatar,
   Badge,
   Button,
+  Chip,
+  Modal,
   Pagination,
+  ScrollArea,
   Select,
   Skeleton,
+  Stack,
   Text,
   TextInput,
   Tooltip,
@@ -15,8 +19,14 @@ import { getCookie } from "cookies-next";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { HiArrowRight, HiSearch, HiSortAscending } from "react-icons/hi";
+import {
+  HiArrowRight,
+  HiFilter,
+  HiSearch,
+  HiSortAscending,
+} from "react-icons/hi";
 import { TeamType } from "../..";
+import LabelledCheckbox from "../../../../components/LabelledCheckbox";
 import ModernEmptyState from "../../../../components/ModernEmptyState";
 import RenderMarkdown from "../../../../components/RenderMarkdown";
 import ShadedButton from "../../../../components/ShadedButton";
@@ -27,6 +37,7 @@ import clsx from "../../../../util/clsx";
 import getMediaUrl from "../../../../util/get-media";
 import { NonUser, User } from "../../../../util/prisma-types";
 import { getTeam } from "../../../../util/teams";
+import { tags } from "./issue/create";
 
 export type TeamViewIssuesProps = {
   user: User;
@@ -69,10 +80,12 @@ const TeamViewIssues: React.FC<TeamViewIssuesProps> = ({ user, team }) => {
   const [search, setSearch] = useState("");
   const [issueFilter, setIssueFilter] = useState<IssueFilter>("all");
   const [issueSort, setServerSort] = useState<IssueSort>("title");
+  const [tagFilter, setTagFilter] = useState<string[]>([]);
   const [issues, setIssues] = useState<Issue[]>([]);
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [tagFilterModal, setTagFilterModal] = useState(false);
 
   const fetchIssues = async () => {
     setLoading(true);
@@ -83,6 +96,7 @@ const TeamViewIssues: React.FC<TeamViewIssuesProps> = ({ user, team }) => {
           filter: String(issueFilter),
           sort: String(issueSort),
           page: String(page),
+          tags: JSON.stringify(tagFilter),
         }),
       {
         headers: {
@@ -101,10 +115,41 @@ const TeamViewIssues: React.FC<TeamViewIssuesProps> = ({ user, team }) => {
 
   useEffect(() => {
     fetchIssues();
-  }, [search, issueFilter, issueSort, page]);
+  }, [search, issueFilter, issueSort, page, tagFilter]);
 
   return (
     <TeamsViewProvider user={user} team={team} active="issues">
+      <Modal
+        title="Filter by tags"
+        opened={tagFilterModal}
+        onClose={() => setTagFilterModal(false)}
+      >
+        <Text size="sm" color="dimmed" mb="lg">
+          Select tags to filter issues by to only show issues with the selected
+          tags.
+        </Text>
+        <ShadedCard className="border-0">
+          <ScrollArea sx={{ height: "15rem" }}>
+            <Stack spacing="sm">
+              {tags.map((tag) => (
+                <LabelledCheckbox
+                  key={tag.value}
+                  label={tag.label}
+                  checked={tagFilter.includes(tag.value)}
+                  description={`Show issues with the ${tag.label} tag.`}
+                  onChange={() => {
+                    if (tagFilter.includes(tag.value)) {
+                      setTagFilter(tagFilter.filter((t) => t !== tag.value));
+                    } else {
+                      setTagFilter([...tagFilter, tag.value]);
+                    }
+                  }}
+                />
+              ))}
+            </Stack>
+          </ScrollArea>
+        </ShadedCard>
+      </Modal>
       <div
         className={clsx(
           "flex-initial flex-col md:flex-row flex items-center gap-4",
@@ -180,15 +225,38 @@ const TeamViewIssues: React.FC<TeamViewIssuesProps> = ({ user, team }) => {
           </Button>
         </Link>
       </div>
-      <div className="flex items-center justify-center">
-        <Pagination
-          mt="lg"
-          mb="xl"
-          radius="md"
-          total={pages}
-          page={page}
-          onChange={setPage}
-        />
+      <div className="flex items-center gap-4 mt-6 mb-6">
+        <Pagination radius="md" total={pages} page={page} onChange={setPage} />
+        <Chip
+          classNames={{ label: "px-4" }}
+          checked={false}
+          onClick={() => {
+            setTagFilterModal(true);
+          }}
+          styles={(theme) => ({
+            label: {
+              backgroundColor:
+                tagFilter.length > 0
+                  ? theme.colors.blue[9] + "85 !important"
+                  : undefined,
+              borderColor:
+                tagFilter.length > 0
+                  ? theme.colors.blue[9] + "85 !important"
+                  : undefined,
+              color: tagFilter.length > 0 ? "white" : undefined,
+            },
+          })}
+        >
+          <div className="flex items-center gap-2">
+            <HiFilter />
+            <span>
+              Filter by tags
+              {tagFilter.length > 0 && (
+                <span className="font-mono"> ({tagFilter.length})</span>
+              )}
+            </span>
+          </div>
+        </Chip>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {loading ? (

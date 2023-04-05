@@ -219,7 +219,7 @@ const TeamIssueCreate: React.FC<TeamIssueCreateProps> = ({ user, team }) => {
               placeholder="Choose an assignee"
               {...form.getInputProps("assignee")}
             />
-            <Button size="lg" disabled={form.errors.length! > 0} type="submit">
+            <Button size="lg" type="submit">
               Create issue
             </Button>
           </FormSection>
