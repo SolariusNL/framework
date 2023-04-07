@@ -1,22 +1,30 @@
 import { OAuthScope } from "@prisma/client";
 import {
+  BadRequestException,
   Body,
   createHandler,
+  Delete,
   Get,
   Header,
+  NotFoundException,
+  Param,
+  Patch,
   Post,
   Query,
   Req,
   Res,
 } from "@storyofams/next-api-decorators";
+import { randomUUID } from "crypto";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getClientIp } from "request-ip";
 import { z } from "zod";
+import { GetMyOAuth2ApplicationsSelect } from "../../../types/api/IGetMyOAuth2ApplicationsResponse";
 import Authorized, { Account } from "../../../util/api/authorized";
 import { exclude } from "../../../util/exclude";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
 import { nonCurrentUserSelect } from "../../../util/prisma-types";
+import SuccessResponse from "../../../util/response/success";
 import { OperatingSystem } from "../../../util/ua";
 
 class OAuth2Router {
@@ -285,6 +293,120 @@ class OAuth2Router {
       username: found.username,
       discriminator: found.discriminator,
     };
+  }
+
+  @Get("/my/apps")
+  @Authorized()
+  public async getMyOAuthApplications(@Account() user: User) {
+    const apps = await prisma.oAuthApplication.findMany({
+      where: {
+        ownerId: user.id,
+      },
+      select: GetMyOAuth2ApplicationsSelect,
+    });
+
+    return new SuccessResponse("Successfully retrieved applications", {
+      apps,
+    });
+  }
+
+  @Post("/my/apps/new")
+  @Authorized()
+  public async createOAuthApplication(
+    @Account() user: User,
+    @Body() body: unknown
+  ) {
+    const schema = z.object({
+      name: z.string(),
+      description: z.string(),
+      redirectUri: z.string(),
+      scopes: z.array(z.nativeEnum(OAuthScope)),
+    });
+
+    const parsed = schema.safeParse(body);
+
+    if (!parsed.success) {
+      throw new BadRequestException("Invalid body");
+    }
+
+    const app = await prisma.oAuthApplication.create({
+      data: {
+        name: parsed.data.name,
+        description: parsed.data.description,
+        redirectUri: parsed.data.redirectUri,
+        scopes: parsed.data.scopes,
+        owner: {
+          connect: {
+            id: user.id,
+          },
+        },
+        secret: randomUUID(),
+      },
+      select: {
+        ...GetMyOAuth2ApplicationsSelect,
+        secret: true,
+      },
+    });
+
+    return new SuccessResponse("Successfully created application", {
+      app,
+    });
+  }
+
+  @Delete("/my/apps/:id")
+  @Authorized()
+  public async deleteOAuthApplication(
+    @Account() user: User,
+    @Param("id") id: string
+  ) {
+    const app = await prisma.oAuthApplication.findFirst({
+      where: {
+        id,
+        ownerId: user.id,
+      },
+    });
+
+    if (!app) {
+      throw new NotFoundException("Application not found");
+    }
+
+    await prisma.oAuthApplication.delete({
+      where: {
+        id,
+      },
+    });
+
+    return new SuccessResponse("Successfully deleted application", {});
+  }
+
+  @Patch("/my/apps/:id")
+  @Authorized()
+  public async refreshSecret(@Account() user: User, @Param("id") id: string) {
+    const app = await prisma.oAuthApplication.findFirst({
+      where: {
+        id,
+        ownerId: user.id,
+      },
+    });
+
+    if (!app) {
+      throw new NotFoundException("Application not found");
+    }
+
+    const secret = randomUUID();
+
+    await prisma.oAuthApplication.update({
+      where: {
+        id,
+      },
+      data: {
+        secret,
+      },
+    });
+
+    return new SuccessResponse("Successfully refreshed secret", {
+      secret,
+    });
   }
 }
 

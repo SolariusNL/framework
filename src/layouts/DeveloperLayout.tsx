@@ -2,6 +2,7 @@ import Link from "next/link";
 import { HiHome, HiKey, HiServer, HiUser, HiViewList } from "react-icons/hi";
 import Framework from "../components/Framework";
 import IntegratedTabs from "../components/Framework/IntegratedTabs";
+import WrenchScrewdriver from "../icons/WrenchScrewdriver";
 import { User } from "../util/prisma-types";
 
 type DeveloperLayoutProps = {
@@ -14,7 +15,7 @@ type DeveloperLayoutProps = {
 const tabs = [
   [HiServer, "/developer/servers", "Servers"],
   [HiKey, "/developer/api-keys", "API Keys"],
-  [HiUser, "/developer/profile", "Developer Profile"],
+  [WrenchScrewdriver, "/developer/oauth2", "OAuth2 Applications"],
   [HiViewList, "/developer/activity", "Activity"],
 ];
 
