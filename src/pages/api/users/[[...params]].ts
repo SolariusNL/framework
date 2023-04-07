@@ -55,6 +55,20 @@ class UserRouter {
     return user;
   }
 
+  @Get("/:id")
+  public async getUser(@Param("id") id: number) {
+    const user = await prisma.user.findUnique({
+      where: { id },
+      select: nonCurrentUserSelect.select,
+    });
+
+    if (!user) {
+      throw new BadRequestException("User not found");
+    }
+
+    return user;
+  }
+
   @Post("/@me/verifyemail")
   @Authorized()
   @RateLimitMiddleware(2)()
@@ -181,7 +195,7 @@ class UserRouter {
         emailResetRequired: false,
         previousEmails: {
           push: user.email,
-        }
+        },
       },
     });
 
