@@ -55,7 +55,7 @@ class UserRouter {
     return user;
   }
 
-  @Get("/:id")
+  @Get("/u/:id")
   public async getUser(@Param("id") id: number) {
     const user = await prisma.user.findUnique({
       where: { id: Number(id) },
