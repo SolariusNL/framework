@@ -106,9 +106,11 @@ const Invent: NextPage<InventProps> = ({ user }) => {
             Developer Profile
           </TabNav.Tab>
 
-          <TabNav.Tab value="connections" icon={<HiServer />}>
-            Connections
-          </TabNav.Tab>
+          <Link href="/developer/servers">
+            <TabNav.Tab value="connections" icon={<HiServer />}>
+              Connections
+            </TabNav.Tab>
+          </Link>
 
           <TabNav.Tab value="nucleus" icon={<HiKey />}>
             Nucleus

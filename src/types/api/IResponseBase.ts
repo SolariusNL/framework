@@ -1,4 +1,4 @@
-interface IResponseBase<T> {
+interface IResponseBase<T = any> {
   success: boolean;
   data?: T;
   message?: string;

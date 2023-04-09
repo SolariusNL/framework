@@ -83,6 +83,33 @@ class UserRouter {
     await verificationEmail(user.id, user.email);
   }
 
+  @Get("/@me/games")
+  @Authorized()
+  public async getGames(@Account() user: User) {
+    const games = await prisma.game.findMany({
+      where: {
+        authorId: user.id,
+      },
+      select: {
+        name: true,
+        id: true,
+        iconUri: true,
+        connection: {
+          select: {
+            ip: true,
+          },
+        }
+      },
+    });
+
+    return {
+      success: true,
+      data: {
+        games,
+      },
+    };
+  }
+
   @Post("/@me/changepassword")
   @Authorized()
   @RateLimitMiddleware(2)()

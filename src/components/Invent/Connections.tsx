@@ -1,4 +1,4 @@
-import { Text, Title } from "@mantine/core";
+import { Loader, Text, Title } from "@mantine/core";
 import { User } from "../../util/prisma-types";
 import ConnectionsWidget from "../Widgets/Connections";
 import InventTab from "./InventTab";
@@ -13,16 +13,14 @@ const Connections = ({ user }: ConnectionsProps) => {
       <InventTab
         tabValue="connections"
         tabTitle="Connections"
-        tabSubtitle="Connections are self-hosted servers that can be used as an alternative
-          to dedicated servers. They allow for more flexibility, customization,
-          and control, but requires a bit more technical knowledge to set up and
-          maintain. If you're not sure what you're doing, it's
-          recommended to use a dedicated server instead."
+        tabSubtitle="Redirecting to your connections..."
       >
-        <Title order={4} mb={6}>
-          Your Connections
-        </Title>
-        <ConnectionsWidget />
+        <div className="flex flex-col items-center justify-center w-full h-full mt-12">
+          <Text size="xl" weight={500}>
+            Redirecting to your connections...
+          </Text>
+          <Loader mt="md" size="lg" />
+        </div>
       </InventTab>
     </>
   );

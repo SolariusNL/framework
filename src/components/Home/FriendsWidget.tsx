@@ -56,7 +56,7 @@ export const Section: React.FC<{
   return (
     <>
       {right ? (
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-4">
           <div>{meta}</div>
           {right}
         </div>
