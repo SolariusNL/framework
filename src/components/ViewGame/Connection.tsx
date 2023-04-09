@@ -60,7 +60,12 @@ const ConnectionTab = ({ game }: ConnectionTabProps) => {
             variant="subtle"
             size="xs"
             leftIcon={<HiPlus />}
-            onClick={() => router.push(`/game/${game.id}/connection/add`)}
+            onClick={() =>
+              router.push(
+                "/developer/servers?" +
+                  new URLSearchParams({ page: "CreateServer" }).toString()
+              )
+            }
             disabled={game.connection.length > 0}
           >
             Add server
@@ -70,7 +75,7 @@ const ConnectionTab = ({ game }: ConnectionTabProps) => {
             variant="subtle"
             size="xs"
             leftIcon={<HiViewList />}
-            onClick={() => router.push(`/game/${game.id}/edit/servers`)}
+            onClick={() => router.push("/developer/servers")}
           >
             Manage servers
           </Button>

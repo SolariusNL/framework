@@ -332,7 +332,12 @@ const Games = ({ user }: GamesProps) => {
                         <Menu.Item
                           icon={<HiServer />}
                           onClick={() =>
-                            router.push(`/game/${game.id}/connection/add`)
+                            router.push(
+                              "/developer/servers/?" +
+                                new URLSearchParams({
+                                  page: "CreateServer",
+                                }).toString()
+                            )
                           }
                           disabled={game.connection.length > 0}
                         >
