@@ -1,12 +1,9 @@
 import { schedule } from "node-cron";
-import { Connection, PrismaClient } from "@prisma/client";
-import { config } from "dotenv";
+import { Connection } from "@prisma/client";
 import axios from "axios";
 import setServerStatus from "./util/servers";
 import startSubscriptionService from "./util/subscriptions";
-
-export const client = new PrismaClient();
-config({ path: "../.env" });
+import prisma from "./prisma";
 
 async function checkServerStatus(server: Connection) {
   try {
@@ -33,13 +30,12 @@ async function checkServerStatus(server: Connection) {
 
 async function cron() {
   try {
-    await client.$connect();
     console.log("cron ~ ✅ Connected to Prisma");
     console.log("cron ~ 🔃 Starting subscription service");
     startSubscriptionService();
 
     schedule("0 * * * *", async () => {
-      const servers = await client.connection.findMany({
+      const servers = await prisma.connection.findMany({
         where: { online: true },
       });
 

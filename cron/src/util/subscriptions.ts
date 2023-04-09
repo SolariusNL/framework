@@ -2,7 +2,7 @@ import { NotificationType, Prisma } from "@prisma/client";
 import { schedule } from "node-cron";
 import { scheduleJob } from "node-schedule";
 import { PREMIUM_PAYOUTS } from "../../../src/util/constants";
-import { client } from "../app";
+import prisma from "../prisma";
 
 const user = Prisma.validator<Prisma.UserArgs>()({
   include: {
@@ -20,7 +20,7 @@ async function schedulePremiumExpiration(user: User) {
   const subscription = user.premiumSubscription;
 
   async function invalidate() {
-    await client.user.update({
+    await prisma.user.update({
       where: {
         id: user.id,
       },
@@ -57,7 +57,7 @@ async function schedulePremiumExpiration(user: User) {
 
 async function grantPremiumMonthlyReward(user: User) {
   async function grantTickets(amt: number) {
-    await client.user.update({
+    await prisma.user.update({
       where: {
         id: user.id,
       },
@@ -92,7 +92,7 @@ async function grantPremiumMonthlyReward(user: User) {
 }
 
 async function startSubscriptionService() {
-  const initial = await client.user.findMany({
+  const initial = await prisma.user.findMany({
     where: {
       premium: true,
       premiumSubscription: {
@@ -110,7 +110,7 @@ async function startSubscriptionService() {
   }
 
   schedule("0 9 * * *", async () => {
-    const users = await client.user.findMany({
+    const users = await prisma.user.findMany({
       where: {
         premium: true,
         premiumSubscription: {

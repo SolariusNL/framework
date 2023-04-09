@@ -151,6 +151,14 @@ const SubscriptionTab = ({ user: _user }: SubscriptionTabProps) => {
                         user.premiumSubscription.expiresAt
                       ).toLocaleDateString(),
                     ],
+                    [
+                      "Next gift",
+                      // 1 month from  user.premiumSubscription.lastReward
+                      new Date(
+                        new Date(user.premiumSubscription.lastReward).getTime() +
+                          1000 * 60 * 60 * 24 * 30
+                      ).toLocaleDateString(),
+                    ]
                   ].map(([label, value]) => (
                     <div className="flex items-center gap-2" key={label}>
                       <Text size="sm" color="dimmed">

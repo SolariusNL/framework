@@ -1,8 +1,8 @@
 import { Connection } from "@prisma/client";
-import { client } from "../app";
+import prisma from "../prisma";
 
 async function setServerStatus(server: Connection, online: boolean) {
-  await client.connection.update({
+  await prisma.connection.update({
     where: {
       id: server.id,
     },
