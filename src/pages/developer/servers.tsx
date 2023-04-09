@@ -363,12 +363,7 @@ const Servers: FC<ServersProps> = ({ user }) => {
                       classNames={BLACK}
                       icon={<Rocket />}
                       data={games
-                        .filter((g) => {
-                          if (g.connection) {
-                            return false;
-                          }
-                          return true;
-                        })
+                        .filter((g) => !g.connection)
                         .map((g) => ({
                           label: g.name,
                           value: g.id,
