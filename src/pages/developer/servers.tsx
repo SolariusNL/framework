@@ -363,7 +363,8 @@ const Servers: FC<ServersProps> = ({ user }) => {
                       classNames={BLACK}
                       icon={<Rocket />}
                       data={games
-                        .filter((g) => !g.connection)
+                        // if connection has one, it's already assigned
+                        .filter((g) => g.connection.length === 0)
                         .map((g) => ({
                           label: g.name,
                           value: g.id,
