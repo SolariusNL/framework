@@ -30,6 +30,8 @@ import LabelledCheckbox from "../LabelledCheckbox";
 import { updateAccount } from "./AccountTab";
 import SettingsTab from "./SettingsTab";
 import SideBySide from "./SideBySide";
+import PinInput from "../PinInput";
+import { BLACK } from "../../pages/teams/t/[slug]/issue/create";
 
 interface SecurityTabProps {
   user: User;
@@ -246,9 +248,12 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
       <Modal
         title="Enable Two-factor Authentication"
         opened={twofaPromptOpen}
-        onClose={() => setTwofaPromptOpen(false)}
+        onClose={() => {
+          setTwofaPromptOpen(false);
+
+        }}
       >
-        <Text mb={16}>
+        <Text mb={16} color="dimmed" size="sm">
           Install an authenticator app on your phone, such as Google
           Authenticator (iOS) or Authy (iOS, Android). Then, scan the QR code
           below.
@@ -273,8 +278,9 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
               onChange={(e) => setTwoFactorCode(e.target.value)}
               placeholder="000000"
               error={invalid ? "Invalid code" : undefined}
+              classNames={{ input: "!bg-black" }}
             />
-            <Button fullWidth onClick={async () => await verifyTwoFactor()}>
+            <Button fullWidth onClick={async () => await verifyTwoFactor()} leftIcon={<HiCheck />}>
               Verify TOTP
             </Button>
           </div>
