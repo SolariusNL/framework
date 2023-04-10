@@ -168,6 +168,7 @@ model User {
   assignedIssues             TeamIssue[]            @relation("assignedIssues")
   issueComments              TeamIssueComment[]     @relation("userIssueComments")
   auditLogs                  TeamAuditLog[]         @relation("audited")
+  dismissibleContents        String[]
 }
 
 model ConnectedAccount {
