@@ -688,7 +688,7 @@ const Servers: FC<ServersProps> = ({ user }) => {
                             >
                               <TextInput
                                 icon={<HiSearch />}
-                                placeholder="Search by IP address or game name"
+                                placeholder="Search servers"
                                 sx={{
                                   flex: "0 0 45%",
                                 }}
