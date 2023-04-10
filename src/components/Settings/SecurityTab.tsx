@@ -206,18 +206,24 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
         onClose={() => setPasswordModal(false)}
       >
         <TextInput
-          label="Current Password"
+          label="Current password"
           description="Enter your current password that you use to login"
           mb={6}
           type="password"
           onChange={(e) => setCurrentPassword(e.target.value)}
+          classNames={{ input: "!bg-black" }}
+          placeholder="Enter your current password"
+          required
         />
         <TextInput
-          label="New Password"
+          label="New password"
           description="Enter your new password"
           mb={12}
           type="password"
           onChange={(e) => setNewPassword(e.target.value)}
+          classNames={{ input: "!bg-black" }}
+          placeholder="Enter your new password"
+          required
         />
         <Alert
           color="orange"
@@ -227,7 +233,9 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
         >
           You will be logged out after changing your password.
         </Alert>
-        <Button onClick={changePassword}>Confirm</Button>
+        <div className="flex justify-end">
+          <Button onClick={changePassword}>Confirm</Button>
+        </div>
       </Modal>
 
       <Modal
@@ -236,11 +244,14 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
         onClose={() => setEmailModal(false)}
       >
         <TextInput
-          label="New Email"
+          label="New email"
           description="We will send you an email to verify your new email address. Your existing email address will no longer be valid."
           mb={12}
           type="email"
           onChange={(e) => setNewEmail(e.target.value)}
+          classNames={{ input: "!bg-black" }}
+          required
+          placeholder="Enter your new email"
         />
         <Button onClick={changeEmail}>Confirm</Button>
       </Modal>
@@ -250,7 +261,6 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
         opened={twofaPromptOpen}
         onClose={() => {
           setTwofaPromptOpen(false);
-
         }}
       >
         <Text mb={16} color="dimmed" size="sm">
@@ -280,7 +290,11 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
               error={invalid ? "Invalid code" : undefined}
               classNames={{ input: "!bg-black" }}
             />
-            <Button fullWidth onClick={async () => await verifyTwoFactor()} leftIcon={<HiCheck />}>
+            <Button
+              fullWidth
+              onClick={async () => await verifyTwoFactor()}
+              leftIcon={<HiCheck />}
+            >
               Verify TOTP
             </Button>
           </div>

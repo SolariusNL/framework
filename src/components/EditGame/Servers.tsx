@@ -1,9 +1,7 @@
-import { Button } from "@mantine/core";
-import Link from "next/link";
-import { HiPlus } from "react-icons/hi";
+import { Loader } from "@mantine/core";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 import { Game } from "../../util/prisma-types";
-import ModernEmptyState from "../ModernEmptyState";
-import ConnectionsWidget from "../Widgets/Connections";
 import EditGameTab from "./EditGameTab";
 
 interface ServersProps {
@@ -11,19 +9,22 @@ interface ServersProps {
 }
 
 const Servers = ({ game }: ServersProps) => {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.push(
+      "/developer/servers?" +
+        new URLSearchParams({
+          q: `id:${game.id}`,
+        }).toString()
+    );
+  }, []);
+
   return (
     <EditGameTab value="servers">
-      <Link passHref href={`/game/${game.id}/connection/add`}>
-        <Button
-          leftIcon={<HiPlus />}
-          mb={16}
-          variant="default"
-          disabled={game.connection.length > 0}
-        >
-          Add a new server
-        </Button>
-      </Link>
-      <ConnectionsWidget filterId={game.id} />
+      <div className="col-span-2 flex items-center justify-center py-8">
+        <Loader />
+      </div>
     </EditGameTab>
   );
 };

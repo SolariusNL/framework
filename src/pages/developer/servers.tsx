@@ -4,6 +4,7 @@ import {
   Avatar,
   Badge,
   Button,
+  Code,
   Divider,
   Loader,
   Menu,
@@ -40,6 +41,7 @@ import {
   HiExclamationCircle,
   HiFolder,
   HiPlus,
+  HiQuestionMarkCircle,
   HiRefresh,
   HiSearch,
   HiServer,
@@ -177,7 +179,18 @@ const Servers: FC<ServersProps> = ({ user }) => {
   };
 
   const searchFn = (s: ConnectionWithGame) => {
-    return s.ip.toLowerCase().includes(search.toLowerCase());
+    const parts = search.split(" ");
+    const filters: Record<string, string> = {};
+    parts.forEach((part) => {
+      const [key, value] = part.split(":");
+      filters[key] = value;
+    });
+
+    return (
+      s.ip.toLowerCase().includes(search.toLowerCase()) ||
+      s.game.name.toLowerCase().includes(search.toLowerCase()) ||
+      Number(filters.id) === s.gameId
+    );
   };
 
   const getServers = async () => {
@@ -228,10 +241,14 @@ const Servers: FC<ServersProps> = ({ user }) => {
     if (typeof window !== "undefined") {
       const urlParams = new URLSearchParams(window.location.search);
       const page = urlParams.get("page");
+      const search = urlParams.get("q");
+
       if (page) {
         const tab = SidebarValue[page as keyof typeof SidebarValue];
         if (tab) setActiveTab(tab);
       }
+
+      if (search) setSearch(search);
     }
   }, []);
 
@@ -671,7 +688,7 @@ const Servers: FC<ServersProps> = ({ user }) => {
                             >
                               <TextInput
                                 icon={<HiSearch />}
-                                placeholder="Search by IP address"
+                                placeholder="Search by IP address or game name"
                                 sx={{
                                   flex: "0 0 45%",
                                 }}
@@ -679,6 +696,76 @@ const Servers: FC<ServersProps> = ({ user }) => {
                                 onChange={(e) => {
                                   setSearch(e.target.value);
                                 }}
+                                rightSection={
+                                  <ActionIcon
+                                    className="rounded-full"
+                                    onClick={() =>
+                                      openModal({
+                                        title: "Advanced server search",
+                                        children: (
+                                          <>
+                                            <Text
+                                              size="sm"
+                                              color="dimmed"
+                                              mb="xs"
+                                            >
+                                              Server search includes an advanced
+                                              search system to easily find what
+                                              you&apos;re looking for.
+                                            </Text>
+                                            <Text
+                                              size="sm"
+                                              color="dimmed"
+                                              mb="xs"
+                                            >
+                                              If you&apos;re looking for servers
+                                              for a specific game, you can
+                                              search for the games name. Or, to
+                                              narrow it down even more, you can
+                                              use the below example to search
+                                              for servers under a game by its
+                                              ID, 25.
+                                            </Text>
+                                            <div className="flex flex-col items-center justify-center mb-4 gap-2">
+                                              <Code>id:25</Code>
+                                              <Text
+                                                size="sm"
+                                                color="dimmed"
+                                                weight={500}
+                                              >
+                                                Returns servers for game ID 25
+                                              </Text>
+                                            </div>
+                                            <Text
+                                              size="sm"
+                                              color="dimmed"
+                                              mb="xs"
+                                            >
+                                              Here is another example, where we
+                                              look for servers under game ID 42
+                                              with an IP that begin in 72.
+                                            </Text>
+                                            <div className="flex flex-col items-center justify-center mb-4 gap-2">
+                                              <Code className="w-fit">
+                                                72. id:42
+                                              </Code>
+                                              <Text
+                                                size="sm"
+                                                color="dimmed"
+                                                weight={500}
+                                              >
+                                                Returns servers for game ID 25
+                                                where IP begins with 72.
+                                              </Text>
+                                            </div>
+                                          </>
+                                        ),
+                                      })
+                                    }
+                                  >
+                                    <HiQuestionMarkCircle />
+                                  </ActionIcon>
+                                }
                               />
                               <Select
                                 value={serverFilter}

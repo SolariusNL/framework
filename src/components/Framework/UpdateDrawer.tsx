@@ -20,6 +20,20 @@ const UpdateDrawer: React.FC = () => {
     href?: string;
   }> = [
     {
+      title: "Improved server provisioning",
+      description: "We've added a new Cosmic server creation tool to simplify the process.",
+      badge: BadgeType.NEW,
+      href: "/developer/servers?page=CreateServer",
+      date: new Date("2023-04-10")
+    },
+    {
+      title: "OAuth2",
+      description: "We've release OAuth2 to the public for developers to build applications that integrate with Framework.",
+      badge: BadgeType.NEW,
+      href: "/developer/oauth2",
+      date: new Date("2023-04-08"),
+    },
+    {
       title: "AMOLED Dark Mode",
       description: "An AMOLED Dark Mode experiment is now available.",
       badge: BadgeType.EXPERIMENT,
