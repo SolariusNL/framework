@@ -20,7 +20,6 @@ import {
 import { useForm } from "@mantine/form";
 import { openModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
-import { Prism } from "@mantine/prism";
 import { Connection } from "@prisma/client";
 import Convert from "ansi-to-html";
 import { getCookie } from "cookies-next";
@@ -30,11 +29,9 @@ import { FC, ReactNode, useEffect, useState } from "react";
 import {
   HiArrowLeft,
   HiArrowUp,
-  HiBeaker,
   HiChartBar,
   HiCheckCircle,
   HiChip,
-  HiClipboard,
   HiCloud,
   HiCubeTransparent,
   HiDotsVertical,
@@ -42,15 +39,15 @@ import {
   HiFolder,
   HiPlus,
   HiQuestionMarkCircle,
-  HiRefresh,
   HiSearch,
   HiServer,
   HiSortAscending,
-  HiStop,
   HiWifi,
   HiXCircle,
 } from "react-icons/hi";
+import ContextMenu from "../../components/ContextMenu";
 import ConsoleOutput from "../../components/Developer/ConsoleOutput";
+import ServerContextMenu from "../../components/Developer/ServerContextMenu";
 import { Section } from "../../components/Home/FriendsWidget";
 import ModernEmptyState from "../../components/ModernEmptyState";
 import ShadedButton from "../../components/ShadedButton";
@@ -62,7 +59,6 @@ import IResponseBase from "../../types/api/IResponseBase";
 import authorizedRoute from "../../util/auth";
 import clsx from "../../util/clsx";
 import fetchJson from "../../util/fetch";
-import shutdownNucleus from "../../util/fetch/shutdownNucleus";
 import getMediaUrl from "../../util/get-media";
 import { Game, User } from "../../util/prisma-types";
 import { BLACK } from "../teams/t/[slug]/issue/create";
@@ -479,69 +475,9 @@ const Servers: FC<ServersProps> = ({ user }) => {
                                       </ActionIcon>
                                     </Menu.Target>
                                     <Menu.Dropdown>
-                                      <Menu.Label>Actions</Menu.Label>
-                                      <Menu.Item
-                                        icon={<HiBeaker />}
-                                        disabled={!selectedServer.online}
-                                        onClick={async () => {
-                                          await fetch(
-                                            `/api/nucleus/test/${selectedServer.gameId}`,
-                                            {
-                                              method: "GET",
-                                              headers: {
-                                                "Content-Type":
-                                                  "application/json",
-                                                Authorization: String(
-                                                  getCookie(".frameworksession")
-                                                ),
-                                              },
-                                            }
-                                          )
-                                            .then((res) => res.json())
-                                            .then((res) => {
-                                              if (res.success) {
-                                                openModal({
-                                                  title: "Connection test",
-                                                  children: (
-                                                    <>
-                                                      <Text
-                                                        mb="md"
-                                                        size="sm"
-                                                        color="dimmed"
-                                                      >
-                                                        Connection to{" "}
-                                                        {selectedServer.ip}:
-                                                        {selectedServer.port}{" "}
-                                                        was successful:
-                                                      </Text>
-                                                      <Prism language="json">
-                                                        {JSON.stringify(
-                                                          res.data,
-                                                          null,
-                                                          2
-                                                        )}
-                                                      </Prism>
-                                                    </>
-                                                  ),
-                                                });
-                                              } else {
-                                                showNotification({
-                                                  title: "Connection Failed",
-                                                  message: `Connection to ${selectedServer.ip}:${selectedServer.port} failed.`,
-                                                  icon: <HiXCircle />,
-                                                });
-                                              }
-                                            });
-                                        }}
-                                      >
-                                        Test connection
-                                      </Menu.Item>
-                                      <Menu.Item icon={<HiClipboard />}>
-                                        Copy ID
-                                      </Menu.Item>
-                                      <Menu.Item
-                                        icon={<HiRefresh />}
-                                        onClick={() => {
+                                      <ServerContextMenu
+                                        server={selectedServer}
+                                        onRefresh={() => {
                                           getServers().then(() => {
                                             setSelectedServer(
                                               servers?.find(
@@ -551,34 +487,7 @@ const Servers: FC<ServersProps> = ({ user }) => {
                                             );
                                           });
                                         }}
-                                      >
-                                        Refresh
-                                      </Menu.Item>
-                                      <Menu.Divider />
-                                      <Menu.Label>Danger zone</Menu.Label>
-                                      <Menu.Item
-                                        color="red"
-                                        icon={<HiStop />}
-                                        disabled={!selectedServer.online}
-                                        onClick={async () =>
-                                          await shutdownNucleus(
-                                            selectedServer.gameId
-                                          ).then(() => {
-                                            setTimeout(() => {
-                                              getServers().then(() => {
-                                                setSelectedServer(
-                                                  servers?.find(
-                                                    (s) =>
-                                                      s.id === selectedServer.id
-                                                  )
-                                                );
-                                              });
-                                            }, 1500);
-                                          })
-                                        }
-                                      >
-                                        Stop server
-                                      </Menu.Item>
+                                      />
                                     </Menu.Dropdown>
                                   </Menu>
                                 </div>
@@ -810,46 +719,58 @@ const Servers: FC<ServersProps> = ({ user }) => {
                                   .sort(sortFn)
                                   .filter(searchFn)
                                   .map((s) => (
-                                    <ShadedButton
+                                    <ContextMenu
+                                      dropdown={
+                                        <ServerContextMenu
+                                          server={s}
+                                          onRefresh={() => {
+                                            getServers();
+                                          }}
+                                        />
+                                      }
+                                      width={190}
                                       key={s.id}
-                                      className="w-full flex flex-col gap-4"
-                                      onClick={() => setSelectedServer(s)}
                                     >
-                                      <Badge
-                                        radius="md"
-                                        color={s.online ? "green" : "red"}
-                                        className="cursor-pointer"
+                                      <ShadedButton
+                                        className="w-full flex flex-col gap-4"
+                                        onClick={() => setSelectedServer(s)}
                                       >
-                                        {s.online ? "Online" : "Offline"}
-                                      </Badge>
-                                      <Text
-                                        size="lg"
-                                        className="flex items-center gap-2"
-                                      >
-                                        {s.ip}{" "}
-                                        <Text size="sm" color="dimmed">
-                                          :{s.port}
+                                        <Badge
+                                          radius="md"
+                                          color={s.online ? "green" : "red"}
+                                          className="cursor-pointer"
+                                        >
+                                          {s.online ? "Online" : "Offline"}
+                                        </Badge>
+                                        <Text
+                                          size="lg"
+                                          className="flex items-center gap-2"
+                                        >
+                                          {s.ip}{" "}
+                                          <Text size="sm" color="dimmed" weight={700}>
+                                            {s.port}
+                                          </Text>
                                         </Text>
-                                      </Text>
-                                      <div className="flex justify-between items-center w-full mt-4">
-                                        <div className="flex items-center gap-3">
-                                          <Avatar
-                                            size={24}
-                                            src={getMediaUrl(s.game.iconUri)}
-                                            radius="sm"
-                                          />
-                                          <Text>{s.game.name}</Text>
-                                        </div>
-                                        <Tooltip label="Protocol version">
-                                          <div className="flex items-center gap-2">
-                                            <HiCloud className="text-gray-500" />
-                                            <Text size="sm" color="dimmed">
-                                              {s.protocol}
-                                            </Text>
+                                        <div className="flex justify-between items-center w-full mt-4">
+                                          <div className="flex items-center gap-3">
+                                            <Avatar
+                                              size={24}
+                                              src={getMediaUrl(s.game.iconUri)}
+                                              radius="sm"
+                                            />
+                                            <Text>{s.game.name}</Text>
                                           </div>
-                                        </Tooltip>
-                                      </div>
-                                    </ShadedButton>
+                                          <Tooltip label="Protocol version">
+                                            <div className="flex items-center gap-2">
+                                              <HiCloud className="text-gray-500" />
+                                              <Text size="sm" color="dimmed">
+                                                {s.protocol}
+                                              </Text>
+                                            </div>
+                                          </Tooltip>
+                                        </div>
+                                      </ShadedButton>
+                                    </ContextMenu>
                                   ))
                               ) : (
                                 <ShadedCard className="w-full flex justify-center items-center col-span-full">
