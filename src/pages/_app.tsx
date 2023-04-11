@@ -186,19 +186,20 @@ const Framework = (
           type: "website",
           locale: "en_US",
           url: "https://framework.soodam.rocks/",
-          siteName: "Framework",
+          siteName: "Framework - Soodam.re",
           images: [
             {
               secureUrl: "/brand/white.png",
-              url: "/brand/white.png",
+              url: "/opengraph.svg",
               alt: "The Framework logo.",
               width: 48,
               height: 48,
             },
           ],
+          title: "Framework"
         }}
         titleTemplate="%s | Framework"
-        description="Framework is a free and open-source alternative to Roblox."
+        description="Framework is a free and open-source game platform similar to Roblox. Join the waitlist today and enter a new world."
         canonical="https://framework.soodam.rocks/"
       />
 
