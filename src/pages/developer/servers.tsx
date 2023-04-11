@@ -747,7 +747,11 @@ const Servers: FC<ServersProps> = ({ user }) => {
                                           className="flex items-center gap-2"
                                         >
                                           {s.ip}{" "}
-                                          <Text size="sm" color="dimmed" weight={700}>
+                                          <Text
+                                            size="sm"
+                                            color="dimmed"
+                                            weight={700}
+                                          >
                                             {s.port}
                                           </Text>
                                         </Text>
