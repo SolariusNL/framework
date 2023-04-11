@@ -1,4 +1,5 @@
 import { Loader, NativeSelect, NavLink } from "@mantine/core";
+import { motion } from "framer-motion";
 import { GetServerSidePropsContext, NextPage } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -178,7 +179,15 @@ const Settings: NextPage<SettingsProps> = ({ user, activePage }) => {
                   active={active === tab.value}
                   component="a"
                   {...(active === tab.value && {
-                    description: tab.description,
+                    description: (
+                      <motion.div
+                        initial={{ height: 0 }}
+                        animate={{ height: "auto" }}
+                        transition={{ type: "spring", duration: 0.5 }}
+                      >
+                        {tab.description}
+                      </motion.div>
+                    ),
                   })}
                 />
               </Link>
