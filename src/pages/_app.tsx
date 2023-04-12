@@ -189,14 +189,19 @@ const Framework = (
           siteName: "Framework - Soodam.re",
           images: [
             {
-              secureUrl: "/opengraph.svg",
-              url: "/opengraph.svg",
+              secureUrl: "/opengraph.png",
+              url: "/opengraph.png",
               alt: "Framework SEO Banner",
               width: 800,
               height: 400,
             },
           ],
           title: "Framework",
+        }}
+        twitter={{
+          handle: "@Soodamre",
+          site: "@Soodamre",
+          cardType: "summary_large_image",
         }}
         titleTemplate="%s | Framework"
         description="Framework is a free and open-source game platform similar to Roblox. Join the waitlist today and enter a new world."
