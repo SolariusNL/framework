@@ -189,14 +189,14 @@ const Framework = (
           siteName: "Framework - Soodam.re",
           images: [
             {
-              secureUrl: "/brand/white.png",
+              secureUrl: "/opengraph.svg",
               url: "/opengraph.svg",
-              alt: "The Framework logo.",
-              width: 48,
-              height: 48,
+              alt: "Framework SEO Banner",
+              width: 800,
+              height: 400,
             },
           ],
-          title: "Framework"
+          title: "Framework",
         }}
         titleTemplate="%s | Framework"
         description="Framework is a free and open-source game platform similar to Roblox. Join the waitlist today and enter a new world."
@@ -236,11 +236,11 @@ const Framework = (
                           colorScheme === "light"
                             ? "inset 0 1.2px 0 0 hsla(0,0%,100%,.2);"
                             : "",
-                        
                       }),
-                      ...(amoled && params.variant === "default" && {
-                        backgroundColor: "#000 !important"
-                      })
+                      ...(amoled &&
+                        params.variant === "default" && {
+                          backgroundColor: "#000 !important",
+                        }),
                     },
                   }),
                 },
@@ -342,10 +342,10 @@ const Framework = (
                   styles: {
                     input: {
                       ...(amoled && {
-                        backgroundColor: "#000"
-                      })
-                    }
-                  }
+                        backgroundColor: "#000",
+                      }),
+                    },
+                  },
                 },
                 Pagination: {
                   styles: (
@@ -368,8 +368,8 @@ const Framework = (
                           ],
                       },
                       ...(amoled && {
-                        backgroundColor: "#000"
-                      })
+                        backgroundColor: "#000",
+                      }),
                     },
                   }),
                 },
@@ -391,22 +391,22 @@ const Framework = (
                       "&[data-hovered]": {
                         ...(amoled && {
                           backgroundColor: AMOLED_COLORS.paper,
-                        })
+                        }),
                       },
                       "&[data-selected]": {
                         "&, &:hover": {
                           ...(amoled && {
                             backgroundColor: AMOLED_COLORS.paper,
-                            fontWeight: "bold"
-                          })
+                            fontWeight: "bold",
+                          }),
                         },
                       },
                     },
                     dropdown: {
                       borderRadius: theme.radius.md + " !important",
                       ...(amoled && {
-                        backgroundColor: "#000"
-                      })
+                        backgroundColor: "#000",
+                      }),
                     },
                   }),
                 },
@@ -431,34 +431,33 @@ const Framework = (
                   styles: () => ({
                     input: {
                       ...(amoled && {
-                        backgroundColor: "#000"
-                      })
-                    }
-                  })
+                        backgroundColor: "#000",
+                      }),
+                    },
+                  }),
                 },
                 Table: {
                   styles: () => ({
                     root: {
                       ...(amoled && {
                         "&[data-striped] tbody tr:nth-of-type(odd)": {
-                          backgroundColor:
-                            AMOLED_COLORS.paper
+                          backgroundColor: AMOLED_COLORS.paper,
                         },
-                      })
-                    }
-                  })
+                      }),
+                    },
+                  }),
                 },
                 Accordion: {
                   styles: () => ({
                     control: {
                       ...(amoled && {
                         "&:hover": {
-                          backgroundColor: AMOLED_COLORS.paper + " !important"
-                        }
-                      })
-                    }
-                  })
-                }
+                          backgroundColor: AMOLED_COLORS.paper + " !important",
+                        },
+                      }),
+                    },
+                  }),
+                },
               },
             }}
           >
