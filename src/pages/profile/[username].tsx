@@ -204,7 +204,7 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
                   </Tooltip>
                 )}
                 {viewing.premium && (
-                  <Tooltip label="Subscribed to Framework Premium">
+                  <Tooltip label="Premium Member">
                     <div className="flex items-center">
                       <HiSparkles title="Premium" />
                     </div>

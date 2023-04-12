@@ -3,6 +3,7 @@ import {
   Avatar,
   Badge,
   Button,
+  Divider,
   Modal,
   Select,
   Stack,
@@ -18,7 +19,7 @@ import Link from "next/link";
 import { useState } from "react";
 import {
   HiArrowLeft,
-  HiCalendar,
+  HiChat,
   HiCheck,
   HiCheckCircle,
   HiCube,
@@ -29,6 +30,7 @@ import {
 } from "react-icons/hi";
 import { TeamType } from "../../../..";
 import Markdown from "../../../../../../components/Markdown";
+import ModernEmptyState from "../../../../../../components/ModernEmptyState";
 import Owner from "../../../../../../components/Owner";
 import RenderMarkdown from "../../../../../../components/RenderMarkdown";
 import ShadedCard from "../../../../../../components/ShadedCard";
@@ -38,9 +40,9 @@ import clsx from "../../../../../../util/clsx";
 import getMediaUrl from "../../../../../../util/get-media";
 import prisma from "../../../../../../util/prisma";
 import {
-  nonCurrentUserSelect,
   NonUser,
   User,
+  nonCurrentUserSelect,
 } from "../../../../../../util/prisma-types";
 import { getTeam } from "../../../../../../util/teams";
 
@@ -295,13 +297,12 @@ const TeamIssueView: React.FC<TeamIssueViewProps> = ({ user, team, issue }) => {
           ))}
         </div>
       </ShadedCard>
-      <div className={clsx("mt-6 grid grid-cols-2 gap-4")}>
+      <div
+        className={clsx(
+          "mt-6 grid grid-cols-2 content-center md:grid-cols-3 gap-4"
+        )}
+      >
         {[
-          {
-            icon: <HiCalendar />,
-            label: "Created",
-            item: new Date(issueState.createdAt).toLocaleDateString(),
-          },
           {
             icon: <HiUser />,
             label: "Assignee",
@@ -345,6 +346,24 @@ const TeamIssueView: React.FC<TeamIssueViewProps> = ({ user, team, issue }) => {
           </div>
         ))}
       </div>
+      <Divider mt="lg" mb="lg" />
+      <div className="flex items-center justify-between">
+        <div className="flex gap-2 items-center">
+          <Title order={4}>Comments</Title>
+          <Text weight={700} color="dimmed">
+            0
+          </Text>
+        </div>
+        <Button leftIcon={<HiChat />}>New comment</Button>
+      </div>
+      <ShadedCard mt="md">
+        <div className="flex items-center justify-center">
+          <ModernEmptyState
+            title="Unavailable"
+            body="Comments are currently unavailable."
+          />
+        </div>
+      </ShadedCard>
     </TeamsViewProvider>
   );
 };

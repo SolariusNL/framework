@@ -114,7 +114,7 @@ const SubscriptionTab = ({ user: _user }: SubscriptionTabProps) => {
               {user?.premium ? "Active" : "Inactive"}
             </Badge>
             <Title order={4} mb="sm">
-              {user?.premium ? "Subscribed to Premium" : "Framework Free Plan"}
+              {user?.premium ? "Premium Member" : "Framework Free Plan"}
             </Title>
             {user?.premium && user?.premiumSubscription ? (
               <>
