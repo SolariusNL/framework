@@ -7,6 +7,7 @@ import {
   Select,
   Text,
   Textarea,
+  useMantineColorScheme,
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import Link from "next/link";
@@ -101,6 +102,7 @@ const ReportUser = ({ user, opened, setOpened, game }: ReportUserProps) => {
       opened={opened}
       onClose={() => setOpened(false)}
       title={`Reporting ${user.username}`}
+      className={useMantineColorScheme().colorScheme}
     >
       <Text mb={6}>
         By reporting this user, you agree that this report was made in
@@ -126,19 +128,31 @@ const ReportUser = ({ user, opened, setOpened, game }: ReportUserProps) => {
         mb={12}
         value={reason}
         onChange={(v) => setReason(v as ReportCategory)}
+        required
+        classNames={{
+          input: "dark:bg-black dark:border-zinc-800",
+        }}
       />
 
       <Textarea
         label="Description"
         description="Describe the report."
         mb={24}
+        required
+        placeholder="This user was being rude and was using offensive language."
+        classNames={{
+          input: "dark:bg-black dark:border-zinc-800",
+        }}
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
       <Checkbox
-        label="I confirm that I am not alleging that the user is guilty of any wrongdoing."
+        label="I agree that this report is being made in good faith and is not a false accusation of wrongdoing."
         mb={12}
         checked={checked}
+        classNames={{
+          input: "dark:bg-black dark:border-zinc-800",
+        }}
         onChange={() => setChecked(!checked)}
       />
 
@@ -163,13 +177,15 @@ const ReportUser = ({ user, opened, setOpened, game }: ReportUserProps) => {
         </Alert>
       )}
 
-      <Button
-        disabled={!checked || description.length < 10 || success}
-        loading={loading}
-        onClick={handleReport}
-      >
-        Report {user.username}
-      </Button>
+      <div className="flex justify-end mt-2">
+        <Button
+          disabled={!checked || description.length < 10 || success}
+          loading={loading}
+          onClick={handleReport}
+        >
+          Report {user.username}
+        </Button>
+      </div>
     </Modal>
   );
 };

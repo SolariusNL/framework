@@ -30,8 +30,9 @@ import { getCookie } from "../util/cookies";
 import { exclude } from "../util/exclude";
 import useMediaQuery from "../util/media-query";
 import prisma from "../util/prisma";
-import { Game, gameSelect, User } from "../util/prisma-types";
+import { Game, User, gameSelect } from "../util/prisma-types";
 import { genreMap } from "../util/universe/genre";
+import { BLACK } from "./teams/t/[slug]/issue/create";
 
 interface GamesProps {
   user: User;
@@ -172,7 +173,7 @@ const Games: NextPage<GamesProps> = ({ user }) => {
             </div>
             <Divider mt="lg" mb="lg" />
             <div>
-              <ShadedCard mb="md">
+              <ShadedCard mb="md" className="dark:bg-black border-none">
                 <div className="flex items-center flex-col gap-4">
                   <Select
                     label="Filter"
@@ -192,6 +193,7 @@ const Games: NextPage<GamesProps> = ({ user }) => {
                       setFilter({ ...filter, filter: String(v) })
                     }
                     className="w-full"
+                    classNames={BLACK}
                   />
                   <Select
                     label="Genre"
@@ -201,6 +203,7 @@ const Games: NextPage<GamesProps> = ({ user }) => {
                       value: key,
                     }))}
                     value={filter.genre}
+                    classNames={BLACK}
                     onChange={(v) =>
                       setFilter({ ...filter, genre: String(v) as GameGenre })
                     }
@@ -266,7 +269,7 @@ const Games: NextPage<GamesProps> = ({ user }) => {
             </div>
           </div>
           <div className="flex-1">
-            <ShadedCard>
+            <ShadedCard className="dark:bg-black border-none">
               <TextInput
                 icon={<HiSearch />}
                 placeholder="Search for games"
@@ -306,6 +309,7 @@ const Games: NextPage<GamesProps> = ({ user }) => {
                     games.map((game) => (
                       <ContextMenu
                         width={170}
+                        key={game.id}
                         dropdown={
                           <>
                             <Menu.Item
@@ -320,7 +324,6 @@ const Games: NextPage<GamesProps> = ({ user }) => {
                             </Menu.Item>
                           </>
                         }
-                        key={game.id}
                       >
                         <GameCard game={game} />
                       </ContextMenu>

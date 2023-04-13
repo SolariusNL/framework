@@ -191,7 +191,7 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                           src={getMediaUrl(image)}
                           key={i}
                           alt={game.name}
-                          className="rounded-md"
+                          radius="md"
                         />
                       </AspectRatio>
                     ))
