@@ -6,6 +6,7 @@ import {
   Title,
   UnstyledButton,
 } from "@mantine/core";
+import { PremiumSubscriptionType } from "@prisma/client";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { HiArrowRight, HiCheckCircle } from "react-icons/hi";
 import Framework from "../components/Framework";
@@ -58,6 +59,7 @@ const Premium: NextPage<PremiumProps> = ({ user }) => {
         ["€0", "EUR"],
       ],
       popular: false,
+      disabled: user.premiumSubscription !== undefined,
     },
     {
       name: "Monthly Subscription",
@@ -67,6 +69,23 @@ const Premium: NextPage<PremiumProps> = ({ user }) => {
         ["€4", "EUR"],
       ],
       popular: false,
+      disabled:
+        user.premiumSubscription &&
+        user.premiumSubscription.type ===
+          PremiumSubscriptionType.PREMIUM_ONE_MONTH,
+    },
+    {
+      name: "Six-monthly Subscription",
+      price: [
+        ["$27", "USD"],
+        ["$28", "CAD"],
+        ["€26", "EUR"],
+      ],
+      popular: true,
+      disabled:
+        user.premiumSubscription &&
+        user.premiumSubscription.type ===
+          PremiumSubscriptionType.PREMIUM_SIX_MONTHS,
     },
     {
       name: "Yearly Subscription",
@@ -76,15 +95,10 @@ const Premium: NextPage<PremiumProps> = ({ user }) => {
         ["€40", "EUR"],
       ],
       popular: false,
-    },
-    {
-      name: "Lifetime Subscription",
-      price: [
-        ["$500", "USD"],
-        ["$600", "CAD"],
-        ["€400", "EUR"],
-      ],
-      popular: true,
+      disabled:
+        user.premiumSubscription &&
+        user.premiumSubscription.type ===
+          PremiumSubscriptionType.PREMIUM_ONE_YEAR,
     },
   ];
 
@@ -158,15 +172,16 @@ const Premium: NextPage<PremiumProps> = ({ user }) => {
                       theme.colorScheme === "dark"
                         ? theme.colors.dark[0]
                         : theme.black,
-
                     "&:hover": {
                       backgroundColor:
                         theme.colorScheme === "dark"
                           ? theme.colors.dark[6]
                           : theme.colors.gray[0],
                     },
-
                     width: "100%",
+                    ...(plan.disabled && {
+                      opacity: 50,
+                    }),
                   })}
                   key={plan.name}
                 >
