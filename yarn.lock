@@ -1178,6 +1178,11 @@
     "@types/qs" "*"
     "@types/serve-static" "*"
 
+"@types/fuzzyset.js@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@types/fuzzyset.js/-/fuzzyset.js-0.0.2.tgz#5aab6eaebc50445c5752e6603d1724b834fe2f07"
+  integrity sha512-gNHcafWmEGjAULHs5br9XIQFiS8IzWeL8911al3aKV4fcFzyK52XHKmHHWbS+Xoixs3EsMyWb4z/hRai1QHK8w==
+
 "@types/hast@^2.0.0":
   version "2.3.4"
   resolved "https://registry.yarnpkg.com/@types/hast/-/hast-2.3.4.tgz#8aa5ef92c117d20d974a82bdfb6a648b08c0bafc"
@@ -3390,6 +3395,11 @@ functions-have-names@^1.2.2:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/functions-have-names/-/functions-have-names-1.2.3.tgz#0404fe4ee2ba2f607f0e0ec3c80bae994133b834"
   integrity sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==
+
+fuzzyset.js@^1.0.7:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/fuzzyset.js/-/fuzzyset.js-1.0.7.tgz#11e6aaa88b03fcfa1e36165dc2911f62494701b7"
+  integrity sha512-SmfOVSiPjbyC17m1i86wFq+jmkGioqlY/amT6RZzq4hPTGJFWFF2voUe88zrq/zDbehFnSJFtu6kqTUCw1caKQ==
 
 gauge@^3.0.0:
   version "3.0.2"

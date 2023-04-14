@@ -33,6 +33,7 @@ import { useOnClickOutside } from "../util/click-outside";
 import getMediaUrl from "../util/get-media";
 import { ChatMessage, NonUser } from "../util/prisma-types";
 import { getMyFriends } from "../util/universe/friends";
+import sanitizeInappropriateContent from "./ReconsiderationPrompt";
 import ShadedButton from "./ShadedButton";
 
 const Chat: React.FC = () => {
@@ -527,7 +528,13 @@ const Chat: React.FC = () => {
                         : "#FFF",
                   })}
                 >
-                  <form onSubmit={messageForm.onSubmit(sendMessage)}>
+                  <form
+                    onSubmit={messageForm.onSubmit((values) =>
+                      sanitizeInappropriateContent(values.message, () =>
+                        sendMessage(values)
+                      )
+                    )}
+                  >
                     <TextInput
                       placeholder="Type a message..."
                       className="flex-1 h-12 items-center flex justify-between w-full"

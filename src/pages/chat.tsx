@@ -22,6 +22,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { HiChatAlt2, HiEmojiHappy } from "react-icons/hi";
 import Framework from "../components/Framework";
 import ModernEmptyState from "../components/ModernEmptyState";
+import sanitizeInappropriateContent from "../components/ReconsiderationPrompt";
 import ShadedCard from "../components/ShadedCard";
 import SocketContext from "../contexts/Socket";
 import SidebarTabNavigation from "../layouts/SidebarTabNavigation";
@@ -384,7 +385,11 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
                       />
                     )}
                     <form
-                      onSubmit={messageForm.onSubmit(sendMessage)}
+                      onSubmit={messageForm.onSubmit((values) =>
+                        sanitizeInappropriateContent(values.message, () =>
+                          sendMessage(values)
+                        )
+                      )}
                       className="mt-10"
                     >
                       <TextInput

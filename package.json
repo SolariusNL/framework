@@ -18,7 +18,8 @@
     "analyze": "cross-env ANALYZE=true yarn run build",
     "create-config": "ts-node --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\" scripts/create-config.ts",
     "create-config-schema": "typescript-json-schema src/types/Configuration.ts Configuration > framework.schema.json",
-    "emails:dev": "cd email && yarn run dev"
+    "emails:dev": "cd email && yarn run dev",
+    "profanity": "ts-node --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\" scripts/profanity.ts"
   },
   "dependencies": {
     "@emoji-mart/react": "^1.1.0",
@@ -51,6 +52,7 @@
     "@supabase/supabase-js": "^1.35.4",
     "@tailwindcss/typography": "^0.5.9",
     "@types/bcrypt": "^5.0.0",
+    "@types/fuzzyset.js": "^0.0.2",
     "@types/multer": "^1.4.7",
     "@types/nodemailer": "^6.4.5",
     "@types/qrcode": "^1.5.0",
@@ -76,6 +78,7 @@
     "emoji-mart": "^5.4.0",
     "fetch-intercept": "^2.4.0",
     "framer-motion": "^7.3.6",
+    "fuzzyset.js": "^1.0.7",
     "is-electron": "^2.2.1",
     "js-yaml-loader": "^1.2.2",
     "micro": "^9.4.1",

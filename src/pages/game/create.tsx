@@ -14,6 +14,7 @@ import { useRouter } from "next/router";
 import ReactNoSSR from "react-no-ssr";
 import Framework from "../../components/Framework";
 import LabelledRadio from "../../components/LabelledRadio";
+import sanitizeInappropriateContent from "../../components/ReconsiderationPrompt";
 import RichText from "../../components/RichText";
 import ShadedCard from "../../components/ShadedCard";
 import authorizedRoute from "../../util/auth";
@@ -148,7 +149,18 @@ const CreateGame: NextPage<CreateGameProps> = ({ user }) => {
     >
       <ReactNoSSR>
         <form
-          onSubmit={form.onSubmit(async (values) => onSubmit(values))}
+          onSubmit={form.onSubmit(async (values) => {
+            [values.gameName, values.description].reduce(
+              (acc: boolean, val: string) => {
+                if (acc) return acc;
+                const match = sanitizeInappropriateContent(val, () =>
+                  onSubmit(values)
+                );
+                return match;
+              },
+              false
+            );
+          })}
           className="gap-6 flex flex-col"
         >
           <ShadedCard>

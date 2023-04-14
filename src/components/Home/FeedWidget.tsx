@@ -25,6 +25,7 @@ import { NonUser } from "../../util/prisma-types";
 import { getRelativeTime } from "../../util/relative-time";
 import Markdown, { ToolbarItem } from "../Markdown";
 import ModernEmptyState from "../ModernEmptyState";
+import sanitizeInappropriateContent from "../ReconsiderationPrompt";
 import RenderMarkdown from "../RenderMarkdown";
 import ReportUser from "../ReportUser";
 import ShadedCard from "../ShadedCard";
@@ -108,7 +109,18 @@ const FeedWidget: React.FC = () => {
         onClose={() => setNewPost(false)}
         className={colorScheme}
       >
-        <form onSubmit={form.onSubmit(handleStatusPost)}>
+        <form
+          onSubmit={form.onSubmit((values) => {
+            setNewPost(false);
+            sanitizeInappropriateContent(
+              values.status,
+              () => {
+                handleStatusPost(values);
+              },
+              () => setNewPost(true)
+            );
+          })}
+        >
           <Markdown
             placeholder="Enter your status..."
             toolbar={[

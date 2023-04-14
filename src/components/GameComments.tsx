@@ -15,6 +15,7 @@ import getMediaUrl from "../util/get-media";
 import { Game, NonUser, User } from "../util/prisma-types";
 import Comment from "./Comment";
 import ModernEmptyState from "./ModernEmptyState";
+import sanitizeInappropriateContent from "./ReconsiderationPrompt";
 import ShadedCard from "./ShadedCard";
 
 interface GameCommentsProps {
@@ -113,7 +114,9 @@ const GameComments = ({ user, game }: GameCommentsProps) => {
           <Button
             leftIcon={<HiChat />}
             disabled={commentText.length == 0 || commentText.length > 500}
-            onClick={submitComment}
+            onClick={() => {
+              sanitizeInappropriateContent(commentText, () => submitComment());
+            }}
             loading={loading}
           >
             Send
