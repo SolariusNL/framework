@@ -1,7 +1,4 @@
-import { render } from "@react-email/render";
 import speakeasy from "speakeasy";
-import AccountUpdate from "../../email/emails/account-update";
-import { sendMail } from "./mail";
 import prisma from "./prisma";
 
 const generateOTP = async (uid: number) => {
@@ -40,7 +37,6 @@ const verifyOTP = async (uid: number, token: string) => {
     secret: user.otpBase32!,
     encoding: "base32",
     token: token,
-    window: 1,
   });
 
   if (!verified) {
