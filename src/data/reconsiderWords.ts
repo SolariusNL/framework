@@ -21,6 +21,13 @@ const reconsiderWords = [
   "faggots",
   "trannies",
   "whores",
+  "chink",
+  "ch!nk",
+  "chinks",
+  "beaner",
+  "chingchong",
+  "paki",
+  "jewtard",
 ];
 
 interface RestrictionCheckResult {
@@ -37,7 +44,7 @@ function isRestricted(input: string): RestrictionCheckResult {
   let hasMatch = false;
   words.forEach((word) => {
     const fuzzySet = FuzzySet(reconsiderWords);
-    const fuzzyMatches = fuzzySet.get(word, null, 0.65);
+    const fuzzyMatches = fuzzySet.get(word, null, 0.66);
     if (fuzzyMatches !== null) {
       hasMatch = true;
       fuzzyMatches.forEach((match) => {
