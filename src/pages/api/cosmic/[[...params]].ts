@@ -21,10 +21,15 @@ class CosmicRouter {
             iconUri: true,
           },
         },
+        nucleusKey: true,
+        commands: true,
       },
     });
 
-    return servers || [];
+    return servers.map((server) => ({
+      ...server,
+      nucleusKey: server.nucleusKey[0],
+    }));
   }
 
   @Get("/my/servers/:id/stdout")

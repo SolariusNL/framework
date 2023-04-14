@@ -1,4 +1,5 @@
 import {
+  Body,
   createHandler,
   Get,
   Param,
@@ -415,6 +416,58 @@ class NucleusRouter {
     return {
       pages: Math.ceil(count / 20),
       servers: connections,
+    };
+  }
+
+  @Post("/servers/:id/command/run")
+  @Authorized()
+  public async runRemoteCommand(
+    @Param("id") id: string,
+    @Body() body: { command: string; args?: string },
+    @Account() user: User
+  ) {
+    const connection = await prisma.connection.findFirst({
+      where: {
+        id: String(id),
+        game: {
+          authorId: user.role === "ADMIN" ? undefined : user.id,
+        },
+      },
+    });
+
+    if (!connection) {
+      return {
+        success: false,
+        message: "Invalid connection",
+      };
+    }
+
+    const webhookAuth = await prisma.cosmicWebhookSignature.create({
+      data: {},
+    });
+
+    const res = await fetch(
+      `http://${connection.ip}:${connection.port}/api/webhook/command/run`,
+      {
+        headers: {
+          "nucleus-signature": webhookAuth.secret,
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify(body),
+      }
+    );
+
+    if (!res.ok) {
+      return {
+        success: false,
+        message: "Failed to run command",
+      };
+    }
+
+    return {
+      success: true,
+      message: "Command run",
     };
   }
 }

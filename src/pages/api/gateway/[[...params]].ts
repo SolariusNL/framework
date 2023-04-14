@@ -249,6 +249,23 @@ class GatewayRouter {
                 })
               ),
             });
+            const commands = await prisma.cosmicCommand.findMany({
+              where: {
+                connId: socket.data.cosmic.connection.id,
+              },
+            });
+            const commandNames = commands.map((c) => c.name);
+            const uniqueCommandNames = [...new Set(commandNames)];
+            const duplicateCommandNames = commandNames.filter(
+              (c) => !uniqueCommandNames.includes(c)
+            );
+            await prisma.cosmicCommand.deleteMany({
+              where: {
+                name: {
+                  in: duplicateCommandNames,
+                },
+              },
+            });
           });
         }
       });

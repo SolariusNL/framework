@@ -8,6 +8,7 @@ import {
   Divider,
   Loader,
   Menu,
+  Modal,
   NavLink,
   NumberInput,
   Select,
@@ -20,7 +21,7 @@ import {
 import { useForm } from "@mantine/form";
 import { openModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
-import { Connection } from "@prisma/client";
+import { Connection, CosmicCommand, NucleusKey } from "@prisma/client";
 import Convert from "ansi-to-html";
 import { getCookie } from "cookies-next";
 import { AnimatePresence, motion } from "framer-motion";
@@ -29,19 +30,21 @@ import { FC, ReactNode, useEffect, useState } from "react";
 import {
   HiArrowLeft,
   HiArrowUp,
-  HiChartBar,
   HiCheckCircle,
   HiChip,
   HiCloud,
+  HiCode,
   HiCubeTransparent,
   HiDotsVertical,
   HiExclamationCircle,
   HiFolder,
+  HiOutlineCode,
   HiPlus,
   HiQuestionMarkCircle,
   HiSearch,
   HiServer,
   HiSortAscending,
+  HiUpload,
   HiWifi,
   HiXCircle,
 } from "react-icons/hi";
@@ -66,7 +69,11 @@ import { BLACK } from "../teams/t/[slug]/issue/create";
 type ServersProps = {
   user: User;
 };
-type ConnectionWithGame = Connection & { game: Game };
+export type ConnectionWithGameAndKey = Connection & {
+  game: Game;
+  nucleusKey: NucleusKey;
+  commands: CosmicCommand[];
+};
 type SidebarItem = {
   title: string;
   description: string;
@@ -76,7 +83,6 @@ type SidebarItem = {
 enum SidebarValue {
   Servers,
   ErrorLog,
-  PerformanceStatistics,
   CI,
   CreateServer,
 }
@@ -102,12 +108,6 @@ const sidebar: SidebarItem[] = [
     value: SidebarValue.ErrorLog,
   },
   {
-    title: "Performance statistics",
-    description: "See how your servers are performing",
-    icon: <HiChartBar />,
-    value: SidebarValue.PerformanceStatistics,
-  },
-  {
     title: "Continuous integration",
     description: "Manage CI/CD workflows to automate development",
     icon: <Rocket />,
@@ -116,7 +116,7 @@ const sidebar: SidebarItem[] = [
 ];
 
 const Servers: FC<ServersProps> = ({ user }) => {
-  const [servers, setServers] = useState<ConnectionWithGame[]>();
+  const [servers, setServers] = useState<ConnectionWithGameAndKey[]>();
   const [activeTab, setActiveTab] = useState<SidebarValue>(
     SidebarValue.Servers
   );
@@ -124,14 +124,18 @@ const Servers: FC<ServersProps> = ({ user }) => {
   const [search, setSearch] = useState("");
   const [serverSort, setServerSort] = useState<ServerSort>("ip");
   const [serverFilter, setServerFilter] = useState<ServerFilter>("all");
-  const [selectedServer, setSelectedServer] = useState<ConnectionWithGame>();
+  const [selectedServer, setSelectedServer] =
+    useState<ConnectionWithGameAndKey>();
   const [shouldAnimateMainServerPanel, setShouldAnimateMainServerPanel] =
     useState(false);
   const [stdout, setStdout] = useState<string[]>([]);
   const [games, setGames] = useState<
     Pick<Game, "id" | "name" | "connection">[]
   >([]);
+  const [args, setArgs] = useState<string>("");
   const [createLoading, setCreateLoading] = useState(false);
+  const [remoteRun, setRemoteRun] = useState(false);
+  const [remoteRunTarget, setRemoteRunTarget] = useState<CosmicCommand>();
   const form = useForm<ServerForm>({
     initialValues: {
       ip: "",
@@ -160,12 +164,12 @@ const Servers: FC<ServersProps> = ({ user }) => {
   });
   const theme = useMantineTheme();
 
-  const filterFn = (s: ConnectionWithGame) => {
+  const filterFn = (s: ConnectionWithGameAndKey) => {
     if (serverFilter === "all") return true;
     return s.online === (serverFilter === "online" ? true : false);
   };
 
-  const sortFn = (a: ConnectionWithGame, b: ConnectionWithGame) => {
+  const sortFn = (a: ConnectionWithGameAndKey, b: ConnectionWithGameAndKey) => {
     if (serverSort === "ip") {
       return a.ip.localeCompare(b.ip);
     } else if (serverSort === "port") {
@@ -174,7 +178,7 @@ const Servers: FC<ServersProps> = ({ user }) => {
     return 0;
   };
 
-  const searchFn = (s: ConnectionWithGame) => {
+  const searchFn = (s: ConnectionWithGameAndKey) => {
     const parts = search.split(" ");
     const filters: Record<string, string> = {};
     parts.forEach((part) => {
@@ -200,7 +204,7 @@ const Servers: FC<ServersProps> = ({ user }) => {
     })
       .then((res) => res.json())
       .then((res) => {
-        setServers(res as ConnectionWithGame[]);
+        setServers(res as ConnectionWithGameAndKey[]);
         setLoading(false);
       });
   };
@@ -270,6 +274,67 @@ const Servers: FC<ServersProps> = ({ user }) => {
       title="Servers"
       description="Manage your self-hosted and dedicated Cosmic servers."
     >
+      <Modal
+        title="Remotely run command"
+        opened={remoteRun}
+        onClose={() => setRemoteRun(false)}
+        className={theme.colorScheme}
+      >
+        <Text size="sm" color="dimmed" mb="md">
+          This will run the command{" "}
+          <span className="font-mono font-semibold">
+            {remoteRunTarget?.name}
+          </span>{" "}
+          on the server{" "}
+          <span className="font-mono font-semibold">{selectedServer?.ip}</span>.
+          Provide arguments in the input below or leave it empty to run the
+          command without arguments.
+        </Text>
+        <TextInput
+          label="Arguments"
+          description="Arguments to pass to the command."
+          placeholder="e.g. --help"
+          value={args}
+          onChange={(e) => setArgs(e.target.value)}
+          classNames={{
+            input: "dark:bg-black dark:text-white",
+          }}
+          icon={<HiCode />}
+        />
+        <div className="flex justify-end mt-4">
+          <Button
+            leftIcon={<HiUpload />}
+            onClick={async () => {
+              await fetchJson<IResponseBase>(
+                `/api/nucleus/servers/${selectedServer?.id}/command/run`,
+                {
+                  method: "POST",
+                  body: {
+                    command: remoteRunTarget?.name,
+                    args,
+                  },
+                  auth: true,
+                }
+              )
+                .then((res) => {
+                  if (res.success) {
+                    showNotification({
+                      title: "Success",
+                      message: `Command ${remoteRunTarget?.name} ran successfully. View the output in the console for more details.`,
+                      icon: <HiCheckCircle />,
+                    });
+                  }
+                })
+                .finally(() => {
+                  setRemoteRun(false);
+                  setArgs("");
+                });
+            }}
+          >
+            Run command
+          </Button>
+        </div>
+      </Modal>
       <SidebarTabNavigation>
         <SidebarTabNavigation.Sidebar>
           {sidebar.map((s) => (
@@ -376,7 +441,6 @@ const Servers: FC<ServersProps> = ({ user }) => {
                       classNames={BLACK}
                       icon={<Rocket />}
                       data={games
-                        // if connection has one, it's already assigned
                         .filter((g) => g.connection.length === 0)
                         .map((g) => ({
                           label: g.name,
@@ -550,6 +614,34 @@ const Servers: FC<ServersProps> = ({ user }) => {
                             </Tooltip>
                           ))}
                         </div>
+                        {selectedServer &&
+                          selectedServer.commands.length > 0 && (
+                            <>
+                              <Divider mt="xl" mb="xl" />
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 gap-y-6">
+                                {selectedServer.commands.map((c) => (
+                                  <NavLink
+                                    key={c.id}
+                                    icon={<HiOutlineCode />}
+                                    label={
+                                      <span>
+                                        Run
+                                        <span className="font-mono ml-1 mr-1 font-semibold">
+                                          {c.name}
+                                        </span>
+                                      </span>
+                                    }
+                                    description={c.description}
+                                    className="rounded-md"
+                                    onClick={() => {
+                                      setRemoteRun(true);
+                                      setRemoteRunTarget(c);
+                                    }}
+                                  />
+                                ))}
+                              </div>
+                            </>
+                          )}
                       </motion.div>
                     ) : (
                       <motion.div
@@ -804,20 +896,6 @@ const Servers: FC<ServersProps> = ({ user }) => {
                   <Section
                     title="Error Log"
                     description="Monitor the logs from your servers and catch errors when they happen."
-                  />
-                  <ShadedCard className="w-full flex justify-center items-center">
-                    <ModernEmptyState
-                      title="Unavailable"
-                      body="This feature is not available yet."
-                    />
-                  </ShadedCard>
-                </>
-              )}
-              {activeTab === SidebarValue.PerformanceStatistics && (
-                <>
-                  <Section
-                    title="Performance Statistics"
-                    description="Monitor the performance of your Cosmic servers to scale accordingly."
                   />
                   <ShadedCard className="w-full flex justify-center items-center">
                     <ModernEmptyState

@@ -1,8 +1,8 @@
 import { Menu, Text } from "@mantine/core";
+import { useClipboard } from "@mantine/hooks";
 import { openModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import { Prism } from "@mantine/prism";
-import { Connection } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { FC } from "react";
 import {
@@ -12,10 +12,11 @@ import {
   HiStop,
   HiXCircle,
 } from "react-icons/hi";
+import { ConnectionWithGameAndKey } from "../../pages/developer/servers";
 import shutdownNucleus from "../../util/fetch/shutdownNucleus";
 
 type ServerContextMenuProps = {
-  server: Connection;
+  server: ConnectionWithGameAndKey;
   onRefresh: () => void;
 };
 
@@ -23,6 +24,8 @@ const ServerContextMenu: FC<ServerContextMenuProps> = ({
   server,
   onRefresh,
 }) => {
+  const { copy } = useClipboard();
+
   return (
     <>
       <Menu.Label>Actions</Menu.Label>
@@ -65,7 +68,21 @@ const ServerContextMenu: FC<ServerContextMenuProps> = ({
       >
         Test connection
       </Menu.Item>
-      <Menu.Item icon={<HiClipboard />}>Copy ID</Menu.Item>
+      <Menu.Item icon={<HiClipboard />} onClick={() => copy(server.id)}>
+        Copy ID
+      </Menu.Item>
+      <Menu.Item
+        icon={<HiClipboard />}
+        onClick={() => copy(`${server.ip}:${server.port}`)}
+      >
+        Copy IP & port
+      </Menu.Item>
+      <Menu.Item
+        icon={<HiClipboard />}
+        onClick={() => copy(server.nucleusKey.key)}
+      >
+        Copy Nucleus key
+      </Menu.Item>
       <Menu.Item icon={<HiRefresh />} onClick={onRefresh}>
         Refresh
       </Menu.Item>
