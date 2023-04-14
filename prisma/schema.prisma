@@ -449,6 +449,16 @@ model Connection {
   reportedCores    Int?            @default(0)
   reportedDiskGb   Float?          @default(0)
   protocol         String          @default("P-1000")
+  commands         CosmicCommand[] @relation("cosmicCommands")
+}
+
+model CosmicCommand {
+  id          String     @id @default(uuid())
+  name        String
+  usage       String
+  description String
+  connection  Connection @relation("cosmicCommands", fields: [connId], references: [id])
+  connId      String
 }
 
 model Update {
