@@ -22,6 +22,7 @@ import { category } from "../../../components/ReportUser";
 import countries from "../../../data/countries";
 import getTimezones from "../../../data/timezones";
 import Authorized, { Account } from "../../../util/api/authorized";
+import registerAutomodHandler from "../../../util/automod";
 import { exclude } from "../../../util/exclude";
 import { hashPass, isSamePass } from "../../../util/hash/password";
 import { sendMail } from "../../../util/mail";
@@ -32,6 +33,8 @@ import { nonCurrentUserSelect } from "../../../util/prisma-types";
 import { RateLimitMiddleware } from "../../../util/rate-limit";
 import { verificationEmail } from "../../../util/templates/verification-email";
 import { logTransaction } from "../../../util/transaction-history";
+
+const statusAutomod = registerAutomodHandler("Status update");
 
 interface UserUpdateBody {
   username?: string;
@@ -98,7 +101,7 @@ class UserRouter {
           select: {
             ip: true,
           },
-        }
+        },
       },
     });
 
@@ -411,6 +414,8 @@ class UserRouter {
         user: exclude(nonCurrentUserSelect, ["statusPosts"]),
       },
     });
+
+    statusAutomod(user.id, s.content);
 
     return {
       success: true,

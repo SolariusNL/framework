@@ -10,12 +10,14 @@ import {
 import { z } from "zod";
 import MissedMessage from "../../../../email/emails/missed-message";
 import Authorized, { Account } from "../../../util/api/authorized";
+import registerAutomodHandler from "../../../util/automod";
 import { sendMail } from "../../../util/mail";
 import prisma from "../../../util/prisma";
 import type { ChatMessage, User } from "../../../util/prisma-types";
 import { chatMessageSelect } from "../../../util/prisma-types";
 
 const lastEmailSent = new Map<number, Date>();
+const chatAutomod = registerAutomodHandler("Chat message");
 
 class ChatRouter {
   @Get("/conversation/:id")
@@ -180,6 +182,8 @@ class ChatRouter {
         );
       }
     }
+
+    chatAutomod(user.id, content);
 
     return message;
   }

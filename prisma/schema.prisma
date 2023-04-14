@@ -169,6 +169,7 @@ model User {
   issueComments              TeamIssueComment[]     @relation("userIssueComments")
   auditLogs                  TeamAuditLog[]         @relation("audited")
   dismissibleContents        String[]
+  automodTriggers            AutomodTrigger[]       @relation("automodTriggers")
 }
 
 model ConnectedAccount {
@@ -1052,4 +1053,14 @@ enum TeamAuditLogType {
   UPDATE_INVITED_USERS
   UPDATE_SHOUT
   REMOVE_USER
+}
+
+model AutomodTrigger {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  content   String
+  user      User     @relation("automodTriggers", fields: [userId], references: [id])
+  userId    Int
+  reference String
+  matched   String[]
 }

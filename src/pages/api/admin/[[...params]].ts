@@ -1,5 +1,6 @@
 import {
   AdminPermission,
+  AutomodTrigger,
   EmployeeRole,
   GiftCodeGrant,
   NotificationType,
@@ -7,20 +8,20 @@ import {
   PremiumSubscriptionType,
   Prisma,
   PunishmentType,
-  Role
+  Role,
 } from "@prisma/client";
 import { render } from "@react-email/render";
 import { setEnvVar } from "@soodam.re/env-utils";
 import {
   BadRequestException,
   Body,
-  createHandler,
   Delete,
   Get,
   Param,
   Post,
   Query,
-  Request
+  Request,
+  createHandler,
 } from "@storyofams/next-api-decorators";
 import { promises as fs, readFileSync } from "fs";
 import type { NextApiRequest } from "next";
@@ -35,7 +36,7 @@ import type { ReportCategory } from "../../../components/ReportUser";
 import { AdminAction } from "../../../util/admin-action";
 import Authorized, {
   Account,
-  AdminAuthorized
+  AdminAuthorized,
 } from "../../../util/api/authorized";
 import { PREMIUM_PAYOUTS } from "../../../util/constants";
 import generateGiftCode from "../../../util/gift-codes";
@@ -43,14 +44,18 @@ import { hashPass } from "../../../util/hash/password";
 import { sendMail } from "../../../util/mail";
 import createNotification from "../../../util/notifications";
 import prisma from "../../../util/prisma";
-import type { User } from "../../../util/prisma-types";
+import type { NonUser, User } from "../../../util/prisma-types";
 import {
   articleSelect,
   nonCurrentUserSelect,
-  userSelect
+  userSelect,
 } from "../../../util/prisma-types";
 import { RateLimitMiddleware } from "../../../util/rate-limit";
 import { getOperatingSystem } from "../../../util/ua";
+
+export type AutomodTriggerWithUser = AutomodTrigger & {
+  user: NonUser;
+};
 
 class AdminRouter {
   @Get("/reports")
@@ -1898,6 +1903,69 @@ class AdminRouter {
           },
         },
         activity: `Deleted gift code with grant ${res.grant}`,
+        importance: 2,
+      },
+    });
+
+    return {
+      success: true,
+    };
+  }
+
+  @Get("/automod")
+  @AdminAuthorized()
+  public async getAutomod(@Query("page") page = 1) {
+    const automod = await prisma.automodTrigger.findMany({
+      skip: (page - 1) * 25,
+      take: 25,
+      include: {
+        user: {
+          select: nonCurrentUserSelect.select,
+        },
+      },
+    });
+
+    const count = await prisma.automodTrigger.count();
+
+    return {
+      success: true,
+      data: {
+        automod,
+        pages: Math.ceil(count / 25),
+      },
+    };
+  }
+
+  @Delete("/automod/:id")
+  @AdminAuthorized()
+  public async deleteAutomod(
+    @Param("id") id: string,
+    @Account() admin: User
+  ): Promise<{ success: boolean }> {
+    const res = await prisma.automodTrigger.findFirst({
+      where: {
+        id,
+      },
+    });
+
+    if (!res) {
+      throw new BadRequestException("Invalid trigger");
+    }
+
+    await prisma.automodTrigger.delete({
+      where: {
+        id,
+      },
+    });
+
+    await prisma.adminActivityLog.create({
+      data: {
+        user: {
+          connect: {
+            id: admin.id,
+          },
+        },
+        activity: `Deleted automod trigger with id ${id}`,
         importance: 2,
       },
     });

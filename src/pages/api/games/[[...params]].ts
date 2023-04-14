@@ -10,13 +10,13 @@ import {
 } from "@prisma/client";
 import {
   Body,
-  createHandler,
   Delete,
   Get,
   Param,
   Post,
   Query,
   ValidationPipe,
+  createHandler,
 } from "@storyofams/next-api-decorators";
 import * as Validate from "class-validator";
 import fetch from "node-fetch";
@@ -25,6 +25,7 @@ import { z } from "zod";
 import { scoreDescriptions } from "../../../components/EditGame/AgeRating";
 import { parse } from "../../../components/RenderMarkdown";
 import Authorized, { Account } from "../../../util/api/authorized";
+import registerAutomodHandler from "../../../util/automod";
 import logger from "../../../util/logger";
 import prisma from "../../../util/prisma";
 import {
@@ -34,6 +35,9 @@ import {
 } from "../../../util/prisma-types";
 import { RateLimitMiddleware } from "../../../util/rate-limit";
 import { logTransaction } from "../../../util/transaction-history";
+
+const commentAutomod = registerAutomodHandler("Game comment");
+const gameCreateAutomod = registerAutomodHandler("Game creation");
 
 interface GameCreateBody {
   gameName: string;
@@ -200,6 +204,9 @@ class GameRouter {
       },
     });
 
+    gameCreateAutomod(account.id, gameName);
+    gameCreateAutomod(account.id, description);
+
     return {
       success: true,
       game,
@@ -260,6 +267,8 @@ class GameRouter {
         id: true,
       },
     });
+
+    commentAutomod(user.id, commentBody);
 
     return {
       success: true,

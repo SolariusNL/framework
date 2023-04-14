@@ -23,19 +23,19 @@ import { useEffect, useState } from "react";
 import {
   HiArrowLeft,
   HiBeaker,
-  HiBookmark,
-  HiCheck,
+  HiBookmarkAlt,
+  HiClipboardCheck,
   HiCog,
-  HiDatabase,
-  HiDocument,
-  HiFolder,
+  HiColorSwatch,
   HiGift,
   HiHome,
   HiIdentification,
   HiKey,
-  HiOutlineKey,
   HiServer,
+  HiShieldCheck,
+  HiTable,
   HiTicket,
+  HiUserGroup,
   HiUsers,
   HiWifi,
 } from "react-icons/hi";
@@ -43,6 +43,7 @@ import ReactNoSSR from "react-no-ssr";
 import Tasks from "../../components/Admin/Employee/Tasks";
 import Activity from "../../components/Admin/Pages/Activity";
 import Articles from "../../components/Admin/Pages/Articles";
+import Automod from "../../components/Admin/Pages/Automod";
 import BannedIPs from "../../components/Admin/Pages/BannedIPs";
 import Cosmic from "../../components/Admin/Pages/Cosmic";
 import Dashboard from "../../components/Admin/Pages/Dashboard";
@@ -152,8 +153,15 @@ const data = [
     subtitle: "Basic information about this instance",
   },
   {
+    label: "Automod",
+    icon: HiShieldCheck,
+    href: "/admin/automod",
+    render: <Automod />,
+    subtitle: "Review automod triggers and actions",
+  },
+  {
     label: "Articles",
-    icon: HiFolder,
+    icon: HiBookmarkAlt,
     href: "/admin/articles",
     render: <Articles />,
     subtitle: "View news and announcements from HR",
@@ -181,7 +189,7 @@ const data = [
   },
   {
     label: "Reports",
-    icon: HiBookmark,
+    icon: HiColorSwatch,
     href: "/admin/reports",
     render: <Reports />,
     subtitle: "View reports made by users",
@@ -202,7 +210,7 @@ const data = [
   },
   {
     label: "Directory",
-    icon: HiBookmark,
+    icon: HiUserGroup,
     href: "/admin/directory",
     render: <Directory />,
     subtitle: "View the directory of all employees",
@@ -216,21 +224,21 @@ const data = [
   },
   {
     label: "Licenses",
-    icon: HiDatabase,
+    icon: HiIdentification,
     href: "/admin/licenses",
     render: <Licenses />,
-    subtitle: "Manage Studio license keys"
+    subtitle: "Manage Studio license keys",
   },
   {
     label: "Tasks",
-    icon: HiCheck,
+    icon: HiClipboardCheck,
     href: "/admin/tasks",
     render: <Tasks />,
     subtitle: "View your tasks and manage them",
   },
   {
     label: "Activity",
-    icon: HiDocument,
+    icon: HiTable,
     href: "/admin/activity",
     render: <Activity />,
     subtitle: "Review admin activity logs",
