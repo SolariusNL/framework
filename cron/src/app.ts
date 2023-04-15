@@ -1,11 +1,17 @@
-import { schedule } from "node-cron";
-import { Connection } from "@prisma/client";
+import { Connection, NotificationType, User } from "@prisma/client";
 import axios from "axios";
+import { schedule } from "node-cron";
+import prisma from "./prisma";
 import setServerStatus from "./util/servers";
 import startSubscriptionService from "./util/subscriptions";
-import prisma from "./prisma";
 
-async function checkServerStatus(server: Connection) {
+type ConnectionWithGameAndAuthor = Connection & {
+  game: {
+    author: User;
+  };
+};
+
+async function checkServerStatus(server: ConnectionWithGameAndAuthor) {
   try {
     const response = await axios.get(
       `http://${server.ip}:${server.port}/api/server`
@@ -25,6 +31,14 @@ async function checkServerStatus(server: Connection) {
       `cron ~ ❌ Server ${server.id} (${server.ip}:${server.port}) is offline, couldn't reach it.`
     );
     await setServerStatus(server, false);
+    await prisma.notification.create({
+      data: {
+        type: NotificationType.ALERT,
+        title: "Server offline",
+        message: `Server ${server.ip}:${server.port} couldn't be reached and was marked as offline.`,
+        userId: server.game.author.id,
+      },
+    });
   }
 }
 
@@ -37,6 +51,13 @@ async function cron() {
     schedule("0 * * * *", async () => {
       const servers = await prisma.connection.findMany({
         where: { online: true },
+        include: {
+          game: {
+            include: {
+              author: true,
+            },
+          },
+        },
       });
 
       for (const server of servers) {
