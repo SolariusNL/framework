@@ -19,7 +19,7 @@ async function checkServerStatus(server: ConnectionWithGameAndAuthor) {
     if (!response.data.sync) {
       await setServerStatus(server, false);
       console.log(
-        `cron ~ ❌ Server ${server.id} (${server.ip}:${server.port}) is not synced with Soodam.re; status updated`
+        `cron ~ ❌ Server ${server.id} (${server.ip}:${server.port} is not synced with Soodam.re; status updated`
       );
     } else {
       console.log(
