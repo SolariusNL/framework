@@ -446,7 +446,7 @@ class NucleusRouter {
       data: {},
     });
 
-    const res = await fetch(
+    fetch(
       `http://${connection.ip}:${connection.port}/api/webhook/command/run`,
       {
         headers: {
@@ -456,14 +456,11 @@ class NucleusRouter {
         method: "POST",
         body: JSON.stringify(body),
       }
-    );
-
-    if (!res.ok) {
-      return {
-        success: false,
-        message: "Failed to run command",
-      };
-    }
+    ).catch((e) => {
+      logger().warn(
+        `Failed to run command on connection ${connection.id} for game ${connection.gameId}`
+      );
+    });
 
     return {
       success: true,
