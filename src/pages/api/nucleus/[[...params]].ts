@@ -458,7 +458,7 @@ class NucleusRouter {
       }
     ).catch((e) => {
       logger().warn(
-        `Failed to run command on connection ${connection.id} for game ${connection.gameId}`
+        `Failed to run command on connection ${connection.id} for game ${connection.gameId}: ${e}`
       );
     });
 
