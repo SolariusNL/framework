@@ -305,6 +305,9 @@ const Servers: FC<ServersProps> = ({ user }) => {
           <Button
             leftIcon={<HiUpload />}
             onClick={async () => {
+              setRemoteRun(false);
+              setArgs("");
+
               await fetchJson<IResponseBase>(
                 `/api/nucleus/servers/${selectedServer?.id}/command/run`,
                 {
@@ -315,20 +318,15 @@ const Servers: FC<ServersProps> = ({ user }) => {
                   },
                   auth: true,
                 }
-              )
-                .then((res) => {
-                  if (res.success) {
-                    showNotification({
-                      title: "Success",
-                      message: `Command ${remoteRunTarget?.name} ran successfully. View the output in the console for more details.`,
-                      icon: <HiCheckCircle />,
-                    });
-                  }
-                })
-                .finally(() => {
-                  setRemoteRun(false);
-                  setArgs("");
-                });
+              ).then((res) => {
+                if (res.success) {
+                  showNotification({
+                    title: "Success",
+                    message: `Command ${remoteRunTarget?.name} ran successfully. View the output in the console for more details.`,
+                    icon: <HiCheckCircle />,
+                  });
+                }
+              });
             }}
           >
             Run command

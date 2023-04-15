@@ -25,6 +25,8 @@ const ConsoleOutput: React.FC<ConsoleOutputProps> = (props) => {
             className="cursor-pointer hover:bg-zinc-900/75 text-sm p-2 rounded-md text-white"
             style={{
               fontFamily: "Fira Code VF, monospace",
+              // break words
+              wordBreak: "break-word",
             }}
             onClick={() => {
               openModal({
