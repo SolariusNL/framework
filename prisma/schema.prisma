@@ -170,6 +170,7 @@ model User {
   auditLogs                  TeamAuditLog[]         @relation("audited")
   dismissibleContents        String[]
   automodTriggers            AutomodTrigger[]       @relation("automodTriggers")
+  domains                    Domain[]               @relation("userDomains")
 }
 
 model ConnectedAccount {
@@ -189,6 +190,23 @@ enum AdminPermission {
   CHANGE_INSTANCE_SETTINGS
   IMPERSONATE_USERS
   GENERATE_GIFTS
+}
+
+enum DomainStatus {
+  UNVERIFIED
+  VERIFIED
+  GENERATING_CERTIFICATE
+  COMPLETE
+}
+
+model Domain {
+  id        String       @id @default(uuid())
+  createdAt DateTime     @default(now())
+  user      User         @relation("userDomains", fields: [userId], references: [id])
+  userId    Int
+  domain    String
+  status    DomainStatus @default(UNVERIFIED)
+  txtRecord String
 }
 
 model DiscordConnectCode {
