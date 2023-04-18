@@ -1,26 +1,16 @@
+import { DomainStatus } from "@prisma/client";
 import { Body, Post, createHandler } from "@storyofams/next-api-decorators";
 import { randomUUID } from "crypto";
+import { promises } from "node:dns";
 import { z } from "zod";
 import Authorized, { Account } from "../../../util/api/authorized";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
-import { promises } from "node:dns";
-import { DomainStatus } from "@prisma/client";
 
 const domainSchema = z.object({
   domain: z
     .string()
-    .regex(/^[^.]+\.[^.]+$/)
-    .refine(
-      (domain) => {
-        if (!domain) {
-          return false;
-        }
-
-        return domain.split(".").length > 2;
-      },
-      { message: "Expected domain with subdomain" }
-    ),
+    .regex(/^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$/, "Must be a valid domain"),
 });
 
 class DomainRouter {
@@ -87,6 +77,7 @@ class DomainRouter {
           user: {
             id: user.id,
           },
+          status: DomainStatus.UNVERIFIED,
           domain,
         },
       });
@@ -98,26 +89,38 @@ class DomainRouter {
         };
       }
 
-      const txtRecordsOnDomain = await promises.resolveTxt(domain);
+      try {
+        const txtRecordsOnDomain = await promises.resolveTxt(domain);
 
-      if (
-        !txtRecordsOnDomain
-          .flat()
-          .includes(`fw-verification=${match.txtRecord}`)
-      ) {
+        if (
+          !txtRecordsOnDomain
+            .flat()
+            .includes(`fw-verification=${match.txtRecord}`)
+        ) {
+          return {
+            success: false,
+            message: "TXT record does not match",
+          };
+        } else {
+          await prisma.domain.update({
+            where: {
+              id: match.id,
+            },
+            data: {
+              status: DomainStatus.GENERATING_CERTIFICATE,
+            },
+          });
+
+          return {
+            success: true,
+            message: "TXT record matches",
+          };
+        }
+      } catch {
         return {
           success: false,
           message: "TXT record does not match",
         };
-      } else {
-        await prisma.domain.update({
-          where: {
-            id: match.id,
-          },
-          data: {
-            status: DomainStatus.GENERATING_CERTIFICATE,
-          },
-        });
       }
     } else {
       return {
