@@ -1,5 +1,10 @@
 import { DomainStatus } from "@prisma/client";
-import { Body, Post, createHandler } from "@storyofams/next-api-decorators";
+import {
+  Body,
+  Get,
+  Post,
+  createHandler,
+} from "@storyofams/next-api-decorators";
 import { randomUUID } from "crypto";
 import { promises } from "node:dns";
 import { z } from "zod";
@@ -128,6 +133,25 @@ class DomainRouter {
         message: data.error,
       };
     }
+  }
+
+  @Get("/my")
+  @Authorized()
+  public async getMyDomains(@Account() user: User) {
+    const domains = await prisma.domain.findMany({
+      where: {
+        user: {
+          id: user.id,
+        },
+      },
+    });
+
+    return {
+      success: true,
+      data: {
+        domains,
+      },
+    };
   }
 }
 

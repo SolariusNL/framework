@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { HiHome, HiKey, HiServer, HiUser, HiViewList } from "react-icons/hi";
+import { HiGlobe, HiKey, HiServer, HiViewList } from "react-icons/hi";
 import Framework from "../components/Framework";
 import IntegratedTabs from "../components/Framework/IntegratedTabs";
 import WrenchScrewdriver from "../icons/WrenchScrewdriver";
@@ -14,6 +14,7 @@ type DeveloperLayoutProps = {
 
 const tabs = [
   [HiServer, "/developer/servers", "Servers"],
+  [HiGlobe, "/developer/domains", "Domains"],
   [HiKey, "/developer/api-keys", "API Keys"],
   [WrenchScrewdriver, "/developer/oauth2", "OAuth2 Applications"],
   [HiViewList, "/developer/activity", "Activity"],
