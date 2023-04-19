@@ -7,6 +7,7 @@ import {
   TextInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { showNotification } from "@mantine/notifications";
 import { Domain, DomainStatus } from "@prisma/client";
 import { GetServerSidePropsContext } from "next";
 import { ReactNode, useEffect, useState } from "react";
@@ -22,7 +23,6 @@ import authorizedRoute from "../../util/auth";
 import fetchJson from "../../util/fetch";
 import { User } from "../../util/prisma-types";
 import { BLACK } from "../teams/t/[slug]/issue/create";
-import { showNotification } from "@mantine/notifications";
 
 type DomainsProps = {
   user: User;
@@ -148,7 +148,7 @@ const Domains: React.FC<DomainsProps> = ({ user }) => {
                   Array.from({ length: 4 }).map((_v, i) => (
                     <Skeleton height={80} key={i} />
                   ))
-                ) : domains && domains.length ? (
+                ) : domains && domains.length === 0 ? (
                   <ShadedCard className="col-span-full flex items-center justify-center">
                     <ModernEmptyState
                       title="No domains"
