@@ -1,17 +1,32 @@
 import {
+  ActionIcon,
+  Alert,
   Badge,
   Button,
+  Menu,
   NavLink,
   Skeleton,
   Text,
   TextInput,
+  Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { Domain, DomainStatus } from "@prisma/client";
+import { AnimatePresence, motion } from "framer-motion";
 import { GetServerSidePropsContext } from "next";
 import { ReactNode, useEffect, useState } from "react";
-import { HiGlobe, HiPlusCircle, HiXCircle } from "react-icons/hi";
+import {
+  HiArrowLeft,
+  HiCheck,
+  HiCheckCircle,
+  HiCog,
+  HiDocumentText,
+  HiDotsVertical,
+  HiGlobe,
+  HiPlusCircle,
+  HiXCircle,
+} from "react-icons/hi";
 import { Section } from "../../components/Home/FriendsWidget";
 import ModernEmptyState from "../../components/ModernEmptyState";
 import ShadedButton from "../../components/ShadedButton";
@@ -23,6 +38,7 @@ import authorizedRoute from "../../util/auth";
 import fetchJson from "../../util/fetch";
 import { User } from "../../util/prisma-types";
 import { BLACK } from "../teams/t/[slug]/issue/create";
+import clsx from "../../util/clsx";
 
 type DomainsProps = {
   user: User;
@@ -36,6 +52,7 @@ type SidebarItem = {
 enum SidebarValue {
   Domains,
   CreateNewDomain,
+  DomainDetails,
   ValidateTXTRecord,
 }
 type Form = {
@@ -63,7 +80,9 @@ const Domains: React.FC<DomainsProps> = ({ user }) => {
   );
   const [domains, setDomains] = useState<Domain[]>();
   const [loading, setLoading] = useState<boolean>(true);
+  const [txtError, setTxtError] = useState<string>();
   const [selectedDomain, setSelectedDomain] = useState<Domain>();
+  const [loadingOwnership, setLoadingOwnership] = useState<boolean>(false);
   const form = useForm<Form>({
     initialValues: {
       domain: "",
@@ -105,6 +124,9 @@ const Domains: React.FC<DomainsProps> = ({ user }) => {
       method: "POST",
     }).then((res) => {
       if (res.success) {
+        fetchDomains();
+        setActiveTab(SidebarValue.Domains);
+        form.reset();
       } else {
         showNotification({
           title: "Error",
@@ -114,6 +136,42 @@ const Domains: React.FC<DomainsProps> = ({ user }) => {
         });
       }
     });
+  };
+
+  const verifyDomainRecord = async () => {
+    if (selectedDomain) {
+      setLoadingOwnership(true);
+      await fetchJson<IResponseBase>("/api/domains/verify", {
+        method: "POST",
+        body: {
+          domain: selectedDomain.domain,
+        },
+        auth: true,
+      })
+        .then((res) => {
+          if (res.success) {
+            showNotification({
+              title: "Success",
+              message: "Your domain has been successfully verified.",
+              icon: <HiCheckCircle />,
+            });
+          } else {
+            setTxtError(res.message || "An unknown error occurred.");
+            setTimeout(() => {
+              setTxtError(undefined);
+            }, 3500);
+          }
+        })
+        .catch((err) => {
+          showNotification({
+            title: "Error",
+            message: "An unknown error occurred: " + err,
+            icon: <HiXCircle />,
+            color: "red",
+          });
+        })
+        .finally(() => setLoadingOwnership(false));
+    }
   };
 
   useEffect(() => {
@@ -142,54 +200,192 @@ const Domains: React.FC<DomainsProps> = ({ user }) => {
         </SidebarTabNavigation.Sidebar>
         <SidebarTabNavigation.Content>
           {activeTab === SidebarValue.Domains && (
-            <>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {loading ? (
-                  Array.from({ length: 4 }).map((_v, i) => (
-                    <Skeleton height={80} key={i} />
-                  ))
-                ) : domains && domains.length === 0 ? (
-                  <ShadedCard className="col-span-full flex items-center justify-center">
-                    <ModernEmptyState
-                      title="No domains"
-                      body="You do not have any domains."
-                    />
-                  </ShadedCard>
-                ) : (
-                  domains?.map((d, i) => (
-                    <ShadedButton
-                      className="w-full flex flex-col gap-4"
-                      key={i}
-                    >
+            <AnimatePresence mode="wait" initial={false}>
+              {selectedDomain === undefined ? (
+                <motion.div
+                  key="domain-list"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 500,
+                    damping: 30,
+                  }}
+                >
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {loading ? (
+                        Array.from({ length: 4 }).map((_v, i) => (
+                          <Skeleton height={80} key={i} />
+                        ))
+                      ) : domains && domains.length === 0 ? (
+                        <ShadedCard className="col-span-full flex items-center justify-center">
+                          <ModernEmptyState
+                            title="No domains"
+                            body="You do not have any domains."
+                          />
+                        </ShadedCard>
+                      ) : (
+                        domains?.map((d, i) => (
+                          <ShadedButton
+                            className="w-full flex flex-col gap-4"
+                            key={i}
+                            onClick={() => setSelectedDomain(d)}
+                          >
+                            <Badge
+                              radius="md"
+                              color={
+                                d.status === DomainStatus.UNVERIFIED
+                                  ? "red"
+                                  : DomainStatus.VERIFIED
+                                  ? "orange"
+                                  : DomainStatus.GENERATING_CERTIFICATE
+                                  ? "yellow"
+                                  : "green"
+                              }
+                              className="cursor-pointer"
+                            >
+                              {d.status === DomainStatus.UNVERIFIED
+                                ? "Unverified"
+                                : DomainStatus.VERIFIED
+                                ? "Verified"
+                                : DomainStatus.GENERATING_CERTIFICATE
+                                ? "Generating Certificate"
+                                : DomainStatus.COMPLETE && "Verified"}
+                            </Badge>
+                            <Text size="lg" className="flex items-center gap-2">
+                              {d.domain}
+                            </Text>
+                          </ShadedButton>
+                        ))
+                      )}
+                    </div>
+                  </>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="server-details"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 500,
+                    damping: 30,
+                  }}
+                >
+                  <div className="flex items-center justify-between mb-5">
+                    <div className="flex items-start gap-5">
+                      <div className="flex items-center md:gap-6 gap-2">
+                        <ActionIcon
+                          onClick={() => {
+                            setSelectedDomain(undefined);
+                          }}
+                          size="xl"
+                          className="rounded-full hover:border-zinc-500/50 transition-all"
+                          sx={{
+                            borderWidth: 1,
+                          }}
+                        >
+                          <HiArrowLeft />
+                        </ActionIcon>
+                        <HiGlobe size={32} />
+                      </div>
+                      <div>
+                        <Title order={3}>{selectedDomain.domain}</Title>
+                        <Text color="dimmed">
+                          {selectedDomain.txtRecord.split("-").shift()}
+                        </Text>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
                       <Badge
+                        size="lg"
                         radius="md"
                         color={
-                          d.status === DomainStatus.UNVERIFIED
-                            ? "red"
-                            : DomainStatus.VERIFIED
-                            ? "orange"
-                            : DomainStatus.GENERATING_CERTIFICATE
-                            ? "yellow"
-                            : "green"
+                          selectedDomain.status === DomainStatus.COMPLETE
+                            ? "green"
+                            : "red"
                         }
-                        className="cursor-pointer"
                       >
-                        {d.status === DomainStatus.UNVERIFIED
-                          ? "Unverified"
-                          : DomainStatus.VERIFIED
+                        {selectedDomain.status === DomainStatus.COMPLETE
                           ? "Verified"
-                          : DomainStatus.GENERATING_CERTIFICATE
-                          ? "Generating Certificate"
-                          : DomainStatus.COMPLETE && "Verified"}
+                          : "Unverified"}
                       </Badge>
-                      <Text size="lg" className="flex items-center gap-2">
-                        {d.domain}
+                      <Menu width={180}>
+                        <Menu.Target>
+                          <ActionIcon>
+                            <HiDotsVertical />
+                          </ActionIcon>
+                        </Menu.Target>
+                        <Menu.Dropdown></Menu.Dropdown>
+                      </Menu>
+                    </div>
+                  </div>
+                  {selectedDomain.status === DomainStatus.UNVERIFIED ? (
+                    <>
+                      <Text color="dimmed" size="sm" mb="xs">
+                        In order to verify your domain ownership, please copy
+                        the TXT record below and create a TXT DNS record
+                        according to the information provided.
                       </Text>
-                    </ShadedButton>
-                  ))
-                )}
-              </div>
-            </>
+                      <Text color="dimmed" size="sm" mb="lg">
+                        Please note that DNS changes may take up to 24 hours to
+                        propagate. Once your DNS record has been updated, click
+                        the &quot;Verify&quot; to complete the verification
+                        process.
+                      </Text>
+                      <div className="grid md:grid-cols-2 gap-4 grid-cols-1">
+                        <TextInput
+                          icon={<HiCog />}
+                          required
+                          classNames={BLACK}
+                          value="TXT"
+                          label="DNS record type"
+                          description="Create a TXT record to verify ownership of this domain. No other type is supported."
+                        />
+                        <TextInput
+                          icon={<HiDocumentText />}
+                          classNames={BLACK}
+                          required
+                          value={selectedDomain.domain}
+                          label="Record name"
+                          description="The name of the TXT record must be the domain you are verifying."
+                        />
+                      </div>
+                      <TextInput
+                        label="Record value"
+                        description="Copy and paste this identifier into the value field of your DNS record."
+                        classNames={BLACK}
+                        value={`fw-verification=${selectedDomain.txtRecord}`}
+                        required
+                        mt="sm"
+                      />
+                      <div className="mt-5 flex justify-between">
+                        <Alert
+                          color="red"
+                          className={clsx(txtError ? "block" : "hidden")}
+                          icon={<HiXCircle />}
+                        >
+                          {txtError}
+                        </Alert>
+                        <Button
+                          leftIcon={<HiCheck />}
+                          onClick={() => verifyDomainRecord()}
+                          className="ml-auto"
+                          loading={loadingOwnership}
+                        >
+                          Verify ownership
+                        </Button>
+                      </div>
+                    </>
+                  ) : (
+                    <></>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           )}
           {activeTab === SidebarValue.CreateNewDomain && (
             <>
