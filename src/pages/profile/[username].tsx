@@ -1,4 +1,12 @@
-import { Avatar, Button, Image, Text, Title, Tooltip } from "@mantine/core";
+import {
+  Avatar,
+  Button,
+  Image,
+  Indicator,
+  Text,
+  Title,
+  Tooltip,
+} from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { NextSeo } from "next-seo";
 import { useRouter } from "next/router";
@@ -149,15 +157,25 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
           <div className="flex-auto w-full">
             <div className="md:flex md:flex-row items-center md:items-start gap-8">
               <div className="md:items-start items-center flex flex-col md:mb-0 mb-8">
-                <Avatar
-                  src={
-                    getMediaUrl(viewing.avatarUri) ||
-                    `https://avatars.dicebear.com/api/identicon/${viewing.id}.png`
+                <Indicator
+                  color="green"
+                  size={10}
+                  position="bottom-end"
+                  disabled={
+                    Date.now() - new Date(viewing.lastSeen).getTime() >
+                    5 * 60 * 1000
                   }
-                  className="cursor-pointer"
-                  radius={999}
-                  size={100}
-                />
+                >
+                  <Avatar
+                    src={
+                      getMediaUrl(viewing.avatarUri) ||
+                      `https://avatars.dicebear.com/api/identicon/${viewing.id}.png`
+                    }
+                    className="cursor-pointer"
+                    radius={999}
+                    size={100}
+                  />
+                </Indicator>
               </div>
               <div className="flex flex-col justify-between h-full">
                 <div className="flex flex-col justify-between">
