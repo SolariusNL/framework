@@ -5,7 +5,7 @@ import Badge from "./Badge";
 const PremiumBadge = ({ user }: { user: User }) => {
   return (
     <Badge
-      title="Premium subscriber"
+      title="Premium"
       description={`${user.username} is currently a Framework Premium subscriber.`}
       user={user}
       icon={HiOutlineSparkles}

@@ -5,7 +5,7 @@ import Badge from "./Badge";
 const AlphaBadge = ({ user }: { user: User }) => {
   return (
     <Badge
-      title="Alpha member"
+      title="Alpha"
       description={`${user.username} has been a member of Framework since its alpha period.`}
       user={user}
       icon={HiOutlineClock}

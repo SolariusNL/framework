@@ -1,43 +1,18 @@
-import {
-  ActionIcon,
-  Anchor,
-  Avatar,
-  Badge,
-  Button,
-  Center,
-  Container,
-  CopyButton,
-  Grid,
-  Group,
-  Image,
-  Indicator,
-  Paper,
-  Progress,
-  Stack,
-  Text,
-  ThemeIcon,
-  Title,
-  Tooltip,
-} from "@mantine/core";
-import { showNotification } from "@mantine/notifications";
+import { Avatar, Button, Image, Text, Title, Tooltip } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { NextSeo } from "next-seo";
 import { useRouter } from "next/router";
 import React from "react";
 import ReactCountryFlag from "react-country-flag";
 import {
-  HiArrowRight,
+  HiCake,
   HiCheck,
-  HiClipboardCopy,
   HiClock,
-  HiDesktopComputer,
   HiFlag,
-  HiGlobe,
-  HiOfficeBuilding,
-  HiSparkles,
+  HiLockClosed,
+  HiMap,
   HiUser,
-  HiUsers,
-  HiXCircle,
+  HiUserGroup,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import AdminBadge from "../../components/Badges/Admin";
@@ -45,9 +20,12 @@ import AlphaBadge from "../../components/Badges/Alpha";
 import EmailBadge from "../../components/Badges/Email";
 import PremiumBadge from "../../components/Badges/Premium";
 import TOTPBadge from "../../components/Badges/TOTP";
+
+import { showNotification } from "@mantine/notifications";
+import { getCookie } from "cookies-next";
+import Link from "next/link";
 import Framework from "../../components/Framework";
 import ThumbnailCarousel from "../../components/ImageCarousel";
-import ModernEmptyState from "../../components/ModernEmptyState";
 import PlaceholderGameResource from "../../components/PlaceholderGameResource";
 import Donate from "../../components/Profile/Donate";
 import Links from "../../components/Profile/Links";
@@ -56,8 +34,8 @@ import ShadedCard from "../../components/ShadedCard";
 import { useUserInformationDialog } from "../../contexts/UserInformationDialog";
 import countries from "../../data/countries";
 import getTimezones from "../../data/timezones";
+import Rocket from "../../icons/Rocket";
 import authorizedRoute from "../../util/auth";
-import { getCookie } from "../../util/cookies";
 import { exclude } from "../../util/exclude";
 import getMediaUrl from "../../util/get-media";
 import useMediaQuery from "../../util/media-query";
@@ -78,6 +56,56 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
   const [viewing, setViewing] = React.useState(profile);
   const [viewingTime, setViewingTime] = React.useState<string>();
   const [isFollowing, setIsFollowing] = React.useState(following);
+
+  const FollowButton = (
+    <Button
+      leftIcon={<HiUser />}
+      onClick={async () => {
+        setIsFollowing(!isFollowing);
+        setViewing((viewing) => ({
+          ...viewing,
+          _count: {
+            ...viewing._count,
+            followers: viewing._count.followers + (isFollowing ? -1 : 1),
+          },
+        }));
+
+        showNotification({
+          title: "Followed",
+          message: `Successfully ${isFollowing ? "unfollowed" : "followed"} ${
+            viewing.username
+          }.`,
+          icon: <HiCheck />,
+        });
+
+        await fetch(`/api/users/${viewing.id}/follow`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: String(getCookie(".frameworksession")),
+          },
+        });
+      }}
+    >
+      {isFollowing ? "Unfollow" : "Follow"}
+    </Button>
+  );
+
+  const DonationButton = (
+    <ReactNoSSR>
+      <Donate user={viewing} />
+    </ReactNoSSR>
+  );
+
+  const ReportButton = (
+    <Button
+      leftIcon={<HiFlag />}
+      color="red"
+      onClick={() => setReportOpened(true)}
+    >
+      Report
+    </Button>
+  );
 
   React.useEffect(() => {
     if (typeof window !== "undefined") {
@@ -117,511 +145,251 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
         }}
       />
       <Framework user={user} activeTab="none">
-        <Center
-          sx={{
-            width: "100vw / 2",
-          }}
-        >
-          <Stack align="center">
-            <Group align="center">
-              <Indicator
-                color="green"
-                size={10}
-                position="bottom-end"
-                disabled={
-                  Date.now() - new Date(viewing.lastSeen).getTime() >
-                  5 * 60 * 1000
-                }
-              >
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex-auto w-full">
+            <div className="md:flex md:flex-row items-center md:items-start gap-8">
+              <div className="md:items-start items-center flex flex-col md:mb-0 mb-8">
                 <Avatar
                   src={
                     getMediaUrl(viewing.avatarUri) ||
                     `https://avatars.dicebear.com/api/identicon/${viewing.id}.png`
                   }
-                  alt={viewing.username}
+                  className="cursor-pointer"
                   radius={999}
                   size={100}
                 />
-              </Indicator>
-            </Group>
-
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-              }}
-            >
-              {viewing.country && (
-                <ReactCountryFlag
-                  style={{ borderRadius: "6px", marginRight: 12 }}
-                  countryCode={viewing.country}
-                  svg
-                />
-              )}
-              <div className="flex items-center gap-3">
-                {viewing.role == "ADMIN" && (
-                  <Tooltip label="Soodam.re Staff">
-                    <Image src="/brand/white.png" width={16} height={16} />
-                  </Tooltip>
-                )}
-                <Tooltip
-                  label={
-                    viewing.previousUsernames.length > 0
-                      ? `This user was previously known as: ${viewing.previousUsernames.join(
-                          ", "
-                        )}.`
-                      : "This user has not changed their username before."
-                  }
-                >
-                  <Text weight={500} size="xl" align="center">
-                    {viewing.username}
-                  </Text>
-                </Tooltip>
               </div>
-              {viewing.alias && (
-                <ReactNoSSR>
-                  <Tooltip label="This user has an alias:">
-                    <Text
-                      weight={500}
-                      size="xl"
-                      align="center"
-                      color="dimmed"
-                      sx={{ marginLeft: 8 }}
-                    >
-                      ({viewing.alias})
-                    </Text>
-                  </Tooltip>
-                </ReactNoSSR>
-              )}
-            </div>
-
-            <div className="flex items-center gap-4">
-              <ReactNoSSR>
-                {viewing.busy && (
-                  <Tooltip label="This user is busy, and may take a while to respond to your requests.">
-                    <Badge>Busy</Badge>
-                  </Tooltip>
-                )}
-                {viewing.premium && (
-                  <Tooltip label="Premium Member">
-                    <div className="flex items-center">
-                      <HiSparkles title="Premium" />
-                    </div>
-                  </Tooltip>
-                )}
-              </ReactNoSSR>
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-              }}
-            >
-              <Group spacing={3}>
-                <Text color="dimmed">
-                  User ID: <strong>{viewing.id}</strong>
-                </Text>
-                <CopyButton value={String(viewing.id)} timeout={2000}>
-                  {({ copied, copy }) => (
-                    <Tooltip
-                      label={copied ? "Copied" : "Copy"}
-                      withArrow
-                      position="right"
-                    >
-                      <ActionIcon
-                        color={copied ? "teal" : "gray"}
-                        onClick={copy}
-                      >
-                        {copied ? (
-                          <HiCheck size={16} />
-                        ) : (
-                          <HiClipboardCopy size={16} />
-                        )}
-                      </ActionIcon>
-                    </Tooltip>
-                  )}
-                </CopyButton>
-              </Group>
-
-              <Text color="dimmed" pl={8} pr={8}>
-                ·
-              </Text>
-
-              <Text color="dimmed">@{viewing.username}</Text>
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-              }}
-            >
-              <Group spacing={3}>
-                <HiClock color="#868e96" style={{ marginRight: 5 }} />
-                <Text color="dimmed" weight={500} mr={5}>
-                  {viewing.timeZone}
-                </Text>
-                <Text color="dimmed">{viewingTime || "Fetching..."}</Text>
-              </Group>
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-              }}
-            >
-              <Group spacing={3}>
-                <HiUsers color="#868e96" style={{ marginRight: 5 }} />
-                <Anchor
-                  onClick={() => {
-                    setUser(viewing);
-                    setDefaultTab("followers");
-                    setOpen(true);
-                  }}
-                >
-                  {viewing._count.followers} followers
-                </Anchor>
-                <Text color="dimmed" pl={8} pr={8}>
-                  ·
-                </Text>
-                <Anchor
-                  onClick={() => {
-                    setUser(viewing);
-                    setDefaultTab("following");
-                    setOpen(true);
-                  }}
-                >
-                  {viewing._count.following} following
-                </Anchor>
-              </Group>
-            </div>
-
-            {viewing.id != user.id && (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                }}
-              >
-                <Button.Group>
-                  <Button
-                    leftIcon={<HiUser />}
-                    onClick={async () => {
-                      setIsFollowing(!isFollowing);
-                      setViewing((viewing) => ({
-                        ...viewing,
-                        _count: {
-                          ...viewing._count,
-                          followers:
-                            viewing._count.followers + (isFollowing ? -1 : 1),
-                        },
-                      }));
-
-                      showNotification({
-                        title: "Followed",
-                        message: `Successfully ${
-                          isFollowing ? "unfollowed" : "followed"
-                        } ${viewing.username}.`,
-                        icon: <HiCheck />,
-                      });
-
-                      await fetch(`/api/users/${viewing.id}/follow`, {
-                        method: "POST",
-                        headers: {
-                          "Content-Type": "application/json",
-                          Authorization: String(getCookie(".frameworksession")),
-                        },
-                      });
-                    }}
-                  >
-                    {isFollowing ? "Unfollow" : "Follow"}
-                  </Button>
-                  <ReactNoSSR>
-                    <Donate user={viewing} />
-                  </ReactNoSSR>
-                  <Button
-                    leftIcon={<HiFlag />}
-                    color="red"
-                    onClick={() => setReportOpened(true)}
-                  >
-                    Report
-                  </Button>
-                </Button.Group>
-              </div>
-            )}
-          </Stack>
-        </Center>
-
-        <ShadedCard
-          p={16}
-          mt={50}
-          {...(viewing.banned && {
-            className: "flex items-center justify-center py-16",
-          })}
-        >
-          {viewing.banned ? (
-            <div className="flex gap-4 max-w-sm">
-              <HiXCircle
-                size={24}
-                className="whitespace-nowrap flex-shrink-0 text-red-400"
-              />
-              <div>
-                <Text size="lg">
-                  <span className="font-semibold">{viewing.username}</span> has
-                  been banned.
-                </Text>
-                <Text size="sm" color="dimmed">
-                  Sorry. We cannot show you this user&apos;s profile, as
-                  they&apos;ve been banned.
-                </Text>
-              </div>
-            </div>
-          ) : (
-            <>
-              <Grid columns={24}>
-                <Grid.Col span={mobile ? 24 : 14}>
-                  <Text weight={550} mb={10} color="dimmed">
-                    About {viewing.username}
-                  </Text>
-                  <Text mb={16}>
-                    <ReactNoSSR>
-                      {viewing.bio
-                        ? viewing.bio.split("\n").map((line, i) => (
-                            <React.Fragment key={i}>
-                              {line}
-                              <br />
-                            </React.Fragment>
-                          ))
-                        : "No bio"}
-                    </ReactNoSSR>
-                  </Text>
-                  <ReactNoSSR>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <ShadedCard withBorder shadow="md" className="h-fit">
-                        <Stack spacing={6}>
-                          {[
-                            [HiClock, viewing.timeZone, "Timezone"],
-                            [
-                              HiGlobe,
-                              countries.find((c) => c.code == viewing.country)
-                                ?.name,
-                              "Country",
-                            ],
-                            [
-                              HiOfficeBuilding,
-                              viewing.busy
-                                ? "Busy"
-                                : "Available" || "Available",
-                              "Status",
-                            ],
-                            [
-                              HiDesktopComputer,
-                              new Date(viewing.lastSeen).toLocaleString(),
-                              "Last seen",
-                            ],
-                          ]
-                            .filter(([, value]) => value)
-                            .map(([Icon, value, label]: any) => (
-                              <Group spacing={3} key={label}>
-                                <Tooltip label={label} key={value}>
-                                  <ThemeIcon color="transparent">
-                                    <Icon
-                                      color="#868e96"
-                                      style={{ marginRight: 5 }}
-                                    />
-                                  </ThemeIcon>
-                                </Tooltip>
-                                <Text color="dimmed" mr={5}>
-                                  {String(value)}
-                                </Text>
-                              </Group>
-                            ))}
-                        </Stack>
-                      </ShadedCard>
-                      <ShadedCard withBorder shadow="md" className="h-fit">
-                        <Stack spacing={12}>
-                          {[
-                            {
-                              icon: HiClock,
-                              label: "Member since",
-                              value: new Date(
-                                viewing.createdAt
-                              ).toLocaleDateString(),
-                            },
-                            {
-                              icon: HiUsers,
-                              label: "Place visits",
-                              value: viewing.games
-                                .map((g) => g.visits)
-                                .reduce((a, b) => a + b, 0),
-                            },
-                            {
-                              icon: HiClock,
-                              label: "Hours played",
-                              value: 0,
-                            },
-                          ].map(({ icon: Icon, label, value }) => (
-                            <Group key={String(value)} spacing={3}>
-                              <Icon
-                                color="#868e96"
-                                style={{ marginRight: 12 }}
-                              />
-                              <div className="items-start">
-                                <Text color="dimmed" weight={600}>
-                                  {label}
-                                </Text>
-                                <Text color="dimmed">{String(value)}</Text>
-                              </div>
-                            </Group>
-                          ))}
-                        </Stack>
-                      </ShadedCard>
-                    </div>
-                  </ReactNoSSR>
-                  <Text weight={550} mb={10} color="dimmed" mt={50}>
-                    Contacts
-                  </Text>
-                  <Links
-                    user={viewing}
-                    mb={16}
-                    sx={(theme) => ({
-                      backgroundColor:
-                        theme.colorScheme == "dark"
-                          ? theme.colors.dark[9]
-                          : "#FFF",
-                    })}
-                    shadow="md"
-                  />
-
-                  <Text weight={550} mb={10} color="dimmed" mt={50}>
-                    Badges
-                  </Text>
-
-                  <ReactNoSSR>
-                    <div
-                      style={{
-                        display: "grid",
-                        gridColumnGap: "12px",
-                        gridTemplateColumns: `repeat(${mobile ? 1 : 2}, 1fr)`,
-                        gridRowGap: "12px",
-                      }}
-                    >
-                      {[
-                        [<AlphaBadge user={viewing} key="alpha" />, true],
-                        [
-                          <PremiumBadge user={viewing} key="premium" />,
-                          viewing.premium,
-                        ],
-                        [
-                          <AdminBadge user={viewing} key="admin" />,
-                          viewing.role == "ADMIN",
-                        ],
-                        [
-                          <EmailBadge user={viewing} key="email" />,
-                          viewing.emailVerified,
-                        ],
-                        [
-                          <TOTPBadge user={viewing} key="totp" />,
-                          viewing.otpEnabled,
-                        ],
-                      ].map(
-                        ([badge, condition]) => condition && <div>{badge}</div>
-                      )}
-                    </div>
-                  </ReactNoSSR>
-                </Grid.Col>
-
-                <Grid.Col span={mobile ? 24 : 10}>
-                  {viewing.games.length == 0 && (
-                    <ModernEmptyState
-                      title="No games"
-                      body={`${viewing.username} has no games.`}
-                    />
-                  )}
-                  <ReactNoSSR>
-                    <ThumbnailCarousel
-                      p={8}
-                      slides={viewing.games.map((g, i) => (
-                        <Paper
-                          withBorder
-                          p="md"
-                          radius="md"
-                          key={i}
-                          shadow="md"
-                          sx={(theme) => ({
-                            marginRight: i != viewing.games.length - 1 ? 8 : 0,
-                            backgroundColor:
-                              theme.colorScheme == "dark"
-                                ? theme.colors.dark[9]
-                                : "#FFF",
-                          })}
-                        >
-                          <Container p={0} mb={16}>
-                            {g.gallery.length > 0 && (
-                              <ThumbnailCarousel
-                                slides={g.gallery.map((gal, j) => (
-                                  <Image
-                                    height={180}
-                                    src={getMediaUrl(gal)}
-                                    key={j}
-                                    alt={g.name}
-                                  />
-                                ))}
-                              />
-                            )}
-
-                            {g.gallery.length == 0 && (
-                              <PlaceholderGameResource
-                                height={180}
-                                radius={6}
-                              />
-                            )}
-                          </Container>
-
-                          <Title order={3}>{g.name}</Title>
-                          <Text size="sm" color="dimmed" mb={16}>
-                            @{viewing.username}
-                          </Text>
-
-                          <Progress
-                            sections={[
-                              {
-                                value:
-                                  (g.likedBy.length / g.likedBy.length +
-                                    g.dislikedBy.length) *
-                                  100,
-                                color: "green",
-                              },
-                              {
-                                value:
-                                  (g.likedBy.length / g.likedBy.length +
-                                    g.dislikedBy.length) *
-                                  100,
-                                color: "red",
-                              },
-                            ]}
-                            mb="md"
+              <div className="flex flex-col justify-between h-full">
+                <div className="flex flex-col justify-between">
+                  <div className="flex items-center justify-center md:justify-start gap-3">
+                    <Title order={2} mr="xs">
+                      {viewing.alias || viewing.username}
+                    </Title>
+                    {viewing.role === "ADMIN" && (
+                      <Tooltip label="Soodam.re Staff">
+                        <div className="flex items-center">
+                          <Image
+                            src="/brand/white.png"
+                            width={16}
+                            height={16}
                           />
+                        </div>
+                      </Tooltip>
+                    )}
+                    {viewing.busy && (
+                      <Tooltip label="Busy">
+                        <div className="flex items-center">
+                          <HiLockClosed />
+                        </div>
+                      </Tooltip>
+                    )}
+                    {viewing.premium && (
+                      <Tooltip label="Framework Premium">
+                        <div className="flex items-center">
+                          <Rocket className="text-pink-500 animate-pulse" />
+                        </div>
+                      </Tooltip>
+                    )}
+                  </div>
+                  <Text
+                    size="sm"
+                    color="dimmed"
+                    className="md:text-left text-center"
+                  >
+                    @{viewing.username}
+                  </Text>
+                </div>
+                <div className="flex items-center gap-4 mt-4 md:justify-start justify-center">
+                  <Text
+                    color="dimmed"
+                    size="sm"
+                    onClick={() => {
+                      setOpen(true);
+                      setUser(viewing);
+                      setDefaultTab("followers");
+                    }}
+                    className="cursor-pointer dark:hover:text-gray-300 transition-colors hover:text-gray-700"
+                  >
+                    <span className="font-semibold">
+                      {viewing._count.followers}
+                    </span>{" "}
+                    Followers
+                  </Text>
+                  <Text
+                    color="dimmed"
+                    size="sm"
+                    onClick={() => {
+                      setOpen(true);
+                      setUser(viewing);
+                      setDefaultTab("following");
+                    }}
+                    className="cursor-pointer dark:hover:text-gray-300 transition-colors hover:text-gray-700"
+                  >
+                    <span className="font-semibold">
+                      {viewing._count.following}
+                    </span>{" "}
+                    Following
+                  </Text>
+                </div>
+                {viewing.id !== user.id && (
+                  <>
+                    <div className="mt-4">
+                      <div className="hidden md:flex items-center gap-2">
+                        <Button.Group>
+                          {FollowButton}
+                          {DonationButton}
+                        </Button.Group>
+                        {ReportButton}
+                      </div>
+                      <div className="md:hidden block w-full">
+                        <div className="flex flex-col gap-1">
+                          <div className="flex items-center gap-2 md:justify-start justify-center">
+                            {FollowButton}
+                            {DonationButton}
+                            {ReportButton}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
 
-                          <Button
-                            fullWidth
-                            leftIcon={<HiArrowRight />}
-                            onClick={() => router.push(`/game/${g.id}`)}
-                          >
-                            View
-                          </Button>
-                        </Paper>
-                      ))}
-                    />
-                  </ReactNoSSR>
-                </Grid.Col>
-              </Grid>
-            </>
-          )}
-        </ShadedCard>
+            <Text size="sm" weight={500} mb="sm" color="dimmed" mt="xl">
+              Biography
+            </Text>
+            <Text mb="xl">
+              {viewing.bio
+                ? viewing.bio
+                : "This user hasn't written a biography yet."}
+            </Text>
+            <ShadedCard>
+              <div className="grid md:grid-cols-2 grid-cols-1 gap-2 gap-y-6">
+                {[
+                  {
+                    icon: <HiCake />,
+                    title: "Joined",
+                    value: new Date(viewing.createdAt).toLocaleDateString(),
+                  },
+                  {
+                    icon: <HiMap />,
+                    title: "Country",
+                    value: viewing.country ? (
+                      <div className="flex items-center gap-2">
+                        <ReactCountryFlag
+                          style={{ borderRadius: "6px" }}
+                          countryCode={viewing.country}
+                          svg
+                        />
+                        <span>
+                          {
+                            countries.find((c) => c.code == viewing.country)
+                              ?.name
+                          }
+                        </span>
+                      </div>
+                    ) : (
+                      <span>
+                        <Text size="sm" color="dimmed">
+                          Unknown
+                        </Text>
+                      </span>
+                    ),
+                  },
+                  {
+                    icon: <HiClock />,
+                    title: "Timezone",
+                    value: viewing.timeZone ? (
+                      getTimezones().find((tz) => tz.value == viewing.timeZone)
+                        ?.text
+                    ) : (
+                      <span>
+                        <Text size="sm" color="dimmed">
+                          Unknown
+                        </Text>
+                      </span>
+                    ),
+                  },
+                  {
+                    icon: <HiUserGroup />,
+                    title: "Visits",
+                    value: viewing.games
+                      .map((g) => g.visits)
+                      .reduce((a, b) => a + b, 0),
+                  },
+                ].map((item) => (
+                  <div
+                    className="flex flex-col gap-2 items-center"
+                    key={item.title}
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="text-gray-400 flex items-center">
+                        {item.icon}
+                      </div>
+                      <Text size="sm" color="dimmed">
+                        {item.title}
+                      </Text>
+                    </div>
+                    <Text size="sm" weight={500} align="center">
+                      {item.value}
+                    </Text>
+                  </div>
+                ))}
+              </div>
+            </ShadedCard>
+          </div>
+          <div className="flex-auto md:w-3/4 w-full flex flex-col gap-6">
+            {viewing.games.length > 0 && (
+              <ThumbnailCarousel
+                slides={viewing.games.map((game) => (
+                  <Link href={`/game/${game.id}`} key={game.id} passHref>
+                    <div className="relative cursor-pointer rounded-md">
+                      {game.gallery.length > 0 ? (
+                        <Image
+                          height={200}
+                          src={getMediaUrl(game.gallery[0])}
+                          key={game.gallery[0]}
+                          alt={game.name}
+                          radius="md"
+                        />
+                      ) : (
+                        <PlaceholderGameResource height={200} />
+                      )}
+                      <div className="absolute bottom-0 left-0 w-full h-full rounded-md bg-black bg-opacity-50 backdrop-filter backdrop-blur-sm flex flex-col justify-end p-4">
+                        <Title order={4} className="text-white">
+                          {game.name}
+                        </Title>
+                        <Text size="sm" className="text-white" lineClamp={1}>
+                          {game.description.replace(/(<([^>]+)>)/gi, "")}
+                        </Text>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              />
+            )}
+            {user.profileLinks && <Links user={viewing} shadow="md" />}
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                [<AlphaBadge user={viewing} key="alpha" />, true],
+                [
+                  <PremiumBadge user={viewing} key="premium" />,
+                  viewing.premium,
+                ],
+                [
+                  <AdminBadge user={viewing} key="admin" />,
+                  viewing.role == "ADMIN",
+                ],
+                [
+                  <EmailBadge user={viewing} key="email" />,
+                  viewing.emailVerified,
+                ],
+                [<TOTPBadge user={viewing} key="totp" />, viewing.otpEnabled],
+              ].map(([badge, condition]) => condition && <div>{badge}</div>)}
+            </div>
+          </div>
+        </div>
       </Framework>
     </>
   );

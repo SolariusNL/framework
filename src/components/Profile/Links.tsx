@@ -15,7 +15,7 @@ const Links = ({
   ...props
 }: LinksProps & Omit<CardProps, "children">) => {
   return (
-    <ShadedCard p="md" className="bg-transparent" {...props}>
+    <ShadedCard p="md" {...props}>
       {user.profileLinks.map((link, i) => (
         <Card.Section key={i} p="md" withBorder>
           <Text weight={700} size="sm" color="dimmed" mb={4}>
