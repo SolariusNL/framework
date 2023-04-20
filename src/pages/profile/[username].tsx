@@ -261,7 +261,12 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
             </Text>
             <Text mb="xl">
               {viewing.bio
-                ? viewing.bio
+                ? viewing.bio.split("\n").map((line, i) => (
+                    <React.Fragment key={i}>
+                      {line}
+                      <br />
+                    </React.Fragment>
+                  ))
                 : "This user hasn't written a biography yet."}
             </Text>
             <ShadedCard>
@@ -302,7 +307,7 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
                     title: "Timezone",
                     value: viewing.timeZone ? (
                       getTimezones().find((tz) => tz.value == viewing.timeZone)
-                        ?.text
+                        ?.value
                     ) : (
                       <span>
                         <Text size="sm" color="dimmed">
