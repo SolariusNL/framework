@@ -15,6 +15,7 @@ import ReactCountryFlag from "react-country-flag";
 import {
   HiCake,
   HiCheck,
+  HiChevronDoubleUp,
   HiClock,
   HiFlag,
   HiLockClosed,
@@ -180,9 +181,14 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
               <div className="flex flex-col justify-between h-full">
                 <div className="flex flex-col justify-between">
                   <div className="flex items-center justify-center md:justify-start gap-3">
-                    <Title order={2} mr="xs">
-                      {viewing.alias || viewing.username}
-                    </Title>
+                    <Title order={2}>{viewing.alias || viewing.username}</Title>
+                    {viewing.role === "ADMIN" ||
+                    viewing.busy ||
+                    viewing.premium ? (
+                      <div className="hidden md:block">
+                        <div className="w-px h-4 mx-1 dark:bg-zinc-700/50" />
+                      </div>
+                    ) : null}
                     {viewing.role === "ADMIN" && (
                       <Tooltip label="Soodam.re Staff">
                         <div className="flex items-center">
@@ -361,6 +367,51 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
                 ))}
               </div>
             </ShadedCard>
+            <ReactNoSSR>
+              <div className="flex items-center justify-center mt-6 mb-2">
+                <div
+                  className="flex flex-col gap-3"
+                  style={{
+                    maxWidth: "24rem",
+                  }}
+                >
+                  {[
+                    {
+                      icon: <HiClock />,
+                      title: "Last seen",
+                      value: new Date(viewing.lastSeen).toLocaleString(),
+                    },
+                    {
+                      icon: <HiChevronDoubleUp />,
+                      title: "Repuation",
+                      value: 0,
+                    },
+                    {
+                      icon: <Rocket />,
+                      title: "Trading availability",
+                      value: "Unavailable",
+                    },
+                  ].map((item) => (
+                    <div
+                      className="grid grid-cols-2 gap-2 items-center"
+                      key={item.title}
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className="text-gray-400 flex items-center justify-end">
+                          {item.icon}
+                        </div>
+                        <Text size="sm" color="dimmed">
+                          {item.title}
+                        </Text>
+                      </div>
+                      <Text size="sm" weight={500}>
+                        {item.value}
+                      </Text>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </ReactNoSSR>
           </div>
           <div className="flex-auto md:w-3/4 w-full flex flex-col gap-6">
             {viewing.games.length > 0 && (
