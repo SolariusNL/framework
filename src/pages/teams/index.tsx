@@ -23,6 +23,7 @@ export type TeamType = {
   _count: {
     members: number;
     games: number;
+    issues: number;
   };
   staff: { id: number; username: string; avatarUri: string }[];
   banned: { id: number }[];

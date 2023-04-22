@@ -29,7 +29,6 @@ import AlphaBadge from "../../components/Badges/Alpha";
 import EmailBadge from "../../components/Badges/Email";
 import PremiumBadge from "../../components/Badges/Premium";
 import TOTPBadge from "../../components/Badges/TOTP";
-
 import { showNotification } from "@mantine/notifications";
 import { getCookie } from "cookies-next";
 import Link from "next/link";

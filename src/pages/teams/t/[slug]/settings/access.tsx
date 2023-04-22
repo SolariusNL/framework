@@ -165,7 +165,21 @@ const StaffList: React.FC<{
       username: string;
       id: number;
     }[]
-  >(staff);
+  >();
+  const getStaff = async () => {
+    await fetch(`/api/teams/${tid}/staff`, {
+      method: "GET",
+      headers,
+    })
+      .then(async (res) => res.json())
+      .then(async (res) => {
+        setStaff(res);
+      });
+  };
+
+  useEffect(() => {
+    getStaff();
+  }, []);
 
   return (
     <div className="flex flex-col gap-2">
@@ -174,8 +188,12 @@ const StaffList: React.FC<{
         label="Add staff"
         description="Add a user to your team's staff."
         onUserSelect={async (user) => {
-          if (staff?.find((u) => u.id === user.id)) return;
-          setStaff((s) => [...(s || []), user]);
+          if (staffState?.find((u) => u.id === user.id)) return;
+          setStaff(
+            staffState?.find((u) => u.id === user.id)
+              ? staffState
+              : [...(staffState || []), user]
+          );
 
           await fetch(`/api/teams/${tid}/staff/${user.id}`, {
             method: "POST",
@@ -184,7 +202,9 @@ const StaffList: React.FC<{
         }}
         key={tid}
         id={tid}
-        filter={(_, user) => !staff?.find((u) => u.username === user.username)}
+        filter={(_, user) =>
+          !staffState?.find((u) => u.username === user.username)
+        }
         classNames={{
           input: blackInput,
           icon: "dark:text-white",
@@ -192,8 +212,8 @@ const StaffList: React.FC<{
         icon={<HiPlus />}
       />
       <Stack spacing={2} mt="sm">
-        {staff &&
-          staff.map((user) => (
+        {staffState &&
+          staffState.map((user) => (
             <div key={user.id} className="flex justify-between items-center">
               <div className="flex items-center gap-2">
                 <Avatar
@@ -208,7 +228,7 @@ const StaffList: React.FC<{
               <CloseButton
                 size="xs"
                 onClick={async () => {
-                  setStaff(staff?.filter((u) => u.id !== user.id));
+                  setStaff(staffState?.filter((u) => u.id !== user.id));
                   await fetch(`/api/teams/${tid}/staff/${user.id}`, {
                     method: "DELETE",
                     headers,
@@ -405,7 +425,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     };
   }
   if (team.ownerId !== auth.props.user?.id) {
-    if (!team.staff.find((s) => s.id === auth.props.user?.id)) {
+    if (!team.staff?.find((s) => s.id === auth.props.user?.id)) {
       return {
         redirect: {
           destination: "/404",

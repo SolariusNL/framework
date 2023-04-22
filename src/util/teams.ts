@@ -1,3 +1,4 @@
+import { TeamIssueStatus } from "@prisma/client";
 import prisma from "./prisma";
 import { nonCurrentUserSelect } from "./prisma-types";
 
@@ -31,8 +32,20 @@ const getTeam = async (slug: string, include?: Record<string, any>) => {
       ...include,
     },
   });
+  const openIssues = await prisma.teamIssue.count({
+    where: {
+      teamId: team?.id,
+      status: TeamIssueStatus.OPEN,
+    },
+  });
 
-  return team;
+  return {
+    ...team,
+    _count: {
+      ...team?._count,
+      issues: openIssues,
+    },
+  };
 };
 
 export { getTeam };

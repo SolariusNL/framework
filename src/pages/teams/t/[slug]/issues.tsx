@@ -226,7 +226,12 @@ const TeamViewIssues: React.FC<TeamViewIssuesProps> = ({ user, team }) => {
         </Link>
       </div>
       <div className="flex items-center gap-4 mt-6 mb-6">
-        <Pagination radius="md" total={pages} page={page} onChange={setPage} />
+        <Pagination
+          radius="md"
+          total={pages || 16}
+          page={page}
+          onChange={setPage}
+        />
         <Chip
           classNames={{ label: "px-4" }}
           checked={false}

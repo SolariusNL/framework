@@ -54,6 +54,8 @@ const teamSanitization = {
     "tr",
     "th",
     "td",
+    "pre",
+    "code",
   ],
   allowedAttributes: {
     a: ["href"],
@@ -537,6 +539,117 @@ class TeamsRouter {
     };
   }
 
+  @Post("/:id/staff/:userId")
+  @Authorized()
+  public async inviteStaff(
+    @Account() user: User,
+    @Param("id") id: string,
+    @Param("userId") userId: number
+  ) {
+    const team = await prisma.team.findFirst({
+      where: {
+        id,
+      },
+      include: {
+        staff: { select: { id: true } },
+        owner: true,
+      },
+    });
+
+    if (!team) {
+      throw new BadRequestException("Team does not exist");
+    }
+
+    if (team.ownerId !== user.id) {
+      throw new BadRequestException("You are not the owner of this team");
+    }
+
+    if (team.staff.some((m) => m.id === userId)) {
+      throw new BadRequestException("User is already staff");
+    }
+
+    await prisma.team.update({
+      where: {
+        id,
+      },
+      data: {
+        staff: {
+          connect: {
+            id: Number(userId),
+          },
+        },
+      },
+    });
+
+    await Teams.createAuditLog(
+      TeamAuditLogType.UPDATE_INVITED_USERS,
+      [{ key: "New staff", value: `Staff invited with ID ${userId}` }],
+      "A new staff member was invited to the team",
+      user.id,
+      team.id
+    );
+
+    return {
+      success: true,
+    };
+  }
+
+  @Delete("/:id/staff/:userId")
+  @Authorized()
+  public async removeStaff(
+    @Account() user: User,
+    @Param("id") id: string,
+    @Param("userId") userId: number
+  ) {
+    const team = await prisma.team.findFirst({
+      where: {
+        id,
+      },
+      include: {
+        staff: { select: { id: true } },
+        owner: true,
+      },
+    });
+
+    if (!team) {
+      throw new BadRequestException("Team does not exist");
+    }
+
+    if (team.ownerId !== user.id) {
+      throw new BadRequestException("You are not the owner of this team");
+    }
+
+    await prisma.team.update({
+      where: {
+        id,
+      },
+      data: {
+        staff: {
+          disconnect: {
+            id: Number(userId),
+          },
+        },
+      },
+    });
+
+    await Teams.createAuditLog(
+      TeamAuditLogType.UPDATE_INVITED_USERS,
+      [
+        {
+          key: "Removed staff",
+          value: `Staff role revoked for user with ID ${userId}`,
+        },
+      ],
+      "Staff role for a user was revoked",
+      user.id,
+      team.id
+    );
+
+    return {
+      success: true,
+    };
+  }
+
   @Get("/:id/invited")
   @Authorized()
   public async getInvited(@Account() user: User, @Param("id") id: string) {
@@ -571,6 +684,37 @@ class TeamsRouter {
     }
 
     return team.invited;
+  }
+
+  @Get("/:id/staff")
+  @Authorized()
+  public async getStaff(@Account() user: User, @Param("id") id: string) {
+    const team = await prisma.team.findFirst({
+      where: {
+        id,
+      },
+      include: {
+        staff: {
+          select: {
+            avatarUri: true,
+            username: true,
+            id: true,
+          },
+        },
+      },
+    });
+
+    if (!team) {
+      throw new BadRequestException("Team does not exist");
+    }
+
+    if (team.ownerId !== user.id) {
+      if (!team.staff.some((s) => s.id === user.id)) {
+        throw new BadRequestException("You are not the owner of this team");
+      }
+    }
+
+    return team.staff;
   }
 
   @Get("/:tid/audit/:page")

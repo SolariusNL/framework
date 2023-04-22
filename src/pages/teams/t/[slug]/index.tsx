@@ -8,7 +8,7 @@ import {
   Text,
   Title,
   Tooltip,
-  useMantineTheme
+  useMantineTheme,
 } from "@mantine/core";
 import { useClipboard } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
@@ -32,7 +32,7 @@ import {
   HiMail,
   HiOfficeBuilding,
   HiUsers,
-  HiViewGrid
+  HiViewGrid,
 } from "react-icons/hi";
 import { TeamType } from "../..";
 import Markdown, { ToolbarItem } from "../../../../components/Markdown";
@@ -321,91 +321,76 @@ const TeamView: React.FC<TeamViewProps> = ({ user, team: teamInitial }) => {
         </ShadedCard>
       )}
       <ShadedCard>
-        <div className="flex flex-col md:flex-row gap-4 md:gap-8">
-          <div className="flex flex-col w-full md:w-1/3 gap-2">
-            {[
-              {
-                tooltip: "Cake day",
-                icon: HiCake,
-                value: `Joined ${new Date(
-                  team.cakeDay as Date
-                ).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                })}`,
-              },
-              {
-                tooltip: "Members",
-                icon: HiUsers,
-                value: `${team._count.members + 1} members`,
-              },
-              {
-                tooltip: "Games",
-                icon: HiViewGrid,
-                value: `${team._count.games} games`,
-              },
-              {
-                tooltip: "Open issues",
-                icon: HiExclamationCircle,
-                value: "0 open issues",
-              },
-              {
-                tooltip: "Contact email",
-                icon: HiMail,
-                value: team.email || "Unprovided",
-              },
-              {
-                tooltip: "Website",
-                icon: HiGlobe,
-                value: team.website || "Unprovided",
-              },
-              {
-                tooltip: "Based in",
-                icon: HiOfficeBuilding,
-                value: team.location || "Unprovided",
-              },
-              {
-                tooltip: "Timezone",
-                icon: HiClock,
-                value: team.timezone || "Unprovided",
-              },
-            ].map(({ tooltip, icon: Icon, value }) => (
-              <Tooltip
-                label={`${tooltip}: ${value}`}
-                key={tooltip}
-                withinPortal
-              >
-                <div className="flex items-center gap-3">
-                  <Icon color={colors.gray[5]} className="flex-shrink-0" />
-                  <Text
-                    weight={500}
-                    color="dimmed"
-                    className="break-words"
-                    lineClamp={1}
-                  >
-                    {value.startsWith("http") ? (
-                      <Anchor href={value} target="_blank" rel="noreferrer">
-                        {value}
-                      </Anchor>
-                    ) : (
-                      value
-                    )}
-                  </Text>
-                </div>
-              </Tooltip>
-            ))}
-          </div>
-          <div className="flex flex-col w-full md:w-2/3">
-            <Text weight={500} color="dimmed" mb="sm">
-              Description
-            </Text>
-            <RenderMarkdown>
-              {team.description || "No description provided."}
-            </RenderMarkdown>
-          </div>
-        </div>
+        <Text weight={500} color="dimmed" mb="sm">
+          Description
+        </Text>
+        <RenderMarkdown>
+          {team.description || "No description provided."}
+        </RenderMarkdown>
       </ShadedCard>
+      <div className="grid grid-cols-1 md:grid-cols-3 sm:grid-cols-2 gap-3 gap-y-6 mt-6">
+        {[
+          {
+            tooltip: "Cake day",
+            icon: <HiCake />,
+            value: `Joined ${new Date(team.cakeDay as Date).toLocaleDateString(
+              "en-US",
+              {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              }
+            )}`,
+          },
+          {
+            tooltip: "Members",
+            icon: <HiUsers />,
+            value: `${team._count.members + 1} members`,
+          },
+          {
+            tooltip: "Games",
+            icon: <HiViewGrid />,
+            value: `${team._count.games} games`,
+          },
+          {
+            tooltip: "Open issues",
+            icon: <HiExclamationCircle />,
+            value: team._count.issues + " open issue(s)",
+          },
+          {
+            tooltip: "Contact email",
+            icon: <HiMail />,
+            value: team.email || "Unprovided",
+          },
+          {
+            tooltip: "Website",
+            icon: <HiGlobe />,
+            value: team.website || "Unprovided",
+          },
+          {
+            tooltip: "Based in",
+            icon: <HiOfficeBuilding />,
+            value: team.location || "Unprovided",
+          },
+          {
+            tooltip: "Timezone",
+            icon: <HiClock />,
+            value: team.timezone || "Unprovided",
+          },
+        ].map(({ tooltip, icon, value }) => (
+          <div className="flex flex-col gap-2 items-center" key={tooltip}>
+            <div className="flex items-center gap-2">
+              <div className="text-gray-400 flex items-center">{icon}</div>
+              <Text size="sm" color="dimmed">
+                {tooltip}
+              </Text>
+            </div>
+            <Text size="sm" weight={500} align="center">
+              {value}
+            </Text>
+          </div>
+        ))}
+      </div>
     </TeamsViewProvider>
   );
 };
