@@ -155,6 +155,10 @@ const Domains: React.FC<DomainsProps> = ({ user }) => {
               message: "Your domain has been successfully verified.",
               icon: <HiCheckCircle />,
             });
+            setSelectedDomain({
+              ...selectedDomain,
+              status: DomainStatus.GENERATING_CERTIFICATE,
+            } as Domain);
           } else {
             setTxtError(res.message || "An unknown error occurred.");
             setTimeout(() => {
