@@ -132,7 +132,10 @@ const ChecklistTask = ({
       },
     })
       .then(() => {
-        fetchChecklists();
+        setCurrentChecklist((prev: any) => ({
+          ...prev,
+          items: prev.items.filter((item: any) => item.id !== id),
+        }));
       })
       .catch((err) => {
         console.error(err);
@@ -140,6 +143,7 @@ const ChecklistTask = ({
   };
 
   const updateTask = async (id: string, data: ChecklistTaskUpdateBody) => {
+    setTaskState((prev) => ({ ...prev, ...data }));
     await fetch(`/api/checklists/${currentChecklist.id}/tasks/${id}/update`, {
       method: "POST",
       headers: {
@@ -313,7 +317,9 @@ const ChecklistTask = ({
           >
             <Descriptive
               title={taskState.name}
-              description={taskState.description}
+              description={
+                <span className="line-clamp-2">{taskState.description}</span>
+              }
             >
               <Checkbox
                 label="Completed"

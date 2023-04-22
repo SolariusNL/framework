@@ -163,7 +163,11 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
         setConversating(
           friends.find((friend) => friend.id === currentConversation) as NonUser
         );
-        setConversationOpen(true);
+        if (friends.find((friend) => friend.id === currentConversation)) {
+          setConversationOpen(true);
+        } else {
+          setConversationOpen(false);
+        }
       }
     });
     getUnreadMessages();
@@ -268,6 +272,14 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
           active={conversating?.id === friend.id}
         />
       ))}
+      {friends.length == 0 && (
+        <ShadedCard>
+          <ModernEmptyState
+            title="No friends yet"
+            body="Search for friends to chat with!"
+          />
+        </ShadedCard>
+      )}
     </Stack>
   );
 

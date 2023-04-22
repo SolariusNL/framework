@@ -1,13 +1,11 @@
 import {
   ActionIcon,
-  Anchor,
   Avatar,
   Button,
   Menu,
   Modal,
   Text,
   Title,
-  Tooltip,
   useMantineTheme,
 } from "@mantine/core";
 import { useClipboard } from "@mantine/hooks";
@@ -35,6 +33,7 @@ import {
   HiViewGrid,
 } from "react-icons/hi";
 import { TeamType } from "../..";
+import DataGrid from "../../../../components/DataGrid";
 import Markdown, { ToolbarItem } from "../../../../components/Markdown";
 import Owner from "../../../../components/Owner";
 import RenderMarkdown, { parse } from "../../../../components/RenderMarkdown";
@@ -328,8 +327,11 @@ const TeamView: React.FC<TeamViewProps> = ({ user, team: teamInitial }) => {
           {team.description || "No description provided."}
         </RenderMarkdown>
       </ShadedCard>
-      <div className="grid grid-cols-1 md:grid-cols-3 sm:grid-cols-2 gap-3 gap-y-6 mt-6">
-        {[
+      <DataGrid
+        mdCols={3}
+        smCols={2}
+        defaultCols={1}
+        items={[
           {
             tooltip: "Cake day",
             icon: <HiCake />,
@@ -377,20 +379,8 @@ const TeamView: React.FC<TeamViewProps> = ({ user, team: teamInitial }) => {
             icon: <HiClock />,
             value: team.timezone || "Unprovided",
           },
-        ].map(({ tooltip, icon, value }) => (
-          <div className="flex flex-col gap-2 items-center" key={tooltip}>
-            <div className="flex items-center gap-2">
-              <div className="text-gray-400 flex items-center">{icon}</div>
-              <Text size="sm" color="dimmed">
-                {tooltip}
-              </Text>
-            </div>
-            <Text size="sm" weight={500} align="center">
-              {value}
-            </Text>
-          </div>
-        ))}
-      </div>
+        ]}
+      />
     </TeamsViewProvider>
   );
 };

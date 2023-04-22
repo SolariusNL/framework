@@ -1,7 +1,17 @@
-import { Button, Modal, Stack, Text, Textarea, TextInput } from "@mantine/core";
+import {
+  Button,
+  Modal,
+  Stack,
+  Text,
+  Textarea,
+  TextInput,
+  useMantineColorScheme,
+} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/router";
+import Rocket from "../../icons/Rocket";
+import { BLACK } from "../../pages/teams/t/[slug]/issue/create";
 
 interface CreateChecklistProps {
   opened: boolean;
@@ -56,8 +66,9 @@ const CreateChecklist = ({ opened, setOpened }: CreateChecklistProps) => {
       title="Create checklist"
       opened={opened}
       onClose={() => setOpened(false)}
+      className={useMantineColorScheme().colorScheme === "dark" ? "dark" : ""}
     >
-      <Text mb={16}>
+      <Text mb={16} size="sm" color="dimmed">
         Create a checklist to keep track of your progress on a project.
       </Text>
       <form onSubmit={createForm.onSubmit(() => createChecklist())}>
@@ -65,15 +76,25 @@ const CreateChecklist = ({ opened, setOpened }: CreateChecklistProps) => {
           <TextInput
             label="Name"
             description="The name of your checklist"
+            required
+            placeholder="My checklist"
+            classNames={BLACK}
             {...createForm.getInputProps("name")}
           />
           <Textarea
             label="Description"
             description="The description of your checklist"
+            required
+            placeholder="Contains all the tasks I need to complete for this month"
+            classNames={BLACK}
             {...createForm.getInputProps("description")}
           />
         </Stack>
-        <Button type="submit">Create</Button>
+        <div className="flex justify-end">
+          <Button type="submit" leftIcon={<Rocket />}>
+            Create
+          </Button>
+        </div>
       </form>
     </Modal>
   );

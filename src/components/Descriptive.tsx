@@ -3,7 +3,7 @@ import { Group, Stack, Text } from "@mantine/core";
 interface DescriptiveProps {
   children: React.ReactNode;
   title: string;
-  description: string;
+  description: string | React.ReactNode;
   required?: boolean;
   className?: string;
 }

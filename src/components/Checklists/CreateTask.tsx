@@ -5,11 +5,15 @@ import {
   Stack,
   Textarea,
   TextInput,
+  useMantineColorScheme,
 } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
 import { useForm } from "@mantine/form";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/router";
+import { HiCalendar, HiTag } from "react-icons/hi";
+import Rocket from "../../icons/Rocket";
+import { BLACK } from "../../pages/teams/t/[slug]/issue/create";
 
 interface CreateTaskProps {
   opened: boolean;
@@ -72,17 +76,28 @@ const CreateTask = ({
   };
 
   return (
-    <Modal title="Create task" opened={opened} onClose={() => setOpened(false)}>
+    <Modal
+      title="Create task"
+      opened={opened}
+      onClose={() => setOpened(false)}
+      className={useMantineColorScheme().colorScheme === "dark" ? "dark" : ""}
+    >
       <form onSubmit={createTaskForm.onSubmit(() => createTask())}>
         <Stack spacing={12} mb={24}>
           <TextInput
             label="Name"
             description="Name of the task"
+            classNames={BLACK}
+            required
+            placeholder="Do something"
             {...createTaskForm.getInputProps("name")}
           />
           <Textarea
             label="Description"
             description="Describe what you want to accomplish"
+            classNames={BLACK}
+            placeholder="I want to do something, but I don't know what"
+            required
             {...createTaskForm.getInputProps("description")}
           />
           <DatePicker
@@ -91,6 +106,9 @@ const CreateTask = ({
             {...createTaskForm.getInputProps("schedule")}
             description="When do you want this to be done by?"
             dropdownType="modal"
+            required
+            classNames={BLACK}
+            icon={<HiCalendar />}
           />
           <MultiSelect
             label="Tags"
@@ -100,10 +118,17 @@ const CreateTask = ({
             getCreateLabel={(query) => `+ Create ${query}`}
             data={existingtags || []}
             description="Tags are used to categorize tasks and contribute to organization"
+            required
+            icon={<HiTag />}
+            classNames={BLACK}
             {...createTaskForm.getInputProps("tags")}
           />
         </Stack>
-        <Button type="submit">Create</Button>
+        <div className="flex justify-end">
+          <Button type="submit" leftIcon={<Rocket />}>
+            Create
+          </Button>
+        </div>
       </form>
     </Modal>
   );

@@ -9,11 +9,11 @@ import {
   NavLink,
   Text,
   Title,
-  Tooltip,
 } from "@mantine/core";
 import { ChecklistItem, Prisma } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import {
   HiCheck,
@@ -24,19 +24,20 @@ import {
   HiFilter,
   HiPlusCircle,
   HiSortAscending,
+  HiTable,
   HiViewGrid,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import CreateChecklist from "../components/Checklists/CreateChecklist";
 import CreateTask from "../components/Checklists/CreateTask";
 import ChecklistTask from "../components/Checklists/Task";
+import DataGrid from "../components/DataGrid";
 import Descriptive from "../components/Descriptive";
 import Framework from "../components/Framework";
 import ModernEmptyState from "../components/ModernEmptyState";
 import ShadedCard from "../components/ShadedCard";
 import SidebarTabNavigation from "../layouts/SidebarTabNavigation";
 import authorizedRoute from "../util/auth";
-import useMediaQuery from "../util/media-query";
 import prisma from "../util/prisma";
 import { User } from "../util/prisma-types";
 
@@ -65,6 +66,7 @@ const Checklists: NextPage<ChecklistsProps> = ({ user, checklistData }) => {
   const [active, setActive] = useState("");
   const [currentChecklist, setCurrentChecklist] =
     useState<ChecklistWithTasks | null>(null);
+  const router = useRouter();
   const [createChecklistOpen, setCreateChecklistOpen] = useState(false);
   const [createTaskOpen, setCreateTaskOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -72,7 +74,6 @@ const Checklists: NextPage<ChecklistsProps> = ({ user, checklistData }) => {
   const [display, setDisplay] = useState<"cards" | "list">("cards");
   const [tagFilter, setTagFilter] = useState<string[]>([]);
   const [showOverdue, setShowOverdue] = useState(false);
-  const mobile = useMediaQuery("768");
 
   const sortByLabel = (sort: SortBy) => {
     switch (sort) {
@@ -114,6 +115,13 @@ const Checklists: NextPage<ChecklistsProps> = ({ user, checklistData }) => {
         setActive(checklists[0].id);
         setCurrentChecklist(checklists[0]);
       }
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get("id");
+    if (id) {
+      setActive(id);
+      setCurrentChecklist(checklists?.find((item) => item.id === id) || null);
     }
   }, []);
 
@@ -188,9 +196,21 @@ const Checklists: NextPage<ChecklistsProps> = ({ user, checklistData }) => {
                       onClick={() => {
                         setActive(item.id);
                         setCurrentChecklist(item);
+                        router.push(
+                          {
+                            pathname: "/checklists",
+                            query: { id: item.id },
+                          },
+                          undefined,
+                          {
+                            shallow: true,
+                          }
+                        );
                       }}
-                      description={item.description.substring(0, 78) + "..."}
-                      icon={<HiCheck />}
+                      description={
+                        <span className="line-clamp-2">{item.description}</span>
+                      }
+                      icon={<HiTable />}
                       className="rounded-md h-fit"
                     />
                   ))}
@@ -221,61 +241,44 @@ const Checklists: NextPage<ChecklistsProps> = ({ user, checklistData }) => {
                     {currentChecklist?.name}
                   </Title>
                   <Text mb={24}>{currentChecklist?.description}</Text>
-                  <div
-                    style={{
-                      marginBottom: 24,
-                      display: "flex",
-                    }}
-                  >
-                    {[
+                  <DataGrid
+                    mdCols={2}
+                    smCols={2}
+                    defaultCols={1}
+                    className="mb-6"
+                    items={[
                       {
-                        label: "Created",
+                        tooltip: "Created",
                         value: new Date(
                           currentChecklist?.createdAt as Date
                         ).toLocaleDateString(),
-                        icon: HiClock,
+                        icon: <HiClock />,
                       },
                       {
-                        label: "Tasks",
-                        value: currentChecklist?.items.length,
-                        icon: HiCheckCircle,
+                        tooltip: "Tasks",
+                        value: String(currentChecklist?.items.length),
+                        icon: <HiCheckCircle />,
                       },
                       {
-                        label: "Completed",
-                        value: currentChecklist?.items.filter(
-                          (item) => item.completed
-                        ).length,
-                        icon: HiClipboardCheck,
+                        tooltip: "Completed",
+                        value: String(
+                          currentChecklist?.items.filter(
+                            (item) => item.completed
+                          ).length
+                        ),
+                        icon: <HiClipboardCheck />,
                       },
                       {
-                        label: "Incomplete",
-                        value: currentChecklist?.items.filter(
-                          (item) => !item.completed
-                        ).length,
-                        icon: HiClipboardList,
+                        tooltip: "Incomplete",
+                        value: String(
+                          currentChecklist?.items.filter(
+                            (item) => !item.completed
+                          ).length
+                        ),
+                        icon: <HiClipboardList />,
                       },
-                    ].map((item) => (
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          textAlign: "center",
-                          flex: 1,
-                          gap: 8,
-                        }}
-                        key={item.label}
-                      >
-                        <>
-                          <item.icon size={20} />
-                          <Tooltip label={item.label}>
-                            <Text color="dimmed">{item.value}</Text>
-                          </Tooltip>
-                        </>
-                      </div>
-                    ))}
-                  </div>
+                    ]}
+                  />
 
                   <Group mb={24}>
                     <Button.Group>
@@ -286,27 +289,24 @@ const Checklists: NextPage<ChecklistsProps> = ({ user, checklistData }) => {
                           </Button>
                         </Menu.Target>
                         <Menu.Dropdown>
-                          <Menu.Item
-                            closeMenuOnClick={false}
-                            rightSection={
-                              <MultiSelect
-                                label="Tags"
-                                description="Filter by tags"
-                                placeholder="Create tags for this task"
-                                searchable
-                                data={
-                                  currentChecklist?.items
-                                    .map((item) => item.tags)
-                                    .flat()
-                                    .filter((tag, index, self) => {
-                                      return self.indexOf(tag) === index;
-                                    }) ?? []
-                                }
-                                value={tagFilter}
-                                onChange={(value) => setTagFilter(value)}
-                              />
-                            }
-                          ></Menu.Item>
+                          <Menu.Item closeMenuOnClick={false}>
+                            <MultiSelect
+                              label="Tags"
+                              description="Filter by tags"
+                              placeholder="Create tags for this task"
+                              searchable
+                              data={
+                                currentChecklist?.items
+                                  .map((item) => item.tags)
+                                  .flat()
+                                  .filter((tag, index, self) => {
+                                    return self.indexOf(tag) === index;
+                                  }) ?? []
+                              }
+                              value={tagFilter}
+                              onChange={(value) => setTagFilter(value)}
+                            />
+                          </Menu.Item>
 
                           <Menu.Item closeMenuOnClick={false}>
                             <Descriptive
