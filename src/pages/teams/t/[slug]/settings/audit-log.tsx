@@ -1,21 +1,15 @@
-import {
-  Divider,
-  Group,
-  Pagination,
-  ScrollArea,
-  Select,
-  Text,
-  Title,
-} from "@mantine/core";
+import { Group, Pagination, Select, Text, Title } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { Rating, TeamAuditLog, TeamAuditLogType } from "@prisma/client";
 import { getCookie } from "cookies-next";
+import { AnimatePresence, motion } from "framer-motion";
 import { GetServerSideProps } from "next";
 import React, { forwardRef, useEffect, useState } from "react";
 import { HiGlobe, HiXCircle } from "react-icons/hi";
 import { IconType } from "react-icons/lib";
 import { TeamType } from "../../..";
 import ModernEmptyState from "../../../../../components/ModernEmptyState";
+import Owner from "../../../../../components/Owner";
 import ShadedCard from "../../../../../components/ShadedCard";
 import Stateful from "../../../../../components/Stateful";
 import TeamsViewProvider from "../../../../../components/Teams/TeamsView";
@@ -24,8 +18,6 @@ import authorizedRoute from "../../../../../util/auth";
 import clsx from "../../../../../util/clsx";
 import { NonUser, User } from "../../../../../util/prisma-types";
 import { getTeam } from "../../../../../util/teams";
-import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
-import Owner from "../../../../../components/Owner";
 
 const headers = {
   "Content-Type": "application/json",
@@ -292,7 +284,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     };
   }
   if (team.ownerId !== auth.props.user?.id) {
-    if (!team.staff.find((s) => s.id === auth.props.user?.id)) {
+    if (!team.staff?.find((s) => s.id === auth.props.user?.id)) {
       return {
         redirect: {
           destination: "/404",
