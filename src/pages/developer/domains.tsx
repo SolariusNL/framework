@@ -1,6 +1,7 @@
 import {
   ActionIcon,
   Alert,
+  Anchor,
   Badge,
   Button,
   Menu,
@@ -11,6 +12,7 @@ import {
   Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import { Domain, DomainStatus } from "@prisma/client";
 import { AnimatePresence, motion } from "framer-motion";
@@ -18,15 +20,21 @@ import { GetServerSidePropsContext } from "next";
 import { ReactNode, useEffect, useState } from "react";
 import {
   HiArrowLeft,
+  HiArrowRight,
   HiCheck,
   HiCheckCircle,
   HiCog,
   HiDocumentText,
   HiDotsVertical,
   HiGlobe,
+  HiHashtag,
   HiPlusCircle,
+  HiTrash,
   HiXCircle,
 } from "react-icons/hi";
+import Copy from "../../components/Copy";
+import DataGrid from "../../components/DataGrid";
+import Dot from "../../components/Dot";
 import { Section } from "../../components/Home/FriendsWidget";
 import ModernEmptyState from "../../components/ModernEmptyState";
 import ShadedButton from "../../components/ShadedButton";
@@ -35,10 +43,10 @@ import Developer from "../../layouts/DeveloperLayout";
 import SidebarTabNavigation from "../../layouts/SidebarTabNavigation";
 import IResponseBase from "../../types/api/IResponseBase";
 import authorizedRoute from "../../util/auth";
+import clsx from "../../util/clsx";
 import fetchJson from "../../util/fetch";
 import { User } from "../../util/prisma-types";
 import { BLACK } from "../teams/t/[slug]/issue/create";
-import clsx from "../../util/clsx";
 
 type DomainsProps = {
   user: User;
@@ -124,9 +132,17 @@ const Domains: React.FC<DomainsProps> = ({ user }) => {
       method: "POST",
     }).then((res) => {
       if (res.success) {
-        fetchDomains();
-        setActiveTab(SidebarValue.Domains);
-        form.reset();
+        fetchDomains().then(() => {
+          showNotification({
+            title: "Success",
+            message: "Your domain has been successfully created.",
+            icon: <HiCheckCircle />,
+          });
+
+          setActiveTab(SidebarValue.Domains);
+          setSelectedDomain(undefined);
+          form.reset();
+        });
       } else {
         showNotification({
           title: "Error",
@@ -176,6 +192,32 @@ const Domains: React.FC<DomainsProps> = ({ user }) => {
         })
         .finally(() => setLoadingOwnership(false));
     }
+  };
+
+  const deleteDomain = async (domain: string) => {
+    await fetchJson<IResponseBase>("/api/domains/delete", {
+      method: "DELETE",
+      body: {
+        domain: String(domain),
+      },
+      auth: true,
+    }).then((res) => {
+      if (res.success) {
+        showNotification({
+          title: "Success",
+          message: "Your domain has been successfully deleted.",
+          icon: <HiCheckCircle />,
+        });
+        fetchDomains();
+      } else {
+        showNotification({
+          title: "Error",
+          message: `Your domain couldn't be deleted. Error: ${res.message}`,
+          color: "red",
+          icon: <HiXCircle />,
+        });
+      }
+    });
   };
 
   useEffect(() => {
@@ -237,29 +279,29 @@ const Domains: React.FC<DomainsProps> = ({ user }) => {
                             key={i}
                             onClick={() => setSelectedDomain(d)}
                           >
-                            <Badge
-                              radius="md"
-                              color={
-                                d.status === DomainStatus.UNVERIFIED
-                                  ? "red"
-                                  : DomainStatus.VERIFIED
-                                  ? "orange"
-                                  : DomainStatus.GENERATING_CERTIFICATE
-                                  ? "yellow"
-                                  : "green"
-                              }
-                              className="cursor-pointer"
-                            >
-                              {d.status === DomainStatus.UNVERIFIED
-                                ? "Unverified"
-                                : DomainStatus.VERIFIED
-                                ? "Verified"
-                                : DomainStatus.GENERATING_CERTIFICATE
-                                ? "Generating Certificate"
-                                : DomainStatus.COMPLETE && "Verified"}
-                            </Badge>
+                            <div className="flex w-full justify-between items-center">
+                              <Badge
+                                radius="md"
+                                color={
+                                  d.status === DomainStatus.UNVERIFIED
+                                    ? "red"
+                                    : DomainStatus.VERIFIED && "green"
+                                }
+                                className="cursor-pointer"
+                              >
+                                {d.status === DomainStatus.UNVERIFIED
+                                  ? "Unverified"
+                                  : DomainStatus.VERIFIED && "Verified"}
+                              </Badge>
+                              <div className="text-gray-400">
+                                <HiArrowRight />
+                              </div>
+                            </div>
                             <Text size="lg" className="flex items-center gap-2">
                               {d.domain}
+                            </Text>
+                            <Text size="sm" color="dimmed">
+                              {d.id.split("-").shift()}
                             </Text>
                           </ShadedButton>
                         ))
@@ -305,17 +347,17 @@ const Domains: React.FC<DomainsProps> = ({ user }) => {
                     </div>
                     <div className="flex items-center gap-4">
                       <Badge
-                        size="lg"
                         radius="md"
+                        size="lg"
                         color={
-                          selectedDomain.status === DomainStatus.COMPLETE
-                            ? "green"
-                            : "red"
+                          selectedDomain.status === DomainStatus.UNVERIFIED
+                            ? "red"
+                            : DomainStatus.VERIFIED && "green"
                         }
                       >
-                        {selectedDomain.status === DomainStatus.COMPLETE
-                          ? "Verified"
-                          : "Unverified"}
+                        {selectedDomain.status === DomainStatus.UNVERIFIED
+                          ? "Unverified"
+                          : DomainStatus.VERIFIED && "Verified"}
                       </Badge>
                       <Menu width={180}>
                         <Menu.Target>
@@ -323,7 +365,46 @@ const Domains: React.FC<DomainsProps> = ({ user }) => {
                             <HiDotsVertical />
                           </ActionIcon>
                         </Menu.Target>
-                        <Menu.Dropdown></Menu.Dropdown>
+                        <Menu.Dropdown>
+                          <Menu.Item
+                            onClick={() => {
+                              setSelectedDomain(undefined);
+                            }}
+                            icon={<HiArrowLeft />}
+                          >
+                            Back to domains
+                          </Menu.Item>
+                          <Menu.Item
+                            onClick={() => {
+                              openConfirmModal({
+                                title: "Delete domain",
+                                children: (
+                                  <Text size="sm" color="dimmed">
+                                    Are you sure you want to delete this domain?
+                                    This action is irreversible. Verification
+                                    status will be lost!
+                                  </Text>
+                                ),
+                                labels: {
+                                  confirm: "Delete",
+                                  cancel: "Cancel",
+                                },
+                                confirmProps: {
+                                  color: "red",
+                                  leftIcon: <HiTrash />,
+                                },
+                                onConfirm: () => {
+                                  setSelectedDomain(undefined);
+                                  deleteDomain(selectedDomain.domain);
+                                },
+                              });
+                            }}
+                            icon={<HiTrash />}
+                            color="red"
+                          >
+                            Delete domain
+                          </Menu.Item>
+                        </Menu.Dropdown>
                       </Menu>
                     </div>
                   </div>
@@ -337,8 +418,11 @@ const Domains: React.FC<DomainsProps> = ({ user }) => {
                       <Text color="dimmed" size="sm" mb="lg">
                         Please note that DNS changes may take up to 24 hours to
                         propagate. Once your DNS record has been updated, click
-                        the &quot;Verify&quot; to complete the verification
-                        process.
+                        the{" "}
+                        <span className="font-semibold">
+                          &quot;Verify ownership&quot;
+                        </span>{" "}
+                        button to complete the verification process.
                       </Text>
                       <div className="grid md:grid-cols-2 gap-4 grid-cols-1">
                         <TextInput
@@ -348,6 +432,10 @@ const Domains: React.FC<DomainsProps> = ({ user }) => {
                           value="TXT"
                           label="DNS record type"
                           description="Create a TXT record to verify ownership of this domain. No other type is supported."
+                          onClick={(
+                            e: React.MouseEvent<HTMLDivElement, MouseEvent> &
+                              React.FocusEvent<HTMLInputElement>
+                          ) => e.target.select()}
                         />
                         <TextInput
                           icon={<HiDocumentText />}
@@ -356,6 +444,10 @@ const Domains: React.FC<DomainsProps> = ({ user }) => {
                           value={selectedDomain.domain}
                           label="Record name"
                           description="The name of the TXT record must be the domain you are verifying."
+                          onClick={(
+                            e: React.MouseEvent<HTMLDivElement, MouseEvent> &
+                              React.FocusEvent<HTMLInputElement>
+                          ) => e.target.select()}
                         />
                       </div>
                       <TextInput
@@ -365,6 +457,10 @@ const Domains: React.FC<DomainsProps> = ({ user }) => {
                         value={`fw-verification=${selectedDomain.txtRecord}`}
                         required
                         mt="sm"
+                        onClick={(
+                          e: React.MouseEvent<HTMLDivElement, MouseEvent> &
+                            React.FocusEvent<HTMLInputElement>
+                        ) => e.target.select()}
                       />
                       <div className="mt-5 flex justify-between">
                         <Alert
@@ -385,7 +481,50 @@ const Domains: React.FC<DomainsProps> = ({ user }) => {
                       </div>
                     </>
                   ) : (
-                    <></>
+                    <>
+                      <DataGrid
+                        items={[
+                          {
+                            tooltip: "Domain",
+                            value: (
+                              <Anchor href={`https://${selectedDomain.domain}`}>
+                                {selectedDomain.domain}
+                              </Anchor>
+                            ),
+                            icon: <HiGlobe />,
+                          },
+                          {
+                            tooltip: "Status",
+                            icon: <HiCheckCircle />,
+                            value: (
+                              <div className="flex items-center gap-2">
+                                <Dot
+                                  color="green"
+                                  classNames={{
+                                    pulsar: "w-2 h-2",
+                                    dot: "w-2 h-2",
+                                  }}
+                                  pulse
+                                />
+                                <span>Verified</span>
+                              </div>
+                            ),
+                          },
+                          {
+                            tooltip: "ID",
+                            icon: <HiHashtag />,
+                            value: (
+                              <div className="flex items-center gap-2">
+                                <Copy value={selectedDomain.id} />
+                                <span>
+                                  {selectedDomain.id.split("-").shift()}...
+                                </span>
+                              </div>
+                            ),
+                          },
+                        ]}
+                      />
+                    </>
                   )}
                 </motion.div>
               )}
@@ -398,14 +537,14 @@ const Domains: React.FC<DomainsProps> = ({ user }) => {
                 description="Fill out the fields below to add a new domain to your account."
               />
               <Text size="sm" color="dimmed" mb="lg">
-                You cannot use apex domains as they pose a security risk of
-                domain takeover. You must use a subdomain.
+                Note that this may be a long process, and it may take up to 24
+                hours for your domain to be verified due to DNS propagation.
               </Text>
               <form onSubmit={form.onSubmit((values) => createDomain(values))}>
                 <div className="grid md:grid-cols-2 gap-4 grid-cols-1">
                   <TextInput
                     label="Domain"
-                    description="Your domain must include a subdomain."
+                    description="The domain you want to add to your account."
                     placeholder="docs.soodam.rocks"
                     required
                     classNames={BLACK}

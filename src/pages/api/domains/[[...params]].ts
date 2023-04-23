@@ -1,6 +1,7 @@
 import { DomainStatus } from "@prisma/client";
 import {
   Body,
+  Delete,
   Get,
   Post,
   createHandler,
@@ -15,7 +16,10 @@ import type { User } from "../../../util/prisma-types";
 const domainSchema = z.object({
   domain: z
     .string()
-    .regex(/^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$/, "Must be a valid domain"),
+    // can be apex, or subdomain doesn't matter
+    .regex(
+      /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$/
+    ),
 });
 
 class DomainRouter {
@@ -152,6 +156,46 @@ class DomainRouter {
         domains,
       },
     };
+  }
+
+  @Delete("/delete")
+  @Authorized()
+  public async deleteDomain(@Account() user: User, @Body() body: unknown) {
+    const data = domainSchema.safeParse(body);
+
+    if (data.success) {
+      const { domain } = data.data;
+      const match = await prisma.domain.findFirst({
+        where: {
+          user: {
+            id: user.id,
+          },
+          domain,
+        },
+      });
+
+      if (!match) {
+        return {
+          success: false,
+          message: "No domain found",
+        };
+      }
+
+      await prisma.domain.delete({
+        where: {
+          id: match.id,
+        },
+      });
+
+      return {
+        success: true,
+      };
+    } else {
+      return {
+        success: false,
+        message: data.error,
+      };
+    }
   }
 }
 

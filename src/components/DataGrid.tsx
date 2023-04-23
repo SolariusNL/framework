@@ -4,7 +4,7 @@ import clsx from "../util/clsx";
 type DataGridItem = {
   tooltip: string;
   icon: JSX.Element;
-  value: string;
+  value: string | React.ReactNode;
 };
 
 type DataGridProps = {
