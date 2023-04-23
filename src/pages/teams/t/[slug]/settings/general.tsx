@@ -342,7 +342,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     };
   }
   if (team.ownerId !== auth.props.user?.id) {
-    if (!team.staff.find((s) => s.id === auth.props.user?.id)) {
+    if (!team.staff?.find((s) => s.id === auth.props.user?.id)) {
       return {
         redirect: {
           destination: "/404",
