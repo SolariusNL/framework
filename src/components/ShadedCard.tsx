@@ -25,7 +25,6 @@ const ShadedCard = (
             : theme.colors.gray[0],
         overflow: "visible",
       })}
-      withBorder
       {...props}
     >
       {props.title && (
