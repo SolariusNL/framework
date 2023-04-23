@@ -175,6 +175,7 @@ const Domains: React.FC<DomainsProps> = ({ user }) => {
               ...selectedDomain,
               status: DomainStatus.GENERATING_CERTIFICATE,
             } as Domain);
+            fetchDomains();
           } else {
             setTxtError(res.message || "An unknown error occurred.");
             setTimeout(() => {
