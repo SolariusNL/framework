@@ -24,6 +24,10 @@ module.exports = {
           400: "#909296",
           "400-dark": "#868e96",
         },
+        mantine: {
+          "text-dark": "#C1C2C5",
+          text: "#000",
+        },
       },
     },
     fontFamily: {
