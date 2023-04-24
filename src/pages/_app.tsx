@@ -40,7 +40,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import NextNProgress from "nextjs-progressbar";
 import { useEffect, useState } from "react";
-import { HiArrowRight, HiCheckCircle } from "react-icons/hi";
+import { HiArrowRight, HiCheckCircle, HiExclamation } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import "../../flags.config";
 import Descriptive from "../components/Descriptive";
@@ -122,6 +122,10 @@ const Framework = (
     key: "soodam-cookie-consent",
     defaultValue: { accepted: false, rejected: false },
   });
+  const [seenUnknownHost, setSeenUnknownHost] = useLocalStorage<boolean>({
+    key: "@fw/seen-unknown-host",
+    defaultValue: false,
+  });
 
   const router = useRouter();
   const { flags } = useFlags();
@@ -134,6 +138,28 @@ const Framework = (
         icon: <HiCheckCircle size={18} />,
         color: "green",
       });
+    }
+
+    if (
+      typeof window !== "undefined" &&
+      !seenUnknownHost &&
+      window.location.host !== process.env.NEXT_PUBLIC_HOSTNAME
+    ) {
+      if (process.env.NEXT_PUBLIC_ENABLE_HOSTNAME_CHECK !== "true") {
+        return;
+      }
+
+      showNotification({
+        title: "Warning",
+        message:
+          `You are currently connected to ${window.location.host}, ` +
+          `but you are supposed to be connected to ${process.env.NEXT_PUBLIC_HOSTNAME}. ` +
+          "This may result in unexpected behavior.",
+        color: "orange",
+        icon: <HiExclamation />,
+        autoClose: false,
+      });
+      setSeenUnknownHost(true);
     }
   }, []);
 
