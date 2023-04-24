@@ -14,7 +14,7 @@ import authorizedRoute from "../../../../util/auth";
 import clsx from "../../../../util/clsx";
 import getMediaUrl from "../../../../util/get-media";
 import prisma from "../../../../util/prisma";
-import { Game, gameSelect, User } from "../../../../util/prisma-types";
+import { Game, User, gameSelect } from "../../../../util/prisma-types";
 
 interface TransferGameToTeamProps {
   user: User;
@@ -94,13 +94,13 @@ const TransferGameToTeam: React.FC<TransferGameToTeamProps> = ({
                       {team.description.replace(/(<([^>]+)>)/gi, "")}
                     </Text>
                     <div className="flex items-center gap-2">
-                      <HiCake className="text-gray-400" />
+                      <HiCake className="text-dimmed" />
                       <Text size="sm" color="dimmed">
                         {new Date(team.cakeDay).toLocaleDateString()}
                       </Text>
                     </div>
                     <div className="flex items-center gap-2">
-                      <HiUsers className="text-gray-400" />
+                      <HiUsers className="text-dimmed" />
                       <Text size="sm" color="dimmed">
                         {team._count.members + 1} members
                       </Text>

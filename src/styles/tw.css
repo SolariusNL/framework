@@ -1,2 +1,8 @@
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+  .text-dimmed {
+    @apply text-gray-400 dark:text-gray-400-dark;
+  }
+}

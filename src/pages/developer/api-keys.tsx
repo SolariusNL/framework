@@ -189,7 +189,7 @@ const DeveloperAPIKeys: React.FC<DeveloperProps> = ({ user }) => {
               keys.map((key) => (
                 <tr key={key.id}>
                   <td className="font-semibold">{key.name}</td>
-                  <td className="text-gray-400 dark:text-gray-400/75">
+                  <td className="text-dimmed">
                     {new Date(key.createdAt).toLocaleDateString()}
                   </td>
                   <td className="flex items-center gap-2">

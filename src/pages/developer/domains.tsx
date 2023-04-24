@@ -294,7 +294,7 @@ const Domains: React.FC<DomainsProps> = ({ user }) => {
                                   ? "Unverified"
                                   : DomainStatus.VERIFIED && "Verified"}
                               </Badge>
-                              <div className="text-gray-400">
+                              <div className="text-dimmed">
                                 <HiArrowRight />
                               </div>
                             </div>

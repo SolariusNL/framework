@@ -240,7 +240,7 @@ const Comment = ({
             ) : (
               <Text className={classes.body}>
                 {msg.replace(/\s/g, "").length == 0 ? (
-                  <span className="text-gray-400">No content</span>
+                  <span className="text-dimmed">No content</span>
                 ) : (
                   msg
                 )}

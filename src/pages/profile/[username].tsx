@@ -7,8 +7,11 @@ import {
   Title,
   Tooltip,
 } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
+import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { NextSeo } from "next-seo";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import ReactCountryFlag from "react-country-flag";
@@ -29,9 +32,6 @@ import AlphaBadge from "../../components/Badges/Alpha";
 import EmailBadge from "../../components/Badges/Email";
 import PremiumBadge from "../../components/Badges/Premium";
 import TOTPBadge from "../../components/Badges/TOTP";
-import { showNotification } from "@mantine/notifications";
-import { getCookie } from "cookies-next";
-import Link from "next/link";
 import Framework from "../../components/Framework";
 import ThumbnailCarousel from "../../components/ImageCarousel";
 import PlaceholderGameResource from "../../components/PlaceholderGameResource";
@@ -396,7 +396,7 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
                       key={item.title}
                     >
                       <div className="flex items-center gap-2">
-                        <div className="text-gray-400 flex items-center justify-end">
+                        <div className="text-dimmed flex items-center justify-end">
                           {item.icon}
                         </div>
                         <Text size="sm" color="dimmed">

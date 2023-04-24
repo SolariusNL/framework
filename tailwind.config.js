@@ -1,6 +1,7 @@
 const {
   default: flattenColorPalette,
 } = require("tailwindcss/lib/util/flattenColorPalette");
+const { colors } = require("tailwindcss/defaultTheme");
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -17,6 +18,12 @@ module.exports = {
         md: "8px",
         lg: "12px",
         xl: "16px",
+      },
+      colors: {
+        gray: {
+          400: "#909296",
+          "400-dark": "#868e96",
+        },
       },
     },
     fontFamily: {
