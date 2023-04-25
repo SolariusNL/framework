@@ -20,6 +20,7 @@ import SidebarTabNavigation from "../layouts/SidebarTabNavigation";
 import authorizedRoute from "../util/auth";
 import useMediaQuery from "../util/media-query";
 import { User } from "../util/prisma-types";
+import LoadingIndicator from "../components/LoadingIndicator";
 
 interface HomeProps {
   user: User;
