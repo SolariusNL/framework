@@ -294,7 +294,10 @@ const Punish: React.FC<PunishProps> = ({ user, onClose }) => {
                       "absolute bottom-0 left-0 right-0 flex justify-center animate-bounce"
                     )}
                   >
-                    <ActionIcon className="bg-zinc-900/50" radius={999}>
+                    <ActionIcon
+                      className="dark:bg-zinc-900/50 bg-gray-500/50 text-gray-100"
+                      radius={999}
+                    >
                       <HiArrowSmDown />
                     </ActionIcon>
                   </div>
