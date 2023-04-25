@@ -26,23 +26,29 @@ import { HiCheck, HiCheckCircle } from "react-icons/hi";
 import { useFrameworkUser } from "../../contexts/FrameworkUser";
 import { useUserInformationDialog } from "../../contexts/UserInformationDialog";
 import employeeRoleMeta from "../../data/employeeRoles";
+import clsx from "../../util/clsx";
 import getMediaUrl from "../../util/get-media";
 import Copy from "../Copy";
+import { Section } from "../Home/FriendsWidget";
 import ModernEmptyState from "../ModernEmptyState";
+import ShadedCard from "../ShadedCard";
 import Stateful from "../Stateful";
 import NoteTable, { NoteUser } from "./NoteTable";
 import { AdminViewUser } from "./Pages/Users";
 import Punishment from "./Punishment";
 import UserActions from "./UserActions";
-import { Section } from "../Home/FriendsWidget";
-import ShadedCard from "../ShadedCard";
-import clsx from "../../util/clsx";
 
 interface UserViewProps {
   user: AdminViewUser;
+  punishPanelOpened: boolean;
+  setPunishPanelOpened: (opened: boolean) => void;
 }
 
-const UserView = ({ user }: UserViewProps) => {
+const UserView = ({
+  user,
+  punishPanelOpened,
+  setPunishPanelOpened,
+}: UserViewProps) => {
   const randomKey = () => {
     return Math.random().toString(36).substring(7);
   };
@@ -113,7 +119,7 @@ const UserView = ({ user }: UserViewProps) => {
         <Button
           color="red"
           onClick={() => {
-            setPunishOpened(true);
+            setPunishPanelOpened(true);
           }}
           disabled={
             !currentUser.adminPermissions.includes(AdminPermission.PUNISH_USERS)

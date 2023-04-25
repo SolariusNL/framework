@@ -685,6 +685,7 @@ model PunishmentLog {
   reason       String
   createdAt    DateTime       @default(now())
   type         PunishmentType
+  internalNote String         @default("No internal note provided. (before 25/04/2023)")
 }
 
 enum PunishmentType {

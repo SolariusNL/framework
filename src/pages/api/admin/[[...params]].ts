@@ -542,13 +542,25 @@ class AdminRouter {
   public async punishUser(
     @Param("uid") uid: string,
     @Param("category") category: "ban" | "warning",
-    @Body() body: { reason: string; reportAuthorId?: number; expires?: string },
+    @Body()
+    body: {
+      reason: string;
+      reportAuthorId?: number;
+      expires?: string;
+      internalNote?: string;
+    },
     @Account() admin: User
   ) {
     if (body.reason.length < 3 || body.reason.length > 1024) {
       return {
         success: false,
         error: "Reason must be between 3 and 1024 characters",
+      };
+    }
+    if (body.internalNote && body.internalNote.length > 1024) {
+      return {
+        success: false,
+        error: "Internal note must be less than 1024 characters",
       };
     }
 
@@ -635,6 +647,7 @@ class AdminRouter {
         },
         type: category.toUpperCase() as PunishmentType,
         reason: body.reason,
+        ...(body.internalNote && { internalNote: body.internalNote }),
       },
     });
 
