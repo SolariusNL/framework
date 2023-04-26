@@ -34,6 +34,7 @@ import SubscriptionTab from "../../components/Settings/SubscriptionTab";
 import VoiceTab from "../../components/Settings/Voice";
 import ShadedCard from "../../components/ShadedCard";
 import SidebarTabNavigation from "../../layouts/SidebarTabNavigation";
+import useFastFlags from "../../stores/useFastFlags";
 import authorizedRoute from "../../util/auth";
 import useMediaQuery from "../../util/media-query";
 import { User } from "../../util/prisma-types";
@@ -147,6 +148,14 @@ const Settings: NextPage<SettingsProps> = ({ user, activePage }) => {
   const [active, setActive] = React.useState(activePage || "account");
   const page = tabs.find((item) => item.value === active) || tabs[0];
   const router = useRouter();
+  const { flags } = useFastFlags();
+  const [disabledTabs, setDisabledTabs] = React.useState<string[]>([]);
+
+  React.useEffect(() => {
+    if (flags["disabled-settings"]) {
+      setDisabledTabs(flags["disabled-settings"] as string[]);
+    }
+  }, [flags]);
 
   return (
     <Framework
@@ -169,30 +178,32 @@ const Settings: NextPage<SettingsProps> = ({ user, activePage }) => {
               size="lg"
             />
           ) : (
-            tabs.map((tab) => (
-              <Link passHref href={`/settings/${tab.value}`} key={tab.value}>
-                <NavLink
-                  icon={tab.icon}
-                  color={tab.color}
-                  label={tab.label}
-                  className="rounded-md -mb-1"
-                  active={active === tab.value}
-                  component="a"
-                  {...(active === tab.value && {
-                    description: (
-                      <motion.div
-                        initial={{ height: 0 }}
-                        animate={{ height: "auto" }}
-                        transition={{ type: "spring", duration: 0.5 }}
-                        exit={{ height: 0 }}
-                      >
-                        {tab.description}
-                      </motion.div>
-                    ),
-                  })}
-                />
-              </Link>
-            ))
+            tabs
+              .filter((tab) => !disabledTabs.includes(tab.value))
+              .map((tab) => (
+                <Link passHref href={`/settings/${tab.value}`} key={tab.value}>
+                  <NavLink
+                    icon={tab.icon}
+                    color={tab.color}
+                    label={tab.label}
+                    className="rounded-md -mb-1"
+                    active={active === tab.value}
+                    component="a"
+                    {...(active === tab.value && {
+                      description: (
+                        <motion.div
+                          initial={{ height: 0 }}
+                          animate={{ height: "auto" }}
+                          transition={{ type: "spring", duration: 0.5 }}
+                          exit={{ height: 0 }}
+                        >
+                          {tab.description}
+                        </motion.div>
+                      ),
+                    })}
+                  />
+                </Link>
+              ))
           )}
         </SidebarTabNavigation.Sidebar>
         <SidebarTabNavigation.Content>

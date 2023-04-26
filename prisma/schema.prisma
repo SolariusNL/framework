@@ -1093,3 +1093,20 @@ model AutomodTrigger {
   reference String
   matched   String[]
 }
+
+model FastFlag {
+  id          String            @id @default(uuid())
+  createdAt   DateTime          @default(now())
+  name        String
+  value       String
+  valueType   FastFlagUnionType
+  description String
+}
+
+enum FastFlagUnionType {
+  STRING
+  NUMBER
+  BOOLEAN
+  ARRAY
+  OBJECT
+}

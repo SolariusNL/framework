@@ -17,10 +17,10 @@ import NotificationsWidget from "../components/Home/NotificationsWidget";
 import SubscriptionWidget from "../components/Home/SubscriptionWidget";
 import UpdatesWidget from "../components/Home/UpdatesWidget";
 import SidebarTabNavigation from "../layouts/SidebarTabNavigation";
+import useFastFlags from "../stores/useFastFlags";
 import authorizedRoute from "../util/auth";
 import useMediaQuery from "../util/media-query";
 import { User } from "../util/prisma-types";
-import LoadingIndicator from "../components/LoadingIndicator";
 
 interface HomeProps {
   user: User;
@@ -106,6 +106,7 @@ const Home: NextPage<HomeProps> = ({ user }) => {
 
   const [activeIndex, setActiveIndex] = useState(0);
   const mobile = useMediaQuery("768");
+  const { flags } = useFastFlags();
 
   return (
     <Framework
