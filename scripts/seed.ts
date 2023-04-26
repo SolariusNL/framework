@@ -11,6 +11,18 @@ const stages = [
     run: true,
     execute: async () => {
       await prisma.user
+        .findFirst({
+          where: {
+            username: "Framework",
+          },
+        })
+        .then(async (u) => {
+          if (u) {
+            logger().warn("Admin user already exists");
+            return;
+          }
+        });
+      await prisma.user
         .create({
           data: {
             email: "admin@invent.soodam.rocks",
@@ -100,32 +112,7 @@ const stages = [
   },
 ];
 
-async function verifyDatabase() {
-  logger().debug("Verifying database...");
-  try {
-    await prisma.user
-      .findFirst({
-        where: {
-          username: "Framework",
-        },
-      })
-      .then((u) => {
-        if (u) {
-          logger().warn("Admin user already exists");
-          stages.find((s) => s.name === "create-admin-account")!.run = false;
-        }
-      });
-  } catch (e) {
-    logger().error(
-      "Could not verify database. Make sure your Postgres server is running on the configured port, host, and password in the .env file"
-    );
-    process.exit(1);
-  }
-}
-
 async function seedDatabase() {
-  verifyDatabase();
-
   logger().debug("Seeding database...");
   try {
     for (const stage of stages) {
