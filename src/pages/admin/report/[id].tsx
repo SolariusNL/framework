@@ -47,6 +47,7 @@ import {
   Report,
   User,
 } from "../../../util/prisma-types";
+import Punish from "../../../components/Admin/Pages/Punish";
 
 interface ReportProps {
   user: User;
@@ -128,179 +129,190 @@ const ReportPage: NextPage<ReportProps> = ({ user, report }) => {
 
   return (
     <>
-      <Punishment
-        user={punishUser as NonUser}
-        setPunishOpened={setPunishOpened}
-        punishOpened={punishOpened}
-        onCompleted={() => {
-          closeReport();
-        }}
-        reportAuthor={report.author.id}
-      />
-
       <Framework activeTab="none" user={user}>
-        <Grid columns={6} gutter="xl">
-          <Grid.Col span={4}>
-            <Group mb={12}>
-              <Link href="/admin/reports">
-                <Anchor sx={{ display: "flex", gap: 8, alignItems: "center" }}>
-                  <HiArrowLeft />
-                  Back to reports
-                </Anchor>
-              </Link>
-            </Group>
-            <Title order={3} mb={24}>
-              Report {report.id}{" "}
-              {report.processed && (
-                <Badge>
-                  <HiShieldCheck /> Closed
-                </Badge>
-              )}
-            </Title>
-
-            <Grid mb={24}>
-              <Grid.Col span={4}>
-                <UserSection
-                  user={exclude(report.author, ["notes"])}
-                  hint="Author"
-                />
-              </Grid.Col>
-              <Grid.Col span={4}>
-                <UserSection
-                  user={exclude(report.user, ["notes"])}
-                  hint="Reported"
-                />
-              </Grid.Col>
-              <Grid.Col span={4}>
-                <Group>
-                  <ThemeIcon color="blue" size={36} radius={99}>
-                    <HiClock />
-                  </ThemeIcon>
-                  <Stack spacing={3}>
-                    <Text size="md" color="dimmed">
-                      Created
-                    </Text>
-                    <Text weight={500}>
-                      {new Date(report.createdAt).toLocaleDateString()}
-                    </Text>
-                  </Stack>
-                </Group>
-              </Grid.Col>
-            </Grid>
-
-            <ShadedCard>
-              {report.description.length < 30 && (
-                <Alert
-                  icon={<HiShieldExclamation size={24} />}
-                  color="orange"
-                  title="Potential spam"
-                  mb={24}
-                >
-                  This warning is shown because the report description is less
-                  than 30 characters. This is a potential sign of spam. If you
-                  believe this is a mistake, please contact an HR.
-                </Alert>
-              )}
-
-              <Title order={4} mb={10}>
-                {report.reason}
+        {punishOpened ? (
+          <Punish
+            reporterId={report.author.id}
+            userId={punishUser?.id}
+            back={{
+              label: "Back to report",
+              onClick: () => {
+                setPunishOpened(false);
+              },
+            }}
+            onComplete={closeReport}
+          />
+        ) : (
+          <Grid columns={6} gutter="xl">
+            <Grid.Col span={4}>
+              <Group mb={12}>
+                <Link href="/admin/reports">
+                  <Anchor
+                    sx={{ display: "flex", gap: 8, alignItems: "center" }}
+                  >
+                    <HiArrowLeft />
+                    Back to reports
+                  </Anchor>
+                </Link>
+              </Group>
+              <Title order={3} mb={24}>
+                Report {report.id}{" "}
+                {report.processed && (
+                  <Badge>
+                    <HiShieldCheck /> Closed
+                  </Badge>
+                )}
               </Title>
-              <Text>{report.description}</Text>
-              <Divider mt={32} mb={32} />
-              {!report.game ? (
-                <ModernEmptyState
-                  title="No data"
-                  body="This report has no data associated with it."
-                />
-              ) : (
-                report.game && (
-                  <Table striped>
-                    <tbody>
-                      {[
-                        ["Game ID", report.game.id],
-                        ["Name", report.game.name],
-                        [
-                          "Description",
-                          report.game.description.replace(/(<([^>]+)>)/gi, ""),
-                        ],
-                        [
-                          "Created",
-                          new Date(report.game.createdAt).toLocaleDateString(),
-                        ],
-                        ["Icon URI", report.game.iconUri || "None"],
-                        ["Likes", report.game.likedBy.length],
-                        ["Dislikes", report.game.dislikedBy.length],
-                        ["Visits", report.game.visits],
-                        ["Playing", report.game.playing],
-                        ["Rating", report.game.rating?.type || "None"],
-                      ].map(([key, value]) => (
-                        <tr key={key}>
-                          <td className="whitespace-nowrap">{key}</td>
-                          <td>{value}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </Table>
-                )
-              )}
-            </ShadedCard>
-          </Grid.Col>
-          <Grid.Col span={2}>
-            <Text size="sm" color="dimmed" weight={500} mb={6}>
-              Actions
-            </Text>
-            <Stack spacing={8} mb={16}>
-              <Button.Group orientation="vertical">
-                <Button
-                  color="red"
-                  leftIcon={<HiDocument />}
-                  onClick={() => {
-                    setPunishUser(report.author);
-                    setPunishOpened(true);
-                  }}
-                  fullWidth
-                  disabled={report.processed}
-                >
-                  Punish author
-                </Button>
-                <Button
-                  color="red"
-                  leftIcon={<HiDocument />}
-                  onClick={() => {
-                    setPunishUser(report.user);
-                    setPunishOpened(true);
-                  }}
-                  fullWidth
-                  disabled={report.processed}
-                >
-                  Punish reported
-                </Button>
-              </Button.Group>
 
-              <Button
-                variant="light"
-                leftIcon={<HiX />}
-                disabled={report.processed}
-                fullWidth
-                onClick={() => {
-                  closeReport();
-                }}
-              >
-                Close report
-              </Button>
+              <Grid mb={24}>
+                <Grid.Col span={4}>
+                  <UserSection
+                    user={exclude(report.author, ["notes"])}
+                    hint="Author"
+                  />
+                </Grid.Col>
+                <Grid.Col span={4}>
+                  <UserSection
+                    user={exclude(report.user, ["notes"])}
+                    hint="Reported"
+                  />
+                </Grid.Col>
+                <Grid.Col span={4}>
+                  <Group>
+                    <ThemeIcon color="blue" size={36} radius={99}>
+                      <HiClock />
+                    </ThemeIcon>
+                    <Stack spacing={3}>
+                      <Text size="md" color="dimmed">
+                        Created
+                      </Text>
+                      <Text weight={500}>
+                        {new Date(report.createdAt).toLocaleDateString()}
+                      </Text>
+                    </Stack>
+                  </Group>
+                </Grid.Col>
+              </Grid>
 
-              <ReactNoSSR>
-                <ShadedCard withBorder shadow="md">
-                  {[report.user, report.author].map((user) => (
-                    <Card.Section withBorder p="md" key={user.id}>
-                      <NoteTable user={user as unknown as NoteUser} />
-                    </Card.Section>
-                  ))}
-                </ShadedCard>
-              </ReactNoSSR>
-            </Stack>
-          </Grid.Col>
-        </Grid>
+              <ShadedCard>
+                {report.description.length < 30 && (
+                  <Alert
+                    icon={<HiShieldExclamation size={24} />}
+                    color="orange"
+                    title="Potential spam"
+                    mb={24}
+                  >
+                    This warning is shown because the report description is less
+                    than 30 characters. This is a potential sign of spam. If you
+                    believe this is a mistake, please contact an HR.
+                  </Alert>
+                )}
+
+                <Title order={4} mb={10}>
+                  {report.reason}
+                </Title>
+                <Text>{report.description}</Text>
+                <Divider mt={32} mb={32} />
+                {!report.game ? (
+                  <ModernEmptyState
+                    title="No data"
+                    body="This report has no data associated with it."
+                  />
+                ) : (
+                  report.game && (
+                    <Table striped>
+                      <tbody>
+                        {[
+                          ["Game ID", report.game.id],
+                          ["Name", report.game.name],
+                          [
+                            "Description",
+                            report.game.description.replace(
+                              /(<([^>]+)>)/gi,
+                              ""
+                            ),
+                          ],
+                          [
+                            "Created",
+                            new Date(
+                              report.game.createdAt
+                            ).toLocaleDateString(),
+                          ],
+                          ["Icon URI", report.game.iconUri || "None"],
+                          ["Likes", report.game.likedBy.length],
+                          ["Dislikes", report.game.dislikedBy.length],
+                          ["Visits", report.game.visits],
+                          ["Playing", report.game.playing],
+                          ["Rating", report.game.rating?.type || "None"],
+                        ].map(([key, value]) => (
+                          <tr key={key}>
+                            <td className="whitespace-nowrap">{key}</td>
+                            <td>{value}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </Table>
+                  )
+                )}
+              </ShadedCard>
+            </Grid.Col>
+            <Grid.Col span={2}>
+              <Text size="sm" color="dimmed" weight={500} mb={6}>
+                Actions
+              </Text>
+              <Stack spacing={8} mb={16}>
+                <Button.Group orientation="vertical">
+                  <Button
+                    color="red"
+                    leftIcon={<HiDocument />}
+                    onClick={() => {
+                      setPunishUser(report.author);
+                      setPunishOpened(true);
+                    }}
+                    fullWidth
+                    disabled={report.processed}
+                  >
+                    Punish author
+                  </Button>
+                  <Button
+                    color="red"
+                    leftIcon={<HiDocument />}
+                    onClick={() => {
+                      setPunishUser(report.user);
+                      setPunishOpened(true);
+                    }}
+                    fullWidth
+                    disabled={report.processed}
+                  >
+                    Punish reported
+                  </Button>
+                </Button.Group>
+
+                <Button
+                  variant="light"
+                  leftIcon={<HiX />}
+                  disabled={report.processed}
+                  fullWidth
+                  onClick={() => {
+                    closeReport();
+                  }}
+                >
+                  Close report
+                </Button>
+
+                <ReactNoSSR>
+                  <ShadedCard withBorder shadow="md">
+                    {[report.user, report.author].map((user) => (
+                      <Card.Section withBorder p="md" key={user.id}>
+                        <NoteTable user={user as unknown as NoteUser} />
+                      </Card.Section>
+                    ))}
+                  </ShadedCard>
+                </ReactNoSSR>
+              </Stack>
+            </Grid.Col>
+          </Grid>
+        )}
       </Framework>
     </>
   );

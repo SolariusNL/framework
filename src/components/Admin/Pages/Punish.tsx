@@ -9,18 +9,14 @@ import {
   TextInput,
   Textarea,
   Title,
-  useMantineColorScheme
+  useMantineColorScheme,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import Link from "next/link";
-import React from "react";
-import {
-  HiArrowLeft,
-  HiCheck,
-  HiCheckCircle,
-  HiXCircle
-} from "react-icons/hi";
+import React, { FC } from "react";
+import { HiArrowLeft, HiCheck, HiCheckCircle, HiXCircle } from "react-icons/hi";
+import ReactNoSSR from "react-no-ssr";
 import { BLACK } from "../../../pages/teams/t/[slug]/issue/create";
 import IResponseBase from "../../../types/api/IResponseBase";
 import fetchJson from "../../../util/fetch";
@@ -115,14 +111,36 @@ const AUTOFILL_FIELDS = [
   },
 ];
 
-const Punish: React.FC = () => {
+type PunishProps = {
+  reporterId?: number;
+  userId?: number;
+  back?: {
+    label: string;
+    href?: string;
+    onClick?: () => void;
+  };
+  onComplete?: () => void;
+};
+
+const Punish: React.FC<PunishProps> = ({
+  reporterId: rpid,
+  userId,
+  onComplete,
+  back = {
+    label: "Back to users",
+    href: "/admin/users",
+  },
+}) => {
   const [autofillOpen, setAutofillOpen] = React.useState(false);
   const [af, _setAf] = React.useState(AUTOFILL_FIELDS[0]);
   const [loading, setLoading] = React.useState(false);
   const [loadingUser, setLoadingUser] = React.useState(true);
   const [user, setUser] = React.useState<AdminViewUser>();
-  const [reporterId, setReporterId] = React.useState<number>();
+  const [reporterId, setReporterId] = React.useState<number>(
+    rpid ?? (undefined as unknown as number)
+  );
   const colorScheme = useMantineColorScheme();
+
   const form = useForm<PunishmentForm>({
     initialValues: {
       type: "warning",
@@ -161,6 +179,22 @@ const Punish: React.FC = () => {
       .finally(() => setLoadingUser(false));
   };
 
+  const BackButton: FC = () => (
+    <Anchor
+      className="flex items-center gap-2"
+      {...(back.onClick && {
+        onClick: () => {
+          if (back.onClick) back.onClick();
+        },
+      })}
+    >
+      <span className="flex items-center">
+        <HiArrowLeft />
+      </span>
+      {back.label}
+    </Anchor>
+  );
+
   React.useEffect(() => {
     if (typeof window !== "undefined") {
       const urlParams = new URLSearchParams(window.location.search);
@@ -169,6 +203,8 @@ const Punish: React.FC = () => {
 
       if (uid) {
         fetchUser(Number(uid));
+      } else {
+        fetchUser(userId!);
       }
       if (reporter) {
         setReporterId(Number(reporter));
@@ -240,14 +276,20 @@ const Punish: React.FC = () => {
           )}
         </Stateful>
       </Modal>
-      <Link href="/admin/users" passHref>
-        <Anchor className="flex items-center gap-2">
-          <span className="flex items-center">
-            <HiArrowLeft />
-          </span>
-          Back to users
-        </Anchor>
-      </Link>
+      {back.href ? (
+        <ReactNoSSR>
+          <Link href={back.href || "/admin/users"} passHref>
+            <Anchor className="flex items-center gap-2">
+              <span className="flex items-center">
+                <HiArrowLeft />
+              </span>
+              {back.label}
+            </Anchor>
+          </Link>
+        </ReactNoSSR>
+      ) : (
+        <BackButton />
+      )}
       {loadingUser ? (
         <div className="flex justify-center items-center h-64">
           <LoadingIndicator />
@@ -344,6 +386,7 @@ const Punish: React.FC = () => {
                               message: `Successfully punished ${user.username}. Thank you for keeping Framework safe.`,
                               icon: <HiCheckCircle />,
                             });
+                            if (onComplete) return onComplete();
                           } else {
                             showNotification({
                               title: "Something went wrong",
