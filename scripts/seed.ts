@@ -10,40 +10,35 @@ const stages = [
     description: "Create admin account with username Framework",
     run: true,
     execute: async () => {
-      await prisma.user
-        .findFirst({
-          where: {
-            username: "Framework",
-          },
-        })
-        .then(async (u) => {
-          if (u) {
-            logger().warn("Admin user already exists");
-            return;
-          }
-        });
-      await prisma.user
-        .create({
-          data: {
-            email: "admin@invent.soodam.rocks",
-            password: String(
-              await hashPass(
-                Math.random().toString(36).substring(2, 15) +
-                  Math.random().toString(36).substring(2, 15)
-              )
-            ),
-            role: "ADMIN",
-            username: "Framework",
-            premium: true,
-            avatarUri: "",
-            avatar: {
-              create: {},
+      const u = await prisma.user.findFirst({
+        where: {
+          username: "Framework",
+        },
+      });
+      if (u) return;
+      else
+        await prisma.user
+          .create({
+            data: {
+              email: "admin@invent.soodam.rocks",
+              password: String(
+                await hashPass(
+                  Math.random().toString(36).substring(2, 15) +
+                    Math.random().toString(36).substring(2, 15)
+                )
+              ),
+              role: "ADMIN",
+              username: "Framework",
+              premium: true,
+              avatarUri: "",
+              avatar: {
+                create: {},
+              },
             },
-          },
-        })
-        .then(() => {
-          logger().info("Admin user created");
-        });
+          })
+          .then(() => {
+            logger().info("Admin user created");
+          });
     },
   },
   {
