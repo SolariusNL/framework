@@ -37,6 +37,7 @@ import NoteTable, { NoteUser } from "./NoteTable";
 import { AdminViewUser } from "./Pages/Users";
 import Punishment from "./Punishment";
 import UserActions from "./UserActions";
+import PunishmentHistory from "./PunishmentHistory";
 
 interface UserViewProps {
   user: AdminViewUser;
@@ -647,54 +648,7 @@ const UserView = ({
         </Tabs.Panel>
 
         <Tabs.Panel value="history">
-          <Table striped>
-            <thead>
-              <tr>
-                <th>Punished By</th>
-                <th>Type</th>
-                <th>Reason</th>
-                <th>Date issued</th>
-              </tr>
-            </thead>
-            <tbody>
-              {user.punishmentHistory
-                .sort(
-                  (a, b) =>
-                    new Date(b.createdAt).getTime() -
-                    new Date(a.createdAt).getTime()
-                )
-                .map((h) => (
-                  <tr key={h.id}>
-                    <td>
-                      <div className="flex items-center">
-                        <Avatar
-                          size={24}
-                          src={h.punishedBy.avatarUri}
-                          radius="xl"
-                        />
-                        <Text weight={500}>{h.punishedBy.username}</Text>
-                      </div>
-                    </td>
-                    <td>
-                      <Badge>{h.type}</Badge>
-                    </td>
-                    <td>{h.reason}</td>
-                    <td>{new Date(h.createdAt).toLocaleString()}</td>
-                  </tr>
-                ))}
-
-              {user.punishmentHistory.length === 0 && (
-                <tr>
-                  <td colSpan={4}>
-                    <ModernEmptyState
-                      title="No punishment history"
-                      body="This user has never received a punishment!"
-                    />
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </Table>
+          <PunishmentHistory user={user} scroll scrollH="30rem" />
         </Tabs.Panel>
 
         <Tabs.Panel value="actions">

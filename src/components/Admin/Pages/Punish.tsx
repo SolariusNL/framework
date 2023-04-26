@@ -1,41 +1,35 @@
 import {
-  ActionIcon,
   Anchor,
   Button,
   Divider,
   Modal,
-  ScrollArea,
   Select,
   Stack,
   Text,
   TextInput,
   Textarea,
   Title,
-  useMantineColorScheme,
+  useMantineColorScheme
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
-import { PunishmentType } from "@prisma/client";
 import Link from "next/link";
 import React from "react";
 import {
   HiArrowLeft,
-  HiArrowSmDown,
   HiCheck,
   HiCheckCircle,
-  HiXCircle,
+  HiXCircle
 } from "react-icons/hi";
 import { BLACK } from "../../../pages/teams/t/[slug]/issue/create";
 import IResponseBase from "../../../types/api/IResponseBase";
-import clsx from "../../../util/clsx";
 import fetchJson from "../../../util/fetch";
 import { Section } from "../../Home/FriendsWidget";
 import LabelledCheckbox from "../../LabelledCheckbox";
 import LoadingIndicator from "../../LoadingIndicator";
-import ModernEmptyState from "../../ModernEmptyState";
-import Owner from "../../Owner";
 import ShadedCard from "../../ShadedCard";
 import Stateful from "../../Stateful";
+import PunishmentHistory from "../PunishmentHistory";
 import { AdminViewUser } from "./Users";
 
 type PunishmentForm = {
@@ -122,15 +116,13 @@ const AUTOFILL_FIELDS = [
 ];
 
 const Punish: React.FC = () => {
-  const colorScheme = useMantineColorScheme();
   const [autofillOpen, setAutofillOpen] = React.useState(false);
-  const [af, setAf] = React.useState(AUTOFILL_FIELDS[0]);
+  const [af, _setAf] = React.useState(AUTOFILL_FIELDS[0]);
   const [loading, setLoading] = React.useState(false);
   const [loadingUser, setLoadingUser] = React.useState(true);
-  const [didScroll, setDidScroll] = React.useState(false);
-  const historyRef = React.useRef<HTMLDivElement>(null);
   const [user, setUser] = React.useState<AdminViewUser>();
   const [reporterId, setReporterId] = React.useState<number>();
+  const colorScheme = useMantineColorScheme();
   const form = useForm<PunishmentForm>({
     initialValues: {
       type: "warning",
@@ -309,65 +301,7 @@ const Punish: React.FC = () => {
                 history before applying a punishment.
               </Text>
               <Divider my="lg" />
-              {user.punishmentHistory.length > 0 ? (
-                <ScrollArea
-                  sx={{
-                    height: "15rem",
-                  }}
-                  onScrollPositionChange={() => setDidScroll(true)}
-                  viewportRef={historyRef}
-                >
-                  {!didScroll && (
-                    <div
-                      className={clsx(
-                        "absolute bottom-0 left-0 right-0 flex justify-center animate-bounce"
-                      )}
-                    >
-                      <ActionIcon
-                        className="dark:bg-zinc-900/50 bg-gray-500/50 text-gray-100"
-                        radius={999}
-                      >
-                        <HiArrowSmDown />
-                      </ActionIcon>
-                    </div>
-                  )}
-                  {user.punishmentHistory.map((p, i) => (
-                    <>
-                      {i !== 0 && <Divider my="md" />}
-
-                      <div>
-                        <Owner user={p.punishedBy} />
-                        <Text size="lg" mt="sm" weight={500}>
-                          {p.type === PunishmentType.WARNING
-                            ? "Warning"
-                            : p.type === PunishmentType.BAN
-                            ? "Ban"
-                            : "HWID Ban"}{" "}
-                          - {new Date(p.createdAt).toLocaleDateString()}
-                        </Text>
-                        <Text size="sm" color="dimmed" mt="md">
-                          User-facing reason
-                        </Text>
-                        <Text size="sm" mt={4}>
-                          {p.reason}
-                        </Text>
-                        <Text size="sm" color="dimmed" mt="md">
-                          Internal note
-                        </Text>
-                        <Text size="sm" mt={4}>
-                          {p.internalNote ||
-                            "No internal note provided. (possibly before this feature was added)"}
-                        </Text>
-                      </div>
-                    </>
-                  ))}
-                </ScrollArea>
-              ) : (
-                <ModernEmptyState
-                  title="No punishments"
-                  body="This user has no punishment history!"
-                />
-              )}
+              <PunishmentHistory user={user} scroll />
             </div>
             <Divider my="xl" className="md:hidden" />
             <div className="flex-1">
@@ -384,6 +318,7 @@ const Punish: React.FC = () => {
                         "Please provide an expiration date for this punishment."
                       );
                     } else {
+                      setLoading(true);
                       await fetchJson<IResponseBase>(
                         `/api/admin/users/${user?.id}/punish/${
                           values.type === "warning" ? "warning" : "ban"
@@ -400,23 +335,25 @@ const Punish: React.FC = () => {
                             reason: values.userFacingReason,
                           },
                         }
-                      ).then((res) => {
-                        if (res.success) {
-                          form.reset();
-                          showNotification({
-                            title: "Justice served",
-                            message: `Successfully punished ${user.username}. Thank you for keeping Framework safe.`,
-                            icon: <HiCheckCircle />,
-                          });
-                        } else {
-                          showNotification({
-                            title: "Something went wrong",
-                            message: `We were unable to punish ${user.username}. Please try again later.`,
-                            icon: <HiXCircle />,
-                            color: "red",
-                          });
-                        }
-                      });
+                      )
+                        .then((res) => {
+                          if (res.success) {
+                            form.reset();
+                            showNotification({
+                              title: "Justice served",
+                              message: `Successfully punished ${user.username}. Thank you for keeping Framework safe.`,
+                              icon: <HiCheckCircle />,
+                            });
+                          } else {
+                            showNotification({
+                              title: "Something went wrong",
+                              message: `We were unable to punish ${user.username}. Please try again later.`,
+                              icon: <HiXCircle />,
+                              color: "red",
+                            });
+                          }
+                        })
+                        .finally(() => setLoading(false));
                     }
                   })}
                 >
