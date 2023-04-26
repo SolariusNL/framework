@@ -33,6 +33,8 @@ type PunishmentForm = {
   userFacingReason: string;
   internalNote: string;
   expires?: Date;
+  escalate?: boolean;
+  scrubUsername?: boolean;
 };
 
 const AUTOFILL_FIELDS = [
@@ -343,7 +345,7 @@ const Punish: React.FC<PunishProps> = ({
                 history before applying a punishment.
               </Text>
               <Divider my="lg" />
-              <PunishmentHistory user={user} scroll />
+              <PunishmentHistory user={user} scroll scrollH="30rem" />
             </div>
             <Divider my="xl" className="md:hidden" />
             <div className="flex-1">
@@ -437,6 +439,7 @@ const Punish: React.FC<PunishProps> = ({
                         description={item.description}
                         disabled={item.disabled}
                         classNames={BLACK}
+                        radius="xl"
                         onChange={() => {
                           form.setFieldValue(
                             "type",
@@ -572,6 +575,27 @@ const Punish: React.FC<PunishProps> = ({
                       />
                     </>
                   )}
+                  <Section
+                    title="Additional options"
+                    description="Please select any additional options you would like to apply to this punishment."
+                    sm
+                  />
+                  <Stack spacing="xs" mb="xl">
+                    <LabelledCheckbox
+                      label="Escalate report"
+                      description="For reports which contain threats, harassment, child exploitation or other serious violations."
+                      classNames={BLACK}
+                      {...form.getInputProps("escalate", { type: "checkbox" })}
+                    />
+                    <LabelledCheckbox
+                      label="Scrub username"
+                      description="This will set the users username to a randomly generated string making it impossible to find them by username and to remove inappropiate content."
+                      classNames={BLACK}
+                      {...form.getInputProps("scrubUsername", {
+                        type: "checkbox",
+                      })}
+                    />
+                  </Stack>
                   <Button
                     size="lg"
                     type="submit"

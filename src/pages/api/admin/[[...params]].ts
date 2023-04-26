@@ -23,6 +23,7 @@ import {
   Request,
   createHandler,
 } from "@storyofams/next-api-decorators";
+import { randomUUID } from "crypto";
 import { promises as fs, readFileSync } from "fs";
 import type { NextApiRequest } from "next";
 import { join } from "path";
@@ -570,6 +571,7 @@ class AdminRouter {
       reportAuthorId?: number;
       expires?: string;
       internalNote?: string;
+      scrubUsername?: boolean;
     },
     @Account() admin: User
   ) {
@@ -709,6 +711,18 @@ class AdminRouter {
         }) as React.ReactElement
       )
     );
+
+    if (body.scrubUsername && body.scrubUsername === true) {
+      const random = randomUUID().split("-").shift();
+      await prisma.user.update({
+        where: {
+          id: Number(uid),
+        },
+        data: {
+          username: `[Deleted - ${random}]`,
+        },
+      });
+    }
 
     return {
       success: true,

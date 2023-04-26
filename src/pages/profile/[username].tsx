@@ -1,4 +1,5 @@
 import {
+  Anchor,
   Avatar,
   Button,
   Image,
@@ -16,6 +17,7 @@ import { useRouter } from "next/router";
 import React from "react";
 import ReactCountryFlag from "react-country-flag";
 import {
+  HiArrowSmLeft,
   HiCake,
   HiCheck,
   HiChevronDoubleUp,
@@ -25,6 +27,7 @@ import {
   HiMap,
   HiUser,
   HiUserGroup,
+  HiXCircle,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import AdminBadge from "../../components/Badges/Admin";
@@ -153,316 +156,350 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
         }}
       />
       <Framework user={user} activeTab="none">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-auto w-full">
-            <div className="md:flex md:flex-row items-center md:items-start gap-8">
-              <div className="md:items-start items-center flex flex-col md:mb-0 mb-8">
-                <Indicator
-                  color="green"
-                  size={10}
-                  position="bottom-end"
-                  disabled={
-                    Date.now() - new Date(viewing.lastSeen).getTime() >
-                    5 * 60 * 1000
-                  }
-                >
-                  <Avatar
-                    src={
-                      getMediaUrl(viewing.avatarUri) ||
-                      `https://avatars.dicebear.com/api/identicon/${viewing.id}.png`
-                    }
-                    className="cursor-pointer"
-                    radius={999}
-                    size={100}
-                  />
-                </Indicator>
+        {viewing.banned ? (
+          <div className="flex items-center justify-center flex-col w-full py-8">
+            <ShadedCard>
+              <div className="flex gap-4 max-w-sm">
+                <HiXCircle
+                  size={24}
+                  className="whitespace-nowrap flex-shrink-0 text-red-400"
+                />
+                <div>
+                  <Text size="lg">
+                    <span className="font-semibold">{viewing.username}</span>{" "}
+                    has been banned.
+                  </Text>
+                  <Text size="sm" color="dimmed">
+                    Sorry. We cannot show you this user&apos;s profile, as
+                    they&apos;ve been banned.
+                  </Text>
+                </div>
               </div>
-              <div className="flex flex-col justify-between h-full">
-                <div className="flex flex-col justify-between">
-                  <div className="flex items-center justify-center md:justify-start gap-3">
-                    <Title order={2}>{viewing.alias || viewing.username}</Title>
-                    {viewing.role === "ADMIN" ||
-                    viewing.busy ||
-                    viewing.premium ? (
-                      <div className="hidden md:block">
-                        <div className="w-px h-4 mx-1 dark:bg-zinc-700/50" />
-                      </div>
-                    ) : null}
-                    {viewing.role === "ADMIN" && (
-                      <Tooltip label="Soodam.re Staff">
-                        <div className="flex items-center">
-                          <Image
-                            src="/brand/white.png"
-                            width={16}
-                            height={16}
-                          />
+            </ShadedCard>
+            <Link href="/" passHref>
+              <Anchor className="mt-4 flex items-center gap-2">
+                <span className="flex items-center">
+                  <HiArrowSmLeft />
+                </span>
+                Go back home
+              </Anchor>
+            </Link>
+          </div>
+        ) : (
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-auto w-full">
+              <div className="md:flex md:flex-row items-center md:items-start gap-8">
+                <div className="md:items-start items-center flex flex-col md:mb-0 mb-8">
+                  <Indicator
+                    color="green"
+                    size={10}
+                    position="bottom-end"
+                    disabled={
+                      Date.now() - new Date(viewing.lastSeen).getTime() >
+                      5 * 60 * 1000
+                    }
+                  >
+                    <Avatar
+                      src={
+                        getMediaUrl(viewing.avatarUri) ||
+                        `https://avatars.dicebear.com/api/identicon/${viewing.id}.png`
+                      }
+                      className="cursor-pointer"
+                      radius={999}
+                      size={100}
+                    />
+                  </Indicator>
+                </div>
+                <div className="flex flex-col justify-between h-full">
+                  <div className="flex flex-col justify-between">
+                    <div className="flex items-center justify-center md:justify-start gap-3">
+                      <Title order={2}>
+                        {viewing.alias || viewing.username}
+                      </Title>
+                      {viewing.role === "ADMIN" ||
+                      viewing.busy ||
+                      viewing.premium ? (
+                        <div className="hidden md:block">
+                          <div className="w-px h-4 mx-1 dark:bg-zinc-700/50" />
                         </div>
-                      </Tooltip>
-                    )}
-                    {viewing.busy && (
-                      <Tooltip label="Busy">
-                        <div className="flex items-center">
-                          <HiLockClosed />
-                        </div>
-                      </Tooltip>
-                    )}
-                    {viewing.premium && (
-                      <Tooltip label="Framework Premium">
-                        <div className="flex items-center">
-                          <Rocket className="text-pink-500 animate-pulse" />
-                        </div>
-                      </Tooltip>
-                    )}
+                      ) : null}
+                      {viewing.role === "ADMIN" && (
+                        <Tooltip label="Soodam.re Staff">
+                          <div className="flex items-center">
+                            <Image
+                              src="/brand/white.png"
+                              width={16}
+                              height={16}
+                            />
+                          </div>
+                        </Tooltip>
+                      )}
+                      {viewing.busy && (
+                        <Tooltip label="Busy">
+                          <div className="flex items-center">
+                            <HiLockClosed />
+                          </div>
+                        </Tooltip>
+                      )}
+                      {viewing.premium && (
+                        <Tooltip label="Framework Premium">
+                          <div className="flex items-center">
+                            <Rocket className="text-pink-500 animate-pulse" />
+                          </div>
+                        </Tooltip>
+                      )}
+                    </div>
+                    <Text
+                      size="sm"
+                      color="dimmed"
+                      className="md:text-left text-center"
+                    >
+                      @{viewing.username}
+                    </Text>
                   </div>
-                  <Text
-                    size="sm"
-                    color="dimmed"
-                    className="md:text-left text-center"
-                  >
-                    @{viewing.username}
-                  </Text>
-                </div>
-                <div className="flex items-center gap-4 mt-4 md:justify-start justify-center">
-                  <Text
-                    color="dimmed"
-                    size="sm"
-                    onClick={() => {
-                      setOpen(true);
-                      setUser(viewing);
-                      setDefaultTab("followers");
-                    }}
-                    className="cursor-pointer dark:hover:text-gray-300 transition-colors hover:text-gray-700"
-                  >
-                    <span className="font-semibold">
-                      {viewing._count.followers}
-                    </span>{" "}
-                    Followers
-                  </Text>
-                  <Text
-                    color="dimmed"
-                    size="sm"
-                    onClick={() => {
-                      setOpen(true);
-                      setUser(viewing);
-                      setDefaultTab("following");
-                    }}
-                    className="cursor-pointer dark:hover:text-gray-300 transition-colors hover:text-gray-700"
-                  >
-                    <span className="font-semibold">
-                      {viewing._count.following}
-                    </span>{" "}
-                    Following
-                  </Text>
-                </div>
-                {viewing.id !== user.id && (
-                  <>
-                    <div className="mt-4">
-                      <div className="hidden md:flex items-center gap-2">
-                        <Button.Group>
-                          {FollowButton}
-                          {DonationButton}
-                        </Button.Group>
-                        {ReportButton}
-                      </div>
-                      <div className="md:hidden block w-full">
-                        <div className="flex flex-col gap-1">
-                          <div className="flex items-center gap-2 md:justify-start justify-center">
+                  <div className="flex items-center gap-4 mt-4 md:justify-start justify-center">
+                    <Text
+                      color="dimmed"
+                      size="sm"
+                      onClick={() => {
+                        setOpen(true);
+                        setUser(viewing);
+                        setDefaultTab("followers");
+                      }}
+                      className="cursor-pointer dark:hover:text-gray-300 transition-colors hover:text-gray-700"
+                    >
+                      <span className="font-semibold">
+                        {viewing._count.followers}
+                      </span>{" "}
+                      Followers
+                    </Text>
+                    <Text
+                      color="dimmed"
+                      size="sm"
+                      onClick={() => {
+                        setOpen(true);
+                        setUser(viewing);
+                        setDefaultTab("following");
+                      }}
+                      className="cursor-pointer dark:hover:text-gray-300 transition-colors hover:text-gray-700"
+                    >
+                      <span className="font-semibold">
+                        {viewing._count.following}
+                      </span>{" "}
+                      Following
+                    </Text>
+                  </div>
+                  {viewing.id !== user.id && (
+                    <>
+                      <div className="mt-4">
+                        <div className="hidden md:flex items-center gap-2">
+                          <Button.Group>
                             {FollowButton}
                             {DonationButton}
-                            {ReportButton}
+                          </Button.Group>
+                          {ReportButton}
+                        </div>
+                        <div className="md:hidden block w-full">
+                          <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-2 md:justify-start justify-center">
+                              {FollowButton}
+                              {DonationButton}
+                              {ReportButton}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </>
-                )}
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
 
-            <Text size="sm" weight={500} mb="sm" color="dimmed" mt="xl">
-              Biography
-            </Text>
-            <Text mb="xl">
-              {viewing.bio
-                ? viewing.bio.split("\n").map((line, i) => (
-                    <React.Fragment key={i}>
-                      {line}
-                      <br />
-                    </React.Fragment>
-                  ))
-                : "This user hasn't written a biography yet."}
-            </Text>
-            <ShadedCard>
-              <div className="grid md:grid-cols-2 grid-cols-1 gap-2 gap-y-6">
-                {[
-                  {
-                    icon: <HiCake />,
-                    title: "Joined",
-                    value: new Date(viewing.createdAt).toLocaleDateString(),
-                  },
-                  {
-                    icon: <HiMap />,
-                    title: "Country",
-                    value: viewing.country ? (
-                      <div className="flex items-center gap-2">
-                        <ReactCountryFlag
-                          style={{ borderRadius: "6px" }}
-                          countryCode={viewing.country}
-                          svg
-                        />
-                        <span>
-                          {
-                            countries.find((c) => c.code == viewing.country)
-                              ?.name
-                          }
-                        </span>
-                      </div>
-                    ) : (
-                      <span>
-                        <Text size="sm" color="dimmed">
-                          Unknown
-                        </Text>
-                      </span>
-                    ),
-                  },
-                  {
-                    icon: <HiClock />,
-                    title: "Timezone",
-                    value: viewing.timeZone ? (
-                      getTimezones().find((tz) => tz.value == viewing.timeZone)
-                        ?.value
-                    ) : (
-                      <span>
-                        <Text size="sm" color="dimmed">
-                          Unknown
-                        </Text>
-                      </span>
-                    ),
-                  },
-                  {
-                    icon: <HiUserGroup />,
-                    title: "Visits",
-                    value: viewing.games
-                      .map((g) => g.visits)
-                      .reduce((a, b) => a + b, 0),
-                  },
-                ].map((item) => (
-                  <div
-                    className="flex flex-col gap-2 items-center"
-                    key={item.title}
-                  >
-                    <div className="flex items-center gap-2">
-                      <div className="text-gray-400 flex items-center">
-                        {item.icon}
-                      </div>
-                      <Text size="sm" color="dimmed">
-                        {item.title}
-                      </Text>
-                    </div>
-                    <Text size="sm" weight={500} align="center">
-                      {item.value}
-                    </Text>
-                  </div>
-                ))}
-              </div>
-            </ShadedCard>
-            <ReactNoSSR>
-              <div className="flex items-center justify-center mt-6 mb-2">
-                <div
-                  className="flex flex-col gap-3"
-                  style={{
-                    maxWidth: "24rem",
-                  }}
-                >
+              <Text size="sm" weight={500} mb="sm" color="dimmed" mt="xl">
+                Biography
+              </Text>
+              <Text mb="xl">
+                {viewing.bio
+                  ? viewing.bio.split("\n").map((line, i) => (
+                      <React.Fragment key={i}>
+                        {line}
+                        <br />
+                      </React.Fragment>
+                    ))
+                  : "This user hasn't written a biography yet."}
+              </Text>
+              <ShadedCard>
+                <div className="grid md:grid-cols-2 grid-cols-1 gap-2 gap-y-6">
                   {[
                     {
+                      icon: <HiCake />,
+                      title: "Joined",
+                      value: new Date(viewing.createdAt).toLocaleDateString(),
+                    },
+                    {
+                      icon: <HiMap />,
+                      title: "Country",
+                      value: viewing.country ? (
+                        <div className="flex items-center gap-2">
+                          <ReactCountryFlag
+                            style={{ borderRadius: "6px" }}
+                            countryCode={viewing.country}
+                            svg
+                          />
+                          <span>
+                            {
+                              countries.find((c) => c.code == viewing.country)
+                                ?.name
+                            }
+                          </span>
+                        </div>
+                      ) : (
+                        <span>
+                          <Text size="sm" color="dimmed">
+                            Unknown
+                          </Text>
+                        </span>
+                      ),
+                    },
+                    {
                       icon: <HiClock />,
-                      title: "Last seen",
-                      value: new Date(viewing.lastSeen).toLocaleString(),
+                      title: "Timezone",
+                      value: viewing.timeZone ? (
+                        getTimezones().find(
+                          (tz) => tz.value == viewing.timeZone
+                        )?.value
+                      ) : (
+                        <span>
+                          <Text size="sm" color="dimmed">
+                            Unknown
+                          </Text>
+                        </span>
+                      ),
                     },
                     {
-                      icon: <HiChevronDoubleUp />,
-                      title: "Repuation",
-                      value: 0,
-                    },
-                    {
-                      icon: <Rocket />,
-                      title: "Trading availability",
-                      value: "Unavailable",
+                      icon: <HiUserGroup />,
+                      title: "Visits",
+                      value: viewing.games
+                        .map((g) => g.visits)
+                        .reduce((a, b) => a + b, 0),
                     },
                   ].map((item) => (
                     <div
-                      className="grid grid-cols-2 gap-2 items-center"
+                      className="flex flex-col gap-2 items-center"
                       key={item.title}
                     >
                       <div className="flex items-center gap-2">
-                        <div className="text-dimmed flex items-center justify-end">
+                        <div className="text-gray-400 flex items-center">
                           {item.icon}
                         </div>
                         <Text size="sm" color="dimmed">
                           {item.title}
                         </Text>
                       </div>
-                      <Text size="sm" weight={500}>
+                      <Text size="sm" weight={500} align="center">
                         {item.value}
                       </Text>
                     </div>
                   ))}
                 </div>
-              </div>
-            </ReactNoSSR>
-          </div>
-          <div className="flex-auto md:w-3/4 w-full flex flex-col gap-6">
-            {viewing.games.length > 0 && (
-              <ThumbnailCarousel
-                slides={viewing.games.map((game) => (
-                  <Link href={`/game/${game.id}`} key={game.id} passHref>
-                    <div className="relative cursor-pointer rounded-md">
-                      {game.gallery.length > 0 ? (
-                        <Image
-                          height={200}
-                          src={getMediaUrl(game.gallery[0])}
-                          key={game.gallery[0]}
-                          alt={game.name}
-                          radius="md"
-                        />
-                      ) : (
-                        <PlaceholderGameResource height={200} />
-                      )}
-                      <div className="absolute bottom-0 left-0 w-full h-full rounded-md bg-black bg-opacity-50 backdrop-filter backdrop-blur-sm flex flex-col justify-end p-4">
-                        <Title order={4} className="text-white">
-                          {game.name}
-                        </Title>
-                        <Text size="sm" className="text-white" lineClamp={1}>
-                          {game.description.replace(/(<([^>]+)>)/gi, "")}
+              </ShadedCard>
+              <ReactNoSSR>
+                <div className="flex items-center justify-center mt-6 mb-2">
+                  <div
+                    className="flex flex-col gap-3"
+                    style={{
+                      maxWidth: "24rem",
+                    }}
+                  >
+                    {[
+                      {
+                        icon: <HiClock />,
+                        title: "Last seen",
+                        value: new Date(viewing.lastSeen).toLocaleString(),
+                      },
+                      {
+                        icon: <HiChevronDoubleUp />,
+                        title: "Repuation",
+                        value: 0,
+                      },
+                      {
+                        icon: <Rocket />,
+                        title: "Trading availability",
+                        value: "Unavailable",
+                      },
+                    ].map((item) => (
+                      <div
+                        className="grid grid-cols-2 gap-2 items-center"
+                        key={item.title}
+                      >
+                        <div className="flex items-center gap-2">
+                          <div className="text-dimmed flex items-center justify-end">
+                            {item.icon}
+                          </div>
+                          <Text size="sm" color="dimmed">
+                            {item.title}
+                          </Text>
+                        </div>
+                        <Text size="sm" weight={500}>
+                          {item.value}
                         </Text>
                       </div>
-                    </div>
-                  </Link>
-                ))}
-              />
-            )}
-            {user.profileLinks && <Links user={viewing} shadow="md" />}
-            <div className="grid grid-cols-2 gap-2">
-              {[
-                [<AlphaBadge user={viewing} key="alpha" />, true],
-                [
-                  <PremiumBadge user={viewing} key="premium" />,
-                  viewing.premium,
-                ],
-                [
-                  <AdminBadge user={viewing} key="admin" />,
-                  viewing.role == "ADMIN",
-                ],
-                [
-                  <EmailBadge user={viewing} key="email" />,
-                  viewing.emailVerified,
-                ],
-                [<TOTPBadge user={viewing} key="totp" />, viewing.otpEnabled],
-              ].map(([badge, condition]) => condition && <div>{badge}</div>)}
+                    ))}
+                  </div>
+                </div>
+              </ReactNoSSR>
+            </div>
+            <div className="flex-auto md:w-3/4 w-full flex flex-col gap-6">
+              {viewing.games.length > 0 && (
+                <ThumbnailCarousel
+                  slides={viewing.games.map((game) => (
+                    <Link href={`/game/${game.id}`} key={game.id} passHref>
+                      <div className="relative cursor-pointer rounded-md">
+                        {game.gallery.length > 0 ? (
+                          <Image
+                            height={200}
+                            src={getMediaUrl(game.gallery[0])}
+                            key={game.gallery[0]}
+                            alt={game.name}
+                            radius="md"
+                          />
+                        ) : (
+                          <PlaceholderGameResource height={200} />
+                        )}
+                        <div className="absolute bottom-0 left-0 w-full h-full rounded-md bg-black bg-opacity-50 backdrop-filter backdrop-blur-sm flex flex-col justify-end p-4">
+                          <Title order={4} className="text-white">
+                            {game.name}
+                          </Title>
+                          <Text size="sm" className="text-white" lineClamp={1}>
+                            {game.description.replace(/(<([^>]+)>)/gi, "")}
+                          </Text>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                />
+              )}
+              {user.profileLinks && <Links user={viewing} shadow="md" />}
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  [<AlphaBadge user={viewing} key="alpha" />, true],
+                  [
+                    <PremiumBadge user={viewing} key="premium" />,
+                    viewing.premium,
+                  ],
+                  [
+                    <AdminBadge user={viewing} key="admin" />,
+                    viewing.role == "ADMIN",
+                  ],
+                  [
+                    <EmailBadge user={viewing} key="email" />,
+                    viewing.emailVerified,
+                  ],
+                  [<TOTPBadge user={viewing} key="totp" />, viewing.otpEnabled],
+                ].map(([badge, condition]) => condition && <div>{badge}</div>)}
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </Framework>
     </>
   );

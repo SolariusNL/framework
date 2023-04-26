@@ -11,9 +11,17 @@ type PunishmentHistoryProps = {
   user: AdminViewUser;
   scroll?: boolean;
   scrollH?: string;
+  className?: string;
+  style?: React.CSSProperties;
 };
 
-const PunishmentHistory: FC<PunishmentHistoryProps> = ({ user, scroll, scrollH }) => {
+const PunishmentHistory: FC<PunishmentHistoryProps> = ({
+  user,
+  scroll,
+  scrollH,
+  className,
+  style,
+}) => {
   const historyRef = useRef<HTMLDivElement>(null);
   const [didScroll, setDidScroll] = useState(false);
 
@@ -56,6 +64,7 @@ const PunishmentHistory: FC<PunishmentHistoryProps> = ({ user, scroll, scrollH }
             sx={{
               height: scrollH || "15rem",
             }}
+            className={className}
             onScrollPositionChange={() => setDidScroll(true)}
             viewportRef={historyRef}
           >

@@ -13,7 +13,7 @@ const LabelledRadio: React.FC<LabelledRadioProps & RadioProps> = ({
 }) => {
   return (
     <div className="flex gap-3 items-start">
-      <Radio {...props} />
+      <Radio classNames={props.classNames} {...props} />
       <div>
         <Text
           size="sm"
