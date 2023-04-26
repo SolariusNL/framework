@@ -2,12 +2,12 @@ import { NotificationType, OperatingSystem } from "@prisma/client";
 import { render } from "@react-email/render";
 import {
   Body,
-  createHandler,
   Get,
   Param,
   Post,
   Req,
   Res,
+  createHandler,
 } from "@storyofams/next-api-decorators";
 import { setCookie } from "cookies-next";
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -91,6 +91,14 @@ class AuthRouter {
       return {
         status: 400,
         message: "Invalid credentials",
+      };
+    }
+
+    if (account.locked) {
+      return {
+        status: 403,
+        message:
+          "Your account has been locked. Please contact support for further assistance.",
       };
     }
 

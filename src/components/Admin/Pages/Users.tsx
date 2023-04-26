@@ -33,11 +33,14 @@ import {
   HiUser,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
+import IResponseBase from "../../../types/api/IResponseBase";
 import clsx from "../../../util/clsx";
+import fetchJson from "../../../util/fetch";
 import getMediaUrl from "../../../util/get-media";
 import useMediaQuery from "../../../util/media-query";
 import { NonUser, User } from "../../../util/prisma-types";
 import ContextMenu from "../../ContextMenu";
+import LoadingIndicator from "../../LoadingIndicator";
 import ShadedButton from "../../ShadedButton";
 import UserSelect from "../../UserSelect";
 import UserView from "../UserView";
@@ -69,6 +72,7 @@ const Users = () => {
   const [opened, setOpened] = useState(false);
   const [bulkOpened, setBulkOpened] = useState(false);
   const [punishPanelOpened, setPunishPanelOpened] = useState(false);
+  const [userLoading, setUserLoading] = useState(false);
 
   const fetchUsers = async () => {
     await fetch(`/api/admin/users/${page}`, {
@@ -113,6 +117,21 @@ const Users = () => {
       },
     },
   });
+
+  const fetchUser = async (id: number) => {
+    await fetchJson<IResponseBase<{ user: AdminViewUser }>>(
+      `/api/admin/user/${id}`,
+      {
+        auth: true,
+      }
+    )
+      .then((res) => {
+        if (res.success) {
+          setSelectedUser(res.data?.user!);
+        }
+      })
+      .finally(() => setUserLoading(false));
+  };
 
   const singleNotificationForm = useForm<{
     title: string;
@@ -332,8 +351,9 @@ const Users = () => {
                       <Menu.Item
                         icon={<HiArrowRight />}
                         onClick={() => {
-                          setSelectedUserId(u.id);
-                          setSelectedUser(u);
+                          setSelectedUser(null);
+                          setUserLoading(true);
+                          fetchUser(u.id);
                         }}
                       >
                         Select user
@@ -352,8 +372,9 @@ const Users = () => {
                 >
                   <ShadedButton
                     onClick={() => {
-                      setSelectedUserId(u.id);
-                      setSelectedUser(u);
+                      setSelectedUser(null);
+                      setUserLoading(true);
+                      fetchUser(u.id);
                     }}
                     key={u.id}
                   >
@@ -387,18 +408,17 @@ const Users = () => {
             marginTop: mobile ? 16 : 0,
           }}
         >
-          {selectedUserId ? (
+          {userLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <LoadingIndicator />
+            </div>
+          ) : (
             <ReactNoSSR>
               <UserView
                 user={selectedUser as AdminViewUser}
-                setPunishPanelOpened={setPunishPanelOpened}
-                punishPanelOpened={punishPanelOpened}
+                loading={userLoading}
               />
             </ReactNoSSR>
-          ) : (
-            <Text size="xl" weight={700}>
-              Select a user to view their profile.
-            </Text>
           )}
         </div>
       </div>

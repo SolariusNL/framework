@@ -72,6 +72,7 @@ model User {
   bio                        String                 @default("This user has not yet written a bio.")
   busy                       Boolean                @default(false)
   banned                     Boolean                @default(false)
+  locked                     Boolean                @default(false)
   banReason                  String                 @default("")
   banExpires                 DateTime?
   emailVerificationInstances EmailVerification[]    @relation("emailVerification")

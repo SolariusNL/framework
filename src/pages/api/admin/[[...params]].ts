@@ -82,6 +82,7 @@ const adminUserSelect = {
   otpEnabled: true,
   otpHex: true,
   previousEmails: true,
+  locked: true,
 };
 
 class AdminRouter {
@@ -320,7 +321,15 @@ class AdminRouter {
   @AdminAuthorized()
   public async getUsers(@Param("page") page: number) {
     const users = await prisma.user.findMany({
-      select: adminUserSelect,
+      select: {
+        email: true,
+        username: true,
+        role: true,
+        banned: true,
+        avatarUri: true,
+        alias: true,
+        id: true,
+      },
       take: 8,
       skip: Number(page) * 8,
       orderBy: {
@@ -2020,6 +2029,48 @@ class AdminRouter {
     });
 
     return {
+      success: true,
+    };
+  }
+
+  @Post("/lock/:uid")
+  @AdminAuthorized()
+  public async lockUser(
+    @Param("uid") uid: string,
+    @Account() admin: User
+  ): Promise<{ success: boolean }> {
+    const user = await prisma.user.findFirst({
+      where: {
+        id: Number(uid),
+      },
+    });
+
+    if (!user) {
+      throw new BadRequestException("Invalid user");
+    }
+
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        locked: !user.locked,
+      },
+    });
+
+    await prisma.adminActivityLog.create({
+      data: {
+        user: {
+          connect: {
+            id: admin.id,
+          },
+        },
+        activity: `Locked user with uid ${uid}`,
+        importance: 2,
+      },
+    });
+
+    return <IResponseBase>{
       success: true,
     };
   }

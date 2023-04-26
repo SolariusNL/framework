@@ -49,6 +49,7 @@ const Login: NextPage = () => {
   const [twofaCode, setTwofaCode] = useState("");
   const [twofaFailed, setTwofaFailed] = useState(false);
   const [twofaUid, setTwofaUid] = useState("");
+  const [lockError, setLockError] = useState("");
 
   const verifyTwoFactor = async () => {
     await fetch("/api/auth/@me/twofa/verify", {
@@ -104,6 +105,9 @@ const Login: NextPage = () => {
             router.push("/").then(() => router.reload());
           }
         } else {
+          if (res.status === 403) {
+            setLockError(res.message);
+          }
           form.setErrors({
             username: "Invalid login",
             password: "Invalid login",
@@ -193,6 +197,14 @@ const Login: NextPage = () => {
               <Anchor size="sm">Forgot your password?</Anchor>
             </Link>
           </Group>
+          {lockError && (
+            <div className="flex mt-5 items-center gap-2">
+              <HiXCircle className="text-red-500 flex-shrink-0" />
+              <Text color="red" size="sm">
+                {lockError}
+              </Text>
+            </div>
+          )}
           <Button fullWidth mt="xl" type="submit" loading={loading}>
             Sign in
           </Button>
