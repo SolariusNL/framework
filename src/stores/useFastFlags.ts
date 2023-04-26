@@ -12,7 +12,7 @@ type FastFlagNames =
 
 type ReturnedFastFlag = Record<
   FastFlagNames,
-  string | number | boolean | any[] | Record<string, any>
+  string | number | boolean | any[] | Record<string, any> | any
 >;
 
 interface FastFlagStore {
