@@ -41,7 +41,6 @@ import ContextMenu from "../../ContextMenu";
 import ShadedButton from "../../ShadedButton";
 import UserSelect from "../../UserSelect";
 import UserView from "../UserView";
-import Punish from "./Punish";
 
 export type AdminViewUser = User & {
   sessions: Session[];
@@ -267,151 +266,142 @@ const Users = () => {
           </Button>
         </form>
       </Modal>
-      {punishPanelOpened ? (
-        <ReactNoSSR>
-          <Punish
-            user={selectedUser!}
-            onClose={() => setPunishPanelOpened(false)}
-          />
-        </ReactNoSSR>
-      ) : (
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "space-between",
-          }}
-        >
-          <div style={{ width: mobile ? "100%" : "38%" }}>
-            <div
-              className={clsx(
-                "flex-initial md:flex-row flex items-center gap-4",
-                "items-stretch justify-between mb-4"
-              )}
-            >
-              <TextInput
-                icon={<HiSearch />}
-                placeholder="Search users"
-                className="w-full"
-                sx={{
-                  flex: "0 0 85%",
-                }}
-              />
-              <Menu>
-                <Menu.Target>
-                  <ActionIcon className="w-9 h-9" variant="default">
-                    <HiDotsVertical />
-                  </ActionIcon>
-                </Menu.Target>
-                <Menu.Dropdown>
-                  <Menu.Label>Notifications</Menu.Label>
-                  <Menu.Item icon={<HiBell />} onClick={() => setOpened(true)}>
-                    Send notification to user
-                  </Menu.Item>
-                  <Menu.Item
-                    icon={<HiBell />}
-                    onClick={() => setBulkOpened(true)}
-                  >
-                    Send all users notification
-                  </Menu.Item>
-                </Menu.Dropdown>
-              </Menu>
-            </div>
-            <Pagination
-              className="w-full flex justify-center mb-6"
-              radius="xl"
-              page={page + 1}
-              onChange={(p) => setPage(p - 1)}
-              total={pages}
-            />
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
-              {users &&
-                users.length > 0 &&
-                users.map((u) => (
-                  <ContextMenu
-                    className="w-full"
-                    dropdown={
-                      <>
-                        <Menu.Item
-                          icon={<HiUser />}
-                          onClick={() => router.push(`/profile/${u.username}`)}
-                        >
-                          View profile
-                        </Menu.Item>
-                        <Menu.Item
-                          icon={<HiArrowRight />}
-                          onClick={() => {
-                            setSelectedUserId(u.id);
-                            setSelectedUser(u);
-                          }}
-                        >
-                          Select user
-                        </Menu.Item>
-                        <Menu.Divider />
-                        <Menu.Item
-                          icon={<HiRefresh />}
-                          onClick={() => fetchUsers()}
-                        >
-                          Refresh
-                        </Menu.Item>
-                      </>
-                    }
-                    key={u.id}
-                    width={160}
-                  >
-                    <ShadedButton
-                      onClick={() => {
-                        setSelectedUserId(u.id);
-                        setSelectedUser(u);
-                      }}
-                      key={u.id}
-                    >
-                      <Avatar src={getMediaUrl(u.avatarUri)} className="mr-3" />
-                      <div>
-                        <div className="flex items-center">
-                          <Text weight={600} className="mr-2">
-                            {u.username}
-                          </Text>
-                          {u.role === "ADMIN" && (
-                            <Image
-                              src="/brand/white.png"
-                              width={16}
-                              height={16}
-                            />
-                          )}
-                          {u.banned && <Badge color="red">Banned</Badge>}
-                        </div>
-                        <Text size="sm" color="dimmed">
-                          {u.email}
-                        </Text>
-                      </div>
-                    </ShadedButton>
-                  </ContextMenu>
-                ))}
-            </div>
-          </div>
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          justifyContent: "space-between",
+        }}
+      >
+        <div style={{ width: mobile ? "100%" : "38%" }}>
           <div
-            style={{
-              width: mobile ? "100%" : "58%",
-              marginTop: mobile ? 16 : 0,
-            }}
-          >
-            {selectedUserId ? (
-              <ReactNoSSR>
-                <UserView
-                  user={selectedUser as AdminViewUser}
-                  setPunishPanelOpened={setPunishPanelOpened}
-                  punishPanelOpened={punishPanelOpened}
-                />
-              </ReactNoSSR>
-            ) : (
-              <Text size="xl" weight={700}>
-                Select a user to view their profile.
-              </Text>
+            className={clsx(
+              "flex-initial md:flex-row flex items-center gap-4",
+              "items-stretch justify-between mb-4"
             )}
+          >
+            <TextInput
+              icon={<HiSearch />}
+              placeholder="Search users"
+              className="w-full"
+              sx={{
+                flex: "0 0 85%",
+              }}
+            />
+            <Menu>
+              <Menu.Target>
+                <ActionIcon className="w-9 h-9" variant="default">
+                  <HiDotsVertical />
+                </ActionIcon>
+              </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Label>Notifications</Menu.Label>
+                <Menu.Item icon={<HiBell />} onClick={() => setOpened(true)}>
+                  Send notification to user
+                </Menu.Item>
+                <Menu.Item
+                  icon={<HiBell />}
+                  onClick={() => setBulkOpened(true)}
+                >
+                  Send all users notification
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
+          </div>
+          <Pagination
+            className="w-full flex justify-center mb-6"
+            radius="xl"
+            page={page + 1}
+            onChange={(p) => setPage(p - 1)}
+            total={pages}
+          />
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
+            {users &&
+              users.length > 0 &&
+              users.map((u) => (
+                <ContextMenu
+                  className="w-full"
+                  dropdown={
+                    <>
+                      <Menu.Item
+                        icon={<HiUser />}
+                        onClick={() => router.push(`/profile/${u.username}`)}
+                      >
+                        View profile
+                      </Menu.Item>
+                      <Menu.Item
+                        icon={<HiArrowRight />}
+                        onClick={() => {
+                          setSelectedUserId(u.id);
+                          setSelectedUser(u);
+                        }}
+                      >
+                        Select user
+                      </Menu.Item>
+                      <Menu.Divider />
+                      <Menu.Item
+                        icon={<HiRefresh />}
+                        onClick={() => fetchUsers()}
+                      >
+                        Refresh
+                      </Menu.Item>
+                    </>
+                  }
+                  key={u.id}
+                  width={160}
+                >
+                  <ShadedButton
+                    onClick={() => {
+                      setSelectedUserId(u.id);
+                      setSelectedUser(u);
+                    }}
+                    key={u.id}
+                  >
+                    <Avatar src={getMediaUrl(u.avatarUri)} className="mr-3" />
+                    <div>
+                      <div className="flex items-center">
+                        <Text weight={600} className="mr-2">
+                          {u.username}
+                        </Text>
+                        {u.role === "ADMIN" && (
+                          <Image
+                            src="/brand/white.png"
+                            width={16}
+                            height={16}
+                          />
+                        )}
+                        {u.banned && <Badge color="red">Banned</Badge>}
+                      </div>
+                      <Text size="sm" color="dimmed">
+                        {u.email}
+                      </Text>
+                    </div>
+                  </ShadedButton>
+                </ContextMenu>
+              ))}
           </div>
         </div>
-      )}
+        <div
+          style={{
+            width: mobile ? "100%" : "58%",
+            marginTop: mobile ? 16 : 0,
+          }}
+        >
+          {selectedUserId ? (
+            <ReactNoSSR>
+              <UserView
+                user={selectedUser as AdminViewUser}
+                setPunishPanelOpened={setPunishPanelOpened}
+                punishPanelOpened={punishPanelOpened}
+              />
+            </ReactNoSSR>
+          ) : (
+            <Text size="xl" weight={700}>
+              Select a user to view their profile.
+            </Text>
+          )}
+        </div>
+      </div>
     </>
   );
 };

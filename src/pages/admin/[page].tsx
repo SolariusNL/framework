@@ -67,6 +67,7 @@ import getMediaUrl from "../../util/get-media";
 import useMediaQuery from "../../util/media-query";
 import prisma from "../../util/prisma";
 import { User } from "../../util/prisma-types";
+import Punish from "../../components/Admin/Pages/Punish";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon");
@@ -277,6 +278,14 @@ const data = [
     subtitle: "Manage your personal admin settings",
     show: false,
   },
+  {
+    label: "Punish",
+    icon: HiCog,
+    href: "/admin/punish",
+    render: <Punish />,
+    subtitle: "Punish a user from Framework.",
+    show: false,
+  }
 ];
 
 export type PageName =

@@ -32,7 +32,9 @@ import JoinFramework from "../../../../email/emails/join-framework";
 import StaffEmail from "../../../../email/emails/staff-email";
 import SupportTicketClosed from "../../../../email/emails/support-ticket-closed";
 import { PrefCategory } from "../../../components/Admin/Pages/Instance";
+import { AdminViewUser } from "../../../components/Admin/Pages/Users";
 import type { ReportCategory } from "../../../components/ReportUser";
+import IResponseBase from "../../../types/api/IResponseBase";
 import { AdminAction } from "../../../util/admin-action";
 import Authorized, {
   Account,
@@ -55,6 +57,30 @@ import { getOperatingSystem } from "../../../util/ua";
 
 export type AutomodTriggerWithUser = AutomodTrigger & {
   user: NonUser;
+};
+
+const adminUserSelect = {
+  ...userSelect,
+  sessions: true,
+  discordAccount: true,
+  notifications: true,
+  notes: {
+    include: {
+      author: nonCurrentUserSelect,
+      user: nonCurrentUserSelect,
+    },
+  },
+  punishmentHistory: {
+    include: {
+      punishedBy: nonCurrentUserSelect,
+    },
+  },
+  otpAscii: true,
+  otpAuthUrl: true,
+  otpBase32: true,
+  otpEnabled: true,
+  otpHex: true,
+  previousEmails: true,
 };
 
 class AdminRouter {
@@ -293,29 +319,7 @@ class AdminRouter {
   @AdminAuthorized()
   public async getUsers(@Param("page") page: number) {
     const users = await prisma.user.findMany({
-      select: {
-        ...userSelect,
-        sessions: true,
-        discordAccount: true,
-        notifications: true,
-        notes: {
-          include: {
-            author: nonCurrentUserSelect,
-            user: nonCurrentUserSelect,
-          },
-        },
-        punishmentHistory: {
-          include: {
-            punishedBy: nonCurrentUserSelect,
-          },
-        },
-        otpAscii: true,
-        otpAuthUrl: true,
-        otpBase32: true,
-        otpEnabled: true,
-        otpHex: true,
-        previousEmails: true,
-      },
+      select: adminUserSelect,
       take: 8,
       skip: Number(page) * 8,
       orderBy: {
@@ -324,6 +328,24 @@ class AdminRouter {
     });
 
     return users;
+  }
+
+  @Get("/user/:uid")
+  @AdminAuthorized()
+  public async getUserById(@Param("uid") uid: number) {
+    const user = await prisma.user.findFirst({
+      where: {
+        id: Number(uid),
+      },
+      select: adminUserSelect,
+    });
+
+    return <IResponseBase<{ user: AdminViewUser }>>{
+      success: true,
+      data: {
+        user: user as unknown as AdminViewUser,
+      },
+    };
   }
 
   @Post("/users/:id/permissions/update")

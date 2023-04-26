@@ -116,17 +116,26 @@ const UserView = ({
       </Group>
 
       <Group mb={18}>
-        <Button
-          color="red"
-          onClick={() => {
-            setPunishPanelOpened(true);
-          }}
-          disabled={
-            !currentUser.adminPermissions.includes(AdminPermission.PUNISH_USERS)
+        <Link
+          href={
+            "/admin/punish?" +
+            new URLSearchParams({
+              uid: user.id.toString(),
+            }).toString()
           }
+          passHref
         >
-          Punish
-        </Button>
+          <Button
+            color="red"
+            disabled={
+              !currentUser.adminPermissions.includes(
+                AdminPermission.PUNISH_USERS
+              )
+            }
+          >
+            Punish
+          </Button>
+        </Link>
         <Button.Group>
           <Stateful>
             {(opened, setOpened) => (
