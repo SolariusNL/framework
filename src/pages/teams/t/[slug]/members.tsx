@@ -4,7 +4,7 @@ import {
   Menu,
   Pagination,
   Skeleton,
-  Text
+  Text,
 } from "@mantine/core";
 import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
@@ -17,7 +17,7 @@ import {
   HiArrowRight,
   HiDotsVertical,
   HiUserRemove,
-  HiXCircle
+  HiXCircle,
 } from "react-icons/hi";
 import { TeamType } from "../..";
 import { Friend } from "../../../../components/Home/FriendsWidget";
@@ -53,7 +53,7 @@ const TeamViewMembers: React.FC<TeamViewMembersProps> = ({ user, team }) => {
     return (
       (isStaff(u) &&
         team.staff &&
-        team.staff.map((s) => s.id).includes(u.id)) ||
+        !team.staff.map((s) => s.id).includes(u.id)) ||
       u.id === user.id
     );
   };
