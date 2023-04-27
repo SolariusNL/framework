@@ -30,6 +30,7 @@ import {
   HiGift,
   HiHome,
   HiIdentification,
+  HiInboxIn,
   HiKey,
   HiServer,
   HiShieldCheck,
@@ -204,7 +205,7 @@ const data = [
   },
   {
     label: "Tickets",
-    icon: HiTicket,
+    icon: HiInboxIn,
     href: "/admin/tickets",
     render: <Tickets />,
     subtitle: "Manage user-submitted support tickets",
@@ -285,7 +286,7 @@ const data = [
     render: <Punish />,
     subtitle: "Punish a user from Framework.",
     show: false,
-  }
+  },
 ];
 
 export type PageName =

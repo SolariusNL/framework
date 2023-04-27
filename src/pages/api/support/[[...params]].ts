@@ -6,6 +6,7 @@ import {
   Get,
   Post,
 } from "@storyofams/next-api-decorators";
+import sanitize from "sanitize-html";
 import z, { ZodLiteral } from "zod";
 import AccountUpdate from "../../../../email/emails/account-update";
 import SupportTicketCreated from "../../../../email/emails/support-ticket-created";
@@ -18,13 +19,17 @@ import { nonCurrentUserSelect } from "../../../util/prisma-types";
 import { RateLimitMiddleware } from "../../../util/rate-limit";
 import { categories } from "../../support";
 
+export const supportSanitization = {
+  allowedTags: ["h2", "h3", "b", "strong", "ul", "ol", "li", "p", "br"],
+};
+
 class SupportRouter {
   @Post("/submit")
   @RateLimitMiddleware(3)()
   public async submitSupportForm(@Account() user: User, @Body() body: unknown) {
     const schema = z.object({
       title: z.string().min(3).max(100),
-      content: z.string().min(10).max(1000),
+      contentMd: z.string().min(10).max(2048),
       category: z.union(
         categories.map(([category]) => z.literal(category)) as [
           ZodLiteral<"general">,
@@ -58,7 +63,8 @@ class SupportRouter {
     await prisma.supportTicket.create({
       data: {
         title: data.data.title,
-        content: data.data.content,
+        content: sanitize(data.data.contentMd, supportSanitization),
+        contentMd: data.data.contentMd,
         category: data.data.category,
         contactEmail: data.data.contactEmail,
         contactName: data.data.contactName,
@@ -79,7 +85,6 @@ class SupportRouter {
       render(
         SupportTicketCreated({
           title: data.data.title,
-          content: data.data.content,
           category:
             data.data.category.substring(0, 1).toUpperCase() +
             data.data.category.substring(1),
@@ -103,7 +108,7 @@ class SupportRouter {
             </li>
             <li style="margin-bottom: 10px;">
               <strong style="display: block; font-size: 16px; color: #333;">Content:</strong> ${
-                data.data.content
+                data.data.contentMd
               }
             </li>
             <li style="margin-bottom: 10px;">

@@ -8,7 +8,6 @@ import EmailLayout from "./layout";
 
 interface SupportTicketCreatedProps {
   title: string;
-  content: string;
   category: string;
   contactEmail: string;
   contactName: string;
@@ -16,7 +15,6 @@ interface SupportTicketCreatedProps {
 
 const SupportTicketCreated: React.FC<SupportTicketCreatedProps> = ({
   title = "My Ticket",
-  content = "I need help with my account. I can't seem to log in, and I'm not sure why. I've tried resetting my password, but it still doesn't work.",
   category = "Account",
   contactEmail = "example@test.com",
   contactName = "John Doe",
@@ -41,9 +39,6 @@ const SupportTicketCreated: React.FC<SupportTicketCreatedProps> = ({
         <Hr />
         <Text style={styles.text}>
           <b>Category:</b> {category}
-        </Text>
-        <Text style={styles.text}>
-          <b>Content:</b> {content}
         </Text>
         <Text style={styles.text}>
           <b>Contact Email:</b> {contactEmail}
