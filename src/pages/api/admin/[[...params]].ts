@@ -2068,7 +2068,7 @@ class AdminRouter {
             id: admin.id,
           },
         },
-        activity: `Locked user with uid ${uid}`,
+        activity: `Locked user account with uid ${uid}`,
         importance: 2,
       },
     });
