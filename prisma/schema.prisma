@@ -736,7 +736,7 @@ model SupportTicket {
   authorId     Int?
   title        String
   content      String
-  contentMd    String
+  contentMd    String              @default("")
   createdAt    DateTime            @default(now())
   updatedAt    DateTime            @default(now())
   category     String
