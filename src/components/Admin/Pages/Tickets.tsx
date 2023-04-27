@@ -7,6 +7,7 @@ import {
   Pagination,
   Select,
   Text,
+  useMantineColorScheme,
   useMantineTheme,
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
@@ -14,10 +15,13 @@ import { SupportTicket, SupportTicketStatus } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
 import { HiCheckCircle, HiInformationCircle } from "react-icons/hi";
+import sanitize from "sanitize-html";
 import useAuthorizedUserStore from "../../../stores/useAuthorizedUser";
 import getMediaUrl from "../../../util/get-media";
 import { NonUser } from "../../../util/prisma-types";
+import { supportSanitization } from "../../../util/sanitize";
 import ModernEmptyState from "../../ModernEmptyState";
+import RenderMarkdown from "../../RenderMarkdown";
 import ShadedButton from "../../ShadedButton";
 import ShadedCard from "../../ShadedCard";
 import Stateful from "../../Stateful";
@@ -35,6 +39,7 @@ const Tickets: React.FC = () => {
   >([]);
   const { user } = useAuthorizedUserStore();
   const { colors } = useMantineTheme();
+  const { colorScheme } = useMantineColorScheme();
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(0);
   const [status, setStatus] = useState<"OPEN" | "CLOSED" | "ALL">("ALL");
@@ -161,7 +166,10 @@ const Tickets: React.FC = () => {
                           {ticket.title}
                         </Text>
                         <Text color="dimmed" size="sm" lineClamp={2}>
-                          {ticket.content}
+                          {sanitize(
+                            ticket.content,
+                            supportSanitization
+                          ).replace(/<[^>]*>?/gm, "")}
                         </Text>
                       </div>
                       <div>
@@ -199,11 +207,12 @@ const Tickets: React.FC = () => {
                   <Modal
                     title={ticket.title}
                     opened={opened}
+                    className={colorScheme}
                     onClose={() => setOpened(false)}
                   >
                     <>
-                      <Text mb={16}>{ticket.content}</Text>
-                      <div className="grid grid-cols-1 mb-8 md:grid-cols-3">
+                      <RenderMarkdown>{ticket.content}</RenderMarkdown>
+                      <div className="grid grid-cols-1 mt-4 mb-8 md:grid-cols-3">
                         {[
                           [
                             "Status",

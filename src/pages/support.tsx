@@ -3,6 +3,7 @@ import {
   Badge,
   Button,
   Checkbox,
+  Divider,
   Modal,
   Pagination,
   Select,
@@ -10,7 +11,7 @@ import {
   Text,
   TextInput,
   Title,
-  useMantineColorScheme
+  useMantineColorScheme,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { openModal } from "@mantine/modals";
@@ -40,6 +41,8 @@ import authorizedRoute from "../util/auth";
 import { User } from "../util/prisma-types";
 import { BLACK } from "./teams/t/[slug]/issue/create";
 import RenderMarkdown from "../components/RenderMarkdown";
+import sanitize from "sanitize-html";
+import { supportSanitization } from "../util/sanitize";
 
 interface SupportProps {
   user: User;
@@ -116,6 +119,7 @@ const Support: NextPage<SupportProps> = ({ user }) => {
   const [viewingTickets, setViewingTickets] = useState(false);
   const [tickets, setTickets] = useState<SupportTicket[]>();
   const [page, setPage] = useState(1);
+  const { colorScheme } = useMantineColorScheme();
 
   useEffect(() => {
     if (user) {
@@ -137,7 +141,6 @@ const Support: NextPage<SupportProps> = ({ user }) => {
         title="Your tickets"
         opened={viewingTickets}
         onClose={() => setViewingTickets(false)}
-        className={useMantineColorScheme().colorScheme}
       >
         <Stack spacing={3}>
           {tickets?.length === 0 && (
@@ -155,11 +158,11 @@ const Support: NextPage<SupportProps> = ({ user }) => {
                     setViewingTickets(false);
                     openModal({
                       title: ticket.title,
+                      className: colorScheme,
                       children: (
                         <>
-                          <RenderMarkdown>
-                            {ticket.content}
-                          </RenderMarkdown>
+                          <RenderMarkdown>{ticket.content}</RenderMarkdown>
+                          <Divider mt="xl" mb="xl" />
                           <div className="flex justify-between md:flex-row flex-col">
                             {[
                               [
@@ -217,7 +220,10 @@ const Support: NextPage<SupportProps> = ({ user }) => {
                         {ticket.title}
                       </Text>
                       <Text size="sm" lineClamp={2} color="dimmed">
-                        {ticket.content}
+                        {sanitize(ticket.content, supportSanitization).replace(
+                          /<[^>]*>?/gm,
+                          ""
+                        )}
                       </Text>
                     </div>
                     <div>

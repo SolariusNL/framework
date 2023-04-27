@@ -18,10 +18,7 @@ import type { User } from "../../../util/prisma-types";
 import { nonCurrentUserSelect } from "../../../util/prisma-types";
 import { RateLimitMiddleware } from "../../../util/rate-limit";
 import { categories } from "../../support";
-
-export const supportSanitization = {
-  allowedTags: ["h2", "h3", "b", "strong", "ul", "ol", "li", "p", "br"],
-};
+import { supportSanitization } from "../../../util/sanitize";
 
 class SupportRouter {
   @Post("/submit")
