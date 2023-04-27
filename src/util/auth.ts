@@ -67,6 +67,15 @@ const authorizedRoute = async (
           },
         };
       }
+      if (account?.locked && context.resolvedUrl !== "/locked") {
+        return {
+          redirect: {
+            destination: "/locked",
+            permanent: false,
+            banRedirect: true,
+          },
+        };
+      }
 
       if (redirectIfAuthorized) {
         return {
