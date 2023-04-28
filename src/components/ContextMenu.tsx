@@ -19,10 +19,16 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const { colorScheme } = useMantineColorScheme();
+  const [mouseX, setMouseX] = useState(0);
+  const [mouseY, setMouseY] = useState(0);
+  const [display, setDisplay] = useState<"block" | "none">("none");
 
   const handleContextMenu = (event: React.MouseEvent) => {
     event.preventDefault();
     setPosition({ x: event.clientX, y: event.clientY });
+    setMouseX(event.clientX);
+    setMouseY(event.clientY);
+    setDisplay("block");
     setIsOpen(true);
   };
 
@@ -32,6 +38,9 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
 
   useWindowEvent("resize", () => {
     setIsOpen(false);
+  });
+  useWindowEvent("click", () => {
+    setDisplay("none");
   });
 
   return (
@@ -50,6 +59,8 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
           boxShadow: `0 8px 16px ${
             colorScheme === "dark" ? theme.colors.dark[9] : theme.colors.gray[3]
           } !important`,
+          display: display,
+          transform: `translateX(min(${mouseX}px, calc(100vw - 100%))) translateY(min(${mouseY}px, calc(100vh - 100%)))`,
         },
         divider: {
           borderTop:
@@ -73,12 +84,14 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
       </Menu.Target>
       <Affix
         position={{
-          top: position.y,
-          left: position.x,
+          top: 0,
+          left: 0,
         }}
         sx={{
-          position: "fixed",
           zIndex: 1000,
+          display: display,
+          position: "fixed",
+          transform: `translateX(min(${mouseX}px, calc(100vw - 100%))) translateY(min${mouseY}px, calc(100vh - 100%)))`,
         }}
       >
         <Menu.Dropdown>{dropdown}</Menu.Dropdown>
