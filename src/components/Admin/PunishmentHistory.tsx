@@ -25,36 +25,41 @@ const PunishmentHistory: FC<PunishmentHistoryProps> = ({
   const historyRef = useRef<HTMLDivElement>(null);
   const [didScroll, setDidScroll] = useState(false);
 
-  const entries = user.punishmentHistory.map((p, i) => (
-    <>
-      {i !== 0 && <Divider my="md" />}
+  const entries = user.punishmentHistory
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    )
+    .map((p, i) => (
+      <>
+        {i !== 0 && <Divider my="md" />}
 
-      <div>
-        <Owner user={p.punishedBy} />
-        <Text size="lg" mt="sm" weight={500}>
-          {p.type === PunishmentType.WARNING
-            ? "Warning"
-            : p.type === PunishmentType.BAN
-            ? "Ban"
-            : "HWID Ban"}{" "}
-          - {new Date(p.createdAt).toLocaleDateString()}
-        </Text>
-        <Text size="sm" color="dimmed" mt="md">
-          User-facing reason
-        </Text>
-        <Text size="sm" mt={4}>
-          {p.reason}
-        </Text>
-        <Text size="sm" color="dimmed" mt="md">
-          Internal note
-        </Text>
-        <Text size="sm" mt={4}>
-          {p.internalNote ||
-            "No internal note provided. (possibly before this feature was added)"}
-        </Text>
-      </div>
-    </>
-  ));
+        <div>
+          <Owner user={p.punishedBy} />
+          <Text size="lg" mt="sm" weight={500}>
+            {p.type === PunishmentType.WARNING
+              ? "Warning"
+              : p.type === PunishmentType.BAN
+              ? "Ban"
+              : "HWID Ban"}{" "}
+            - {new Date(p.createdAt).toLocaleDateString()}
+          </Text>
+          <Text size="sm" color="dimmed" mt="md">
+            User-facing reason
+          </Text>
+          <Text size="sm" mt={4}>
+            {p.reason}
+          </Text>
+          <Text size="sm" color="dimmed" mt="md">
+            Internal note
+          </Text>
+          <Text size="sm" mt={4}>
+            {p.internalNote ||
+              "No internal note provided. (possibly before this feature was added)"}
+          </Text>
+        </div>
+      </>
+    ));
 
   return (
     <>
@@ -68,7 +73,7 @@ const PunishmentHistory: FC<PunishmentHistoryProps> = ({
             onScrollPositionChange={() => setDidScroll(true)}
             viewportRef={historyRef}
           >
-            {!didScroll && (
+            {!didScroll && user.punishmentHistory.length > 3 && (
               <div
                 className={clsx(
                   "absolute bottom-0 left-0 right-0 flex justify-center animate-bounce"

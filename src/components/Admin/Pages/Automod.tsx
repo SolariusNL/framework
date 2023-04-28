@@ -1,4 +1,12 @@
-import { CloseButton, Pagination, Skeleton, Text, Title } from "@mantine/core";
+import {
+  CloseButton,
+  Code,
+  Pagination,
+  Skeleton,
+  Text,
+  Title,
+  Tooltip,
+} from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { AnimatePresence, motion } from "framer-motion";
 import { FC, useEffect, useState } from "react";
@@ -83,7 +91,20 @@ const Automod: FC = () => {
                     onClick={() => setOpen(!open)}
                   >
                     <div className="flex justify-between items-center">
-                      <Title order={4}>{entry.reference}</Title>
+                      <div className="flex items-center gap-2">
+                        <Title order={4}>{entry.reference}</Title>
+                        <Tooltip label="Click to copy ID: for use in internal notes">
+                          <Code
+                            className="dark:bg-black bg-white"
+                            onClick={(e: React.MouseEvent) => {
+                              e.stopPropagation();
+                              navigator.clipboard.writeText(entry.id);
+                            }}
+                          >
+                            {entry.id.split("-").shift()}
+                          </Code>
+                        </Tooltip>
+                      </div>
                       <CloseButton
                         onClick={(e) => {
                           e.stopPropagation();

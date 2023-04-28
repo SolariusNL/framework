@@ -173,7 +173,7 @@ const Games: NextPage<GamesProps> = ({ user }) => {
             </div>
             <Divider mt="lg" mb="lg" />
             <div>
-              <ShadedCard mb="md" className="dark:bg-black border-none">
+              <ShadedCard mb="md">
                 <div className="flex items-center flex-col gap-4">
                   <Select
                     label="Filter"
@@ -269,7 +269,7 @@ const Games: NextPage<GamesProps> = ({ user }) => {
             </div>
           </div>
           <div className="flex-1">
-            <ShadedCard className="dark:bg-black border-none">
+            <ShadedCard>
               <TextInput
                 icon={<HiSearch />}
                 placeholder="Search for games"

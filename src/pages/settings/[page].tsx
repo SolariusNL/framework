@@ -1,5 +1,5 @@
 import { Loader, NativeSelect, NavLink } from "@mantine/core";
-import { motion } from "framer-motion";
+import { LayoutGroup, motion } from "framer-motion";
 import { GetServerSidePropsContext, NextPage } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -181,28 +181,31 @@ const Settings: NextPage<SettingsProps> = ({ user, activePage }) => {
             tabs
               .filter((tab) => !disabledTabs.includes(tab.value))
               .map((tab) => (
-                <Link passHref href={`/settings/${tab.value}`} key={tab.value}>
-                  <NavLink
-                    icon={tab.icon}
-                    color={tab.color}
-                    label={tab.label}
-                    className="rounded-md -mb-1"
-                    active={active === tab.value}
-                    component="a"
-                    {...(active === tab.value && {
-                      description: (
-                        <motion.div
-                          initial={{ height: 0 }}
-                          animate={{ height: "auto" }}
-                          transition={{ type: "spring", duration: 0.5 }}
-                          exit={{ height: 0 }}
-                        >
-                          {tab.description}
-                        </motion.div>
-                      ),
-                    })}
-                  />
-                </Link>
+                <LayoutGroup id="settings" key={tab.value}>
+                  <Link passHref href={`/settings/${tab.value}`}>
+                    <NavLink
+                      icon={tab.icon}
+                      color={tab.color}
+                      label={tab.label}
+                      className="rounded-md -mb-1"
+                      active={active === tab.value}
+                      component="a"
+                      {...(active === tab.value && {
+                        description: (
+                          <motion.div
+                            initial={{ height: 0 }}
+                            animate={{ height: "auto" }}
+                            transition={{ type: "spring", duration: 0.5 }}
+                            exit={{ height: 0 }}
+                            layoutId="settings"
+                          >
+                            {tab.description}
+                          </motion.div>
+                        ),
+                      })}
+                    />
+                  </Link>
+                </LayoutGroup>
               ))
           )}
         </SidebarTabNavigation.Sidebar>
