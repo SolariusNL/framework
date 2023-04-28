@@ -6,6 +6,15 @@ import FuzzySet from "fuzzyset.js";
  *
  * I do not condone the use of these words.
  */
+const exemptWords = [
+  "nigeria",
+  "niger",
+  "ching",
+  "chin",
+  "chang",
+  "pakistan",
+  "pakistani",
+];
 const reconsiderWords = [
   "nigga",
   "nigger",
@@ -48,6 +57,10 @@ function isRestricted(input: string): RestrictionCheckResult {
     if (fuzzyMatches !== null) {
       hasMatch = true;
       fuzzyMatches.forEach((match) => {
+        if (exemptWords.includes(word)) {
+          hasMatch = false;
+          return;
+        }
         matchedWords.push({ word: word, matched: match[1], score: match[0] });
       });
     }
