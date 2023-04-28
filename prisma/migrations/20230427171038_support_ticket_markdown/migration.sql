@@ -5,4 +5,4 @@
 
 */
 -- AlterTable
-ALTER TABLE "SupportTicket" ADD COLUMN     "contentMd" TEXT NOT NULL;
+ALTER TABLE "SupportTicket" ADD COLUMN     "contentMd" TEXT NOT NULL DEFAULT '';
