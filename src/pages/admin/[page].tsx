@@ -17,9 +17,10 @@ import {
 } from "@mantine/core";
 import { useLocalStorage } from "@mantine/hooks";
 import { openModal } from "@mantine/modals";
+import { LayoutGroup, motion } from "framer-motion";
 import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   HiArrowLeft,
   HiBeaker,
@@ -35,7 +36,6 @@ import {
   HiServer,
   HiShieldCheck,
   HiTable,
-  HiTicket,
   HiUserGroup,
   HiUsers,
   HiWifi,
@@ -54,6 +54,7 @@ import Gifts from "../../components/Admin/Pages/Gifts";
 import Instance from "../../components/Admin/Pages/Instance";
 import Invites from "../../components/Admin/Pages/Invites";
 import Licenses from "../../components/Admin/Pages/Licenses";
+import Punish from "../../components/Admin/Pages/Punish";
 import Reports from "../../components/Admin/Pages/Reports";
 import Tickets from "../../components/Admin/Pages/Tickets";
 import Users from "../../components/Admin/Pages/Users";
@@ -64,11 +65,11 @@ import ShadedCard from "../../components/ShadedCard";
 import useAmoled from "../../stores/useAmoled";
 import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
 import authorizedRoute from "../../util/auth";
+import clsx from "../../util/clsx";
 import getMediaUrl from "../../util/get-media";
 import useMediaQuery from "../../util/media-query";
 import prisma from "../../util/prisma";
 import { User } from "../../util/prisma-types";
-import Punish from "../../components/Admin/Pages/Punish";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon");
@@ -372,16 +373,37 @@ const AdminDashboard: React.FC<{
           event.preventDefault();
         }}
       >
-        <a
-          className={cx(classes.link, {
-            [classes.linkActive]: item.label.toLowerCase() === active,
-          })}
-          target={item.external ? "_blank" : undefined}
-          rel={item.external ? "noopener noreferrer" : undefined}
+        <motion.a
+          className={clsx(
+            "dark:text-zinc-300s flex cursor-pointer items-center font-medium gap-2 w-full md:px-6 px-4 h-9 rounded-md relative transition ease-in-out duration-200",
+            active === item.label.toLowerCase()
+              ? "dark:text-pink-200 text-pink-700"
+              : "dark:hover:text-zinc-200 dark:hover:bg-zinc-700/10",
+            mobile &&
+              active === item.label.toLowerCase() &&
+              "dark:bg-pink-900/30"
+          )}
+          style={{
+            fontSize: theme.fontSizes.sm,
+          }}
         >
-          <item.icon className={classes.linkIcon} stroke="1.5" />
-          <span>{item.label}</span>
-        </a>
+          {active === item.label.toLowerCase() && (
+            <motion.span
+              layoutId="sidebar"
+              className={clsx(
+                "absolute left-0 right-0 top-0 bottom-0 rounded-md bg-pink-900/30",
+                mobile && "hidden"
+              )}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <div className="bg-pink-800 w-[2px] rounded-full absolute top-2.5 left-2.5 h-4" />
+            </motion.span>
+          )}
+          {React.createElement(item.icon)}
+          {item.label}
+        </motion.a>
       </Link>
     ));
 
@@ -416,7 +438,9 @@ const AdminDashboard: React.FC<{
             </Navbar.Section>
 
             <Navbar.Section grow component={ScrollArea}>
-              {links}
+              <LayoutGroup id="sidebar">
+                <div className="flex flex-col gap-y-1">{links}</div>
+              </LayoutGroup>
             </Navbar.Section>
 
             <Navbar.Section className={classes.footer}>
