@@ -30,15 +30,15 @@ const TabNav = (props: React.ComponentProps<typeof Tabs>) => {
           /** @ts-ignore */
           "&[data-active=true]": {
             ":after": {
-              height: "24px",
+              height: "12px",
               content: "''",
               backgroundColor:
                 theme.colorScheme == "dark"
                   ? "rgb(88, 166, 255)"
                   : "rgb(9, 105, 218)",
-              borderRadius: "6px",
+              borderRadius: "8px",
               position: "absolute",
-              top: "calc(50% - 12px)",
+              top: "calc(50% - 6px)",
               left: "-8px",
               width: "4px",
             },
