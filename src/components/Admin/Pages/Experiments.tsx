@@ -1,11 +1,14 @@
-import { Stack } from "@mantine/core";
+import { Stack, TextInput, Title, TitleOrder } from "@mantine/core";
 import { useState } from "react";
+import { HiInbox } from "react-icons/hi";
+import { BLACK } from "../../../pages/teams/t/[slug]/issue/create";
 import Markdown from "../../Markdown";
 import SideBySide from "../../Settings/SideBySide";
 import ShadedCard from "../../ShadedCard";
 
 const Experiments: React.FC = () => {
   const [markdown, setMarkdown] = useState<string>("");
+  const [titleText, setTitleText] = useState<string>("Hello, world!");
 
   return (
     <Stack spacing="lg">
@@ -18,6 +21,31 @@ const Experiments: React.FC = () => {
           </ShadedCard>
         }
         noUpperBorder
+      />
+      <SideBySide
+        title="New heading font"
+        description="Mona Sans for the new heading font."
+        noUpperBorder
+        right={
+          <ShadedCard>
+            <Stack spacing="xl">
+              {[1, 2, 3, 4, 5, 6].map((order) => (
+                <Title order={order as TitleOrder} key={order}>
+                  {titleText}
+                </Title>
+              ))}
+            </Stack>
+          </ShadedCard>
+        }
+        actions={
+          <TextInput
+            classNames={BLACK}
+            onChange={(e) => setTitleText(e.currentTarget.value)}
+            value={titleText}
+            icon={<HiInbox />}
+            placeholder="Enter text"
+          />
+        }
       />
     </Stack>
   );
