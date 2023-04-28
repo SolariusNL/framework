@@ -28,7 +28,7 @@ import Framework from "../../../../components/Framework";
 import SidebarTabNavigation from "../../../../layouts/SidebarTabNavigation";
 import authorizedRoute from "../../../../util/auth";
 import prisma from "../../../../util/prisma";
-import { Game, gameSelect, User } from "../../../../util/prisma-types";
+import { Game, User, gameSelect } from "../../../../util/prisma-types";
 
 export type GameWithDatastore = Game & {
   datastores: {
@@ -125,7 +125,7 @@ const EditGame: NextPage<EditGameProps> = ({ game, user, activePage }) => {
     <Framework
       activeTab="invent"
       user={user}
-      modernTitle={`${game.name} -> ${page.title}`}
+      modernTitle={`${game.name} → ${page.title}`}
       modernSubtitle="Configure your games details and other settings."
     >
       <SidebarTabNavigation>
