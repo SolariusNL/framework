@@ -30,7 +30,6 @@ import {
 import { GameWithDatastore } from "../../pages/game/[id]/edit/[edit]";
 import clsx from "../../util/clsx";
 import { getRelativeTime } from "../../util/relative-time";
-import Copy from "../Copy";
 import LabelledRadio from "../LabelledRadio";
 import ModernEmptyState from "../ModernEmptyState";
 import ShadedCard from "../ShadedCard";
@@ -342,12 +341,6 @@ const EnvironmentVariables = ({ game }: EnvironmentVariablesProps) => {
                             {env.environment === "PRODUCTION"
                               ? "Production environment"
                               : "Development environment"}
-                          </Text>
-                        </div>
-                        <div className="md:flex hidden items-center gap-3 ">
-                          <Copy value={env.value} />
-                          <Text size="sm" color="dimmed">
-                            •••••••••••••••
                           </Text>
                         </div>
                         <div className="flex items-center">

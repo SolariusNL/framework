@@ -24,6 +24,7 @@ import { default as sanitize, default as sanitizeHtml } from "sanitize-html";
 import { z } from "zod";
 import { scoreDescriptions } from "../../../components/EditGame/AgeRating";
 import { parse } from "../../../components/RenderMarkdown";
+import IResponseBase from "../../../types/api/IResponseBase";
 import Authorized, { Account } from "../../../util/api/authorized";
 import registerAutomodHandler from "../../../util/automod";
 import logger from "../../../util/logger";
@@ -1197,6 +1198,50 @@ class GameRouter {
     return {
       success: true,
       fund: f,
+    };
+  }
+
+  @Delete("/:id/fund/:fundId")
+  @Authorized()
+  async deleteFund(
+    @Account() user: User,
+    @Param("id") id: number,
+    @Param("fundId") fundId: string
+  ) {
+    const game = await prisma.game.findFirst({
+      where: {
+        id: Number(id),
+      },
+    });
+
+    if (!game || game.authorId !== user.id) {
+      return <IResponseBase>{
+        success: false,
+        message: "Game not found",
+      };
+    }
+
+    const fund = await prisma.gameFund.findFirst({
+      where: {
+        id: fundId,
+      },
+    });
+
+    if (!fund) {
+      return <IResponseBase>{
+        success: false,
+        message: "Fund not found",
+      };
+    }
+
+    await prisma.gameFund.delete({
+      where: {
+        id: fundId,
+      },
+    });
+
+    return <IResponseBase>{
+      success: true,
     };
   }
 

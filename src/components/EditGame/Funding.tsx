@@ -5,6 +5,7 @@ import {
   NumberInput,
   Text,
   TextInput,
+  useMantineColorScheme,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { FormValidateInput } from "@mantine/form/lib/types";
@@ -19,10 +20,15 @@ import {
   HiPencil,
   HiPlus,
   HiTicket,
+  HiTrash,
   HiXCircle,
 } from "react-icons/hi";
+import { BLACK } from "../../pages/teams/t/[slug]/issue/create";
+import IResponseBase from "../../types/api/IResponseBase";
+import fetchJson from "../../util/fetch";
 import { Game } from "../../util/prisma-types";
 import Descriptive from "../Descriptive";
+import { Section } from "../Home/FriendsWidget";
 import Markdown, { ToolbarItem } from "../Markdown";
 import ModernEmptyState from "../ModernEmptyState";
 import RenderMarkdown from "../RenderMarkdown";
@@ -78,6 +84,7 @@ const Funding = ({ game }: FundingProps) => {
       >
     >
   >(game.funds);
+  const { colorScheme } = useMantineColorScheme();
   const form = useForm<CreateFundForm>({
     initialValues: {
       name: "",
@@ -182,6 +189,24 @@ const Funding = ({ game }: FundingProps) => {
       })
       .catch((err) => console.error(err));
   };
+  const deleteFund = async (id: string) => {
+    await fetchJson<IResponseBase>(`/api/games/${game.id}/fund/${id}`, {
+      method: "DELETE",
+      auth: true,
+    }).then((res) => {
+      if (!res.success) {
+        showNotification({
+          title: "Error",
+          message:
+            res.message ||
+            "An unknown error occurred and we couldn't delete the fund. Please try again later.",
+          icon: <HiXCircle />,
+          color: "red",
+        });
+        return;
+      }
+    });
+  };
 
   return (
     <>
@@ -243,6 +268,7 @@ const Funding = ({ game }: FundingProps) => {
                       size="lg"
                       opened={opened}
                       onClose={() => setOpened(false)}
+                      className={colorScheme === "dark" ? "dark" : ""}
                     >
                       <form
                         onSubmit={editForm.onSubmit(
@@ -252,19 +278,18 @@ const Funding = ({ game }: FundingProps) => {
                             )
                         )}
                       >
-                        <Text size="lg" weight={500} mb={2}>
-                          Details
-                        </Text>
-                        <Text size="sm" color="dimmed" mb="md">
-                          Edit the details of your fund.
-                        </Text>
+                        <Section
+                          title="Details"
+                          description="Edit the details of your fund."
+                          sm
+                        />
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                           <TextInput
                             label="Name"
                             placeholder="Development costs"
                             required
                             icon={<HiAtSymbol />}
-                            classNames={{ input: "!mt-1 dark:bg-black" }}
+                            classNames={BLACK}
                             {...editForm.getInputProps("name")}
                           />
                           <NumberInput
@@ -272,22 +297,44 @@ const Funding = ({ game }: FundingProps) => {
                             placeholder="5000T$"
                             required
                             icon={<HiTicket />}
-                            classNames={{ input: "!mt-1 dark:bg-black" }}
+                            classNames={BLACK}
                             {...editForm.getInputProps("goal")}
                           />
                         </div>
-                        <Text size="lg" weight={500} mb={2}>
-                          Description
-                        </Text>
-                        <Text size="sm" color="dimmed" mb="md">
-                          Edit the description of your fund. Markdown is
-                          supported.
-                        </Text>
+                        <Section
+                          title="Description"
+                          description="Detail your fund, what it'll go towards, etc. Markdown is supported."
+                          sm
+                        />
                         <Markdown
                           toolbar={toolbar}
                           {...editForm.getInputProps("description")}
                         />
-                        <div className="flex justify-end mt-4">
+                        <div className="flex justify-end mt-4 gap-2">
+                          <Stateful initialState={0}>
+                            {(confirmed, setConfirmed) => (
+                              <Button
+                                leftIcon={<HiTrash />}
+                                color="red"
+                                onClick={() => {
+                                  const repeated = confirmed + 1;
+                                  setConfirmed(repeated);
+                                  if (repeated === 2) {
+                                    deleteFund(fund.id).then(() => {
+                                      setFunds(
+                                        funds.filter(
+                                          (fund) => fund.id !== fund.id
+                                        )
+                                      );
+                                      setOpened(false);
+                                    });
+                                  }
+                                }}
+                              >
+                                {confirmed === 1 ? "Confirm" : "Delete"}
+                              </Button>
+                            )}
+                          </Stateful>
                           <Button leftIcon={<HiPencil />} type="submit">
                             Confirm
                           </Button>

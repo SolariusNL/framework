@@ -9,13 +9,22 @@ import {
   Textarea,
   TextInput,
   Tooltip,
+  useMantineColorScheme,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { Gamepass } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import React from "react";
-import { HiCheckCircle, HiPlus, HiTrash, HiXCircle } from "react-icons/hi";
+import {
+  HiCheckCircle,
+  HiInbox,
+  HiPlus,
+  HiTicket,
+  HiTrash,
+  HiXCircle,
+} from "react-icons/hi";
+import { BLACK } from "../../pages/teams/t/[slug]/issue/create";
 import abbreviateNumber from "../../util/abbreviate";
 import { Game } from "../../util/prisma-types";
 import Descriptive from "../Descriptive";
@@ -70,6 +79,7 @@ const Store: React.FC<StoreProps> = ({ game }) => {
   });
   const [gamepasses, setGamepasses] = React.useState(game.gamepasses);
   const imgRef = React.useRef<HTMLImageElement | null>(null);
+  const { colorScheme } = useMantineColorScheme();
 
   return (
     <>
@@ -182,6 +192,7 @@ const Store: React.FC<StoreProps> = ({ game }) => {
                 opened={opened}
                 onClose={() => setOpened(false)}
                 title="Create a new gamepass"
+                className={colorScheme}
               >
                 <form
                   onSubmit={form.onSubmit(async (values) => {
@@ -258,20 +269,28 @@ const Store: React.FC<StoreProps> = ({ game }) => {
                     description="The name of the gamepass"
                     required
                     mb="md"
+                    placeholder="VIP"
+                    classNames={BLACK}
+                    icon={<HiInbox />}
                     {...form.getInputProps("name")}
                   />
                   <Textarea
                     label="Description"
                     description="The description of the gamepass, what it grants the user, etc."
                     required
+                    placeholder="VIP grants you access to the VIP room and other perks!"
                     mb="md"
+                    classNames={BLACK}
                     {...form.getInputProps("description")}
                   />
                   <NumberInput
                     label="Price"
                     description="The price of the gamepass in Tickets"
                     required
+                    placeholder="100"
                     mb="md"
+                    classNames={BLACK}
+                    icon={<HiTicket />}
                     {...form.getInputProps("price")}
                   />
                   <Descriptive
@@ -289,7 +308,7 @@ const Store: React.FC<StoreProps> = ({ game }) => {
                           ref={imgRef}
                         />
                       ) : (
-                        <div className="w-16 h-16 rounded-md bg-zinc-800" />
+                        <div className="w-16 h-16 rounded-md dark:bg-zinc-900 bg-gray-100 border dark:border-zinc-700 border-gray-200 border-solid" />
                       )}
                       <ImageUploader
                         crop
