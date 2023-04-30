@@ -17,6 +17,7 @@ type ReturnedFastFlag = Record<
 
 interface FastFlagStore {
   flags: ReturnedFastFlag;
+  rawFlags: GenericFastFlag[];
   setFlags: (GenericFastFlag: GenericFastFlag[]) => void;
 }
 
@@ -48,6 +49,7 @@ const useFastFlags = create<FastFlagStore>((set) => ({
       flags: returnedFlags,
     });
   },
+  rawFlags: [],
 }));
 
 function fetchFlags() {
@@ -57,6 +59,7 @@ function fetchFlags() {
     .then((res) => {
       if (res.success) {
         useFastFlags.getState().setFlags(res.data?.flags || []);
+        useFastFlags.getState().rawFlags = res.data?.flags || [];
       }
     })
     .catch(() => {});

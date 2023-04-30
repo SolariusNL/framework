@@ -766,6 +766,10 @@ const UserView = ({ user: u, loading }: UserViewProps) => {
                                   AdminPermission.GENERATE_GIFTS,
                                   "generate gift codes",
                                 ],
+                                [
+                                  AdminPermission.EDIT_FAST_FLAGS,
+                                  "edit fast flags",
+                                ],
                               ].find((i) => i[0] === permission)![1]) as string
                           }
                           onChange={(e) => {

@@ -191,6 +191,7 @@ enum AdminPermission {
   CHANGE_INSTANCE_SETTINGS
   IMPERSONATE_USERS
   GENERATE_GIFTS
+  EDIT_FAST_FLAGS
 }
 
 enum DomainStatus {

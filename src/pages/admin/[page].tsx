@@ -28,6 +28,7 @@ import {
   HiClipboardCheck,
   HiCog,
   HiColorSwatch,
+  HiFlag,
   HiGift,
   HiHome,
   HiIdentification,
@@ -50,6 +51,7 @@ import Cosmic from "../../components/Admin/Pages/Cosmic";
 import Dashboard from "../../components/Admin/Pages/Dashboard";
 import Directory from "../../components/Admin/Pages/Directory";
 import Experiments from "../../components/Admin/Pages/Experiments";
+import Flags from "../../components/Admin/Pages/Flags";
 import Gifts from "../../components/Admin/Pages/Gifts";
 import Instance from "../../components/Admin/Pages/Instance";
 import Invites from "../../components/Admin/Pages/Invites";
@@ -238,6 +240,13 @@ const data = [
     href: "/admin/tasks",
     render: <Tasks />,
     subtitle: "View your tasks and manage them",
+  },
+  {
+    label: "Flags",
+    icon: HiFlag,
+    href: "/admin/flags",
+    render: <Flags />,
+    subtitle: "Manage runtime flags to enable/disable features",
   },
   {
     label: "Activity",
