@@ -150,16 +150,13 @@ const CreateGame: NextPage<CreateGameProps> = ({ user }) => {
       <ReactNoSSR>
         <form
           onSubmit={form.onSubmit(async (values) => {
-            [values.gameName, values.description].reduce(
-              (acc: boolean, val: string) => {
-                if (acc) return acc;
-                const match = sanitizeInappropriateContent(val, () =>
-                  onSubmit(values)
-                );
-                return match;
-              },
-              false
-            );
+            [values.gameName].reduce((acc: boolean, val: string) => {
+              if (acc) return acc;
+              const match = sanitizeInappropriateContent(val, () =>
+                onSubmit(values)
+              );
+              return match;
+            }, false);
           })}
           className="gap-6 flex flex-col"
         >

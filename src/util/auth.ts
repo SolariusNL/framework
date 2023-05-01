@@ -29,7 +29,7 @@ const authorizedRoute = async (
     }
   }
 
-  const account = await getAccountFromSession(token);
+  let account = await getAccountFromSession(token);
   const isAuthorized = !!account;
 
   const bannedIps = await prisma.bannedIP.findMany({
@@ -79,8 +79,8 @@ const authorizedRoute = async (
 
       if (
         account?.lastDailyBits === null ||
-        new Date(account?.lastDailyBits as Date).getDate() !==
-          new Date().getDate()
+        new Date(account?.lastDailyBits!).getTime() <
+          Date.now() - 24 * 60 * 60 * 1000
       ) {
         await prisma.user.update({
           where: {
@@ -93,6 +93,10 @@ const authorizedRoute = async (
             },
           },
         });
+        account = {
+          ...account,
+          bits: account?.bits! + 100,
+        } as typeof account;
       }
 
       if (redirectIfAuthorized) {

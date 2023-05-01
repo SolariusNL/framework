@@ -1,10 +1,12 @@
 import {
   Body,
   createHandler,
+  Delete,
   Get,
   Param,
   Post,
 } from "@storyofams/next-api-decorators";
+import IResponseBase from "../../../types/api/IResponseBase";
 import Authorized, {
   Account,
   NucleusAuthorized,
@@ -208,6 +210,50 @@ class DatastoreRouter {
     }
 
     return {
+      success: true,
+    };
+  }
+
+  @Delete("/:id/delete")
+  @Authorized()
+  @RateLimitMiddleware(5)()
+  async deleteDatastore(@Param("id") id: string, @Account() user: User) {
+    const datastore = await prisma.gameDatastore.findFirst({
+      where: {
+        id: id,
+      },
+      include: {
+        game: true,
+      },
+    });
+
+    if (!datastore) {
+      return <IResponseBase>{
+        success: false,
+        message: "Datastore not found",
+      };
+    }
+
+    if (datastore.game.authorId !== user.id) {
+      return <IResponseBase>{
+        success: false,
+        message: "You do not have permission to delete this datastore",
+      };
+    }
+
+    await prisma.gameDatastoreKeyValuePair.deleteMany({
+      where: {
+        gameDatastoreId: datastore.id,
+      },
+    });
+
+    await prisma.gameDatastore.delete({
+      where: {
+        id: datastore.id,
+      },
+    });
+
+    return <IResponseBase>{
       success: true,
     };
   }

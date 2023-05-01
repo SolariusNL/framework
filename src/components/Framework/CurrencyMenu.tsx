@@ -153,9 +153,12 @@ const CurrencyMenu = ({
               {user?.bits!}
             </Text>
           </Group>
-          <Text size="xl" color="dimmed" py="md">
-            converted to
-          </Text>
+          <Exchange
+            className="text-dimmed my-4 w-10 h-10"
+            style={{
+              transform: "rotate(90deg)",
+            }}
+          />
           <Group spacing={6}>
             <HiTicket color={theme.colors.green[3]} className="w-6 h-6" />
             <Text

@@ -3,6 +3,7 @@ import {
   Anchor,
   Button,
   Modal,
+  Stack,
   Table,
   Text,
   Textarea,
@@ -10,10 +11,14 @@ import {
   Tooltip,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { openConfirmModal } from "@mantine/modals";
+import { showNotification } from "@mantine/notifications";
 import { getCookie } from "cookies-next";
 import React from "react";
-import { HiPlus, HiTrash } from "react-icons/hi";
+import { HiPlus, HiTrash, HiXCircle } from "react-icons/hi";
 import { GameWithDatastore } from "../../pages/game/[id]/edit/[edit]";
+import IResponseBase from "../../types/api/IResponseBase";
+import fetchJson from "../../util/fetch";
 import Copy from "../Copy";
 import ModernEmptyState from "../ModernEmptyState";
 import Stateful from "../Stateful";
@@ -152,8 +157,8 @@ const Datastores = ({ game }: DatastoreProps) => {
               <th>ID</th>
               <th>Name</th>
               <th>Description</th>
-              <th>Created at</th>
-              <th>Actions</th>
+              <th>Created</th>
+              <th></th>
             </tr>
           </thead>
 
@@ -162,17 +167,75 @@ const Datastores = ({ game }: DatastoreProps) => {
               datastores.map((datastore) => (
                 <tr key={datastore.id}>
                   <td>
-                    <div className="flex items-center gap-2">
-                      <Copy value={datastore.id} />
-                      <Text color="dimmed">Copy ID</Text>
-                    </div>
+                    <Copy value={datastore.id} />
                   </td>
-                  <td>{datastore.name}</td>
-                  <td>{datastore.desc}</td>
-                  <td>{new Date(datastore.createdAt).toLocaleString()}</td>
                   <td>
-                    <Tooltip label="Coming soon">
-                      <ActionIcon color="red" disabled>
+                    <Tooltip label={datastore.name}>
+                      <span className="line-clamp-1 font-semibold">
+                        {datastore.name}
+                      </span>
+                    </Tooltip>
+                  </td>
+                  <td>
+                    <Tooltip label={datastore.desc}>
+                      <span className="line-clamp-1 text-dimmed">
+                        {datastore.desc}
+                      </span>
+                    </Tooltip>
+                  </td>
+                  <td>{new Date(datastore.createdAt).toLocaleDateString()}</td>
+                  <td>
+                    <Tooltip label="Delete datastore">
+                      <ActionIcon
+                        color="red"
+                        variant="light"
+                        onClick={() =>
+                          openConfirmModal({
+                            title: "Are you sure?",
+                            labels: { confirm: "Delete", cancel: "Nevermind" },
+                            children: (
+                              <Stack spacing="sm">
+                                <Text size="sm" color="dimmed">
+                                  Are you sure you want to delete this
+                                  datastore? This action cannot be undone.
+                                </Text>
+                                <Text size="sm" color="dimmed">
+                                  All data in this datastore will be deleted.
+                                </Text>
+                              </Stack>
+                            ),
+                            confirmProps: {
+                              color: "red",
+                              leftIcon: <HiTrash />,
+                            },
+                            async onConfirm() {
+                              await fetchJson<IResponseBase>(
+                                "/api/datastores/" + datastore.id + "/delete",
+                                {
+                                  method: "DELETE",
+                                  auth: true,
+                                }
+                              ).then((res) => {
+                                if (!res.success) {
+                                  showNotification({
+                                    title: "Error",
+                                    message: res.message,
+                                    icon: <HiXCircle />,
+                                    color: "red",
+                                  });
+                                  return;
+                                }
+
+                                setDatastores(
+                                  datastores.filter(
+                                    (d) => d.id !== datastore.id
+                                  )
+                                );
+                              });
+                            },
+                          })
+                        }
+                      >
                         <HiTrash />
                       </ActionIcon>
                     </Tooltip>
