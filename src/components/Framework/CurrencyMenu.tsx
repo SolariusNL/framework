@@ -8,6 +8,7 @@ import {
   Text,
   Tooltip,
   UnstyledButton,
+  useMantineColorScheme,
 } from "@mantine/core";
 import { useLocalStorage } from "@mantine/hooks";
 import Link from "next/link";
@@ -138,6 +139,7 @@ const CurrencyMenu = ({
         title="Bits"
         opened={modalOpened}
         onClose={() => setModalOpened(false)}
+        className={useMantineColorScheme().colorScheme}
       >
         <div className="flex justify-center text-center flex-col items-center">
           <Group spacing={6}>
