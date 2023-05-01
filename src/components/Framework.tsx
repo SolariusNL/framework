@@ -609,7 +609,9 @@ const Framework = ({
                   <FrameworkLogo square={mobile} />
                 </Link>
               </ContextMenu>
-              {process.env.NODE_ENV === "development" && <Badge>Dev</Badge>}
+              {process.env.NODE_ENV === "development" && (
+                <Badge className="md:block hidden">Dev</Badge>
+              )}
             </Group>
 
             {mobile && (
@@ -618,6 +620,11 @@ const Framework = ({
                   <>
                     <MobileSearchMenu opened={mobileSearchOpened} />
                     <NotificationFlyout />
+                    <CurrencyMenu
+                      currencyMenuOpened={currencyMenuOpened}
+                      minimal
+                      bits
+                    />
                     <CurrencyMenu
                       currencyMenuOpened={currencyMenuOpened}
                       minimal
@@ -649,7 +656,9 @@ const Framework = ({
             {!mobile && user && (
               <Group>
                 <NotificationFlyout />
+                <CurrencyMenu currencyMenuOpened={currencyMenuOpened} bits />
                 <CurrencyMenu currencyMenuOpened={currencyMenuOpened} />
+
                 <UserMenu userMenuOpened={userMenuOpened} />
               </Group>
             )}

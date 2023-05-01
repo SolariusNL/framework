@@ -63,13 +63,7 @@ const Flags: FC = () => {
                     <Text
                       size="sm"
                       color={Boolean(flag.value) ? "green" : "red"}
-                      className={clsx(
-                        "before:w-2 before:h-2 before:rounded-full before:inline-block before:mr-2",
-                        Boolean(flag.value)
-                          ? "before:bg-green-500"
-                          : "before:bg-red-500",
-                        "!font-mono"
-                      )}
+                      className={clsx("!font-mono")}
                     >
                       {Boolean(flag.value).toString()}
                     </Text>

@@ -1230,6 +1230,34 @@ class UserRouter {
       success: true,
     };
   }
+
+  @Get("/bits")
+  @Authorized()
+  public async convertBitsToTickets(@Account() user: User) {
+    if (user.bits < 100) {
+      throw new BadRequestException("Not enough bits");
+    }
+
+    const increment =
+      Math.floor(user.bits / 100) * 10 + Math.round((user.bits % 100) / 10);
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        tickets: {
+          increment,
+        },
+        bits: {
+          decrement: user.bits,
+        },
+      },
+    });
+
+    return {
+      success: true,
+    };
+  }
 }
 
 export default createHandler(UserRouter);

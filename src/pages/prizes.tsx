@@ -12,6 +12,7 @@ import { GetServerSidePropsContext, NextPage } from "next";
 import React from "react";
 import Celebration from "react-confetti";
 import Framework from "../components/Framework";
+import Bit from "../icons/Bit";
 import authorizedRoute from "../util/auth";
 import clsx from "../util/clsx";
 import { User } from "../util/prisma-types";
@@ -36,8 +37,8 @@ interface PrizesProps {
 }
 
 const Prizes: NextPage<PrizesProps> = ({ user }) => {
-  const { classes } = useStyles();
-
+  const { classes, theme } = useStyles();
+  const { width, height } = useViewportSize();
   const [finished, setFinished] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | undefined>(undefined);
@@ -45,8 +46,6 @@ const Prizes: NextPage<PrizesProps> = ({ user }) => {
     success: boolean;
     earned: number;
   }>();
-
-  const { width, height } = useViewportSize();
   const [isClient, setClient] = React.useState(false);
 
   React.useEffect(() => {
@@ -95,11 +94,15 @@ const Prizes: NextPage<PrizesProps> = ({ user }) => {
       <Container size={460} my={30}>
         {finished && prizeData ? (
           <>
-            <Title align="center" mb={36}>
-              Congratulations! You won {prizeData.earned} tickets!
-            </Title>
-            <Text color="dimmed">
-              Your tickets should be added to your account shortly.
+            <div className="flex items-center justify-center gap-6 mb-6">
+              <Bit
+                color={theme.colors.violet[3]}
+                className="flex-shrink-0 w-12 h-12"
+              />
+              <Title align="center">You won {prizeData.earned} Bits!</Title>
+            </div>
+            <Text color="dimmed" align="center">
+              Your Bits should be added to your account shortly.
             </Text>
             {isClient && <Celebration width={width} height={height} />}
           </>

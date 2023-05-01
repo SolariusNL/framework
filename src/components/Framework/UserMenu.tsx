@@ -24,12 +24,11 @@ import {
   HiInformationCircle,
   HiLibrary,
   HiLogout,
-  HiMoon,
   HiQrcode,
-  HiSun,
   HiUser,
   HiUsers,
 } from "react-icons/hi";
+import ThemeSwitch from "../../icons/ThemeSwitch";
 import useAmoled from "../../stores/useAmoled";
 import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
 import useFeedback from "../../stores/useFeedback";
@@ -198,7 +197,7 @@ const UserMenu = ({
           >
             <div>
               <Menu.Item
-                icon={colorScheme === "dark" ? <HiMoon /> : <HiSun />}
+                icon={<ThemeSwitch />}
                 color={colorScheme === "dark" ? "yellow" : "blue"}
                 onClick={() => toggleColorScheme()}
                 disabled={amoled}

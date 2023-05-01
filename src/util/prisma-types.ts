@@ -151,6 +151,7 @@ export const userSelect: Prisma.UserSelect = {
   premium: true,
   locked: true,
   tickets: true,
+  bits: true,
   games: {
     include: {
       updates: true,

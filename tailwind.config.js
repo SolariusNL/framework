@@ -27,6 +27,7 @@ module.exports = {
         mantine: {
           "text-dark": "#C1C2C5",
           text: "#000",
+          "paper-dark": "#101113",
         },
       },
     },
