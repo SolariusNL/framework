@@ -77,6 +77,24 @@ const authorizedRoute = async (
         };
       }
 
+      if (
+        account?.lastDailyBits === null ||
+        new Date(account?.lastDailyBits as Date).getDate() !==
+          new Date().getDate()
+      ) {
+        await prisma.user.update({
+          where: {
+            id: account?.id,
+          },
+          data: {
+            lastDailyBits: new Date(),
+            bits: {
+              increment: 100,
+            },
+          },
+        });
+      }
+
       if (redirectIfAuthorized) {
         return {
           redirect: {

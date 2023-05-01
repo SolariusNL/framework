@@ -145,6 +145,7 @@ export const userSelect: Prisma.UserSelect = {
   password: false,
   username: true,
   id: true,
+  lastDailyBits: true,
   email: true,
   createdAt: true,
   updatedAt: true,
