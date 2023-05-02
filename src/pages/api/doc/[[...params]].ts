@@ -1,4 +1,5 @@
 import { createHandler, Get, SetHeader } from "@storyofams/next-api-decorators";
+import { existsSync } from "fs";
 import { readFile } from "fs/promises";
 import fetch from "node-fetch";
 import { RateLimitMiddleware } from "../../../util/rate-limit";
@@ -24,6 +25,14 @@ class DocRouter {
   async getVersion() {
     const data = await readFile("./package.json", "utf-8");
     const { version } = JSON.parse(data);
+
+    if (existsSync("./.git/refs/heads/main")) {
+      const commit = await readFile("./.git/refs/heads/main", "utf-8");
+      const commitHash = commit.slice(0, 7);
+
+      return `${version}+${commitHash}`;
+    }
+
     return version;
   }
 
