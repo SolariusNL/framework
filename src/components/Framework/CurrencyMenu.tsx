@@ -48,10 +48,6 @@ const CurrencyMenu = ({
     key: "@fw/daily-prize-reminder",
     defaultValue: false,
   });
-  const [prizeReminderActivated, setPrizeReminderActivated] = useLocalStorage({
-    key: "@fw/daily-prize-reminder-activated",
-    defaultValue: 0,
-  });
   const [menuOpened, setMenuOpened] = React.useState(false);
   const [modalOpened, setModalOpened] = React.useState(false);
   const [celebration, setCelebration] = React.useState(false);
@@ -203,7 +199,6 @@ const CurrencyMenu = ({
               label: "Redeem daily prize",
               icon: <HiGift className="text-dimmed" />,
               onClick: () => {
-                setPrizeReminderActivated(Date.now());
                 router.push("/prizes");
                 setModalOpened(false);
               },
@@ -269,11 +264,10 @@ const CurrencyMenu = ({
             <Popover
               opened={
                 bits &&
+                router.pathname !== "/prizes" &&
                 !prizeReminder &&
                 new Date().getTime() -
                   new Date(user?.lastRandomPrize!).getTime() >
-                  1000 * 60 * 60 * 24 &&
-                new Date().getTime() - prizeReminderActivated >
                   1000 * 60 * 60 * 24
               }
               shadow="md"
@@ -302,10 +296,6 @@ const CurrencyMenu = ({
                     gradient={{
                       from: "grape",
                       to: "violet",
-                    }}
-                    onClick={() => {
-                      setPrizeReminderActivated(new Date().getTime());
-                      setPrizeReminder(true);
                     }}
                   >
                     Claim prize
