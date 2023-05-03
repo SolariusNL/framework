@@ -1,4 +1,3 @@
-import { useFlags } from "@happykit/flags/client";
 import {
   AlertStylesParams,
   Anchor,
@@ -51,6 +50,7 @@ import { FrameworkUserProvider } from "../contexts/FrameworkUser";
 import SocketProvider from "../contexts/SocketContextProvider";
 import { UserInformationWrapper } from "../contexts/UserInformationDialog";
 import useAmoled from "../stores/useAmoled";
+import useFastFlags from "../stores/useFastFlags";
 import useFeedback from "../stores/useFeedback";
 import "../styles/fonts.css";
 import "../styles/framework.css";
@@ -128,7 +128,7 @@ const Framework = (
   });
 
   const router = useRouter();
-  const { flags } = useFlags();
+  const { flags } = useFastFlags();
 
   useEffect(() => {
     if (router.query.status == "success") {
@@ -164,7 +164,7 @@ const Framework = (
   }, []);
 
   useEffect(() => {
-    if (flags?.maintenanceEnabled == true) {
+    if (flags.maintenance) {
       if (
         router.pathname !== "/maintenance" &&
         !router.pathname.startsWith("/admin")
@@ -172,7 +172,7 @@ const Framework = (
         router.push("/maintenance");
       }
     }
-  }, [flags?.maintenanceEnabled]);
+  }, [flags]);
 
   async function initGateway() {
     await fetch("/api/gateway/initialize", {

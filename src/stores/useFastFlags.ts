@@ -34,7 +34,7 @@ const useFastFlags = create<FastFlagStore>((set) => ({
           returnedFlags[flag.name] = Number(flag.value);
           break;
         case "BOOLEAN":
-          returnedFlags[flag.name] = Boolean(flag.value);
+          returnedFlags[flag.name] = flag.value === "true" ? true : false;
           break;
         case "ARRAY":
           returnedFlags[flag.name] = JSON.parse(flag.value as string);

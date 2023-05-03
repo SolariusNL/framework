@@ -1,9 +1,9 @@
-import { useFlags } from "@happykit/flags/client";
 import { Button, Container, createStyles, Text, Title } from "@mantine/core";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import MinimalFooter from "../components/MinimalFooter";
+import useFastFlags from "../stores/useFastFlags";
 import useMediaQuery from "../util/media-query";
 
 const useStyles = createStyles((theme) => ({
@@ -28,16 +28,16 @@ const useStyles = createStyles((theme) => ({
 
 const Maintenance: NextPage = () => {
   const { classes } = useStyles();
-  const { flags } = useFlags();
+  const { flags } = useFastFlags();
   const router = useRouter();
   const mobile = useMediaQuery("768");
 
   useEffect(() => {
-    if (flags?.maintenanceEnabled == false) {
+    console.log(flags);
+    if (!flags.maintenance) {
       router.push("/");
     }
-  }),
-    [];
+  }, [flags]);
 
   return (
     <Container size={460} my={200}>
