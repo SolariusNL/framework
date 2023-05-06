@@ -181,48 +181,40 @@ const Checklists: NextPage<ChecklistsProps> = ({ user, checklistData }) => {
       >
         <SidebarTabNavigation>
           <SidebarTabNavigation.Sidebar>
-            {loading ? (
-              <div className="col-span-full flex justify-center items-center">
-                <Loader />
-              </div>
-            ) : (
-              <>
-                {checklists &&
-                  checklists.map((item) => (
-                    <NavLink
-                      key={item.name}
-                      label={item.name}
-                      active={active === item.id}
-                      onClick={() => {
-                        setActive(item.id);
-                        setCurrentChecklist(item);
-                        router.push(
-                          {
-                            pathname: "/checklists",
-                            query: { id: item.id },
-                          },
-                          undefined,
-                          {
-                            shallow: true,
-                          }
-                        );
-                      }}
-                      description={
-                        <span className="line-clamp-2">{item.description}</span>
-                      }
-                      icon={<HiTable />}
-                      className="rounded-md h-fit"
-                    />
-                  ))}
+            {checklists &&
+              checklists.map((item) => (
                 <NavLink
-                  label="Create new checklist"
-                  description="Set up a new checklist to keep track of something new"
-                  icon={<HiPlusCircle />}
-                  onClick={() => setCreateChecklistOpen(true)}
-                  className="rounded-md"
+                  key={item.name}
+                  label={item.name}
+                  active={active === item.id}
+                  onClick={() => {
+                    setActive(item.id);
+                    setCurrentChecklist(item);
+                    router.push(
+                      {
+                        pathname: "/checklists",
+                        query: { id: item.id },
+                      },
+                      undefined,
+                      {
+                        shallow: true,
+                      }
+                    );
+                  }}
+                  description={
+                    <span className="line-clamp-2">{item.description}</span>
+                  }
+                  icon={<HiTable />}
+                  className="rounded-md h-fit"
                 />
-              </>
-            )}
+              ))}
+            <NavLink
+              label="Create new checklist"
+              description="Set up a new checklist to keep track of something new"
+              icon={<HiPlusCircle />}
+              onClick={() => setCreateChecklistOpen(true)}
+              className="rounded-md"
+            />
           </SidebarTabNavigation.Sidebar>
           <SidebarTabNavigation.Content>
             <ShadedCard>
