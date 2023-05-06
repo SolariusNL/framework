@@ -5,7 +5,6 @@ import {
   Badge,
   Box,
   Burger,
-  Divider,
   Drawer,
   NavLink,
   Paper,
@@ -323,28 +322,36 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
           <SidebarTabNavigation.Content>
             {conversationOpen ? (
               <ShadedCard>
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-4">
-                    <Avatar
-                      src={getMediaUrl(conversating?.avatarUri!)}
-                      size="md"
-                      className="rounded-full"
-                    />
-                    <div>
-                      <Text size="lg">
-                        {conversating?.alias || conversating?.username}
-                      </Text>
-                      <Text size="sm" color="dimmed">
-                        @{conversating?.username}
-                      </Text>
+                <ShadedCard
+                  sx={(theme) => ({
+                    backgroundColor:
+                      theme.colorScheme === "dark"
+                        ? theme.colors.dark[8]
+                        : theme.colors.gray[1],
+                  })}
+                >
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-4">
+                      <Avatar
+                        src={getMediaUrl(conversating?.avatarUri!)}
+                        size="md"
+                        className="rounded-full"
+                      />
+                      <div>
+                        <Text size="lg">
+                          {conversating?.alias || conversating?.username}
+                        </Text>
+                        <Text size="sm" color="dimmed">
+                          @{conversating?.username}
+                        </Text>
+                      </div>
                     </div>
+                    <Text size="sm" color="dimmed" weight="500">
+                      Last seen{" "}
+                      {getRelativeTime(new Date(conversating?.lastSeen!))}
+                    </Text>
                   </div>
-                  <Text size="sm" color="dimmed" weight="500">
-                    Last seen{" "}
-                    {getRelativeTime(new Date(conversating?.lastSeen!))}
-                  </Text>
-                </div>
-                <Divider mt="lg" mb="lg" />
+                </ShadedCard>
                 <div
                   style={{
                     height: "calc(100vh - 300px)",
@@ -354,8 +361,9 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
                     overflowY: "auto",
                   }}
                   ref={messagesRef}
+                  className="dark:scrollbar-track-zinc-900/20 dark:scrollbar-thumb-zinc-700 scrollbar-track-gray-100/20 scrollbar-thumb-gray-500 scrollbar-thumb-rounded-md scrollbar-thin"
                 >
-                  <Stack spacing={12}>
+                  <Stack spacing={12} pb="md" pt="md">
                     {conversationData &&
                       conversationData.map((message) =>
                         message.authorId === user?.id ? (
@@ -368,6 +376,8 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
                               textAlign: "right",
                               width: "fit-content",
                               alignSelf: "flex-end",
+                              // 90% width
+                              maxWidth: "90%",
                             })}
                             p="sm"
                           >

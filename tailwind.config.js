@@ -39,6 +39,7 @@ module.exports = {
   plugins: [
     require("@tailwindcss/typography"),
     require("@tailwindcss/line-clamp"),
+    require("tailwind-scrollbar")({ nocompatible: true }),
     function ({ matchUtilities, theme }) {
       matchUtilities(
         {
