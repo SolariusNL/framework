@@ -1,9 +1,10 @@
-import { Anchor, Loader, Stack, Text } from "@mantine/core";
+import { Loader, Stack } from "@mantine/core";
+import { openModal } from "@mantine/modals";
 import { GameUpdateLog } from "@prisma/client";
 import { getCookie } from "cookies-next";
-import Link from "next/link";
 import React, { useState } from "react";
 import { Game } from "../../util/prisma-types";
+import GameCard from "../GameCard";
 import ModernEmptyState from "../ModernEmptyState";
 import ShadedCard from "../ShadedCard";
 import UpdateCard from "../UpdateCard";
@@ -44,18 +45,18 @@ const UpdatesWidget: React.FC = () => {
               <Loader />
             </ShadedCard>
           ) : (
-            <>
+            <div className="grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 gap-4 gap-y-8">
               {gameUpdates.map((game) => (
-                <div key={game.id}>
-                  <div className="flex items-center gap-2 mb-3">
-                    <Link href={`/game/${game.id}`}>
-                      <Anchor size="sm" color="dimmed">
-                        {game.name}
-                      </Anchor>
-                    </Link>
-                  </div>
-                  <UpdateCard update={game.updateLogs[0]} light />
-                </div>
+                <GameCard
+                  onClick={() => {
+                    openModal({
+                      title: `Updates for ${game.name}`,
+                      children: <UpdateCard update={game.updateLogs[0]} />,
+                    });
+                  }}
+                  game={game}
+                  key={game.id}
+                />
               ))}
               {gameUpdates.length === 0 && (
                 <div className="w-full flex justify-center items-center">
@@ -65,7 +66,7 @@ const UpdatesWidget: React.FC = () => {
                   />
                 </div>
               )}
-            </>
+            </div>
           )}
         </Stack>
       </ShadedCard>

@@ -3,6 +3,7 @@ import { createHandler, Get } from "@storyofams/next-api-decorators";
 import Authorized, { Account } from "../../../util/api/authorized";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
+import { gameSelect } from "../../../util/prisma-types";
 
 class DashboardRouter {
   @Get("/friends")
@@ -99,32 +100,14 @@ class DashboardRouter {
   @Authorized()
   public async getRecommendedGames(@Account() user: User) {
     const games = await prisma.game.findMany({
-      take: 6,
+      take: 8,
       orderBy: {
         id: "desc",
       },
       where: {
         private: false,
       },
-      select: {
-        id: true,
-        name: true,
-        author: {
-          select: {
-            id: true,
-            username: true,
-            avatarUri: true,
-          },
-        },
-        genre: true,
-        description: true,
-        _count: {
-          select: {
-            likedBy: true,
-            dislikedBy: true,
-          },
-        },
-      },
+      select: gameSelect,
     });
 
     return games;

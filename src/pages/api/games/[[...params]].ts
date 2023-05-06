@@ -1853,24 +1853,7 @@ class GameRouter {
           some: {},
         },
       },
-      select: {
-        id: true,
-        name: true,
-        updateLogs: {
-          select: {
-            id: true,
-            title: true,
-            content: true,
-            tag: true,
-            type: true,
-            createdAt: true,
-          },
-          orderBy: {
-            createdAt: "desc",
-          },
-          take: 1,
-        },
-      },
+      select: gameSelect,
     });
 
     return games;
