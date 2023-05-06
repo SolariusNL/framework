@@ -12,7 +12,6 @@ import { useForm } from "@mantine/form";
 import type { GetServerSidePropsContext, NextPage } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import Script from "next/script";
 import OuterUI from "../layouts/OuterUI";
 import authorizedRoute from "../util/auth";
 import { setCookie } from "../util/cookies";
@@ -96,10 +95,6 @@ const Register: NextPage = () => {
 
   return (
     <>
-      <Script
-        src="//embed.typeform.com/next/embed.js"
-        strategy="afterInteractive"
-      />
       <OuterUI
         description={
           <span>
@@ -154,19 +149,6 @@ const Register: NextPage = () => {
           </Group>
           <Button fullWidth mt="xl" type="submit" mb="sm">
             Register
-          </Button>
-          <Button
-            variant="subtle"
-            color="gray"
-            fullWidth
-            data-tf-popup="Diz4hyUu"
-            data-tf-opacity="100"
-            data-tf-size="100"
-            data-tf-iframe-props="title=Framework Waitlist"
-            data-tf-transitive-search-params
-            data-tf-medium="snippet"
-          >
-            Join the waitlist
           </Button>
           {/**
            * @todo Add OAuth signup flow

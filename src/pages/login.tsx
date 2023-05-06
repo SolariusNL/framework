@@ -7,15 +7,16 @@ import {
   Stack,
   Text,
   TextInput,
+  useMantineColorScheme,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { PinInput } from "@mantine/labs";
 import { showNotification } from "@mantine/notifications";
 import type { GetServerSidePropsContext, NextPage } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { HiExclamation, HiXCircle } from "react-icons/hi";
+import PinInput from "../components/PinInput";
 import OuterUI from "../layouts/OuterUI";
 import authorizedRoute from "../util/auth";
 import { setCookie } from "../util/cookies";
@@ -46,19 +47,18 @@ const Login: NextPage = () => {
     },
   });
   const [twofaOpened, setTwofaOpened] = useState(false);
-  const [twofaCode, setTwofaCode] = useState("");
   const [twofaFailed, setTwofaFailed] = useState(false);
   const [twofaUid, setTwofaUid] = useState("");
   const [lockError, setLockError] = useState("");
 
-  const verifyTwoFactor = async () => {
+  const verifyTwoFactor = async (code: string) => {
     await fetch("/api/auth/@me/twofa/verify", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        code: twofaCode,
+        code: code,
         intent: "login",
         uid: twofaUid,
       }),
@@ -131,24 +131,21 @@ const Login: NextPage = () => {
         title="Two-factor authentication"
         opened={twofaOpened}
         onClose={() => setTwofaOpened(false)}
+        className={useMantineColorScheme().colorScheme}
       >
-        <Text mb={16}>
+        <Text mb={16} color="dimmed" size="sm" align="center">
           Please enter the code from your authenticator app below. If you are
           having trouble, make sure your clock is set correctly and that you are
           using the correct code for the right account.
         </Text>
         <PinInput
-          value={twofaCode}
-          onChange={(e) => setTwofaCode(e)}
+          onChange={(e) => {
+            verifyTwoFactor(String(e));
+          }}
           length={6}
           className="text-center flex justify-center"
-          size="lg"
           type="number"
-          styles={{
-            input: {
-              minHeight: "fit-content",
-            },
-          }}
+          autoFocus
         />
         {twofaFailed && (
           <div className="flex mt-2 justify-center items-center">
@@ -158,9 +155,6 @@ const Login: NextPage = () => {
             </Text>
           </div>
         )}
-        <Button onClick={verifyTwoFactor} fullWidth mt={24}>
-          Verify code
-        </Button>
       </Modal>
       <OuterUI
         description={

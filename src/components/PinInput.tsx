@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import clsx from "../util/clsx";
 
 type PinInputProps = {
@@ -89,7 +89,7 @@ const PinInput = (props: PinInputProps) => {
           inputMode="numeric"
           pattern="[0-9]*"
           className={clsx(
-            "w-10 h-10 text-1xl text-center rounded-md border-zinc-800 bg-zinc-900 text-white sm:text-sm mx-1",
+            "w-10 h-10 text-1xl text-center rounded-md dark:border-zinc-800 border-gray-200 dark:bg-mantine-paper-dark text-mantine-text dark:text-mantine-text-dark sm:text-sm mx-1",
             "focus:outline-none focus:ring-0 border-solid focus:border-blue-400",
             i === 0 && "ml-0",
             i === length - 1 && "mr-0"
