@@ -10,7 +10,7 @@ import ModernEmptyState from "../../ModernEmptyState";
 import ShadedButton from "../../ShadedButton";
 
 const Flags: FC = () => {
-  const { rawFlags: flags, setFlags } = useFastFlags();
+  const { rawFlags: flags } = useFastFlags();
   const { user } = useAuthorizedUserStore();
   const [search, setSearch] = useState("");
 
