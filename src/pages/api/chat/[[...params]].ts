@@ -59,7 +59,7 @@ class ChatRouter {
       },
       take: 75,
       orderBy: {
-        createdAt: "asc",
+        createdAt: "desc",
       },
       select: chatMessageSelect,
     });
