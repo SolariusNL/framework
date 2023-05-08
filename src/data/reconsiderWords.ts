@@ -19,6 +19,12 @@ const exemptWords = [
   "thanksgiving",
   "thankful",
   "thankfully",
+  "forgot",
+  "bigger",
+  "digger",
+  "trigger",
+  "pigger",
+  "riggers",
 ];
 const reconsiderWords = [
   "nigga",
@@ -42,6 +48,7 @@ const reconsiderWords = [
   "chingchong",
   "paki",
   "jewtard",
+  "retard",
 ];
 
 interface RestrictionCheckResult {
