@@ -412,41 +412,48 @@ const Chat: React.FC = () => {
                       >
                         <Stack spacing={12}>
                           {conversationData &&
-                            conversationData.map((message) =>
-                              message.authorId === user?.id ? (
-                                <Paper
-                                  sx={(theme) => ({
-                                    backgroundColor:
-                                      theme.colorScheme === "dark"
-                                        ? theme.colors.blue[9]
-                                        : theme.colors.blue[1],
-                                    textAlign: "right",
-                                    width: "fit-content",
-                                    alignSelf: "flex-end",
-                                  })}
-                                  px="sm"
-                                  py={8}
-                                >
-                                  <Text size="sm">{message.content}</Text>
-                                </Paper>
-                              ) : (
-                                <Paper
-                                  sx={(theme) => ({
-                                    backgroundColor:
-                                      theme.colorScheme === "dark"
-                                        ? theme.colors.dark[8]
-                                        : theme.colors.gray[1],
-                                    textAlign: "left",
-                                    width: "fit-content",
-                                    alignSelf: "flex-start",
-                                  })}
-                                  px="sm"
-                                  py={8}
-                                >
-                                  <Text size="sm">{message.content}</Text>
-                                </Paper>
+                            conversationData
+                              .reverse()
+                              .sort(
+                                (a, b) =>
+                                  new Date(a.createdAt).getTime() -
+                                  new Date(b.createdAt).getTime()
                               )
-                            )}
+                              .map((message) =>
+                                message.authorId === user?.id ? (
+                                  <Paper
+                                    sx={(theme) => ({
+                                      backgroundColor:
+                                        theme.colorScheme === "dark"
+                                          ? theme.colors.blue[9]
+                                          : theme.colors.blue[1],
+                                      textAlign: "right",
+                                      width: "fit-content",
+                                      alignSelf: "flex-end",
+                                    })}
+                                    px="sm"
+                                    py={8}
+                                  >
+                                    <Text size="sm">{message.content}</Text>
+                                  </Paper>
+                                ) : (
+                                  <Paper
+                                    sx={(theme) => ({
+                                      backgroundColor:
+                                        theme.colorScheme === "dark"
+                                          ? theme.colors.dark[8]
+                                          : theme.colors.gray[1],
+                                      textAlign: "left",
+                                      width: "fit-content",
+                                      alignSelf: "flex-start",
+                                    })}
+                                    px="sm"
+                                    py={8}
+                                  >
+                                    <Text size="sm">{message.content}</Text>
+                                  </Paper>
+                                )
+                              )}
                         </Stack>
                       </div>
                     </motion.div>
