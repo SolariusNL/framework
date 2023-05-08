@@ -25,6 +25,7 @@ const ShadedCard = (
             : theme.colors.gray[0],
         overflow: "visible",
       })}
+      radius="md"
       {...props}
     >
       {props.title && (

@@ -1,14 +1,16 @@
-import { ApiKeyPermission } from "@prisma/client";
+import { ApiKeyPermission, Prisma } from "@prisma/client";
 import {
   Body,
-  createHandler,
   Delete,
   Get,
   Param,
   Post,
   UnauthorizedException,
+  createHandler,
 } from "@storyofams/next-api-decorators";
-import { z, ZodArray, ZodLiteral } from "zod";
+import sanitize from "sanitize-html";
+import { ZodArray, ZodLiteral, z } from "zod";
+import { parse } from "../../../components/RenderMarkdown";
 import Authorized, { Account } from "../../../util/api/authorized";
 import { exclude } from "../../../util/exclude";
 import prisma from "../../../util/prisma";
@@ -83,6 +85,114 @@ class DeveloperRouter {
     await prisma.apiKey.delete({
       where: {
         id,
+      },
+    });
+
+    return { success: true };
+  }
+
+  @Post("/@me/profile/update")
+  @Authorized()
+  public async updateProfile(@Account() user: User, @Body() body: unknown) {
+    const validation = z.object({
+      bioMd: z.string().max(2000),
+      skills: z.array(
+        z.object({
+          name: z.string().max(30),
+          description: z.string().max(120),
+        })
+      ),
+      showcaseGames: z.array(z.number().int().positive().max(1000000000)),
+      lookingForWork: z.boolean(),
+    });
+
+    const data = validation.parse(body);
+    const p = await prisma.developerProfile.findUnique({
+      where: {
+        userId: user.id,
+      },
+      include: {
+        showcaseGames: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+
+    if (p) {
+      await prisma.developerProfile.update({
+        where: {
+          userId: user.id,
+        },
+        data: {
+          skills: {
+            deleteMany: {},
+          },
+          showcaseGames: {
+            disconnect: p?.showcaseGames.map((game) => ({
+              id: game.id,
+            })),
+          },
+        },
+      });
+    }
+
+    const b: Prisma.DeveloperProfileUpdateInput = {
+      bio: sanitize(parse(data.bioMd), {
+        allowedTags: [
+          "h2",
+          "h3",
+          "h4",
+          "i",
+          "b",
+          "strong",
+          "em",
+          "a",
+          "ul",
+          "ol",
+          "li",
+          "p",
+          "br",
+          "pre",
+          "code",
+          "table",
+          "thead",
+          "tbody",
+          "tr",
+          "th",
+          "td",
+        ],
+        allowedAttributes: {
+          a: ["href", "target"],
+        },
+      }),
+      bioMd: data.bioMd,
+      skills: {
+        createMany: {
+          data: data.skills,
+        },
+      },
+      showcaseGames: {
+        connect: data.showcaseGames.map((game) => ({
+          id: game,
+        })),
+      },
+      lookingForWork: data.lookingForWork,
+    };
+
+    await prisma.developerProfile.upsert({
+      where: {
+        userId: user.id,
+      },
+      update: b,
+      create: {
+        ...(b as Prisma.DeveloperProfileCreateInput),
+        user: {
+          connect: {
+            id: user.id,
+          },
+        },
       },
     });
 

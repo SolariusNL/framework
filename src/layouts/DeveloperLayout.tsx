@@ -1,5 +1,11 @@
 import Link from "next/link";
-import { HiGlobe, HiKey, HiServer, HiViewList } from "react-icons/hi";
+import {
+  HiGlobe,
+  HiKey,
+  HiServer,
+  HiUserCircle,
+  HiViewList,
+} from "react-icons/hi";
 import Framework from "../components/Framework";
 import IntegratedTabs from "../components/Framework/IntegratedTabs";
 import WrenchScrewdriver from "../icons/WrenchScrewdriver";
@@ -17,6 +23,7 @@ const tabs = [
   [HiGlobe, "/developer/domains", "Domains"],
   [HiKey, "/developer/api-keys", "API Keys"],
   [WrenchScrewdriver, "/developer/oauth2", "OAuth2 Applications"],
+  [HiUserCircle, "/developer/profile", "Developer Profile"],
   [HiViewList, "/developer/activity", "Activity"],
 ];
 

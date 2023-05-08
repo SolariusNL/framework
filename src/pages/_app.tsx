@@ -1,10 +1,7 @@
 import {
-  AlertStylesParams,
   Anchor,
   AnchorProps,
-  BadgeStylesParams,
   Button,
-  ButtonStylesParams,
   ColorScheme,
   ColorSchemeProvider,
   Dialog,
@@ -12,15 +9,11 @@ import {
   Global,
   Group,
   MantineProvider,
-  MantineTheme,
   Modal,
-  NavLinkStylesParams,
-  PaginationStylesParams,
   PasswordInput,
   Text,
   Textarea,
   TextInput,
-  TooltipStylesParams,
 } from "@mantine/core";
 import { useLocalStorage } from "@mantine/hooks";
 import { ModalsProvider } from "@mantine/modals";
@@ -55,7 +48,7 @@ import useFeedback from "../stores/useFeedback";
 import "../styles/fonts.css";
 import "../styles/framework.css";
 import "../styles/tw.css";
-import { AMOLED_COLORS } from "../util/constants";
+import getComponents from "../util/components";
 
 const Framework = (
   props: AppProps & {
@@ -247,253 +240,11 @@ const Framework = (
               fontFamily: "Inter var",
               defaultRadius: "md",
               fontFamilyMonospace: "Fira Code VF",
-              components: {
-                Button: {
-                  styles: (theme, params: ButtonStylesParams) => ({
-                    root: {
-                      ...(params.variant === "filled" && {
-                        border: "1px solid",
-                        borderColor:
-                          theme.colors[params.color || theme.primaryColor][
-                            theme.colorScheme == "dark" ? 2 : 9
-                          ] + "85",
-                        "&:hover": {
-                          borderColor:
-                            theme.colors[params.color || theme.primaryColor][
-                              theme.colorScheme == "dark" ? 2 : 9
-                            ] + "85",
-                        },
-                        boxShadow:
-                          colorScheme === "light"
-                            ? "inset 0 1.2px 0 0 hsla(0,0%,100%,.2);"
-                            : "",
-                      }),
-                      ...(amoled &&
-                        params.variant === "default" && {
-                          backgroundColor: "#000 !important",
-                        }),
-                    },
-                  }),
-                },
-                NavLink: {
-                  styles: (theme, params: NavLinkStylesParams) => ({
-                    root: {
-                      border: "1px solid",
-                      borderColor: "transparent",
-                      "&[data-active]": {
-                        borderColor:
-                          theme.colors[params.color || theme.primaryColor][
-                            theme.colorScheme == "dark" ? 2 : 9
-                          ] + "85",
-                        "&:hover": {
-                          borderColor:
-                            theme.colors[params.color || theme.primaryColor][
-                              theme.colorScheme == "dark" ? 2 : 9
-                            ] + "85",
-                        },
-                      },
-                      "&:hover": {
-                        ...(amoled && {
-                          backgroundColor: AMOLED_COLORS.paper,
-                        }),
-                      },
-                    },
-                  }),
-                },
-                Tabs: {
-                  styles: () => ({
-                    tab: {
-                      "&[data-active]": {
-                        fontWeight: 700,
-                      },
-                    },
-                  }),
-                },
-                Menu: {
-                  styles: (theme: MantineTheme) => ({
-                    dropdown: {
-                      ...(amoled && {
-                        backgroundColor: "#000",
-                      }),
-                    },
-                  }),
-                },
-                Modal: {
-                  styles: () => ({
-                    root: {
-                      zIndex: 1000,
-                    },
-                    modal: {
-                      ...(amoled && {
-                        backgroundColor: AMOLED_COLORS.paper,
-                      }),
-                    },
-                  }),
-                },
-                Notification: {
-                  styles: (theme: MantineTheme) => ({
-                    root: {
-                      backgroundColor:
-                        theme.colorScheme === "dark"
-                          ? theme.colors.dark[8]
-                          : theme.colors.gray[0],
-                    },
-                  }),
-                },
-                Alert: {
-                  styles: (theme: MantineTheme, params: AlertStylesParams) => ({
-                    root: {
-                      border: "1px solid",
-                      borderColor:
-                        theme.colorScheme === "dark"
-                          ? theme.colors[
-                              params.color || theme.primaryColor
-                            ][2] + "65"
-                          : theme.colors[
-                              params.color || theme.primaryColor
-                            ][9] + "90",
-                      backgroundColor:
-                        theme.colorScheme === "dark"
-                          ? theme.colors[
-                              params.color || theme.primaryColor
-                            ][8] + "20"
-                          : theme.colors[
-                              params.color || theme.primaryColor
-                            ][0] + "90",
-                    },
-                    message: {
-                      color:
-                        theme.colorScheme === "dark"
-                          ? theme.colors[params.color || theme.primaryColor][1]
-                          : theme.colors[params.color || theme.primaryColor][9],
-                    },
-                  }),
-                },
-                Input: {
-                  styles: {
-                    input: {
-                      ...(amoled && {
-                        backgroundColor: "#000",
-                      }),
-                    },
-                  },
-                },
-                Pagination: {
-                  styles: (
-                    theme: MantineTheme,
-                    params: PaginationStylesParams
-                  ) => ({
-                    item: {
-                      fontFamily: "Inter var",
-                      "&[data-active]": {
-                        backgroundColor:
-                          theme.colors[params.color || theme.primaryColor][
-                            theme.colorScheme === "dark" ? 8 : 0
-                          ] + "80",
-                        border:
-                          "1px solid " +
-                          theme.colors[params.color || theme.primaryColor][6],
-                        color:
-                          theme.colors[params.color || theme.primaryColor][
-                            theme.colorScheme === "dark" ? 2 : 9
-                          ],
-                      },
-                      ...(amoled && {
-                        backgroundColor: "#000",
-                      }),
-                    },
-                  }),
-                },
-                Badge: {
-                  styles: (theme: MantineTheme, params: BadgeStylesParams) => ({
-                    root: {
-                      border: "1px solid",
-                      borderColor:
-                        theme.colors[params.color || theme.primaryColor][
-                          theme.colorScheme === "dark" ? 2 : 9
-                        ] + "90",
-                    },
-                  }),
-                },
-                Select: {
-                  styles: (theme: MantineTheme) => ({
-                    item: {
-                      borderRadius: theme.radius.md,
-                      "&[data-hovered]": {
-                        ...(amoled && {
-                          backgroundColor: AMOLED_COLORS.paper,
-                        }),
-                      },
-                      "&[data-selected]": {
-                        "&, &:hover": {
-                          ...(amoled && {
-                            backgroundColor: AMOLED_COLORS.paper,
-                            fontWeight: "bold",
-                          }),
-                        },
-                      },
-                    },
-                    dropdown: {
-                      borderRadius: theme.radius.md + " !important",
-                      ...(amoled && {
-                        backgroundColor: "#000",
-                      }),
-                    },
-                  }),
-                },
-                Tooltip: {
-                  styles: (
-                    theme: MantineTheme,
-                    params: TooltipStylesParams
-                  ) => ({
-                    tooltip: {
-                      backgroundColor:
-                        theme.colorScheme === "dark"
-                          ? theme.colors.gray[3]
-                          : theme.colors.dark[8],
-                      color:
-                        theme.colorScheme === "dark"
-                          ? theme.colors.dark[8]
-                          : theme.colors.gray[3],
-                    },
-                  }),
-                },
-                Checkbox: {
-                  styles: () => ({
-                    input: {
-                      ...(amoled && {
-                        backgroundColor: "#000",
-                      }),
-                    },
-                  }),
-                },
-                Table: {
-                  styles: () => ({
-                    root: {
-                      ...(amoled && {
-                        "&[data-striped] tbody tr:nth-of-type(odd)": {
-                          backgroundColor: AMOLED_COLORS.paper,
-                        },
-                      }),
-                    },
-                  }),
-                },
-                Accordion: {
-                  styles: () => ({
-                    control: {
-                      ...(amoled && {
-                        "&:hover": {
-                          backgroundColor: AMOLED_COLORS.paper + " !important",
-                        },
-                      }),
-                    },
-                  }),
-                },
-              },
+              components: getComponents(amoled),
             }}
           >
             <Global
-              styles={(theme) => ({
+              styles={() => ({
                 ...(highContrast && {
                   "*": {
                     filter: "invert(1) !important",
@@ -531,267 +282,278 @@ const Framework = (
                           {isElectron() && <ElectronTitlebar />}
                         </ReactNoSSR>
                         <Component {...pageProps} key={router.asPath} />
-                        <Modal
-                          withCloseButton={false}
-                          opened={
-                            pageProps != undefined &&
-                            pageProps.user &&
-                            pageProps.user.warning &&
-                            !pageProps.user.warningViewed
-                          }
-                          onClose={() => null}
-                        >
-                          <Text mb={16}>
-                            You have received a warning from the staff team:{" "}
-                            <strong>
-                              {(pageProps != undefined &&
-                                pageProps.user &&
-                                pageProps.user.warning) ||
-                                "No warning reason provided"}
-                            </strong>
-                          </Text>
-
-                          <Text mb={24}>
-                            If you continue to violate our Community Guidelines,
-                            you may be permanently banned from Framework.
-                            Please, go through our policies again and make sure
-                            you understand them. We would hate to see you go!
-                          </Text>
-
-                          <Button
-                            fullWidth
-                            onClick={() => {
-                              fetch("/api/users/@me/warning/acknowledge", {
-                                method: "POST",
-                                headers: {
-                                  "Content-Type": "application/json",
-                                  Authorization: String(
-                                    getCookie(".frameworksession")
-                                  ),
-                                },
-                              }).then(() => router.reload());
-                            }}
+                        <ReactNoSSR>
+                          <Modal
+                            withCloseButton={false}
+                            opened={
+                              pageProps != undefined &&
+                              pageProps.user &&
+                              pageProps.user.warning &&
+                              !pageProps.user.warningViewed
+                            }
+                            onClose={() => null}
                           >
-                            Acknowledge
-                          </Button>
-                        </Modal>
-                        <Modal
-                          title="Experience survey"
-                          opened={ratingModal}
-                          onClose={() => setRatingModal(false)}
-                        >
-                          <Text size="sm" color="dimmed" mb="md">
-                            We would love to hear your feedback about Framework.
-                            Please, take a minute to fill out this survey, and
-                            be brutally honest with your answers. Your feedback
-                            will help us improve Framework.
-                          </Text>
-                          <Stateful
-                            initialState={{
-                              rating: 0,
-                              feedback: "",
-                            }}
+                            <Text mb={16}>
+                              You have received a warning from the staff team:{" "}
+                              <strong>
+                                {(pageProps != undefined &&
+                                  pageProps.user &&
+                                  pageProps.user.warning) ||
+                                  "No warning reason provided"}
+                              </strong>
+                            </Text>
+
+                            <Text mb={24}>
+                              If you continue to violate our Community
+                              Guidelines, you may be permanently banned from
+                              Framework. Please, go through our policies again
+                              and make sure you understand them. We would hate
+                              to see you go!
+                            </Text>
+
+                            <Button
+                              fullWidth
+                              onClick={() => {
+                                fetch("/api/users/@me/warning/acknowledge", {
+                                  method: "POST",
+                                  headers: {
+                                    "Content-Type": "application/json",
+                                    Authorization: String(
+                                      getCookie(".frameworksession")
+                                    ),
+                                  },
+                                }).then(() => router.reload());
+                              }}
+                            >
+                              Acknowledge
+                            </Button>
+                          </Modal>
+                          <Modal
+                            title="Experience survey"
+                            opened={ratingModal}
+                            onClose={() => setRatingModal(false)}
                           >
-                            {(data, setState) => (
-                              <>
-                                <Descriptive
-                                  required
-                                  title="Star rating"
-                                  description="How would you rate your experience with Framework?"
-                                >
-                                  <Rating
-                                    value={data.rating}
-                                    setValue={(rating) =>
+                            <Text size="sm" color="dimmed" mb="md">
+                              We would love to hear your feedback about
+                              Framework. Please, take a minute to fill out this
+                              survey, and be brutally honest with your answers.
+                              Your feedback will help us improve Framework.
+                            </Text>
+                            <Stateful
+                              initialState={{
+                                rating: 0,
+                                feedback: "",
+                              }}
+                            >
+                              {(data, setState) => (
+                                <>
+                                  <Descriptive
+                                    required
+                                    title="Star rating"
+                                    description="How would you rate your experience with Framework?"
+                                  >
+                                    <Rating
+                                      value={data.rating}
+                                      setValue={(rating) =>
+                                        setState({
+                                          ...data,
+                                          rating,
+                                        })
+                                      }
+                                    />
+                                  </Descriptive>
+                                  <Textarea
+                                    label="Feedback"
+                                    placeholder="What do you like about Framework? What could we improve?"
+                                    description="Your feedback is completely anonymous and will help us improve Framework."
+                                    mt="md"
+                                    minRows={4}
+                                    value={data.feedback}
+                                    onChange={(event) =>
                                       setState({
                                         ...data,
-                                        rating,
+                                        feedback: event.currentTarget.value,
                                       })
                                     }
                                   />
-                                </Descriptive>
-                                <Textarea
-                                  label="Feedback"
-                                  placeholder="What do you like about Framework? What could we improve?"
-                                  description="Your feedback is completely anonymous and will help us improve Framework."
-                                  mt="md"
-                                  minRows={4}
-                                  value={data.feedback}
-                                  onChange={(event) =>
-                                    setState({
-                                      ...data,
-                                      feedback: event.currentTarget.value,
-                                    })
-                                  }
-                                />
-                                <div className="flex justify-end mt-6">
+                                  <div className="flex justify-end mt-6">
+                                    <Button
+                                      leftIcon={<HiArrowRight />}
+                                      onClick={() => {
+                                        submitRating(
+                                          data.rating,
+                                          data.feedback
+                                        );
+                                        setRatingModal(false);
+                                      }}
+                                      loading={loading}
+                                      disabled={!data.rating}
+                                    >
+                                      Submit
+                                    </Button>
+                                  </div>
+                                </>
+                              )}
+                            </Stateful>
+                          </Modal>
+
+                          <Dialog
+                            opened={
+                              !cookieConsent.accepted && !cookieConsent.rejected
+                            }
+                          >
+                            <Text size="sm" mb={12}>
+                              Framework and other Soodam.re services use cookies
+                              to help us provide you the best experience. By
+                              continuing to use our services, you agree to our
+                              use of cookies. Read our{" "}
+                              <Link href="/privacy" passHref>
+                                <Anchor>Privacy Policy</Anchor>
+                              </Link>{" "}
+                              for more information regarding your privacy and
+                              how we use cookies.
+                            </Text>
+
+                            <Group grow>
+                              <Button
+                                onClick={() =>
+                                  setCookieConsent({
+                                    accepted: true,
+                                    rejected: false,
+                                  })
+                                }
+                              >
+                                I agree
+                              </Button>
+
+                              <Button
+                                onClick={() =>
+                                  setCookieConsent({
+                                    accepted: false,
+                                    rejected: true,
+                                  })
+                                }
+                              >
+                                I do not agree
+                              </Button>
+                            </Group>
+                          </Dialog>
+
+                          <Modal
+                            title="Reset email"
+                            opened={
+                              pageProps != undefined &&
+                              pageProps.user &&
+                              pageProps.user.emailResetRequired
+                            }
+                            onClose={() => null}
+                            withCloseButton={false}
+                          >
+                            <Text mb={16}>
+                              You are required to reset your email address.
+                              Please enter a new email address below.
+                            </Text>
+                            <Stateful>
+                              {(email, setEmail) => (
+                                <>
+                                  <TextInput
+                                    type="email"
+                                    label="Email"
+                                    description="Your new email address"
+                                    value={email}
+                                    onChange={(e) =>
+                                      setEmail(e.currentTarget.value)
+                                    }
+                                  />
                                   <Button
-                                    leftIcon={<HiArrowRight />}
-                                    onClick={() => {
-                                      submitRating(data.rating, data.feedback);
-                                      setRatingModal(false);
+                                    mt={14}
+                                    leftIcon={<HiCheckCircle />}
+                                    disabled={
+                                      !email ||
+                                      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+                                        email
+                                      ) ||
+                                      email === pageProps.user.email
+                                    }
+                                    onClick={async () => {
+                                      await fetch(
+                                        "/api/users/@me/changeemail",
+                                        {
+                                          method: "POST",
+                                          headers: {
+                                            "Content-Type": "application/json",
+                                            Authorization: String(
+                                              getCookie(".frameworksession")
+                                            ),
+                                          },
+                                          body: JSON.stringify({
+                                            newEmail: email,
+                                          }),
+                                        }
+                                      ).finally(() => router.reload());
                                     }}
-                                    loading={loading}
-                                    disabled={!data.rating}
                                   >
-                                    Submit
+                                    Reset email
                                   </Button>
-                                </div>
-                              </>
-                            )}
-                          </Stateful>
-                        </Modal>
+                                </>
+                              )}
+                            </Stateful>
+                          </Modal>
 
-                        <Dialog
-                          opened={
-                            !cookieConsent.accepted && !cookieConsent.rejected
-                          }
-                        >
-                          <Text size="sm" mb={12}>
-                            Framework and other Soodam.re services use cookies
-                            to help us provide you the best experience. By
-                            continuing to use our services, you agree to our use
-                            of cookies. Read our{" "}
-                            <Link href="/privacy" passHref>
-                              <Anchor>Privacy Policy</Anchor>
-                            </Link>{" "}
-                            for more information regarding your privacy and how
-                            we use cookies.
-                          </Text>
-
-                          <Group grow>
-                            <Button
-                              onClick={() =>
-                                setCookieConsent({
-                                  accepted: true,
-                                  rejected: false,
-                                })
-                              }
-                            >
-                              I agree
-                            </Button>
-
-                            <Button
-                              onClick={() =>
-                                setCookieConsent({
-                                  accepted: false,
-                                  rejected: true,
-                                })
-                              }
-                            >
-                              I do not agree
-                            </Button>
-                          </Group>
-                        </Dialog>
-
-                        <Modal
-                          title="Reset email"
-                          opened={
-                            pageProps != undefined &&
-                            pageProps.user &&
-                            pageProps.user.emailResetRequired
-                          }
-                          onClose={() => null}
-                          withCloseButton={false}
-                        >
-                          <Text mb={16}>
-                            You are required to reset your email address. Please
-                            enter a new email address below.
-                          </Text>
-                          <Stateful>
-                            {(email, setEmail) => (
-                              <>
-                                <TextInput
-                                  type="email"
-                                  label="Email"
-                                  description="Your new email address"
-                                  value={email}
-                                  onChange={(e) =>
-                                    setEmail(e.currentTarget.value)
-                                  }
-                                />
-                                <Button
-                                  mt={14}
-                                  leftIcon={<HiCheckCircle />}
-                                  disabled={
-                                    !email ||
-                                    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
-                                    email === pageProps.user.email
-                                  }
-                                  onClick={async () => {
-                                    await fetch("/api/users/@me/changeemail", {
-                                      method: "POST",
-                                      headers: {
-                                        "Content-Type": "application/json",
-                                        Authorization: String(
-                                          getCookie(".frameworksession")
-                                        ),
-                                      },
-                                      body: JSON.stringify({
-                                        newEmail: email,
-                                      }),
-                                    }).finally(() => router.reload());
-                                  }}
-                                >
-                                  Reset email
-                                </Button>
-                              </>
-                            )}
-                          </Stateful>
-                        </Modal>
-
-                        <Modal
-                          title="Reset password"
-                          opened={
-                            pageProps != undefined &&
-                            pageProps.user &&
-                            pageProps.user.passwordResetRequired
-                          }
-                          onClose={() => null}
-                          withCloseButton={false}
-                        >
-                          <Text mb={16}>
-                            You are required to reset your password. Please
-                            enter a new password below.
-                          </Text>
-                          <Stateful>
-                            {(password, setPassword) => (
-                              <>
-                                <PasswordInput
-                                  label="Password"
-                                  description="Your new password"
-                                  value={password}
-                                  onChange={(e) =>
-                                    setPassword(e.currentTarget.value)
-                                  }
-                                />
-                                <Button
-                                  mt={14}
-                                  leftIcon={<HiCheckCircle />}
-                                  disabled={!password || password.length < 8}
-                                  onClick={async () => {
-                                    await fetch(
-                                      "/api/users/@me/changepassword",
-                                      {
-                                        method: "POST",
-                                        headers: {
-                                          "Content-Type": "application/json",
-                                          Authorization: String(
-                                            getCookie(".frameworksession")
-                                          ),
-                                        },
-                                        body: JSON.stringify({
-                                          newPassword: password,
-                                        }),
-                                      }
-                                    ).finally(() => router.reload());
-                                  }}
-                                >
-                                  Reset password
-                                </Button>
-                              </>
-                            )}
-                          </Stateful>
-                        </Modal>
+                          <Modal
+                            title="Reset password"
+                            opened={
+                              pageProps != undefined &&
+                              pageProps.user &&
+                              pageProps.user.passwordResetRequired
+                            }
+                            onClose={() => null}
+                            withCloseButton={false}
+                          >
+                            <Text mb={16}>
+                              You are required to reset your password. Please
+                              enter a new password below.
+                            </Text>
+                            <Stateful>
+                              {(password, setPassword) => (
+                                <>
+                                  <PasswordInput
+                                    label="Password"
+                                    description="Your new password"
+                                    value={password}
+                                    onChange={(e) =>
+                                      setPassword(e.currentTarget.value)
+                                    }
+                                  />
+                                  <Button
+                                    mt={14}
+                                    leftIcon={<HiCheckCircle />}
+                                    disabled={!password || password.length < 8}
+                                    onClick={async () => {
+                                      await fetch(
+                                        "/api/users/@me/changepassword",
+                                        {
+                                          method: "POST",
+                                          headers: {
+                                            "Content-Type": "application/json",
+                                            Authorization: String(
+                                              getCookie(".frameworksession")
+                                            ),
+                                          },
+                                          body: JSON.stringify({
+                                            newPassword: password,
+                                          }),
+                                        }
+                                      ).finally(() => router.reload());
+                                    }}
+                                  >
+                                    Reset password
+                                  </Button>
+                                </>
+                              )}
+                            </Stateful>
+                          </Modal>
+                        </ReactNoSSR>
                       </FrameworkUserProvider>
                     </NotificationsProvider>
                   </MDXProvider>

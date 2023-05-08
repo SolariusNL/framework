@@ -8,21 +8,10 @@ import {
   Title,
 } from "@mantine/core";
 import { Transaction } from "@prisma/client";
-import {
-  CategoryScale,
-  Chart as ChartJS,
-  LinearScale,
-  LineController,
-  LineElement,
-  PointElement,
-  Title as ChartTitle,
-  Tooltip,
-} from "chart.js";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Line } from "react-chartjs-2";
 import {
   HiCalendar,
   HiChartBar,
@@ -33,23 +22,13 @@ import {
 } from "react-icons/hi";
 import Framework from "../../components/Framework";
 import { Section } from "../../components/Home/FriendsWidget";
+import ModernEmptyState from "../../components/ModernEmptyState";
 import ShadedButton from "../../components/ShadedButton";
-import ShadedCard from "../../components/ShadedCard";
 import TransactionsWidget from "../../components/Widgets/Transactions";
 import SidebarTabNavigation from "../../layouts/SidebarTabNavigation";
 import authorizedRoute from "../../util/auth";
 import getMediaUrl from "../../util/get-media";
 import { User } from "../../util/prisma-types";
-
-ChartJS.register(
-  LineController,
-  LineElement,
-  PointElement,
-  LinearScale,
-  CategoryScale,
-  ChartTitle,
-  Tooltip
-);
 
 type TicketsProps = {
   user: User;
@@ -312,138 +291,11 @@ const Tickets: NextPage<TicketsProps> = ({ user }) => {
             />
           )}
           {activeTab === 2 && (
-            <div>
-              <div className="mb-6">
-                <ShadedCard shadow="sm">
-                  <Line
-                    data={{
-                      labels: [
-                        ...Array.from({ length: 6 }, (_, i) => {
-                          const date = new Date();
-                          date.setMonth(date.getMonth() - i);
-                          return date.toLocaleString("default", {
-                            month: "short",
-                          });
-                        }).reverse(),
-                      ],
-                      datasets: [
-                        {
-                          label: "Tickets",
-                          data: [
-                            ...Array.from({ length: 6 }, (_, i) => {
-                              const date = new Date();
-                              date.setMonth(date.getMonth() - i);
-                              return transactions?.filter(
-                                (transaction) =>
-                                  new Date(transaction.createdAt).getMonth() ===
-                                  date.getMonth()
-                              ).length;
-                            }).reverse(),
-                          ],
-                          fill: false,
-                          backgroundColor: "rgb(255, 99, 132)",
-                          borderColor: "rgba(255, 99, 132, 0.2)",
-                        },
-                      ],
-                    }}
-                    options={{
-                      plugins: {
-                        title: {
-                          display: true,
-                          text: "Transactions in the last 6 months",
-                        },
-                        tooltip: {
-                          callbacks: {
-                            label: (context: any) => {
-                              return `Transactions: ${context.parsed.y}`;
-                            },
-                          },
-                          enabled: true,
-                        },
-                      },
-                      scales: {
-                        y: {
-                          beginAtZero: true,
-                        },
-                        x: {
-                          grid: {
-                            display: false,
-                          },
-                        },
-                      },
-                    }}
-                  />
-                </ShadedCard>
-              </div>
-              <div>
-                <ShadedCard shadow="sm">
-                  <Line
-                    data={{
-                      labels: [
-                        ...Array.from({ length: 6 }, (_, i) => {
-                          const date = new Date();
-                          date.setMonth(date.getMonth() - i);
-                          return date.toLocaleString("default", {
-                            month: "short",
-                          });
-                        }).reverse(),
-                      ],
-                      datasets: [
-                        {
-                          label: "Tickets",
-                          data: [
-                            ...Array.from({ length: 6 }, (_, i) => {
-                              const date = new Date();
-                              date.setMonth(date.getMonth() - i);
-                              return transactions
-                                ?.filter(
-                                  (transaction) =>
-                                    new Date(
-                                      transaction.createdAt
-                                    ).getMonth() === date.getMonth()
-                                )
-                                .reduce(
-                                  (acc, transaction) =>
-                                    acc + transaction.tickets,
-                                  0
-                                );
-                            }).reverse(),
-                          ],
-                          fill: false,
-                          backgroundColor: "rgb(0, 230, 118)",
-                          borderColor: "rgba(0, 230, 118, 0.2)",
-                        },
-                      ],
-                    }}
-                    options={{
-                      plugins: {
-                        title: {
-                          display: true,
-                          text: "Tickets spent in the last 6 months",
-                        },
-                        tooltip: {
-                          callbacks: {
-                            label: (context: any) => {
-                              return `Tickets spent: ${context.parsed.y}`;
-                            },
-                          },
-                          enabled: true,
-                        },
-                      },
-                      scales: {
-                        y: {
-                          beginAtZero: true,
-                        },
-                        x: {
-                          grid: {
-                            display: false,
-                          },
-                        },
-                      },
-                    }}
-                  />
-                </ShadedCard>
-              </div>
+            <div className="flex items-center justify-center">
+              <ModernEmptyState
+                title="Coming soon"
+                body="Ticket analytics are temporarily unavailable while we fix up some bugs."
+              />
             </div>
           )}
         </SidebarTabNavigation.Content>

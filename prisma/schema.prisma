@@ -174,6 +174,7 @@ model User {
   dismissibleContents        String[]
   automodTriggers            AutomodTrigger[]       @relation("automodTriggers")
   domains                    Domain[]               @relation("userDomains")
+  developerProfile           DeveloperProfile?      @relation("developerProfile")
 }
 
 model ConnectedAccount {
@@ -390,6 +391,7 @@ model Game {
   team                 Team?                     @relation("teamGame", fields: [teamId], references: [id])
   teamId               String?
   issues               TeamIssue[]               @relation("gameIssues")
+  showcase             DeveloperProfile[]        @relation("developerShowcaseGames")
 }
 
 model GameComment {
@@ -1114,4 +1116,26 @@ enum FastFlagUnionType {
   BOOLEAN
   ARRAY
   OBJECT
+}
+
+model DeveloperProfile {
+  id             String                  @id @default(uuid())
+  createdAt      DateTime                @default(now())
+  user           User                    @relation("developerProfile", fields: [userId], references: [id])
+  userId         Int                     @unique
+  skills         DeveloperProfileSkill[] @relation("developerProfileSkills")
+  bio            String
+  bioMd          String
+  lookingForWork Boolean                 @default(false)
+  showcaseGames  Game[]                  @relation("developerShowcaseGames")
+  verified       Boolean                 @default(false)
+}
+
+model DeveloperProfileSkill {
+  id          String           @id @default(uuid())
+  createdAt   DateTime         @default(now())
+  profile     DeveloperProfile @relation("developerProfileSkills", fields: [profileId], references: [id])
+  profileId   String
+  name        String
+  description String
 }
