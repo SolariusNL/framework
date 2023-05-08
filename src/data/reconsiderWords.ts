@@ -14,6 +14,11 @@ const exemptWords = [
   "chang",
   "pakistan",
   "pakistani",
+  "thank",
+  "thanks",
+  "thanksgiving",
+  "thankful",
+  "thankfully",
 ];
 const reconsiderWords = [
   "nigga",
