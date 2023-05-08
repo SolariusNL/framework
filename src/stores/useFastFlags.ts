@@ -2,13 +2,8 @@ import create from "zustand";
 import { GenericFastFlag } from "../pages/api/flags/[[...params]]";
 import IResponseBase from "../types/api/IResponseBase";
 import fetchJson from "../util/fetch";
-
-type FastFlagNames =
-  | "disabled-settings"
-  | "disabled-registration"
-  | "maintenance"
-  | "disabled-chat"
-  | "banner";
+import { FastFlagNames } from "../util/types";
+import { FastFlagUnionType, Prisma } from "@prisma/client";
 
 type ReturnedFastFlag = Record<
   FastFlagNames,
@@ -20,6 +15,47 @@ interface FastFlagStore {
   rawFlags: GenericFastFlag[];
   setFlags: (GenericFastFlag: GenericFastFlag[]) => void;
 }
+
+export const FLAGS: Array<
+  {
+    name: FastFlagNames;
+  } & Prisma.FastFlagCreateInput
+> = [
+  {
+    name: "disabled-settings",
+    value: "[]",
+    valueType: FastFlagUnionType.ARRAY,
+    description:
+      "Disable certain settings pages in circumstances where it may be necessary, to lock down certain features",
+  },
+  {
+    name: "disabled-registration",
+    value: "false",
+    valueType: FastFlagUnionType.BOOLEAN,
+    description: "Disable registration for the app",
+  },
+  {
+    name: "maintenance",
+    value: "false",
+    valueType: FastFlagUnionType.BOOLEAN,
+    description: "Enable maintenance mode",
+  },
+  {
+    name: "disabled-chat",
+    value: "false",
+    valueType: FastFlagUnionType.BOOLEAN,
+    description: "Disable chat for the app",
+  },
+  {
+    name: "banner",
+    value: JSON.stringify({
+      enabled: false,
+      message: "Welcome to Framework!",
+    }),
+    valueType: FastFlagUnionType.OBJECT,
+    description: "Enable a system-wide banner",
+  },
+];
 
 const useFastFlags = create<FastFlagStore>((set) => ({
   flags: {} as ReturnedFastFlag,

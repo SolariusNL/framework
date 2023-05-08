@@ -2,6 +2,7 @@ import { Divider, Text, Title, useMantineTheme } from "@mantine/core";
 import useAmoled from "../../stores/useAmoled";
 import { AMOLED_COLORS } from "../../util/constants";
 import useMediaQuery from "../../util/media-query";
+import clsx from "../../util/clsx";
 
 interface SideBySideProps {
   title: string;
@@ -11,6 +12,9 @@ interface SideBySideProps {
   icon?: React.ReactNode;
   shaded?: boolean;
   noUpperBorder?: boolean;
+  classNames?: {
+    title: string;
+  }
 }
 
 const SideBySide = ({
@@ -21,6 +25,7 @@ const SideBySide = ({
   icon,
   shaded,
   noUpperBorder,
+  classNames,
 }: SideBySideProps) => {
   const mobile = useMediaQuery("768");
   const theme = useMantineTheme();
@@ -51,7 +56,10 @@ const SideBySide = ({
             ...(mobile ? { marginBottom: 16 } : {}),
           }}
         >
-          <Title order={4} mb={16} className="flex items-center gap-2 ">
+          <Title order={4} mb={16} className={clsx(
+            "flex items-center gap-2",
+            classNames?.title,
+          )}>
             {icon && icon}
             {title}
           </Title>

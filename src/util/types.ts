@@ -15,3 +15,10 @@ export type NestedValuesOf<T> = {
 export type NestedEntriesOf<T> = {
   [K in keyof T]: T[K] extends object ? NestedEntriesOf<T[K]> : [K, T[K]];
 }[keyof T];
+
+export type FastFlagNames =
+  | "disabled-settings"
+  | "disabled-registration"
+  | "maintenance"
+  | "disabled-chat"
+  | "banner";

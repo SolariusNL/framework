@@ -1,4 +1,5 @@
-import { FastFlagUnionType, Prisma, PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
+import { FLAGS } from "../src/stores/useFastFlags";
 import { hashPass } from "../src/util/hash/password";
 import logger from "../src/util/logger";
 
@@ -47,43 +48,6 @@ const stages = [
       "Seed fast flags (feature flags to influence the app at runtime)",
     run: true,
     execute: async () => {
-      const FLAGS: Array<Prisma.FastFlagCreateInput> = [
-        {
-          name: "disabled-settings",
-          value: "[]",
-          valueType: FastFlagUnionType.ARRAY,
-          description:
-            "Disable certain settings pages in circumstances where it may be necessary, to lock down certain features",
-        },
-        {
-          name: "disabled-registration",
-          value: "false",
-          valueType: FastFlagUnionType.BOOLEAN,
-          description: "Disable registration for the app",
-        },
-        {
-          name: "maintenance",
-          value: "false",
-          valueType: FastFlagUnionType.BOOLEAN,
-          description: "Enable maintenance mode",
-        },
-        {
-          name: "disabled-chat",
-          value: "false",
-          valueType: FastFlagUnionType.BOOLEAN,
-          description: "Disable chat for the app",
-        },
-        {
-          name: "banner",
-          value: JSON.stringify({
-            enabled: false,
-            message: "Welcome to Framework!",
-          }),
-          valueType: FastFlagUnionType.OBJECT,
-          description: "Enable a system-wide banner",
-        },
-      ];
-
       for (const flag of FLAGS) {
         await prisma.fastFlag
           .findFirst({
