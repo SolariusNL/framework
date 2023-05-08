@@ -365,41 +365,47 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
                 >
                   <Stack spacing={12} pb="md" pt="md">
                     {conversationData &&
-                      conversationData.map((message) =>
-                        message.authorId === user?.id ? (
-                          <Paper
-                            sx={(theme) => ({
-                              backgroundColor:
-                                theme.colorScheme === "dark"
-                                  ? theme.colors.blue[9]
-                                  : theme.colors.blue[1],
-                              textAlign: "right",
-                              width: "fit-content",
-                              alignSelf: "flex-end",
-                              // 90% width
-                              maxWidth: "90%",
-                            })}
-                            p="sm"
-                          >
-                            <Text size="sm">{message.content}</Text>
-                          </Paper>
-                        ) : (
-                          <Paper
-                            sx={(theme) => ({
-                              backgroundColor:
-                                theme.colorScheme === "dark"
-                                  ? theme.colors.dark[8]
-                                  : theme.colors.gray[1],
-                              textAlign: "left",
-                              width: "fit-content",
-                              alignSelf: "flex-start",
-                            })}
-                            p="sm"
-                          >
-                            <Text size="sm">{message.content}</Text>
-                          </Paper>
-                        )
-                      )}
+                      conversationData
+                        .sort((a, b) => {
+                          const aA = new Date(a.createdAt);
+                          const bB = new Date(b.createdAt);
+                          return aA.getTime() - bB.getTime();
+                        })
+                        .map((message) =>
+                          message.authorId === user?.id ? (
+                            <Paper
+                              sx={(theme) => ({
+                                backgroundColor:
+                                  theme.colorScheme === "dark"
+                                    ? theme.colors.blue[9]
+                                    : theme.colors.blue[1],
+                                textAlign: "right",
+                                width: "fit-content",
+                                alignSelf: "flex-end",
+                                // 90% width
+                                maxWidth: "90%",
+                              })}
+                              p="sm"
+                            >
+                              <Text size="sm">{message.content}</Text>
+                            </Paper>
+                          ) : (
+                            <Paper
+                              sx={(theme) => ({
+                                backgroundColor:
+                                  theme.colorScheme === "dark"
+                                    ? theme.colors.dark[8]
+                                    : theme.colors.gray[1],
+                                textAlign: "left",
+                                width: "fit-content",
+                                alignSelf: "flex-start",
+                              })}
+                              p="sm"
+                            >
+                              <Text size="sm">{message.content}</Text>
+                            </Paper>
+                          )
+                        )}
                     {conversationData?.length === 0 && (
                       <ModernEmptyState
                         title="No messages"

@@ -413,7 +413,6 @@ const Chat: React.FC = () => {
                         <Stack spacing={12}>
                           {conversationData &&
                             conversationData
-                              .reverse()
                               .sort(
                                 (a, b) =>
                                   new Date(a.createdAt).getTime() -
