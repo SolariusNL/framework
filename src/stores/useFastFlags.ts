@@ -1,11 +1,11 @@
+import { FastFlagUnionType, Prisma } from "@prisma/client";
 import create from "zustand";
 import { GenericFastFlag } from "../pages/api/flags/[[...params]]";
 import IResponseBase from "../types/api/IResponseBase";
 import fetchJson from "../util/fetch";
 import { FastFlagNames } from "../util/types";
-import { FastFlagUnionType, Prisma } from "@prisma/client";
 
-type ReturnedFastFlag = Record<
+export type ReturnedFastFlag = Record<
   FastFlagNames,
   string | number | boolean | any[] | Record<string, any> | any
 >;
@@ -14,6 +14,7 @@ interface FastFlagStore {
   flags: ReturnedFastFlag;
   rawFlags: GenericFastFlag[];
   setFlags: (GenericFastFlag: GenericFastFlag[]) => void;
+  setRawFlags: (GenericFastFlag: GenericFastFlag[]) => void;
 }
 
 export const FLAGS: Array<
@@ -86,6 +87,11 @@ const useFastFlags = create<FastFlagStore>((set) => ({
     });
   },
   rawFlags: [],
+  setRawFlags: (flags) => {
+    set({
+      rawFlags: flags,
+    });
+  },
 }));
 
 function fetchFlags() {

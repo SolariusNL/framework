@@ -21,8 +21,8 @@ module.exports = {
       },
       colors: {
         gray: {
-          400: "#909296",
-          "400-dark": "#868e96",
+          "400-dark": "#909296",
+          400: "#868e96",
         },
         mantine: {
           "text-dark": "#C1C2C5",
