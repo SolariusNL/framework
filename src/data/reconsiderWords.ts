@@ -25,6 +25,15 @@ const exemptWords = [
   "trigger",
   "pigger",
   "riggers",
+  "rigged",
+  "rigging",
+  "offender",
+  "offending",
+  "giggle",
+  "ginger",
+  "nigerian",
+  "nigerians",
+  "nigerien",
 ];
 const reconsiderWords = [
   "nigga",

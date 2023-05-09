@@ -418,7 +418,7 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
                       },
                       {
                         icon: <HiChevronDoubleUp />,
-                        title: "Repuation",
+                        title: "Reputation",
                         value: 0,
                       },
                       {
