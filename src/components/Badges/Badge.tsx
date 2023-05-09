@@ -16,7 +16,6 @@ const Badge = ({ user, title, description, icon: Icon, color }: BadgeProps) => {
   return (
     <Paper
       withBorder
-      shadow="md"
       p="xs"
       radius="md"
       sx={() => ({
@@ -35,9 +34,7 @@ const Badge = ({ user, title, description, icon: Icon, color }: BadgeProps) => {
         });
       }}
       className={clsx(
-        "dark:hover:bg-zinc-900 hover:bg-gray-100 transform transition-all duration-200",
-        "hover:scale-[1.02]",
-        "active:scale-[0.98]"
+        "dark:hover:bg-zinc-900 hover:bg-gray-100 transform transition-all duration-200"
       )}
     >
       <div className="flex items-center gap-2">

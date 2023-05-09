@@ -6,7 +6,6 @@ import {
   Indicator,
   Text,
   Title,
-  Tooltip,
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { getCookie } from "cookies-next";
@@ -36,6 +35,7 @@ import EmailBadge from "../../components/Badges/Email";
 import PremiumBadge from "../../components/Badges/Premium";
 import TOTPBadge from "../../components/Badges/TOTP";
 import Framework from "../../components/Framework";
+import IconTooltip from "../../components/IconTooltip";
 import ThumbnailCarousel from "../../components/ImageCarousel";
 import PlaceholderGameResource from "../../components/PlaceholderGameResource";
 import Donate from "../../components/Profile/Donate";
@@ -46,6 +46,7 @@ import { useUserInformationDialog } from "../../contexts/UserInformationDialog";
 import countries from "../../data/countries";
 import getTimezones from "../../data/timezones";
 import Rocket from "../../icons/Rocket";
+import Soodam from "../../icons/Soodam";
 import authorizedRoute from "../../util/auth";
 import { exclude } from "../../util/exclude";
 import getMediaUrl from "../../util/get-media";
@@ -213,40 +214,89 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
                 <div className="flex flex-col justify-between h-full">
                   <div className="flex flex-col justify-between">
                     <div className="flex items-center justify-center md:justify-start gap-3">
+                      {viewing.role === "ADMIN" && (
+                        <IconTooltip
+                          label="Soodam.re Staff"
+                          className="mr-1 flex items-center justify-center"
+                          icon={<Soodam />}
+                          descriptiveModal
+                          descriptiveModalProps={{
+                            title: "Soodam.re Staff",
+                            children: (
+                              <div className="text-center items-center flex flex-col">
+                                <Soodam height={64} width={64} />
+                                <Title order={3} mt="lg">
+                                  Soodam.re Employee
+                                </Title>
+                                <Text size="sm" color="dimmed" mt="md">
+                                  This user is a Soodam.re employee and can
+                                  assist you with any issues you may have. If
+                                  you have any questions, feel free to contact
+                                  them.
+                                </Text>
+                              </div>
+                            ),
+                          }}
+                        />
+                      )}
                       <Title order={2}>
                         {viewing.alias || viewing.username}
                       </Title>
-                      {viewing.role === "ADMIN" ||
-                      viewing.busy ||
-                      viewing.premium ? (
+                      {viewing.busy || viewing.premium ? (
                         <div className="hidden md:block">
-                          <div className="w-px h-4 mx-1 dark:bg-zinc-700/50" />
+                          <div className="w-px h-4 mx-1 dark:bg-zinc-700/50 bg-gray-200" />
                         </div>
                       ) : null}
-                      {viewing.role === "ADMIN" && (
-                        <Tooltip label="Soodam.re Staff">
-                          <div className="flex items-center">
-                            <Image
-                              src="/brand/white.png"
-                              width={16}
-                              height={16}
-                            />
-                          </div>
-                        </Tooltip>
-                      )}
+
                       {viewing.busy && (
-                        <Tooltip label="Busy">
-                          <div className="flex items-center">
-                            <HiLockClosed />
-                          </div>
-                        </Tooltip>
+                        <IconTooltip
+                          label="Busy"
+                          icon={<HiLockClosed />}
+                          descriptiveModal
+                          descriptiveModalProps={{
+                            title: "Busy",
+                            children: (
+                              <div className="text-center items-center flex flex-col">
+                                <HiLockClosed className="w-16 h-16 text-dimmed" />
+                                <Title order={3} mt="lg">
+                                  Busy
+                                </Title>
+                                <Text size="sm" color="dimmed" mt="md">
+                                  This user is currently busy and may not be
+                                  able to respond to your inquiries.
+                                </Text>
+                              </div>
+                            ),
+                          }}
+                        />
                       )}
                       {viewing.premium && (
-                        <Tooltip label="Framework Premium">
-                          <div className="flex items-center">
+                        <IconTooltip
+                          label="Premium"
+                          icon={
                             <Rocket className="text-pink-500 animate-pulse" />
-                          </div>
-                        </Tooltip>
+                          }
+                          descriptiveModal
+                          descriptiveModalProps={{
+                            title: "Premium",
+                            children: (
+                              <div className="text-center items-center flex flex-col">
+                                <Rocket
+                                  height={64}
+                                  width={64}
+                                  className="text-pink-500"
+                                />
+                                <Title order={3} mt="lg">
+                                  Premium
+                                </Title>
+                                <Text size="sm" color="dimmed" mt="md">
+                                  This user is subscribed to Framework Premium
+                                  and has access to exclusive features.
+                                </Text>
+                              </div>
+                            ),
+                          }}
+                        />
                       )}
                     </div>
                     <Text
@@ -478,7 +528,7 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
                   ))}
                 />
               )}
-              {user.profileLinks && <Links user={viewing} shadow="md" />}
+              {user.profileLinks && <Links user={viewing} />}
               <div className="grid grid-cols-2 gap-2">
                 {[
                   [<AlphaBadge user={viewing} key="alpha" />, true],

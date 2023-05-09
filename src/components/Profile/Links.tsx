@@ -17,7 +17,12 @@ const Links = ({
   return (
     <ShadedCard p="md" {...props}>
       {user.profileLinks.map((link, i) => (
-        <Card.Section key={i} p="md" withBorder>
+        <Card.Section
+          key={i}
+          p="md"
+          withBorder
+          className="dark:!border-zinc-900 !border-gray-200"
+        >
           <Text weight={700} size="sm" color="dimmed" mb={4}>
             {link.name}
           </Text>
