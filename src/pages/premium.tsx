@@ -34,7 +34,7 @@ const Premium: NextPage<PremiumProps> = ({ user }) => {
     ],
     [
       "Free access to all Soodam.re services for life",
-      "You'll be able to access all Soodam.re services for free for life, including Framework, Ukuza, and more.",
+      "You'll be able to access all Soodam.re services for free for life, including Framework, Asura, and more.",
     ],
     [
       "Yearly merchandise",
