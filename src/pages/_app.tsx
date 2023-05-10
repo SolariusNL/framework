@@ -265,7 +265,7 @@ const Framework = (
                         boxShadow:
                           theme.colorScheme === "light"
                             ? "inset 0 1.2px 0 0 hsla(0,0%,100%,.2);"
-                            : "",
+                            : "inset 0 1px 0 rgba(255, 255, 255, 0.1);",
                       }),
                       ...(amoled &&
                         params.variant === "default" && {

@@ -7,6 +7,7 @@ import {
   Stack,
   Text,
   TextInput,
+  useMantineColorScheme,
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import Image from "next/image";
@@ -23,6 +24,7 @@ import {
   HiPencil,
   HiXCircle,
 } from "react-icons/hi";
+import { BLACK } from "../../pages/teams/t/[slug]/issue/create";
 import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
 import { getCookie } from "../../util/cookies";
 import { User } from "../../util/prisma-types";
@@ -30,8 +32,6 @@ import LabelledCheckbox from "../LabelledCheckbox";
 import { updateAccount } from "./AccountTab";
 import SettingsTab from "./SettingsTab";
 import SideBySide from "./SideBySide";
-import PinInput from "../PinInput";
-import { BLACK } from "../../pages/teams/t/[slug]/issue/create";
 
 interface SecurityTabProps {
   user: User;
@@ -204,6 +204,7 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
         title="Change Password"
         opened={passwordModal}
         onClose={() => setPasswordModal(false)}
+        className={useMantineColorScheme().colorScheme}
       >
         <TextInput
           label="Current password"
@@ -211,7 +212,7 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
           mb={6}
           type="password"
           onChange={(e) => setCurrentPassword(e.target.value)}
-          classNames={{ input: "!bg-black" }}
+          classNames={BLACK}
           placeholder="Enter your current password"
           required
         />
@@ -221,7 +222,7 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
           mb={12}
           type="password"
           onChange={(e) => setNewPassword(e.target.value)}
-          classNames={{ input: "!bg-black" }}
+          classNames={BLACK}
           placeholder="Enter your new password"
           required
         />
@@ -242,6 +243,7 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
         title="Change Email"
         opened={emailModal}
         onClose={() => setEmailModal(false)}
+        className={useMantineColorScheme().colorScheme}
       >
         <TextInput
           label="New email"
@@ -249,7 +251,7 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
           mb={12}
           type="email"
           onChange={(e) => setNewEmail(e.target.value)}
-          classNames={{ input: "!bg-black" }}
+          classNames={BLACK}
           required
           placeholder="Enter your new email"
         />
@@ -288,7 +290,7 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
               onChange={(e) => setTwoFactorCode(e.target.value)}
               placeholder="000000"
               error={invalid ? "Invalid code" : undefined}
-              classNames={{ input: "!bg-black" }}
+              classNames={BLACK}
             />
             <Button
               fullWidth

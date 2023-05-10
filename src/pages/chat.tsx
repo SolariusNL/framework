@@ -21,6 +21,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { HiChatAlt2, HiEmojiHappy } from "react-icons/hi";
 import Framework from "../components/Framework";
 import ModernEmptyState from "../components/ModernEmptyState";
+import Owner from "../components/Owner";
 import sanitizeInappropriateContent from "../components/ReconsiderationPrompt";
 import ShadedCard from "../components/ShadedCard";
 import SocketContext from "../contexts/Socket";
@@ -332,19 +333,7 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
                 >
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-4">
-                      <Avatar
-                        src={getMediaUrl(conversating?.avatarUri!)}
-                        size="md"
-                        className="rounded-full"
-                      />
-                      <div>
-                        <Text size="lg">
-                          {conversating?.alias || conversating?.username}
-                        </Text>
-                        <Text size="sm" color="dimmed">
-                          @{conversating?.username}
-                        </Text>
-                      </div>
+                      <Owner user={conversating!} />
                     </div>
                     <Text size="sm" color="dimmed" weight="500">
                       Last seen{" "}
@@ -382,12 +371,16 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
                                 textAlign: "right",
                                 width: "fit-content",
                                 alignSelf: "flex-end",
-                                // 90% width
                                 maxWidth: "90%",
                               })}
                               p="sm"
                             >
-                              <Text size="sm">{message.content}</Text>
+                              <Text
+                                size="sm"
+                                style={{ wordBreak: "break-word" }}
+                              >
+                                {message.content}
+                              </Text>
                             </Paper>
                           ) : (
                             <Paper
@@ -399,10 +392,16 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
                                 textAlign: "left",
                                 width: "fit-content",
                                 alignSelf: "flex-start",
+                                maxWidth: "90%",
                               })}
                               p="sm"
                             >
-                              <Text size="sm">{message.content}</Text>
+                              <Text
+                                size="sm"
+                                style={{ wordBreak: "break-word" }}
+                              >
+                                {message.content}
+                              </Text>
                             </Paper>
                           )
                         )}
@@ -444,8 +443,14 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
                           backgroundColor:
                             theme.colorScheme === "dark"
                               ? theme.colors.dark[9]
-                              : theme.colors.gray[1],
+                              : theme.colors.gray[0],
                           borderRadius: theme.radius.md,
+                          borderTopWidth: 1,
+                          borderTopColor:
+                            theme.colorScheme === "dark"
+                              ? theme.colors.dark[8]
+                              : theme.colors.gray[1],
+                          borderTopStyle: "solid",
                         })}
                         autoComplete="off"
                         ref={messageInputRef}
