@@ -21,7 +21,7 @@ export const parse = (markdown: string) => {
 };
 
 export const proseStyles = clsx(
-  "prose prose-mantine-text max-w-none dark:prose-invert dark:text-mantine-text-dark",
+  "prose text-mantine-text max-w-none dark:prose-invert dark:text-mantine-text-dark",
   // headings
   "prose-headings:scroll-mt-28 prose-headings:font-display prose-headings:font-bold lg:prose-headings:scroll-mt-[8.5rem]",
   // lead
