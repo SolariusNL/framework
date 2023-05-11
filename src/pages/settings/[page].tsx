@@ -94,7 +94,7 @@ const tabs = [
     description: "Manage logins on your account and review suspicious activity",
   },
   {
-    value: "appearance",
+    value: "application",
     icon: <HiPhotograph />,
     color: "",
     label: "Application",
