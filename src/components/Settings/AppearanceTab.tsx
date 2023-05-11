@@ -10,7 +10,6 @@ import {
 import { HiMoon, HiSpeakerphone, HiSun } from "react-icons/hi";
 import useAmoled from "../../stores/useAmoled";
 import usePreferences from "../../stores/usePreferences";
-import useMediaQuery from "../../util/media-query";
 import { Preferences } from "../../util/preferences";
 import { User } from "../../util/prisma-types";
 import { Section } from "../Home/FriendsWidget";
@@ -23,7 +22,6 @@ interface AppearanceTabProps {
 }
 
 const AppearanceTab = ({ user }: AppearanceTabProps) => {
-  const mobile = useMediaQuery("768");
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const { colors } = useMantineTheme();
   const { enabled: amoled } = useAmoled();

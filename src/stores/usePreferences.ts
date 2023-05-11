@@ -30,7 +30,7 @@ function fetchPreferences() {
     if (res?.success) {
       usePreferences.getState().setPreferences(res?.data!.preferences);
       for (const key of Object.keys(defaultUserPreferences)) {
-        if (!res?.data?.preferences[key as UserPreferences]) {
+        if (res.data?.preferences[key as UserPreferences] === undefined) {
           usePreferences
             .getState()
             .setPreference(
