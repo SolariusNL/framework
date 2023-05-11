@@ -8,6 +8,7 @@ import {
   Drawer,
   NavLink,
   Paper,
+  ScrollArea,
   Stack,
   Text,
   TextInput,
@@ -302,7 +303,13 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
         zIndex={10000}
         padding="md"
       >
-        {friendsList}
+        <ScrollArea
+          sx={{
+            height: "calc(100vh - 100px)",
+          }}
+        >
+          {friendsList}
+        </ScrollArea>
       </Drawer>
       <Framework
         beta
@@ -327,7 +334,9 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
         <SidebarTabNavigation>
           {!mobile && (
             <SidebarTabNavigation.Sidebar>
-              {friendsList}
+              <ScrollArea sx={{ height: "calc(100vh - 200px)" }}>
+                {friendsList}
+              </ScrollArea>
             </SidebarTabNavigation.Sidebar>
           )}
           <SidebarTabNavigation.Content>

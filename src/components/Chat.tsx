@@ -18,6 +18,7 @@ import { useHotkeys } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import { getCookie } from "cookies-next";
 import { AnimatePresence, motion } from "framer-motion";
+import { useRouter } from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   HiArrowLeft,
@@ -28,6 +29,7 @@ import {
   HiXCircle,
 } from "react-icons/hi";
 import SocketContext from "../contexts/Socket";
+import useAudio from "../stores/useAudio";
 import useAuthorizedUserStore from "../stores/useAuthorizedUser";
 import useChatStore from "../stores/useChatStore";
 import { useOnClickOutside } from "../util/click-outside";
@@ -50,6 +52,7 @@ const Chat: React.FC = () => {
   const [conversating, setConversating] = useState<NonUser | null>(null);
   const [conversationData, setConversationData] = useState<ChatMessage[]>([]);
   const { user } = useAuthorizedUserStore()!;
+  const { chatNotification } = useAudio();
   const messageForm = useForm<{
     message: string;
   }>({
@@ -72,6 +75,7 @@ const Chat: React.FC = () => {
   const pickerRef = useRef<HTMLDivElement>(null);
   const socket = useContext(SocketContext);
   const messagesRef = useRef<HTMLDivElement>(null);
+  const [audio, setAudio] = useState<HTMLAudioElement | null>();
 
   useOnClickOutside(pickerRef, () => setPicker(false));
 
@@ -173,6 +177,10 @@ const Chat: React.FC = () => {
 
   useEffect(() => {
     getUnreadMessages();
+    if (typeof window !== "undefined") {
+      const audio = new Audio("/audio/chat_message.wav");
+      setAudio(audio);
+    }
   }, []);
 
   useEffect(() => {
@@ -185,6 +193,9 @@ const Chat: React.FC = () => {
   React.useEffect(() => {
     if (socket) {
       socket?.on("@user/chat", (data) => {
+        if (!document.hasFocus() && chatNotification && audio) {
+          audio.play();
+        }
         if (currentConversation === data.authorId) {
           setConversationData((prev) => [...prev, data]);
           markAsRead();
@@ -214,7 +225,9 @@ const Chat: React.FC = () => {
   }, [socket, currentConversation]);
 
   const { colorScheme } = useMantineColorScheme();
+  const router = useRouter();
 
+  if (router.pathname === "/chat") return null;
   return (
     <motion.div
       className={colorScheme}
