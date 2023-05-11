@@ -195,7 +195,10 @@ class GiftRouter {
       };
     }
 
-    const possible = [30, 50, 70, 75, 80, 100, 110, 120, 130, 140, 150];
+    const possible = [
+      30, 50, 70, 75, 80, 100, 110, 120, 130, 140, 150, 200, 210, 215, 220, 225,
+      300,
+    ];
     const random = possible[Math.floor(Math.random() * possible.length)];
 
     await prisma.user.update({

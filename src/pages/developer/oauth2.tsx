@@ -353,12 +353,16 @@ const OAuth2: React.FC<OAuth2Props> = ({ user }) => {
   return (
     <Developer
       user={user}
-      title="API Keys"
-      description="Manage your API keys and integrate your applications with Framework."
+      title="OAuth2"
+      description="Manage your OAuth2 applications."
     >
       {createAppModal}
       <div className="flex items-center justify-between mb-6 gap-3">
-        <TextInput icon={<HiSearch />} className="w-full" placeholder="Search for apps..." />
+        <TextInput
+          icon={<HiSearch />}
+          className="w-full"
+          placeholder="Search for apps..."
+        />
         <Button
           leftIcon={<HiPlus />}
           onClick={() => setCreateAppModalOpened(true)}

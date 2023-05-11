@@ -1,16 +1,21 @@
 import {
   Card,
+  Divider,
+  Switch,
   Text,
   Title,
   useMantineColorScheme,
   useMantineTheme,
 } from "@mantine/core";
-import { HiMoon, HiSun } from "react-icons/hi";
+import { HiMoon, HiSpeakerphone, HiSun } from "react-icons/hi";
 import useAmoled from "../../stores/useAmoled";
+import useAudio from "../../stores/useAudio";
 import useMediaQuery from "../../util/media-query";
 import { User } from "../../util/prisma-types";
+import { Section } from "../Home/FriendsWidget";
 import ModernEmptyState from "../ModernEmptyState";
 import SettingsTab from "./SettingsTab";
+import SideBySide from "./SideBySide";
 
 interface AppearanceTabProps {
   user: User;
@@ -21,9 +26,14 @@ const AppearanceTab = ({ user }: AppearanceTabProps) => {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const { colors } = useMantineTheme();
   const { enabled: amoled } = useAmoled();
+  const { chatNotification, setChatNotification } = useAudio();
 
   return (
     <SettingsTab tabValue="appearance" tabTitle="Appearance">
+      <Section
+        title="Appearance"
+        description="Change the appearance of Framework."
+      />
       <div className="grid grid-cols-2 gap-8 w-full">
         {amoled ? (
           <div className="col-span-full">
@@ -35,13 +45,12 @@ const AppearanceTab = ({ user }: AppearanceTabProps) => {
         ) : (
           ["Dark", "Light"].map((color) => (
             <Card
-              shadow="sm"
               p="md"
               sx={{
                 cursor: "pointer",
                 flex: 1,
                 backgroundColor:
-                  colorScheme == "dark" ? colors.dark[8] : colors.gray[1],
+                  colorScheme == "dark" ? colors.dark[8] : colors.gray[0],
               }}
               onClick={() => toggleColorScheme()}
               key={color}
@@ -85,6 +94,22 @@ const AppearanceTab = ({ user }: AppearanceTabProps) => {
           ))
         )}
       </div>
+      <Divider mt="xl" mb="xl" />
+      <Section title="Sound" description="Change sound preferences." />
+      <SideBySide
+        title="Chat notifications"
+        description="Play a sound when you receive a chat message."
+        icon={<HiSpeakerphone />}
+        right={
+          <Switch
+            label="Enable chat notifications"
+            checked={chatNotification}
+            onChange={() => setChatNotification(!chatNotification)}
+          />
+        }
+        shaded
+        noUpperBorder
+      />
     </SettingsTab>
   );
 };

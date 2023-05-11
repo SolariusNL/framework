@@ -214,6 +214,9 @@ const DeveloperProfile: React.FC<DeveloperProfileProps> = ({
             <Button
               leftIcon={<HiPlus />}
               onClick={() => {
+                if (!creatingSkill.name || !creatingSkill.description) {
+                  return;
+                }
                 form.setFieldValue("skills", [
                   ...form.values.skills,
                   creatingSkill,
@@ -314,43 +317,16 @@ const DeveloperProfile: React.FC<DeveloperProfileProps> = ({
                   />
                   <div className="grid md:grid-cols-2 mt-4 gap-4 grid-cols-1">
                     <Descriptive
-                      title="Skills"
-                      description="What skills do you have?"
-                      required
+                      title="Looking for work"
+                      description="Are you looking for work?"
                     >
-                      <ShadedCard className="flex flex-col gap-1 p-1">
-                        <Button
-                          variant="subtle"
-                          leftIcon={<HiPlus />}
-                          onClick={() => setAddSkillOpen(true)}
-                          disabled={form.values.skills.length > 5}
-                        >
-                          Add skill
-                        </Button>
-                        {form.values.skills.map((skill, index) => (
-                          <div
-                            className="flex justify-between gap-1"
-                            key={index}
-                          >
-                            <div className="flex flex-col gap-1 p-2">
-                              <Text size="lg">{skill.name}</Text>
-                              <Tooltip label={skill.description}>
-                                <Text size="sm" color="dimmed" lineClamp={1}>
-                                  {skill.description}
-                                </Text>
-                              </Tooltip>
-                            </div>
-                            <CloseButton
-                              radius="xl"
-                              onClick={() => {
-                                const skills = form.values.skills;
-                                skills.splice(index, 1);
-                                form.setFieldValue("skills", skills);
-                              }}
-                            />
-                          </div>
-                        ))}
-                      </ShadedCard>
+                      <Checkbox
+                        label="I am looking for work"
+                        classNames={BLACK}
+                        {...form.getInputProps("lookingForWork", {
+                          type: "checkbox",
+                        })}
+                      />
                     </Descriptive>
                     <Descriptive
                       title="Showcase games"
@@ -382,20 +358,53 @@ const DeveloperProfile: React.FC<DeveloperProfileProps> = ({
                             label: game.name,
                           })) || []
                         }
+                        mb="sm"
                       />
                     </Descriptive>
-                    <Descriptive
-                      title="Looking for work"
-                      description="Are you looking for work?"
-                    >
-                      <Checkbox
-                        label="I am looking for work"
-                        classNames={BLACK}
-                        {...form.getInputProps("lookingForWork", {
-                          type: "checkbox",
-                        })}
-                      />
-                    </Descriptive>
+                  </div>
+                  <Descriptive
+                    title="Skills"
+                    description="What skills do you have?"
+                    required
+                  >
+                    <ShadedCard className="flex flex-col gap-1 p-1">
+                      <Button
+                        variant="subtle"
+                        leftIcon={<HiPlus />}
+                        onClick={() => setAddSkillOpen(true)}
+                        disabled={form.values.skills.length > 5}
+                      >
+                        Add skill
+                      </Button>
+                      <div className="grid md:grid-cols-2 gap-2 grid-cols-1">
+                        {form.values.skills.map((skill, index) => (
+                          <div
+                            className="flex justify-between gap-1"
+                            key={index}
+                          >
+                            <div className="flex flex-col gap-1 p-2">
+                              <Text size="lg">{skill.name}</Text>
+                              <Tooltip label={skill.description}>
+                                <Text size="sm" color="dimmed" lineClamp={1}>
+                                  {skill.description}
+                                </Text>
+                              </Tooltip>
+                            </div>
+                            <CloseButton
+                              radius="xl"
+                              onClick={() => {
+                                const skills = form.values.skills;
+                                skills.splice(index, 1);
+                                form.setFieldValue("skills", skills);
+                              }}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </ShadedCard>
+                  </Descriptive>
+                  <div className="grid md:grid-cols-2 mt-4 gap-4 grid-cols-1">
+                    <div />
                     <Button type="submit" size="lg" leftIcon={<HiCheck />}>
                       Save
                     </Button>

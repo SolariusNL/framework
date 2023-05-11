@@ -26,6 +26,7 @@ import sanitizeInappropriateContent from "../components/ReconsiderationPrompt";
 import ShadedCard from "../components/ShadedCard";
 import SocketContext from "../contexts/Socket";
 import SidebarTabNavigation from "../layouts/SidebarTabNavigation";
+import useAudio from "../stores/useAudio";
 import useChatStore from "../stores/useChatStore";
 import authorizedRoute from "../util/auth";
 import { useOnClickOutside } from "../util/click-outside";
@@ -43,6 +44,7 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
   const [drawer, setDrawer] = useState(false);
   const mobile = useMediaQuery("768");
   const { currentConversation, setCurrentConversation } = useChatStore();
+  const { chatNotification } = useAudio();
   const [friends, setFriends] = useState<NonUser[]>([]);
   const [friendsSearch, setFriendsSearch] = useState("");
   const [conversationOpen, setConversationOpen] = useState(false);
@@ -69,6 +71,7 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
   const [picker, setPicker] = useState(false);
   const pickerRef = useRef<HTMLDivElement>(null);
   const socket = useContext(SocketContext);
+  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
   const messagesRef = useRef<HTMLDivElement>(null);
 
   useOnClickOutside(pickerRef, () => setPicker(false));
@@ -175,6 +178,10 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
 
   useEffect(() => {
     getUnreadMessages();
+    if (typeof window !== "undefined") {
+      const audio = new Audio("/audio/chat_message.wav");
+      setAudio(audio);
+    }
   }, []);
 
   useEffect(() => {
@@ -187,6 +194,9 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
   useEffect(() => {
     if (socket) {
       socket?.on("@user/chat", (data) => {
+        if (!document.hasFocus() && chatNotification && audio) {
+          audio.play();
+        }
         if (currentConversation === data.authorId) {
           setConversationData((prev) => [...prev, data]);
           markAsRead();

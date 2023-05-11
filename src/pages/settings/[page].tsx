@@ -97,9 +97,9 @@ const tabs = [
     value: "appearance",
     icon: <HiPhotograph />,
     color: "",
-    label: "Appearance",
+    label: "Application",
     component: AppearanceTab,
-    description: "Change how Framweork looks, edit theme",
+    description: "Change how Framework looks, behaves, and feels",
   },
   {
     value: "voice",

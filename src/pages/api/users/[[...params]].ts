@@ -959,9 +959,14 @@ class UserRouter {
           mode: "insensitive",
         },
       },
-      take: 5,
-      skip: 5 * (Number(page) - 1),
-      ...nonCurrentUserSelect,
+      select: {
+        username: true,
+        alias: true,
+        avatarUri: true,
+        role: true,
+        id: true,
+        lastSeen: true,
+      },
     });
 
     return {

@@ -3,6 +3,7 @@ import {
   ActionIcon,
   Anchor,
   Avatar,
+  Badge,
   Box,
   Card,
   Indicator,
@@ -313,6 +314,7 @@ const Chat: React.FC = () => {
                             setConversationOpen(false);
                             setConversating(null);
                             setCurrentConversation(null);
+                            setConversationData([]);
                           }}
                         >
                           <HiArrowLeft />
@@ -429,11 +431,17 @@ const Chat: React.FC = () => {
                                       textAlign: "right",
                                       width: "fit-content",
                                       alignSelf: "flex-end",
+                                      maxWidth: "90%",
                                     })}
                                     px="sm"
                                     py={8}
                                   >
-                                    <Text size="sm">{message.content}</Text>
+                                    <Text
+                                      size="sm"
+                                      style={{ wordBreak: "break-word" }}
+                                    >
+                                      {message.content}
+                                    </Text>
                                   </Paper>
                                 ) : (
                                   <Paper
@@ -445,11 +453,17 @@ const Chat: React.FC = () => {
                                       textAlign: "left",
                                       width: "fit-content",
                                       alignSelf: "flex-start",
+                                      maxWidth: "90%",
                                     })}
                                     px="sm"
                                     py={8}
                                   >
-                                    <Text size="sm">{message.content}</Text>
+                                    <Text
+                                      size="sm"
+                                      style={{ wordBreak: "break-word" }}
+                                    >
+                                      {message.content}
+                                    </Text>
                                   </Paper>
                                 )
                               )}
@@ -471,6 +485,11 @@ const Chat: React.FC = () => {
                         damping: 30,
                       }}
                       key="friends"
+                      style={{
+                        height: 290,
+                        overflowX: "hidden",
+                        overflowY: "auto",
+                      }}
                     >
                       <Stack spacing={5} p={0}>
                         {friends.map((friend) => (
@@ -484,11 +503,23 @@ const Chat: React.FC = () => {
                             className="rounded-none px-4"
                           >
                             <div className="flex items-center">
-                              <Avatar
-                                src={getMediaUrl(friend.avatarUri)}
-                                size={24}
-                                className="mr-2 rounded-full"
-                              />
+                              {unreadMessages[friend.id] > 0 ? (
+                                <Badge
+                                  variant="filled"
+                                  color="red"
+                                  sx={{ width: 24, height: 24, padding: 0 }}
+                                  className="mr-2"
+                                >
+                                  {String(unreadMessages[friend.id])}
+                                </Badge>
+                              ) : (
+                                <Avatar
+                                  src={getMediaUrl(friend.avatarUri)}
+                                  size={24}
+                                  className="mr-2 rounded-full"
+                                />
+                              )}
+
                               <div className="flex items-center">
                                 <Text size="sm" mr={6}>
                                   {friend.alias || friend.username}
@@ -497,16 +528,6 @@ const Chat: React.FC = () => {
                                   @{friend.username}
                                 </Text>
                               </div>
-                              {unreadMessages[friend.id] > 0 && (
-                                <Indicator
-                                  inline
-                                  label={String(unreadMessages[friend.id])}
-                                  size={16}
-                                  color="red"
-                                >
-                                  <></>
-                                </Indicator>
-                              )}
                             </div>
                           </ShadedButton>
                         ))}
