@@ -22,3 +22,16 @@ export type FastFlagNames =
   | "maintenance"
   | "disabled-chat"
   | "banner";
+
+export type UserPreferences = "message-bell" | "experimental";
+export const userPreferences: UserPreferences[] = [
+  "message-bell",
+  "experimental",
+];
+export const defaultUserPreferences: Record<
+  UserPreferences,
+  string | boolean | number
+> = {
+  "message-bell": true,
+  experimental: false,
+};

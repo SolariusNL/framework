@@ -9,8 +9,9 @@ import {
 } from "@mantine/core";
 import { HiMoon, HiSpeakerphone, HiSun } from "react-icons/hi";
 import useAmoled from "../../stores/useAmoled";
-import useAudio from "../../stores/useAudio";
+import usePreferences from "../../stores/usePreferences";
 import useMediaQuery from "../../util/media-query";
+import { Preferences } from "../../util/preferences";
 import { User } from "../../util/prisma-types";
 import { Section } from "../Home/FriendsWidget";
 import ModernEmptyState from "../ModernEmptyState";
@@ -26,10 +27,11 @@ const AppearanceTab = ({ user }: AppearanceTabProps) => {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const { colors } = useMantineTheme();
   const { enabled: amoled } = useAmoled();
-  const { chatNotification, setChatNotification } = useAudio();
+  const { preferences } = usePreferences();
 
   return (
     <SettingsTab tabValue="appearance" tabTitle="Appearance">
+      {JSON.stringify(preferences)}
       <Section
         title="Appearance"
         description="Change the appearance of Framework."
@@ -103,8 +105,12 @@ const AppearanceTab = ({ user }: AppearanceTabProps) => {
         right={
           <Switch
             label="Enable chat notifications"
-            checked={chatNotification}
-            onChange={() => setChatNotification(!chatNotification)}
+            checked={Boolean(preferences["message-bell"])}
+            onChange={() =>
+              Preferences.setPreferences({
+                "message-bell": !preferences["message-bell"],
+              })
+            }
           />
         }
         shaded

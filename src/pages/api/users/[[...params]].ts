@@ -3,6 +3,7 @@ import {
   PrivacyPreferences,
   ReceiveNotification,
   TransactionType,
+  UserPreferenceUnionType,
 } from "@prisma/client";
 import { render } from "@react-email/render";
 import {
@@ -11,6 +12,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Query,
   createHandler,
@@ -33,6 +35,7 @@ import { nonCurrentUserSelect } from "../../../util/prisma-types";
 import { RateLimitMiddleware } from "../../../util/rate-limit";
 import { verificationEmail } from "../../../util/templates/verification-email";
 import { logTransaction } from "../../../util/transaction-history";
+import { UserPreferences, userPreferences } from "../../../util/types";
 
 const statusAutomod = registerAutomodHandler("Status update");
 
@@ -1258,6 +1261,119 @@ class UserRouter {
         },
       },
     });
+
+    return {
+      success: true,
+    };
+  }
+
+  @Get("/@me/preferences")
+  @Authorized()
+  public async getPreferences(@Account() user: User) {
+    const prefs = await prisma.userPreference.findMany({
+      where: {
+        userId: user.id,
+      },
+    });
+
+    const convertedPrefs = prefs.map((pref) => {
+      const prefValue = pref.value;
+      switch (pref.valueType) {
+        case UserPreferenceUnionType.BOOLEAN:
+          return {
+            ...pref,
+            value: prefValue === "true",
+          };
+        case UserPreferenceUnionType.NUMBER:
+          return {
+            ...pref,
+            value: Number(prefValue),
+          };
+        default:
+          return {
+            ...pref,
+            value: prefValue,
+          };
+      }
+    });
+
+    return {
+      success: true,
+      data: {
+        preferences: Object.fromEntries(
+          convertedPrefs.map((pref) => [pref.key, pref.value])
+        ),
+      },
+    };
+  }
+
+  @Patch("/@me/preferences")
+  @Authorized()
+  public async updatePreferences(
+    @Account() user: User,
+    @Body() preferences: Record<UserPreferences, string | boolean | number>
+  ) {
+    if (!preferences) {
+      throw new BadRequestException("Invalid preferences");
+    }
+
+    const prefs = await prisma.userPreference.findMany({
+      where: {
+        userId: user.id,
+      },
+    });
+
+    for (const [key, value] of Object.entries(preferences)) {
+      const pref = prefs.find((p) => p.key === key);
+      if (pref) {
+        await prisma.userPreference.update({
+          where: {
+            id: pref.id,
+          },
+          data: {
+            value: String(value),
+            valueType: (() => {
+              switch (typeof value) {
+                case "boolean":
+                  return UserPreferenceUnionType.BOOLEAN;
+                case "number":
+                  return UserPreferenceUnionType.NUMBER;
+                default:
+                  return UserPreferenceUnionType.STRING;
+              }
+            })(),
+          },
+        });
+      } else {
+        if (userPreferences.includes(key as UserPreferences)) {
+          let valueType: UserPreferenceUnionType;
+          switch (typeof value) {
+            case "boolean":
+              valueType = UserPreferenceUnionType.BOOLEAN;
+              break;
+            case "number":
+              valueType = UserPreferenceUnionType.NUMBER;
+              break;
+            default:
+              valueType = UserPreferenceUnionType.STRING;
+              break;
+          }
+
+          await prisma.userPreference.create({
+            data: {
+              key,
+              value: String(value),
+              valueType,
+              user: {
+                connect: {
+                  id: user.id,
+                },
+              },
+            },
+          });
+        }
+      }
+    }
 
     return {
       success: true,
