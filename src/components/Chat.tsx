@@ -219,10 +219,21 @@ const Chat: React.FC = () => {
           }));
         }
       });
+
+      socket?.on("@user/chat/read", (data) => {
+        if (currentConversation === data.authorId) {
+          setConversationData((prev) =>
+            prev.map((message) =>
+              message.id === data.id ? { ...message, read: true } : message
+            )
+          );
+        }
+      });
     }
 
     return () => {
       socket?.off("@user/chat");
+      socket?.off("@user/chat/read");
     };
   }, [socket, currentConversation]);
 

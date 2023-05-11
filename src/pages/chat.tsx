@@ -134,6 +134,8 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
   };
 
   const markAsRead = async () => {
+    if (!conversating) return;
+
     await fetch(`/api/chat/conversation/${conversating?.id}/read`, {
       method: "POST",
       headers: {
@@ -221,10 +223,24 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
           }));
         }
       });
+
+      socket?.on("@user/chat/read", (data) => {
+        if (currentConversation === data.authorId) {
+          console.log("read!");
+          setConversationData((prev) =>
+            prev.map((message) =>
+              message.authorId === user.id
+                ? { ...message, seen: true }
+                : message
+            )
+          );
+        }
+      });
     }
 
     return () => {
       socket?.off("@user/chat");
+      socket?.off("@user/chat/read");
     };
   }, [socket, currentConversation]);
 
