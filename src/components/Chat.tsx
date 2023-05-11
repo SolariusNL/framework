@@ -29,9 +29,9 @@ import {
   HiXCircle,
 } from "react-icons/hi";
 import SocketContext from "../contexts/Socket";
-import useAudio from "../stores/useAudio";
 import useAuthorizedUserStore from "../stores/useAuthorizedUser";
 import useChatStore from "../stores/useChatStore";
+import usePreferences from "../stores/usePreferences";
 import { useOnClickOutside } from "../util/click-outside";
 import getMediaUrl from "../util/get-media";
 import { ChatMessage, NonUser } from "../util/prisma-types";
@@ -52,7 +52,7 @@ const Chat: React.FC = () => {
   const [conversating, setConversating] = useState<NonUser | null>(null);
   const [conversationData, setConversationData] = useState<ChatMessage[]>([]);
   const { user } = useAuthorizedUserStore()!;
-  const { chatNotification } = useAudio();
+  const { preferences } = usePreferences();
   const messageForm = useForm<{
     message: string;
   }>({
@@ -193,7 +193,7 @@ const Chat: React.FC = () => {
   React.useEffect(() => {
     if (socket) {
       socket?.on("@user/chat", (data) => {
-        if (!document.hasFocus() && chatNotification && audio) {
+        if (!document.hasFocus() && preferences["message-bell"] && audio) {
           audio.play();
         }
         if (currentConversation === data.authorId) {

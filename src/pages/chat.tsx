@@ -27,8 +27,8 @@ import sanitizeInappropriateContent from "../components/ReconsiderationPrompt";
 import ShadedCard from "../components/ShadedCard";
 import SocketContext from "../contexts/Socket";
 import SidebarTabNavigation from "../layouts/SidebarTabNavigation";
-import useAudio from "../stores/useAudio";
 import useChatStore from "../stores/useChatStore";
+import usePreferences from "../stores/usePreferences";
 import authorizedRoute from "../util/auth";
 import { useOnClickOutside } from "../util/click-outside";
 import getMediaUrl from "../util/get-media";
@@ -45,7 +45,7 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
   const [drawer, setDrawer] = useState(false);
   const mobile = useMediaQuery("768");
   const { currentConversation, setCurrentConversation } = useChatStore();
-  const { chatNotification } = useAudio();
+  const { preferences } = usePreferences();
   const [friends, setFriends] = useState<NonUser[]>([]);
   const [friendsSearch, setFriendsSearch] = useState("");
   const [conversationOpen, setConversationOpen] = useState(false);
@@ -195,7 +195,7 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
   useEffect(() => {
     if (socket) {
       socket?.on("@user/chat", (data) => {
-        if (!document.hasFocus() && chatNotification && audio) {
+        if (!document.hasFocus() && preferences["message-bell"] && audio) {
           audio.play();
         }
         if (currentConversation === data.authorId) {
