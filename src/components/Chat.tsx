@@ -7,7 +7,6 @@ import {
   Box,
   Card,
   Indicator,
-  Paper,
   Stack,
   Text,
   TextInput,
@@ -36,6 +35,7 @@ import { useOnClickOutside } from "../util/click-outside";
 import getMediaUrl from "../util/get-media";
 import { ChatMessage, NonUser } from "../util/prisma-types";
 import { getMyFriends } from "../util/universe/friends";
+import ChatMsg from "./Chat/ChatMessage";
 import sanitizeInappropriateContent from "./ReconsiderationPrompt";
 import ShadedButton from "./ShadedButton";
 
@@ -194,7 +194,9 @@ const Chat: React.FC = () => {
     if (socket) {
       socket?.on("@user/chat", (data) => {
         if (!document.hasFocus() && preferences["message-bell"] && audio) {
-          audio.play();
+          try {
+            audio.play();
+          } catch {}
         }
         if (currentConversation === data.authorId) {
           setConversationData((prev) => [...prev, data]);
@@ -424,6 +426,7 @@ const Chat: React.FC = () => {
                           overflowY: "auto",
                         }}
                         ref={messagesRef}
+                        className="dark:scrollbar-track-zinc-900/20 dark:scrollbar-thumb-zinc-700 scrollbar-track-gray-100/20 scrollbar-thumb-gray-500 scrollbar-thumb-rounded-md scrollbar-thin"
                       >
                         <Stack spacing={12}>
                           {conversationData &&
@@ -433,53 +436,9 @@ const Chat: React.FC = () => {
                                   new Date(a.createdAt).getTime() -
                                   new Date(b.createdAt).getTime()
                               )
-                              .map((message) =>
-                                message.authorId === user?.id ? (
-                                  <Paper
-                                    sx={(theme) => ({
-                                      backgroundColor:
-                                        theme.colorScheme === "dark"
-                                          ? theme.colors.blue[9]
-                                          : theme.colors.blue[1],
-                                      textAlign: "right",
-                                      width: "fit-content",
-                                      alignSelf: "flex-end",
-                                      maxWidth: "90%",
-                                    })}
-                                    px="sm"
-                                    py={8}
-                                  >
-                                    <Text
-                                      size="sm"
-                                      style={{ wordBreak: "break-word" }}
-                                    >
-                                      {message.content}
-                                    </Text>
-                                  </Paper>
-                                ) : (
-                                  <Paper
-                                    sx={(theme) => ({
-                                      backgroundColor:
-                                        theme.colorScheme === "dark"
-                                          ? theme.colors.dark[8]
-                                          : theme.colors.gray[1],
-                                      textAlign: "left",
-                                      width: "fit-content",
-                                      alignSelf: "flex-start",
-                                      maxWidth: "90%",
-                                    })}
-                                    px="sm"
-                                    py={8}
-                                  >
-                                    <Text
-                                      size="sm"
-                                      style={{ wordBreak: "break-word" }}
-                                    >
-                                      {message.content}
-                                    </Text>
-                                  </Paper>
-                                )
-                              )}
+                              .map((message) => (
+                                <ChatMsg message={message} key={message.id} />
+                              ))}
                         </Stack>
                       </div>
                     </motion.div>

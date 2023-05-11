@@ -7,7 +7,6 @@ import {
   Burger,
   Drawer,
   NavLink,
-  Paper,
   ScrollArea,
   Stack,
   Text,
@@ -20,6 +19,7 @@ import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext } from "next";
 import { useContext, useEffect, useRef, useState } from "react";
 import { HiChatAlt2, HiEmojiHappy } from "react-icons/hi";
+import ChatMsg from "../components/Chat/ChatMessage";
 import Framework from "../components/Framework";
 import ModernEmptyState from "../components/ModernEmptyState";
 import Owner from "../components/Owner";
@@ -196,7 +196,9 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
     if (socket) {
       socket?.on("@user/chat", (data) => {
         if (!document.hasFocus() && preferences["message-bell"] && audio) {
-          audio.play();
+          try {
+            audio.play();
+          } catch {}
         }
         if (currentConversation === data.authorId) {
           setConversationData((prev) => [...prev, data]);
@@ -379,51 +381,9 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
                           const bB = new Date(b.createdAt);
                           return aA.getTime() - bB.getTime();
                         })
-                        .map((message) =>
-                          message.authorId === user?.id ? (
-                            <Paper
-                              sx={(theme) => ({
-                                backgroundColor:
-                                  theme.colorScheme === "dark"
-                                    ? theme.colors.blue[9]
-                                    : theme.colors.blue[1],
-                                textAlign: "right",
-                                width: "fit-content",
-                                alignSelf: "flex-end",
-                                maxWidth: "90%",
-                              })}
-                              p="sm"
-                            >
-                              <Text
-                                size="sm"
-                                style={{ wordBreak: "break-word" }}
-                              >
-                                {message.content}
-                              </Text>
-                            </Paper>
-                          ) : (
-                            <Paper
-                              sx={(theme) => ({
-                                backgroundColor:
-                                  theme.colorScheme === "dark"
-                                    ? theme.colors.dark[8]
-                                    : theme.colors.gray[1],
-                                textAlign: "left",
-                                width: "fit-content",
-                                alignSelf: "flex-start",
-                                maxWidth: "90%",
-                              })}
-                              p="sm"
-                            >
-                              <Text
-                                size="sm"
-                                style={{ wordBreak: "break-word" }}
-                              >
-                                {message.content}
-                              </Text>
-                            </Paper>
-                          )
-                        )}
+                        .map((message) => (
+                          <ChatMsg message={message} key={message.id} />
+                        ))}
                     {conversationData?.length === 0 && (
                       <ModernEmptyState
                         title="No messages"
@@ -461,9 +421,10 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
                           padding: theme.spacing.md,
                           backgroundColor:
                             theme.colorScheme === "dark"
-                              ? theme.colors.dark[9]
+                              ? theme.colors.dark[8]
                               : theme.colors.gray[0],
-                          borderRadius: theme.radius.md,
+                          borderBottomLeftRadius: theme.radius.md,
+                          borderBottomRightRadius: theme.radius.md,
                           borderTopWidth: 1,
                           borderTopColor:
                             theme.colorScheme === "dark"

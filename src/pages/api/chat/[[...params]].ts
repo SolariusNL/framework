@@ -3,6 +3,7 @@ import { render } from "@react-email/render";
 import {
   Body,
   createHandler,
+  Delete,
   Get,
   Param,
   Post,
@@ -140,6 +141,36 @@ class ChatRouter {
     chatAutomod(user.id, content);
 
     return message;
+  }
+
+  @Delete("/msg/:msgid")
+  @Authorized()
+  public async deleteMessage(
+    @Account() user: User,
+    @Param("msgid") msgid: string
+  ) {
+    const msg = await prisma.chatMessage.findFirst({
+      where: {
+        id: msgid,
+        authorId: user.id,
+      },
+    });
+
+    if (!msg)
+      return {
+        success: false,
+        message: "No message found with corresponding identifiers",
+      };
+
+    await prisma.chatMessage.delete({
+      where: {
+        id: msg.id,
+      },
+    });
+
+    return {
+      success: true,
+    };
   }
 
   @Post("/conversation/:id/read")
