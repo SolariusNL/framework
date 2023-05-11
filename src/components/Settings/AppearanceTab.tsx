@@ -31,7 +31,6 @@ const AppearanceTab = ({ user }: AppearanceTabProps) => {
 
   return (
     <SettingsTab tabValue="appearance" tabTitle="Appearance">
-      {JSON.stringify(preferences)}
       <Section
         title="Appearance"
         description="Change the appearance of Framework."
