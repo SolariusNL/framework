@@ -6,6 +6,7 @@ import {
   Burger,
   Container,
   createStyles,
+  Divider,
   Group,
   Header,
   Loader,
@@ -158,13 +159,6 @@ const data = [
     subtitle: "Basic information about this instance",
   },
   {
-    label: "Automod",
-    icon: HiShieldCheck,
-    href: "/admin/automod",
-    render: <Automod />,
-    subtitle: "Review automod triggers and actions",
-  },
-  {
     label: "Articles",
     icon: HiBookmarkAlt,
     href: "/admin/articles",
@@ -173,6 +167,7 @@ const data = [
   },
   {
     label: "Keys",
+    group: "Application",
     icon: HiKey,
     href: "/admin/keys",
     render: <Invites />,
@@ -180,13 +175,23 @@ const data = [
   },
   {
     label: "Users",
+    group: "Moderation",
     icon: HiUsers,
     href: "/admin/users",
     render: <Users />,
     subtitle: "Manage users, roles, permissions, and more",
   },
   {
+    label: "Automod",
+    group: "Moderation",
+    icon: HiShieldCheck,
+    href: "/admin/automod",
+    render: <Automod />,
+    subtitle: "Review automod triggers and actions",
+  },
+  {
     label: "Instance",
+    group: "Application",
     icon: HiServer,
     href: "/admin/instance",
     render: <Instance />,
@@ -194,6 +199,7 @@ const data = [
   },
   {
     label: "Reports",
+    group: "Moderation",
     icon: HiColorSwatch,
     href: "/admin/reports",
     render: <Reports />,
@@ -201,6 +207,7 @@ const data = [
   },
   {
     label: "IPs",
+    group: "Moderation",
     icon: HiWifi,
     href: "/admin/ips",
     render: <BannedIPs />,
@@ -208,6 +215,7 @@ const data = [
   },
   {
     label: "Tickets",
+    group: "Support",
     icon: HiInboxIn,
     href: "/admin/tickets",
     render: <Tickets />,
@@ -215,6 +223,7 @@ const data = [
   },
   {
     label: "Directory",
+    group: "Company",
     icon: HiUserGroup,
     href: "/admin/directory",
     render: <Directory />,
@@ -222,6 +231,7 @@ const data = [
   },
   {
     label: "Gifts",
+    group: "Support",
     icon: HiGift,
     href: "/admin/gifts",
     render: <Gifts />,
@@ -229,6 +239,7 @@ const data = [
   },
   {
     label: "Licenses",
+    group: "Application",
     icon: HiIdentification,
     href: "/admin/licenses",
     render: <Licenses />,
@@ -236,6 +247,7 @@ const data = [
   },
   {
     label: "Tasks",
+    group: "Company",
     icon: HiClipboardCheck,
     href: "/admin/tasks",
     render: <Tasks />,
@@ -243,6 +255,7 @@ const data = [
   },
   {
     label: "Flags",
+    group: "Application",
     icon: HiFlag,
     href: "/admin/flags",
     render: <Flags />,
@@ -250,6 +263,7 @@ const data = [
   },
   {
     label: "Activity",
+    group: "Company",
     icon: HiTable,
     href: "/admin/activity",
     render: <Activity />,
@@ -257,6 +271,7 @@ const data = [
   },
   {
     label: "Cosmic",
+    group: "Application",
     icon: HiServer,
     href: "/admin/cosmic",
     render: <Cosmic />,
@@ -264,6 +279,7 @@ const data = [
   },
   {
     label: "ID",
+    group: "Company",
     icon: HiIdentification,
     href: "https://id.soodam.rocks",
     external: true,
@@ -344,7 +360,7 @@ const AdminDashboard: React.FC<{
       });
       setWarningShown(true);
     }
-  });
+  }, [mobile, warningShown]);
 
   const SidebarItem: React.FC<{
     onClick?: () => void;
@@ -371,50 +387,74 @@ const AdminDashboard: React.FC<{
     </a>
   );
 
-  const links = data
-    .filter((item) => item.show !== false)
-    .map((item) => (
-      <Link
-        key={item.label}
-        href={String(item.href)}
-        onClick={(event) => {
-          setActive(item.label as PageName);
-          event.preventDefault();
-        }}
-      >
-        <motion.a
-          className={clsx(
-            "dark:text-zinc-300s flex cursor-pointer items-center font-medium gap-2 w-full md:px-6 px-4 h-9 rounded-md relative transition ease-in-out duration-200",
-            active === item.label.toLowerCase()
-              ? "dark:text-pink-200 text-pink-700"
-              : "dark:hover:text-zinc-200 dark:hover:bg-zinc-700/10",
-            mobile &&
-              active === item.label.toLowerCase() &&
-              "dark:bg-pink-900/30"
-          )}
-          style={{
-            fontSize: theme.fontSizes.sm,
-          }}
-        >
-          {active === item.label.toLowerCase() && (
-            <motion.span
-              layoutId="sidebar"
+  const groupedNavigation = data.reduce(
+    (acc: Record<string, typeof data>, item: any) => {
+      if (!acc[item.group]) {
+        acc[item.group] = [];
+      }
+      acc[item.group].push(item);
+      return acc;
+    },
+    {}
+  );
+
+  const links = Object.entries(groupedNavigation).map(([groupTitle, items]) => (
+    <>
+      {groupTitle !== "undefined" && (
+        <div className={clsx("md:px-6 px-4 py-2 pt-3")}>
+          <Divider mb="lg" />
+          <Text weight={600} size="sm" color="dimmed">
+            {groupTitle}
+          </Text>
+        </div>
+      )}
+      {items
+        .filter((item) => item.show !== false)
+        .map((item) => (
+          <Link
+            key={item.label}
+            href={String(item.href)}
+            onClick={(event) => {
+              setActive(item.label as PageName);
+              event.preventDefault();
+            }}
+            scroll={false}
+          >
+            <motion.a
               className={clsx(
-                "absolute left-0 right-0 top-0 bottom-0 rounded-md bg-pink-900/30",
-                mobile && "hidden"
+                "dark:text-zinc-300s font-normal flex cursor-pointer items-center gap-2 w-full md:px-6 px-4 h-9 rounded-md relative transition ease-in-out duration-200",
+                active === item.label.toLowerCase()
+                  ? "dark:text-pink-200 text-pink-700 !font-medium"
+                  : "dark:hover:text-zinc-200 dark:hover:bg-zinc-700/10",
+                mobile &&
+                  active === item.label.toLowerCase() &&
+                  "dark:bg-pink-900/30"
               )}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              style={{
+                fontSize: theme.fontSizes.sm,
+              }}
             >
-              <div className="bg-pink-800 w-[2px] rounded-full absolute top-2.5 left-2.5 h-4" />
-            </motion.span>
-          )}
-          {React.createElement(item.icon)}
-          {item.label}
-        </motion.a>
-      </Link>
-    ));
+              {active === item.label.toLowerCase() && (
+                <motion.span
+                  layoutId="sidebar"
+                  className={clsx(
+                    "absolute left-0 right-0 top-0 bottom-0 rounded-md bg-pink-900/30",
+                    mobile && "hidden"
+                  )}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <div className="bg-pink-800 w-[2px] rounded-full absolute top-2.5 left-2.5 h-4" />
+                </motion.span>
+              )}
+              {React.createElement(item.icon)}
+              {item.label}
+            </motion.a>
+          </Link>
+        ))}
+    </>
+  ));
 
   return (
     <>
@@ -446,7 +486,12 @@ const AdminDashboard: React.FC<{
               </Group>
             </Navbar.Section>
 
-            <Navbar.Section grow component={ScrollArea}>
+            <Navbar.Section
+              grow
+              component={React.forwardRef<HTMLDivElement>((props, ref) => (
+                <ScrollArea {...props} />
+              ))}
+            >
               <LayoutGroup id="sidebar">
                 <div className="flex flex-col gap-y-1">{links}</div>
               </LayoutGroup>
