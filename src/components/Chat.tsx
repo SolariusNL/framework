@@ -229,11 +229,20 @@ const Chat: React.FC = () => {
           );
         }
       });
+
+      socket?.on("@user/chat/delete", (data) => {
+        if (currentConversation && conversationData) {
+          setConversationData((prev) =>
+            prev.filter((message) => message.id !== data.id)
+          );
+        }
+      });
     }
 
     return () => {
       socket?.off("@user/chat");
       socket?.off("@user/chat/read");
+      socket?.off("@user/chat/delete");
     };
   }, [socket, currentConversation]);
 

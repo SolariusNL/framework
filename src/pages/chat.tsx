@@ -236,8 +236,8 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
           );
         }
       });
-      
-      socket?.on("@user/chat-deleted", (data) => {
+
+      socket?.on("@user/chat/delete", (data) => {
         if (currentConversation && conversationData) {
           setConversationData((prev) =>
             prev.filter((message) => message.id !== data.id)
@@ -248,6 +248,8 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
 
     return () => {
       socket?.off("@user/chat");
+      socket?.off("@user/chat/delete");
+      socket?.off("@user/chat/read");
     };
   }, [socket, currentConversation]);
 

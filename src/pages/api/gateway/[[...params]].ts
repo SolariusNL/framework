@@ -146,7 +146,7 @@ class GatewayRouter {
               socket.emit("@user/chat", result);
             }
             if (params.model === "ChatMessage" && params.action === "delete") {
-              socket.emit("@user/chat-deleted", {
+              socket.emit("@user/chat/delete", {
                 id: result.id
               });
             }
