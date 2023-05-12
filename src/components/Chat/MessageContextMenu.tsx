@@ -1,11 +1,14 @@
 import { Menu, Text } from "@mantine/core";
 import { useClipboard } from "@mantine/hooks";
 import { openConfirmModal } from "@mantine/modals";
+import { showNotification } from "@mantine/notifications";
 import { ChatMessage } from "@prisma/client";
 import { FC } from "react";
-import { HiClipboard, HiTrash } from "react-icons/hi";
+import { HiCheckCircle, HiClipboard, HiTrash } from "react-icons/hi";
 import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
+import IResponseBase from "../../types/api/IResponseBase";
 import clsx from "../../util/clsx";
+import fetchJson from "../../util/fetch";
 import ContextMenu from "../ContextMenu";
 
 type MessageContextMenuProps = {
@@ -50,6 +53,23 @@ const MessageContextMenu: FC<MessageContextMenuProps> = ({
                   confirmProps: {
                     color: "red",
                     leftIcon: <HiTrash />,
+                  },
+                  async onConfirm() {
+                    await fetchJson<IResponseBase>(
+                      "/api/chat/msg/" + chatMessage.id,
+                      {
+                        method: "DELETE",
+                        auth: true,
+                      }
+                    ).then((res) => {
+                      if (res.success) {
+                        showNotification({
+                          title: "Message deleted",
+                          message: "Message successfully deleted.",
+                          icon: <HiCheckCircle />,
+                        });
+                      }
+                    });
                   },
                 });
               }}
