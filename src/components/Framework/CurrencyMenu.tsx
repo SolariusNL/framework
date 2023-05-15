@@ -266,6 +266,7 @@ const CurrencyMenu = ({
                 bits &&
                 router.pathname !== "/prizes" &&
                 !prizeReminder &&
+                user?.emailVerified &&
                 new Date().getTime() -
                   new Date(user?.lastRandomPrize!).getTime() >
                   1000 * 60 * 60 * 24
