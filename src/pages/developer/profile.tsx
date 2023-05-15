@@ -36,6 +36,7 @@ import fetchJson from "../../util/fetch";
 import prisma from "../../util/prisma";
 import { NonUser, User, nonCurrentUserSelect } from "../../util/prisma-types";
 import { BLACK } from "../teams/t/[slug]/issue/create";
+import { useRouter } from "next/router";
 
 type DeveloperProfileEx = DeveloperProfile & {
   user: NonUser;
@@ -107,6 +108,7 @@ const DeveloperProfile: React.FC<DeveloperProfileProps> = ({
     name: "",
     description: "",
   });
+  const router = useRouter();
   const form = useForm<EditForm>({
     initialValues: {
       bioMd: profile?.bioMd || "",
@@ -280,6 +282,7 @@ const DeveloperProfile: React.FC<DeveloperProfileProps> = ({
                           "Your developer profile has been updated successfully.",
                         icon: <HiCheck />,
                       });
+                      if (!profile) router.reload();
                     } else {
                       showNotification({
                         title: "Error",

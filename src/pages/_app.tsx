@@ -275,6 +275,10 @@ const Framework = (
                   }),
                 },
                 NavLink: {
+                  classNames: {
+                    root: "transition-all",
+                    body: "transition-all",
+                  },
                   styles: (theme, params: NavLinkStylesParams) => ({
                     root: {
                       border: "1px solid",

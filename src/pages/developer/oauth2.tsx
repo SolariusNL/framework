@@ -1,6 +1,5 @@
 import {
   ActionIcon,
-  Badge,
   Box,
   Button,
   CloseButton,
@@ -13,7 +12,7 @@ import {
   Text,
   Textarea,
   TextInput,
-  Tooltip,
+  Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useClipboard } from "@mantine/hooks";
@@ -22,9 +21,9 @@ import { OAuthScope } from "@prisma/client";
 import { GetServerSidePropsContext } from "next";
 import { useEffect, useState } from "react";
 import {
-  HiCake,
+  HiBadgeCheck,
+  HiCalendar,
   HiCheck,
-  HiDotsVertical,
   HiGlobe,
   HiKey,
   HiPlus,
@@ -36,7 +35,10 @@ import {
 } from "react-icons/hi";
 import ContextMenu from "../../components/ContextMenu";
 import Copy from "../../components/Copy";
+import DataGrid from "../../components/DataGrid";
+import IconTooltip from "../../components/IconTooltip";
 import ModernEmptyState from "../../components/ModernEmptyState";
+import ShadedButton from "../../components/ShadedButton";
 import ShadedCard from "../../components/ShadedCard";
 import { ownerDescriptions } from "../../data/scopes";
 import Developer from "../../layouts/DeveloperLayout";
@@ -47,8 +49,8 @@ import {
   IOAuthApplication,
 } from "../../types/api/IGetMyOAuth2ApplicationsResponse";
 import IResponseBase from "../../types/api/IResponseBase";
+import abbreviateNumber from "../../util/abbreviate";
 import authorizedRoute from "../../util/auth";
-import { AMOLED_COLORS } from "../../util/constants";
 import fetchJson from "../../util/fetch";
 import { User } from "../../util/prisma-types";
 
@@ -388,82 +390,57 @@ const OAuth2: React.FC<OAuth2Props> = ({ user }) => {
         ) : apps && apps.length > 0 ? (
           apps.map((app) => (
             <ContextMenu key={app.id} dropdown={infoDropdown(app)} width={190}>
-              <ShadedCard
-                sx={(theme) => ({
-                  "&:hover": {
-                    backgroundColor:
-                      theme.colorScheme === "dark"
-                        ? "#0b0b0c"
-                        : theme.colors.gray[1],
-                  },
-                  backgroundColor:
-                    theme.colorScheme === "dark"
-                      ? amoled
-                        ? AMOLED_COLORS.paper
-                        : theme.colors.dark[9]
-                      : theme.colors.gray[0],
-                  overflow: "visible",
-                })}
-                className="transition-all"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <Text size="lg">{app.name}</Text>
-                    {app.verified && (
-                      <Tooltip label="Verified application">
-                        <div className="flex items-center">
-                          <HiCheck className="text-green-500" />
-                        </div>
-                      </Tooltip>
-                    )}
-                  </div>
-                  <Menu width={190} withinPortal>
-                    <Menu.Target>
-                      <ActionIcon size="lg">
-                        <HiDotsVertical />
-                      </ActionIcon>
-                    </Menu.Target>
-                    <Menu.Dropdown>{infoDropdown(app)}</Menu.Dropdown>
-                  </Menu>
+              <ShadedButton className="w-full flex flex-col">
+                <div className="flex w-full items-center justify-center gap-2 text-center">
+                  <Title order={3}>{app.name}</Title>
+                  {app.verified && (
+                    <IconTooltip
+                      icon={<HiBadgeCheck className="text-green-400" />}
+                      descriptiveModal
+                      descriptiveModalProps={{
+                        title: "Verified OAuth2",
+                        children: (
+                          <Text size="sm" color="dimmed">
+                            This OAuth2 application has been verified for
+                            legitimacy by Soodam.re staff.
+                          </Text>
+                        ),
+                      }}
+                      label="Verified application"
+                    />
+                  )}
                 </div>
-                <Text size="sm" color="dimmed" mb="md">
+                <Text
+                  size="sm"
+                  lineClamp={2}
+                  color="dimmed"
+                  align="center"
+                  mt="sm"
+                  mb="md"
+                >
                   {app.description}
                 </Text>
-                <div className="grid grid-cols-2 gap-2 mb-4">
-                  {[
+                <DataGrid
+                  mdCols={2}
+                  smCols={2}
+                  defaultCols={2}
+                  className="w-full"
+                  items={[
                     {
+                      tooltip: "Users",
+                      value: abbreviateNumber(app._count?.clients!),
                       icon: <HiUserGroup />,
-                      value: app._count?.clients,
                     },
                     {
-                      icon: <HiCake />,
+                      tooltip: "Created",
                       value: new Date(
                         app.createdAt as Date
                       ).toLocaleDateString(),
+                      icon: <HiCalendar />,
                     },
-                  ].map((item, i) => (
-                    <div className="flex flex-col items-center gap-2" key={i}>
-                      {item.icon}
-                      <Text size="sm" color="dimmed" weight={500}>
-                        {item.value}
-                      </Text>
-                    </div>
-                  ))}
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {app.scopes!.map((scope) => (
-                    <Badge
-                      color="gray"
-                      key={scope}
-                      variant="outline"
-                      radius="md"
-                      className="font-mono"
-                    >
-                      {scope}
-                    </Badge>
-                  ))}
-                </div>
-              </ShadedCard>
+                  ]}
+                />
+              </ShadedButton>
             </ContextMenu>
           ))
         ) : (

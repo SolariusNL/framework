@@ -1,3 +1,4 @@
+import { Global } from "@mantine/core";
 import clsx from "../util/clsx";
 import useMediaQuery from "../util/media-query";
 
