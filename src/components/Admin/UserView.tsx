@@ -1,5 +1,6 @@
 import {
   Accordion,
+  Anchor,
   Avatar,
   Badge,
   Button,
@@ -339,9 +340,31 @@ const UserView = ({ user: u, loading }: UserViewProps) => {
                             ["Premium", user.premium],
                             ["Banned", user.banned],
                             ["Tickets", user.tickets],
+                            ["Bits", user.bits],
                             ["TOTP Enabled", user.otpEnabled],
                             ["Linked Discord", user.discordAccount?.discordId],
-                            ["Games", user.games.map((g) => g.id).join(", ")],
+                            [
+                              "Games",
+                              <div className="flex flex-wrap" key={randomKey()}>
+                                {user.games.map((g) => (
+                                  <>
+                                    <Link
+                                      key={randomKey()}
+                                      href={`/game/${g.id}`}
+                                      passHref
+                                    >
+                                      <Anchor>{g.name}</Anchor>
+                                    </Link>
+                                    {user.games.indexOf(g) !==
+                                      user.games.length - 1 && (
+                                      <Text color="dimmed" mx={6}>
+                                        •
+                                      </Text>
+                                    )}
+                                  </>
+                                ))}
+                              </div>,
+                            ],
                             [
                               "Links",
                               user.profileLinks.map((l) => l.url).join(", "),

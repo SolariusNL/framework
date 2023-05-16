@@ -9,7 +9,6 @@ const nextConfig = {
     });
     return config;
   },
-  // allow requests to *.soodam.rocks
   async headers() {
     return [
       {
@@ -22,6 +21,9 @@ const nextConfig = {
         ],
       },
     ];
+  },
+  experimental: {
+    scrollRestoration: true,
   },
 };
 

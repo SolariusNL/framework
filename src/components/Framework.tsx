@@ -478,7 +478,6 @@ const Framework = ({
         style={{
           position: immersive ? "sticky" : "relative",
           top: 0,
-          zIndex: 1000,
           ...(amoled && {
             backgroundColor: "#000",
           }),
@@ -808,7 +807,6 @@ const Framework = ({
               sx={(theme) => ({
                 backgroundColor: theme.colorScheme === "dark" ? "#000" : "#fff",
                 position: immersive ? "sticky" : "relative",
-                zIndex: 500,
                 top: immersive ? "108.7px" : "0",
               })}
               mb={noContentPadding ? 0 : 32}

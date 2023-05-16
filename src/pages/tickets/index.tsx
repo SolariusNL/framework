@@ -8,7 +8,7 @@ import {
   Text,
   Title,
 } from "@mantine/core";
-import { RangeCalendar } from "@mantine/dates";
+import { DatePicker, RangeCalendar } from "@mantine/dates";
 import { Transaction } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
@@ -22,6 +22,7 @@ import {
   HiTicket,
   HiViewList,
 } from "react-icons/hi";
+import FilterIndicator from "../../components/FilterIndicator";
 import Framework from "../../components/Framework";
 import { Section } from "../../components/Home/FriendsWidget";
 import ModernEmptyState from "../../components/ModernEmptyState";
@@ -30,6 +31,7 @@ import TransactionsWidget from "../../components/Widgets/Transactions";
 import SidebarTabNavigation from "../../layouts/SidebarTabNavigation";
 import authorizedRoute from "../../util/auth";
 import getMediaUrl from "../../util/get-media";
+import { formatNumberWithCommas } from "../../util/num";
 import { User } from "../../util/prisma-types";
 
 type TicketsProps = {
@@ -253,7 +255,7 @@ const Tickets: NextPage<TicketsProps> = ({ user }) => {
             <ShadedButton className="mb-4">
               <Group>
                 <HiCurrencyDollar size={24} />
-                <Title order={2}>{user.tickets}</Title>
+                <Title order={2}>{formatNumberWithCommas(user.tickets)}</Title>
               </Group>
             </ShadedButton>
           </Link>
@@ -308,6 +310,39 @@ const Tickets: NextPage<TicketsProps> = ({ user }) => {
                   placeholder="Filter"
                 />
               </div>
+              {dateSort === "custom" && (
+                <>
+                  <FilterIndicator
+                    className="mt-4"
+                    onClick={() => setDateSort("last-month")}
+                    text="Sorting by custom date"
+                  />
+                  <div className="flex items-center gap-4 mt-2">
+                    <DatePicker
+                      label="From"
+                      description="The start of the date range"
+                      value={customDateSort[0]}
+                      onChange={(v) => {
+                        setCustomDateSort([v, customDateSort[1]]);
+                      }}
+                      placeholder="From"
+                      icon={<HiCalendar />}
+                      clearable={false}
+                    />
+                    <DatePicker
+                      label="To"
+                      description="The end of the date range"
+                      value={customDateSort[1]}
+                      onChange={(v) => {
+                        setCustomDateSort([customDateSort[0], v]);
+                      }}
+                      placeholder="To"
+                      icon={<HiCalendar />}
+                      clearable={false}
+                    />
+                  </div>
+                </>
+              )}
               <div className="mt-6">
                 {filter === "all" && (
                   <div className="flex flex-col">
