@@ -6,6 +6,7 @@ import { HiArrowRight, HiShoppingCart, HiTicket } from "react-icons/hi";
 import { TransactionWithUser } from "../../pages/tickets";
 import getMediaUrl from "../../util/get-media";
 import { User } from "../../util/prisma-types";
+import ModernEmptyState from "../ModernEmptyState";
 import ShadedCard from "../ShadedCard";
 
 interface TransactionWidgetProps {
@@ -47,7 +48,7 @@ const TransactionsWidget = ({
     <>
       <div className="w-full flex items-center justify-center">
         <Pagination
-          total={Math.ceil((transactions?.length ?? 0) / 8)}
+          total={Math.ceil((transactions?.length || 16) / 8)}
           page={page}
           onChange={setPage}
           radius="md"
@@ -127,6 +128,14 @@ const TransactionsWidget = ({
               </div>
             </ShadedCard>
           ))}
+        {transactions !== null && transactions.length === 0 && (
+          <ShadedCard>
+            <ModernEmptyState
+              title="No transactions"
+              body="Nothing to see here yet."
+            />
+          </ShadedCard>
+        )}
       </Stack>
     </>
   );

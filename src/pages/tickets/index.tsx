@@ -1,12 +1,14 @@
 import {
   Avatar,
   Group,
+  Modal,
   NavLink,
   Select,
   Table,
   Text,
   Title,
 } from "@mantine/core";
+import { RangeCalendar } from "@mantine/dates";
 import { Transaction } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
@@ -42,6 +44,7 @@ type DateSort =
   | "last-week"
   | "last-day"
   | "last-year"
+  | "custom"
   | "all-time";
 type FilterType = "all" | "inbound" | "outbound";
 
@@ -68,8 +71,12 @@ const Tickets: NextPage<TicketsProps> = ({ user }) => {
     TransactionWithUser[] | null
   >(null);
   const [dateSort, setDateSort] = useState<DateSort>("last-month");
+  const [customDateSort, setCustomDateSort] = useState<
+    [Date | null, Date | null]
+  >([new Date(Date.now() - 2592000000), new Date()]);
   const [filter, setFilter] = useState<FilterType>("all");
   const [activeTab, setActiveTab] = useState(0);
+  const [customDateModalOpened, setCustomDateModalOpened] = useState(false);
 
   const dateFilter = (t: Transaction) => {
     switch (dateSort) {
@@ -81,6 +88,13 @@ const Tickets: NextPage<TicketsProps> = ({ user }) => {
         return new Date(t.createdAt).getTime() > Date.now() - 86400000;
       case "last-year":
         return new Date(t.createdAt).getTime() > Date.now() - 31536000000;
+      case "custom":
+        if (!customDateSort) return;
+        if (!customDateSort[0] || !customDateSort[1]) return;
+        return (
+          new Date(t.createdAt).getTime() > customDateSort[0].getTime()! &&
+          new Date(t.createdAt).getTime() < customDateSort[1].getTime()!
+        );
       case "all-time":
         return true;
     }
@@ -107,6 +121,13 @@ const Tickets: NextPage<TicketsProps> = ({ user }) => {
                 <td>{new Date(t.createdAt).toLocaleDateString()}</td>
               </tr>
             ))}
+          {transactions?.filter((t) => t.type === "INBOUND").length === 0 && (
+            <tr>
+              <td className="col-span-full text-dimmed">No data available</td>
+              <td />
+              <td />
+            </tr>
+          )}
           <tr>
             <td className="font-semibold">Total</td>
             <td className="font-semibold">
@@ -162,6 +183,14 @@ const Tickets: NextPage<TicketsProps> = ({ user }) => {
                 <td>{new Date(t.createdAt).toLocaleDateString()}</td>
               </tr>
             ))}
+          {transactions?.filter((t) => t.type === "OUTBOUND").length === 0 && (
+            <tr>
+              <td className="col-span-full text-dimmed">No data available</td>
+              <td />
+              <td />
+              <td />
+            </tr>
+          )}
           <tr>
             <td className="font-semibold">Total</td>
             <td></td>
@@ -192,6 +221,20 @@ const Tickets: NextPage<TicketsProps> = ({ user }) => {
       });
   };
 
+  const customDateModal = (
+    <Modal
+      title="Choose custom date"
+      opened={customDateModalOpened}
+      onClose={() => setCustomDateModalOpened(false)}
+    >
+      <RangeCalendar
+        value={customDateSort as [Date | null, Date | null]}
+        onChange={setCustomDateSort}
+        size="lg"
+      />
+    </Modal>
+  );
+
   useEffect(() => {
     getTransactions();
   }, []);
@@ -203,6 +246,7 @@ const Tickets: NextPage<TicketsProps> = ({ user }) => {
       modernTitle="Tickets"
       modernSubtitle="Manage your tickets, view transactions, and more."
     >
+      {customDateModal}
       <SidebarTabNavigation>
         <SidebarTabNavigation.Sidebar>
           <Link passHref href="/tickets/buy">
@@ -231,8 +275,9 @@ const Tickets: NextPage<TicketsProps> = ({ user }) => {
               <div className="flex items-center gap-4">
                 <Select
                   value={dateSort}
-                  onChange={(v) => {
+                  onChange={(v: DateSort) => {
                     setDateSort(v as DateSort);
+                    if (v === "custom") setCustomDateModalOpened(true);
                   }}
                   icon={<HiCalendar />}
                   label="Date sort"
@@ -242,6 +287,7 @@ const Tickets: NextPage<TicketsProps> = ({ user }) => {
                     { label: "Last week", value: "last-week" },
                     { label: "Last day", value: "last-day" },
                     { label: "Last year", value: "last-year" },
+                    { label: "Custom date", value: "custom" },
                     { label: "All time", value: "all-time" },
                   ]}
                   placeholder="Date sort"
@@ -268,7 +314,7 @@ const Tickets: NextPage<TicketsProps> = ({ user }) => {
                     <div className="mb-4">
                       <Section
                         title="Inbound"
-                        description="Your outbound expenditures."
+                        description="Your inbound expenditures."
                       />
                       <InboundTable />
                     </div>
