@@ -49,7 +49,7 @@ import { FrameworkUserProvider } from "../contexts/FrameworkUser";
 import SocketProvider from "../contexts/SocketContextProvider";
 import { UserInformationWrapper } from "../contexts/UserInformationDialog";
 import useAmoled from "../stores/useAmoled";
-import useFastFlags from "../stores/useFastFlags";
+import useFastFlags, { fetchFlags } from "../stores/useFastFlags";
 import useFeedback from "../stores/useFeedback";
 import "../styles/fonts.css";
 import "../styles/framework.css";
@@ -139,6 +139,10 @@ const Framework = (
       });
     }
 
+    router.events.on("routeChangeComplete", () => {
+      fetchFlags();
+    });
+
     if (
       typeof window !== "undefined" &&
       !seenUnknownHost &&
@@ -160,6 +164,12 @@ const Framework = (
       });
       setSeenUnknownHost(true);
     }
+
+    return () => {
+      router.events.off("routeChangeComplete", () => {
+        fetchFlags();
+      });
+    };
   }, []);
 
   useEffect(() => {

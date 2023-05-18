@@ -94,7 +94,7 @@ const useFastFlags = create<FastFlagStore>((set) => ({
   },
 }));
 
-function fetchFlags() {
+export function fetchFlags() {
   fetchJson<IResponseBase<{ flags: GenericFastFlag[] }>>("/api/flags", {
     auth: false,
   })

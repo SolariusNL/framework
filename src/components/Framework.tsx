@@ -1,4 +1,3 @@
-import { useFlags } from "@happykit/flags/client";
 import {
   ActionIcon,
   Affix,
@@ -16,7 +15,6 @@ import {
   Popover,
   Stack,
   Text,
-  ThemeIcon,
   Title,
   useMantineColorScheme,
 } from "@mantine/core";
@@ -47,7 +45,6 @@ import {
   HiSearch,
   HiShieldCheck,
   HiShoppingBag,
-  HiSpeakerphone,
   HiSun,
   HiTicket,
   HiTrash,
@@ -58,10 +55,8 @@ import {
 import SocketContext from "../contexts/Socket";
 import useAmoled from "../stores/useAmoled";
 import useAuthorizedUserStore from "../stores/useAuthorizedUser";
-import useExperimentsStore, {
-  ExperimentId,
-} from "../stores/useExperimentsStore";
 import useFeedback from "../stores/useFeedback";
+import usePreferences from "../stores/usePreferences";
 import useSidebar from "../stores/useSidebar";
 import logout from "../util/api/logout";
 import { getIpcRenderer } from "../util/electron";
@@ -71,6 +66,7 @@ import Chat from "./Chat";
 import ContextMenu from "./ContextMenu";
 import EmailReminder from "./EmailReminder";
 import Footer from "./Footer";
+import Banner from "./Framework/Banner";
 import CurrencyMenu from "./Framework/CurrencyMenu";
 import MobileSearchMenu from "./Framework/MobileSearchMenu";
 import NotificationFlyout from "./Framework/NotificationFlyout";
@@ -79,7 +75,6 @@ import UpdateDrawer from "./Framework/UpdateDrawer";
 import UserMenu from "./Framework/UserMenu";
 import FrameworkLogo from "./FrameworkLogo";
 import TabNav from "./TabNav";
-import usePreferences from "../stores/usePreferences";
 
 interface FrameworkProps {
   user: User;
@@ -367,8 +362,6 @@ const Framework = ({
   ));
 
   const [searchPopoverOpen, setSearchPopoverOpen] = useState(false);
-  const { flags } = useFlags();
-  const { experiments } = useExperimentsStore();
   const { user: userStore, setUser: setUserStore } = useAuthorizedUserStore()!;
 
   React.useEffect(() => {
@@ -754,55 +747,9 @@ const Framework = ({
           </Container>
         </Drawer>
       </div>
+      <Banner />
       {!noPadding ? (
         <>
-          {flags?.bannerEnabled && (
-            <Box
-              sx={() => ({
-                backgroundColor: "#e03131",
-              })}
-              p={12}
-            >
-              <Container
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                <ThemeIcon color="yellow" size={28} mr={16}>
-                  <HiSpeakerphone />
-                </ThemeIcon>
-                <div>
-                  <Text weight={500} color="white">
-                    {String(flags.bannerMessage).replace(
-                      /(https?:\/\/[^\s]+)/g,
-                      ""
-                    )}
-                  </Text>
-                  {String(flags.bannerMessage).includes("https://") && (
-                    <div className="mt-2 flex gap-2">
-                      {(
-                        String(flags.bannerMessage).match(
-                          /https?:\/\/[^\s]+/g
-                        ) as string[]
-                      ).map((url: string) => (
-                        <Anchor
-                          href={url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          weight={500}
-                          className="text-white"
-                          key={url}
-                        >
-                          {mobile ? "Go to link" : url}
-                        </Anchor>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </Container>
-            </Box>
-          )}
           {modernTitle && modernSubtitle && (
             <Box
               sx={(theme) => ({

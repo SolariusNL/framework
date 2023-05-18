@@ -26,6 +26,7 @@ import { BLACK } from "../../../pages/teams/t/[slug]/issue/create";
 import useAuthorizedUserStore from "../../../stores/useAuthorizedUser";
 import useFastFlags, { FLAGS } from "../../../stores/useFastFlags";
 import IResponseBase from "../../../types/api/IResponseBase";
+import clsx from "../../../util/clsx";
 import fetchJson from "../../../util/fetch";
 import Descriptive from "../../Descriptive";
 import ModernEmptyState from "../../ModernEmptyState";
@@ -254,8 +255,19 @@ const Flags: FC = () => {
                           ) : flag.valueType === "NUMBER" ? (
                             flag.value
                           ) : flag.valueType === "OBJECT" ? (
-                            <pre className="text-start font-monos">
-                              {JSON.stringify(JSON.parse(flag.value), null, 2)}
+                            <pre
+                              className={clsx(
+                                "text-start font-mono",
+                                "whitespace-pre-wrap"
+                              )}
+                            >
+                              <code>
+                                {JSON.stringify(
+                                  JSON.parse(flag.value),
+                                  null,
+                                  2
+                                )}
+                              </code>
                             </pre>
                           ) : (
                             flag.value
