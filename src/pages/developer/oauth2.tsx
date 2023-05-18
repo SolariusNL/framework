@@ -1,5 +1,7 @@
 import {
   ActionIcon,
+  Anchor,
+  Badge,
   Box,
   Button,
   CloseButton,
@@ -42,7 +44,6 @@ import ShadedButton from "../../components/ShadedButton";
 import ShadedCard from "../../components/ShadedCard";
 import { ownerDescriptions } from "../../data/scopes";
 import Developer from "../../layouts/DeveloperLayout";
-import useAmoled from "../../stores/useAmoled";
 import { ICreateNewOAuth2ApplicationResponse } from "../../types/api/ICreateNewOAuth2ApplicationResponse";
 import {
   IGetMyOAuth2ApplicationsResponse,
@@ -53,6 +54,7 @@ import abbreviateNumber from "../../util/abbreviate";
 import authorizedRoute from "../../util/auth";
 import fetchJson from "../../util/fetch";
 import { User } from "../../util/prisma-types";
+import { BLACK } from "../teams/t/[slug]/issue/create";
 
 type OAuth2Props = {
   user: User;
@@ -107,6 +109,7 @@ const OAuth2: React.FC<OAuth2Props> = ({ user }) => {
   const [loadingApps, setLoadingApps] = useState<boolean>(true);
   const [createAppModalOpened, setCreateAppModalOpened] =
     useState<boolean>(false);
+  const [search, setSearch] = useState<string | undefined>(undefined);
   const form = useForm<OAuth2Form>({
     initialValues: {
       name: "",
@@ -142,7 +145,6 @@ const OAuth2: React.FC<OAuth2Props> = ({ user }) => {
     },
   });
   const { copy } = useClipboard();
-  const { enabled: amoled } = useAmoled();
 
   const fetchApps = async () => {
     setLoadingApps(true);
@@ -188,6 +190,7 @@ const OAuth2: React.FC<OAuth2Props> = ({ user }) => {
             if (res.success) {
               setCreateAppModalOpened(false);
               fetchApps();
+              form.reset();
               openModal({
                 title: "Application created",
                 children: (
@@ -352,6 +355,11 @@ const OAuth2: React.FC<OAuth2Props> = ({ user }) => {
     </>
   );
 
+  const searchFn = (s: IOAuthApplication) => {
+    if (search === undefined || !search) return true;
+    return s.name?.toLowerCase().includes(search.toLowerCase());
+  };
+
   return (
     <Developer
       user={user}
@@ -364,6 +372,9 @@ const OAuth2: React.FC<OAuth2Props> = ({ user }) => {
           icon={<HiSearch />}
           className="w-full"
           placeholder="Search for apps..."
+          value={search}
+          onChange={(e) => setSearch(e.currentTarget.value)}
+          classNames={BLACK}
         />
         <Button
           leftIcon={<HiPlus />}
@@ -387,10 +398,39 @@ const OAuth2: React.FC<OAuth2Props> = ({ user }) => {
           Array.from({ length: 4 }).map((_, i) => (
             <Skeleton height="12rem" key={i} />
           ))
-        ) : apps && apps.length > 0 ? (
-          apps.map((app) => (
+        ) : apps && apps.filter(searchFn).length > 0 ? (
+          apps.filter(searchFn).map((app) => (
             <ContextMenu key={app.id} dropdown={infoDropdown(app)} width={190}>
-              <ShadedButton className="w-full flex flex-col">
+              <ShadedButton
+                className="w-full flex flex-col"
+                onClick={() => {
+                  openModal({
+                    title: app.name,
+                    children: (
+                      <>
+                        <Text size="sm" color="dimmed" mb="lg">
+                          {app.description}
+                        </Text>
+                        <div className="flex flex-wrap gap-1 mb-2">
+                          {app.scopes?.map((scope, index) => (
+                            <Badge variant="outline" key={index}>
+                              {scope}
+                            </Badge>
+                          ))}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Text size="sm" color="dimmed">
+                            URI
+                          </Text>
+                          <Anchor weight={500} size="sm" href={app.redirectUri}>
+                            {app.redirectUri}
+                          </Anchor>
+                        </div>
+                      </>
+                    ),
+                  });
+                }}
+              >
                 <div className="flex w-full items-center justify-center gap-2 text-center">
                   <Title order={3}>{app.name}</Title>
                   {app.verified && (
@@ -410,16 +450,18 @@ const OAuth2: React.FC<OAuth2Props> = ({ user }) => {
                     />
                   )}
                 </div>
-                <Text
-                  size="sm"
-                  lineClamp={2}
-                  color="dimmed"
-                  align="center"
-                  mt="sm"
-                  mb="md"
-                >
-                  {app.description}
-                </Text>
+                <div className="w-full flex justify-center">
+                  <Text
+                    size="sm"
+                    lineClamp={2}
+                    color="dimmed"
+                    align="center"
+                    mt="sm"
+                    mb="md"
+                  >
+                    {app.description}
+                  </Text>
+                </div>
                 <DataGrid
                   mdCols={2}
                   smCols={2}
