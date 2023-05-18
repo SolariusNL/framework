@@ -1,4 +1,5 @@
 import {
+  Anchor,
   Button,
   List,
   Modal,
@@ -22,6 +23,8 @@ import { User } from "../../util/prisma-types";
 import ShadedCard from "../ShadedCard";
 import SettingsTab from "./SettingsTab";
 import SideBySide from "./SideBySide";
+import InlineError from "../InlineError";
+import Link from "next/link";
 
 interface DeleteAccountTabProps {
   user: User;
@@ -51,18 +54,14 @@ const DeleteAccountTab = ({ user }: DeleteAccountTabProps) => {
               >
                 Delete Account
               </Button>
-              <div className="flex items-start gap-2 mt-4">
-                <HiExclamationCircle size={20} className="text-red-600 flex-shrink-0" />
-                <div>
-                  <Text className="text-red-500 font-semibold">
-                    Disabled
-                  </Text>
-                  <Text color="dimmed" size="sm">
-                    Account deletion is temporarily disabled due to underlying
-                    issues with the database.
-                  </Text>
-                </div>
-              </div>
+              <InlineError title="Unavailable" className="mt-4">
+                Account deletion is temporarily disabled due to database issues.
+                To delete your Framework account, please{" "}
+                <Link href="/support" passHref>
+                  <Anchor>contact us</Anchor>
+                </Link>{" "}
+                and we&apos;ll assist you.
+              </InlineError>
             </>
           }
           actions={
