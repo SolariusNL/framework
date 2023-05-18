@@ -22,7 +22,7 @@ const PlaceholderGameResource = ({
   function rand() {
     return gradientPairs[
       Math.abs(
-        Array.from(game?.name ?? "placeholder")
+        Array.from(`${game?.name}${String(game?.id)}${String(game?.author.username)}` ?? "placeholder")
           .map((char) => char.charCodeAt(0))
           .reduce((a, b) => a + b, 0)
       ) % gradientPairs.length
