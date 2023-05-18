@@ -30,14 +30,15 @@ function fetchPreferences() {
     if (res?.success) {
       usePreferences.getState().setPreferences(res?.data!.preferences);
       for (const key of Object.keys(defaultUserPreferences)) {
-        if (res.data?.preferences[key as UserPreferences] === undefined) {
+        if (
+          !Object.keys(res?.data!.preferences).includes(key as UserPreferences)
+        ) {
           usePreferences
             .getState()
             .setPreference(
               key as UserPreferences,
               defaultUserPreferences[key as UserPreferences]
             );
-          break;
         }
       }
     }
