@@ -79,6 +79,7 @@ import UpdateDrawer from "./Framework/UpdateDrawer";
 import UserMenu from "./Framework/UserMenu";
 import FrameworkLogo from "./FrameworkLogo";
 import TabNav from "./TabNav";
+import usePreferences from "../stores/usePreferences";
 
 interface FrameworkProps {
   user: User;
@@ -423,7 +424,7 @@ const Framework = ({
       transition="slide-up"
       className={relative ? "relative" : ""}
     >
-      {experiments.includes(ExperimentId.LiveChat) && (
+      {usePreferences().preferences["@chat/enabled"] && (
         <Affix
           position={{
             bottom: 0,

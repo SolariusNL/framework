@@ -21,6 +21,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { HiChatAlt2, HiEmojiHappy } from "react-icons/hi";
 import ChatMsg from "../components/Chat/ChatMessage";
 import Framework from "../components/Framework";
+import LoadingIndicator from "../components/LoadingIndicator";
 import ModernEmptyState from "../components/ModernEmptyState";
 import Owner from "../components/Owner";
 import sanitizeInappropriateContent from "../components/ReconsiderationPrompt";
@@ -51,6 +52,8 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
   const [conversationOpen, setConversationOpen] = useState(false);
   const [conversating, setConversating] = useState<NonUser | null>(null);
   const [conversationData, setConversationData] = useState<ChatMessage[]>([]);
+  const [conversationDataLoading, setConversationDataLoading] =
+    useState<boolean>(true);
   const messageForm = useForm<{
     message: string;
   }>({
@@ -78,16 +81,19 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
   useOnClickOutside(pickerRef, () => setPicker(false));
 
   const getConversationData = async (id: number) => {
+    setConversationDataLoading(true);
     const res = await fetch(`/api/chat/conversation/${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
         Authorization: String(getCookie(".frameworksession")),
       },
-    });
-
-    const data = await res.json();
-    setConversationData(data);
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setConversationDataLoading(false);
+        setConversationData(data);
+      });
   };
 
   const sendMessage = async (values: { message: string }) => {
@@ -197,7 +203,7 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
   useEffect(() => {
     if (socket) {
       socket?.on("@user/chat", (data) => {
-        if (!document.hasFocus() && preferences["message-bell"] && audio) {
+        if (!document.hasFocus() && preferences["@chat/bell"] && audio) {
           try {
             audio.play();
           } catch {}
@@ -399,22 +405,29 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
                   className="dark:scrollbar-track-zinc-900/20 dark:scrollbar-thumb-zinc-700 scrollbar-track-gray-100/20 scrollbar-thumb-gray-500 scrollbar-thumb-rounded-md scrollbar-thin"
                 >
                   <Stack spacing={12} pb="md" pt="md">
-                    {conversationData &&
+                    {conversationDataLoading ? (
+                      <div className="w-full flex justify-center">
+                        <LoadingIndicator />
+                      </div>
+                    ) : (
+                      conversationData &&
                       conversationData
-                        .sort((a, b) => {
-                          const aA = new Date(a.createdAt);
-                          const bB = new Date(b.createdAt);
-                          return aA.getTime() - bB.getTime();
-                        })
+                        .sort(
+                          (a, b) =>
+                            new Date(a.createdAt).getTime() -
+                            new Date(b.createdAt).getTime()
+                        )
                         .map((message) => (
                           <ChatMsg message={message} key={message.id} />
-                        ))}
-                    {conversationData?.length === 0 && (
-                      <ModernEmptyState
-                        title="No messages"
-                        body="Send the first message to start a conversation."
-                      />
+                        ))
                     )}
+                    {!conversationDataLoading &&
+                      conversationData?.length === 0 && (
+                        <ModernEmptyState
+                          title="No messages"
+                          body="Send the first message to start a conversation."
+                        />
+                      )}
                     <form
                       onSubmit={messageForm.onSubmit((values) =>
                         sanitizeInappropriateContent(values.message, () =>

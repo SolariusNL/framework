@@ -1,13 +1,14 @@
 import {
   Card,
   Divider,
+  Stack,
   Switch,
   Text,
   Title,
   useMantineColorScheme,
   useMantineTheme,
 } from "@mantine/core";
-import { HiMoon, HiSpeakerphone, HiSun } from "react-icons/hi";
+import { HiBell, HiChat, HiMoon, HiSun } from "react-icons/hi";
 import useAmoled from "../../stores/useAmoled";
 import usePreferences from "../../stores/usePreferences";
 import { Preferences } from "../../util/preferences";
@@ -94,25 +95,48 @@ const AppearanceTab = ({ user }: AppearanceTabProps) => {
         )}
       </div>
       <Divider mt="xl" mb="xl" />
-      <Section title="Sound" description="Change sound preferences." />
-      <SideBySide
-        title="Chat notifications"
-        description="Play a sound when you receive a chat message."
-        icon={<HiSpeakerphone />}
-        right={
-          <Switch
-            label="Enable chat notifications"
-            checked={Boolean(preferences["message-bell"])}
-            onChange={() =>
-              Preferences.setPreferences({
-                "message-bell": !preferences["message-bell"],
-              })
-            }
-          />
-        }
-        shaded
-        noUpperBorder
+      <Section
+        title="Chat"
+        description="Customize your chatting experience on Framework."
       />
+      <Stack spacing="sm">
+        <SideBySide
+          title="Chat popout"
+          description="Enable the chat popout for quick access to your conversations."
+          icon={<HiChat />}
+          right={
+            <Switch
+              label="Enable chat popout"
+              checked={Boolean(preferences["@chat/enabled"])}
+              onChange={() =>
+                Preferences.setPreferences({
+                  "@chat/enabled": !preferences["@chat/enabled"],
+                })
+              }
+            />
+          }
+          shaded
+          noUpperBorder
+        />
+        <SideBySide
+          title="Chat bell"
+          description="Play a sound when you receive a chat message."
+          icon={<HiBell />}
+          right={
+            <Switch
+              label="Enable chat bell"
+              checked={Boolean(preferences["@chat/bell"])}
+              onChange={() =>
+                Preferences.setPreferences({
+                  "@chat/bell": !preferences["@chat/bell"],
+                })
+              }
+            />
+          }
+          shaded
+          noUpperBorder
+        />
+      </Stack>
     </SettingsTab>
   );
 };

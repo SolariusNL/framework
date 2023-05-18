@@ -24,6 +24,7 @@ import {
   HiChatAlt2,
   HiChevronDown,
   HiChevronUp,
+  HiCog,
   HiEmojiHappy,
   HiXCircle,
 } from "react-icons/hi";
@@ -36,8 +37,11 @@ import getMediaUrl from "../util/get-media";
 import { ChatMessage, NonUser } from "../util/prisma-types";
 import { getMyFriends } from "../util/universe/friends";
 import ChatMsg from "./Chat/ChatMessage";
+import LoadingIndicator from "./LoadingIndicator";
+import ModernEmptyState from "./ModernEmptyState";
 import sanitizeInappropriateContent from "./ReconsiderationPrompt";
 import ShadedButton from "./ShadedButton";
+import Link from "next/link";
 
 const Chat: React.FC = () => {
   const {
@@ -51,6 +55,8 @@ const Chat: React.FC = () => {
   const [conversationOpen, setConversationOpen] = useState(false);
   const [conversating, setConversating] = useState<NonUser | null>(null);
   const [conversationData, setConversationData] = useState<ChatMessage[]>([]);
+  const [conversationDataLoading, setConversationDataLoading] =
+    useState<boolean>(true);
   const { user } = useAuthorizedUserStore()!;
   const { preferences } = usePreferences();
   const messageForm = useForm<{
@@ -80,16 +86,19 @@ const Chat: React.FC = () => {
   useOnClickOutside(pickerRef, () => setPicker(false));
 
   const getConversationData = async (id: number) => {
+    setConversationDataLoading(true);
     const res = await fetch(`/api/chat/conversation/${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
         Authorization: String(getCookie(".frameworksession")),
       },
-    });
-
-    const data = await res.json();
-    setConversationData(data);
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setConversationDataLoading(false);
+        setConversationData(data);
+      });
   };
 
   const sendMessage = async (values: { message: string }) => {
@@ -193,7 +202,7 @@ const Chat: React.FC = () => {
   React.useEffect(() => {
     if (socket) {
       socket?.on("@user/chat", (data) => {
-        if (!document.hasFocus() && preferences["message-bell"] && audio) {
+        if (!document.hasFocus() && preferences["@chat/bell"] && audio) {
           try {
             audio.play();
           } catch {}
@@ -320,7 +329,7 @@ const Chat: React.FC = () => {
           {chatOpened && (
             <motion.div
               initial={{ height: 0 }}
-              animate={{ height: "auto" }}
+              animate={{ height: conversationOpen ? "418px" : "330px" }}
               exit={{ height: 0 }}
               transition={{
                 type: "spring",
@@ -332,7 +341,7 @@ const Chat: React.FC = () => {
                 {conversationOpen ? (
                   <motion.div
                     initial={{ height: 0 }}
-                    animate={{ height: "auto" }}
+                    animate={{ height: conversationData && "auto" }}
                     exit={{ height: 0 }}
                     transition={{
                       type: "spring",
@@ -407,6 +416,13 @@ const Chat: React.FC = () => {
                         autoComplete="off"
                         value={friendsSearch}
                         onChange={(e) => setFriendsSearch(e.target.value)}
+                        rightSection={
+                          <Link href="/settings/application" passHref>
+                            <ActionIcon radius="xl" size="sm">
+                              <HiCog />
+                            </ActionIcon>
+                          </Link>
+                        }
                       />
                     </Card.Section>
                   </motion.div>
@@ -449,7 +465,12 @@ const Chat: React.FC = () => {
                         className="dark:scrollbar-track-zinc-900/20 dark:scrollbar-thumb-zinc-700 scrollbar-track-gray-100/20 scrollbar-thumb-gray-500 scrollbar-thumb-rounded-md scrollbar-thin"
                       >
                         <Stack spacing={12}>
-                          {conversationData &&
+                          {conversationDataLoading ? (
+                            <div className="w-full flex justify-center">
+                              <LoadingIndicator />
+                            </div>
+                          ) : (
+                            conversationData &&
                             conversationData
                               .sort(
                                 (a, b) =>
@@ -458,7 +479,15 @@ const Chat: React.FC = () => {
                               )
                               .map((message) => (
                                 <ChatMsg message={message} key={message.id} />
-                              ))}
+                              ))
+                          )}
+                          {!conversationDataLoading &&
+                            conversationData?.length === 0 && (
+                              <ModernEmptyState
+                                title="No messages"
+                                body="Send the first message to start a conversation."
+                              />
+                            )}
                         </Stack>
                       </div>
                     </motion.div>
