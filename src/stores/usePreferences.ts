@@ -44,8 +44,6 @@ function fetchPreferences() {
   });
 }
 
-if (typeof window !== "undefined") {
-  fetchPreferences();
-}
+fetchPreferences();
 
 export default usePreferences;
