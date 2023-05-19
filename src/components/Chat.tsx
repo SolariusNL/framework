@@ -30,10 +30,11 @@ import {
   HiXCircle,
 } from "react-icons/hi";
 import SocketContext from "../contexts/Socket";
-import useAuthorizedUserStore from "../stores/useAuthorizedUser";
+import useAmoled from "../stores/useAmoled";
 import useChatStore from "../stores/useChatStore";
 import usePreferences from "../stores/usePreferences";
 import { useOnClickOutside } from "../util/click-outside";
+import clsx from "../util/clsx";
 import getMediaUrl from "../util/get-media";
 import { ChatMessage, NonUser } from "../util/prisma-types";
 import { getMyFriends } from "../util/universe/friends";
@@ -57,7 +58,7 @@ const Chat: React.FC = () => {
   const [conversationData, setConversationData] = useState<ChatMessage[]>([]);
   const [conversationDataLoading, setConversationDataLoading] =
     useState<boolean>(true);
-  const { user } = useAuthorizedUserStore()!;
+  const { enabled: amoled } = useAmoled();
   const { preferences } = usePreferences();
   const messageForm = useForm<{
     message: string;
@@ -283,6 +284,7 @@ const Chat: React.FC = () => {
           overflow: "visible",
           borderBottom: "none",
         }}
+        className="dark:bg-black"
         withBorder
         p="md"
       >
@@ -290,7 +292,7 @@ const Chat: React.FC = () => {
           px={10}
           py={6}
           withBorder={chatOpened}
-          className="dark:hover:bg-zinc-900 hover:bg-gray-300 transition-all cursor-pointer rounded-t-md"
+          className="dark:hover:bg-zinc-900 hover:bg-gray-100 transition-all cursor-pointer rounded-t-md"
           onClick={() => setChatOpened(!chatOpened)}
         >
           <div className="flex justify-between items-center">
@@ -372,7 +374,7 @@ const Chat: React.FC = () => {
                             <Text
                               color="dimmed"
                               size="sm"
-                              className="group-hover:font-semibold transition-all"
+                              className="group-hover:font-semibold transition-all group-hover:text-sky-600 dark:group-hover:text-sky-400"
                             >
                               @{conversating?.username}
                             </Text>
@@ -404,6 +406,7 @@ const Chat: React.FC = () => {
                             ? theme.colors.dark[9]
                             : "#FFF",
                       })}
+                      className={clsx(amoled && "bg-black")}
                       px={4}
                       py={2}
                     >
@@ -444,6 +447,7 @@ const Chat: React.FC = () => {
                       ? theme.colors.dark[9]
                       : "#FFF",
                 })}
+                className={clsx(amoled && "bg-black")}
                 p={conversationOpen ? "md" : 0}
                 withBorder={conversationOpen}
               >
@@ -584,6 +588,7 @@ const Chat: React.FC = () => {
                         ? theme.colors.dark[9]
                         : "#FFF",
                   })}
+                  className={clsx(amoled && "bg-black")}
                 >
                   <form
                     onSubmit={messageForm.onSubmit((values) =>

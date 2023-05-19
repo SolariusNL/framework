@@ -117,7 +117,7 @@ const ChatMessage: FC<ChatMessageProps> = ({ message, noActions }) => {
             backgroundColor:
               theme.colorScheme === "dark"
                 ? theme.colors.dark[7]
-                : theme.colors.gray[1],
+                : theme.colors.gray[3],
             textAlign: "left",
             width: "fit-content",
             alignSelf: "flex-start",
@@ -126,7 +126,7 @@ const ChatMessage: FC<ChatMessageProps> = ({ message, noActions }) => {
               backgroundColor:
                 theme.colorScheme === "dark"
                   ? theme.colors.dark[8]
-                  : theme.colors.gray[3],
+                  : theme.colors.gray[4],
             },
           })}
           className="transition-all"
