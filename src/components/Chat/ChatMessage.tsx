@@ -84,7 +84,6 @@ const ChatMessage: FC<ChatMessageProps> = ({ message }) => {
           sx={(theme) => ({
             backgroundColor: theme.colorScheme === "dark" ? color[8] : color[1],
             textAlign: "right",
-            width: "fit-content",
             alignSelf: "flex-end",
             maxWidth: "90%",
             "&:hover": {
@@ -92,7 +91,7 @@ const ChatMessage: FC<ChatMessageProps> = ({ message }) => {
                 theme.colorScheme === "dark" ? color[9] : color[3],
             },
           })}
-          className="transition-all"
+          className="transition-all w-fit max-w-full"
           p="sm"
         >
           <Text
