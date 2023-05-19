@@ -43,21 +43,8 @@ const reconsiderWords = [
   "fagg0t",
   "niqqer",
   "n1gg3r",
-  "whore",
   "n1gga",
-  "tranny",
   "niggers",
-  "faggots",
-  "trannies",
-  "whores",
-  "chink",
-  "ch!nk",
-  "chinks",
-  "beaner",
-  "chingchong",
-  "paki",
-  "jewtard",
-  "retard",
 ];
 
 interface RestrictionCheckResult {
