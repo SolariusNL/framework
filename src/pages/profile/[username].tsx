@@ -17,6 +17,7 @@ import React from "react";
 import ReactCountryFlag from "react-country-flag";
 import {
   HiArrowSmLeft,
+  HiBadgeCheck,
   HiCake,
   HiCheck,
   HiChevronDoubleUp,
@@ -217,7 +218,7 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
                       {viewing.role === "ADMIN" && (
                         <IconTooltip
                           label="Soodam.re Staff"
-                          className="mr-1 flex items-center justify-center"
+                          className="flex items-center justify-center"
                           icon={<Soodam />}
                           descriptiveModal
                           descriptiveModalProps={{
@@ -233,6 +234,27 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
                                   assist you with any issues you may have. If
                                   you have any questions, feel free to contact
                                   them.
+                                </Text>
+                              </div>
+                            ),
+                          }}
+                        />
+                      )}
+                      {viewing.verified && (
+                        <IconTooltip
+                          label="Verified"
+                          icon={<HiBadgeCheck className="text-sky-500 mr-1 w-6 h-6" />}
+                          descriptiveModal
+                          descriptiveModalProps={{
+                            title: "Verified",
+                            children: (
+                              <div className="text-center items-center flex flex-col">
+                                <HiBadgeCheck className="text-sky-500 w-16 h-16" />
+                                <Title order={3} mt="lg">
+                                  Verified
+                                </Title>
+                                <Text size="sm" color="dimmed" mt="md">
+                                  This user is verified.
                                 </Text>
                               </div>
                             ),
@@ -592,6 +614,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       alias: true,
       previousUsernames: true,
       profileLinks: true,
+      verified: true,
       emailVerified: true,
       _count: {
         select: {

@@ -1235,6 +1235,22 @@ class AdminRouter {
           await createActionLog(`Sent email to ${user.username}`, 2);
         },
       },
+      {
+        name: AdminAction.ADJUST_VERIFICATION,
+        action: async () => {
+          await prisma.user.update({
+            where: {
+              id: user.id,
+            },
+            data: {
+              verified: !user.verified,
+              banReason: "",
+            },
+          });
+
+          await createActionLog(`Adjusted ${user.username} verification`, 3);
+        },
+      },
     ];
 
     const foundAction = actions.find((a) => a.name === (action as AdminAction));

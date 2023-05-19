@@ -17,6 +17,7 @@ import ResetUsername from "./UserActions/ResetUsername";
 import SendEmail from "./UserActions/SendEmail";
 import Unban from "./UserActions/Unban";
 import Unwarn from "./UserActions/Unwarn";
+import Verify from "./UserActions/Verify";
 
 const actions = [
   AdjustTickets,
@@ -30,6 +31,7 @@ const actions = [
   Unban,
   Unwarn,
   SendEmail,
+  Verify,
 ];
 
 const ActionList: React.FC<{

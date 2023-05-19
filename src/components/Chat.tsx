@@ -17,6 +17,7 @@ import { useHotkeys } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import { getCookie } from "cookies-next";
 import { AnimatePresence, motion } from "framer-motion";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import {
@@ -41,7 +42,6 @@ import LoadingIndicator from "./LoadingIndicator";
 import ModernEmptyState from "./ModernEmptyState";
 import sanitizeInappropriateContent from "./ReconsiderationPrompt";
 import ShadedButton from "./ShadedButton";
-import Link from "next/link";
 
 const Chat: React.FC = () => {
   const {
@@ -364,16 +364,25 @@ const Chat: React.FC = () => {
                           <HiArrowLeft />
                           Go back
                         </Anchor>
-                        <div className="flex gap-2 items-center">
-                          <Text color="dimmed" size="sm">
-                            @{conversating?.username}
-                          </Text>
-                          <Avatar
-                            src={conversating?.avatarUri}
-                            size="sm"
-                            radius="xl"
-                          />
-                        </div>
+                        <Link
+                          href={`/profile/${conversating?.username}`}
+                          passHref
+                        >
+                          <div className="flex gap-2 items-center group cursor-pointer">
+                            <Text
+                              color="dimmed"
+                              size="sm"
+                              className="group-hover:font-semibold transition-all"
+                            >
+                              @{conversating?.username}
+                            </Text>
+                            <Avatar
+                              src={conversating?.avatarUri}
+                              size="sm"
+                              radius="xl"
+                            />
+                          </div>
+                        </Link>
                       </div>
                     </Card.Section>
                   </motion.div>

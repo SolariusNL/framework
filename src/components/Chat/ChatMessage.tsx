@@ -135,7 +135,7 @@ const ChatMessage: FC<ChatMessageProps> = ({ message, noActions }) => {
           <Text
             size="sm"
             style={{ wordBreak: "break-word" }}
-            className="pointer-events-none dark:text-white text-black"
+            className="pointer-events-none dark:text-gray-300 text-black"
           >
             {message.content}
           </Text>

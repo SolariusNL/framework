@@ -176,6 +176,7 @@ model User {
   domains                    Domain[]               @relation("userDomains")
   developerProfile           DeveloperProfile?      @relation("developerProfile")
   preferences                UserPreference[]       @relation("userPreferences")
+  verified                   Boolean                @default(false)
 }
 
 model ConnectedAccount {

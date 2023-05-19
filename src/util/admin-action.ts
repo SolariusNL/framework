@@ -14,6 +14,7 @@ export enum AdminAction {
   UNBAN = "unban",
   UNWARN = "unwarn",
   SEND_EMAIL = "send-email",
+  ADJUST_VERIFICATION = "adjust-verification",
 }
 
 async function performAdminAction(action: AdminAction, data: any, uid: number) {
