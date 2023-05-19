@@ -35,7 +35,11 @@ import { nonCurrentUserSelect } from "../../../util/prisma-types";
 import { RateLimitMiddleware } from "../../../util/rate-limit";
 import { verificationEmail } from "../../../util/templates/verification-email";
 import { logTransaction } from "../../../util/transaction-history";
-import { UserPreferences, userPreferences } from "../../../util/types";
+import {
+  UserPreferences,
+  userPreferenceValidators,
+  userPreferences,
+} from "../../../util/types";
 
 const statusAutomod = registerAutomodHandler("Status update");
 
@@ -1326,22 +1330,38 @@ class UserRouter {
     for (const [key, value] of Object.entries(preferences)) {
       const pref = prefs.find((p) => p.key === key);
       if (pref) {
+        if (pref.valueType === UserPreferenceUnionType.BOOLEAN) {
+          if (typeof value !== "boolean") {
+            throw new BadRequestException(
+              `Preference ${key} is a boolean, but you provided a ${typeof value}`
+            );
+          }
+        } else if (pref.valueType === UserPreferenceUnionType.NUMBER) {
+          if (typeof value !== "number") {
+            throw new BadRequestException(
+              `Preference ${key} is a number, but you provided a ${typeof value}`
+            );
+          }
+        } else {
+          if (typeof value !== "string") {
+            throw new BadRequestException(
+              `Preference ${key} is a string, but you provided a ${typeof value}`
+            );
+          }
+        }
+
+        if (!userPreferenceValidators[key as UserPreferences]!(value)) {
+          throw new BadRequestException(
+            `Preference ${key} has an invalid value`
+          );
+        }
+
         await prisma.userPreference.update({
           where: {
             id: pref.id,
           },
           data: {
             value: String(value),
-            valueType: (() => {
-              switch (typeof value) {
-                case "boolean":
-                  return UserPreferenceUnionType.BOOLEAN;
-                case "number":
-                  return UserPreferenceUnionType.NUMBER;
-                default:
-                  return UserPreferenceUnionType.STRING;
-              }
-            })(),
           },
         });
       } else {

@@ -1,3 +1,5 @@
+import { MANTINE_COLORS } from "@mantine/core";
+
 export type Primitive = string | number | bigint | boolean | null | undefined;
 
 export type NestedKeysOf<T> = {
@@ -36,4 +38,10 @@ export const defaultUserPreferences: Record<
   "@chat/bell": true,
   "@chat/enabled": true,
   "@chat/my-color": "blue",
+};
+export const userPreferenceValidators: Partial<
+  Record<UserPreferences, (value: string | boolean | number) => boolean>
+> = {
+  "@chat/my-color": (value) =>
+    typeof value === "string" && MANTINE_COLORS.includes(value),
 };
