@@ -15,7 +15,8 @@ import { HiBell, HiChat, HiColorSwatch, HiMoon, HiSun } from "react-icons/hi";
 import useAmoled from "../../stores/useAmoled";
 import usePreferences from "../../stores/usePreferences";
 import { Preferences } from "../../util/preferences";
-import { User } from "../../util/prisma-types";
+import { ChatMessage as IChatMessage, User } from "../../util/prisma-types";
+import ChatMessage from "../Chat/ChatMessage";
 import { Section } from "../Home/FriendsWidget";
 import ModernEmptyState from "../ModernEmptyState";
 import SettingsTab from "./SettingsTab";
@@ -144,20 +145,32 @@ const AppearanceTab = ({ user }: AppearanceTabProps) => {
           description="Customize the color of your chat bubbles in conversations."
           icon={<HiColorSwatch />}
           right={
-            <Select
-              icon={<HiColorSwatch />}
-              value={String(preferences["@chat/my-color"])}
-              onChange={(v: MantineColor) =>
-                Preferences.setPreferences({
-                  "@chat/my-color": v,
-                })
-              }
-              data={MANTINE_COLORS.map((color) => ({
-                label:
-                  color.charAt(0).toUpperCase() + color.slice(1).toLowerCase(),
-                value: color,
-              }))}
-            />
+            <div className="flex flex-col gap-2">
+              <Select
+                icon={<HiColorSwatch />}
+                value={String(preferences["@chat/my-color"])}
+                onChange={(v: MantineColor) =>
+                  Preferences.setPreferences({
+                    "@chat/my-color": v,
+                  })
+                }
+                data={MANTINE_COLORS.map((color) => ({
+                  label:
+                    color.charAt(0).toUpperCase() +
+                    color.slice(1).toLowerCase(),
+                  value: color,
+                }))}
+              />
+              <ChatMessage
+                message={
+                  {
+                    content: "This is a preview of your chat bubble color.",
+                    authorId: user.id,
+                  } as IChatMessage
+                }
+                noActions
+              />
+            </div>
           }
           shaded
           noUpperBorder

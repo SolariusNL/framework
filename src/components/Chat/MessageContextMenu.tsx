@@ -14,6 +14,7 @@ import ContextMenu from "../ContextMenu";
 type MessageContextMenuProps = {
   children: React.ReactNode;
   chatMessage: Pick<ChatMessage, "authorId" | "id" | "createdAt">;
+  ignore?: boolean;
 };
 
 export const deleteMessage = async (id: string) => {
@@ -49,48 +50,57 @@ export const deleteMessage = async (id: string) => {
 const MessageContextMenu: FC<MessageContextMenuProps> = ({
   children,
   chatMessage,
+  ignore,
 }) => {
   const { copy } = useClipboard();
   const { user } = useAuthorizedUserStore();
 
   return (
-    <ContextMenu
-      dropdown={
-        <>
-          <Menu.Label>
-            {new Date(chatMessage.createdAt).toLocaleTimeString()} at{" "}
-            {new Date(chatMessage.createdAt).toLocaleDateString()}
-          </Menu.Label>
-          <Menu.Item
-            icon={<HiClipboard />}
-            onClick={() => copy(chatMessage.id)}
+    <>
+      {ignore ? (
+        children
+      ) : (
+        <ContextMenu
+          dropdown={
+            <>
+              <Menu.Label>
+                {new Date(chatMessage.createdAt).toLocaleTimeString()} at{" "}
+                {new Date(chatMessage.createdAt).toLocaleDateString()}
+              </Menu.Label>
+              <Menu.Item
+                icon={<HiClipboard />}
+                onClick={() => copy(chatMessage.id)}
+              >
+                Copy ID
+              </Menu.Item>
+              {chatMessage.authorId === user?.id && (
+                <Menu.Item
+                  color="red"
+                  icon={<HiTrash />}
+                  onClick={() => {
+                    deleteMessage(chatMessage.id);
+                  }}
+                >
+                  Delete message
+                </Menu.Item>
+              )}
+            </>
+          }
+          width={200}
+        >
+          <div
+            className={clsx(
+              "w-full flex",
+              chatMessage.authorId === user?.id
+                ? "justify-end"
+                : "justify-start"
+            )}
           >
-            Copy ID
-          </Menu.Item>
-          {chatMessage.authorId === user?.id && (
-            <Menu.Item
-              color="red"
-              icon={<HiTrash />}
-              onClick={() => {
-                deleteMessage(chatMessage.id);
-              }}
-            >
-              Delete message
-            </Menu.Item>
-          )}
-        </>
-      }
-      width={200}
-    >
-      <div
-        className={clsx(
-          "w-full flex",
-          chatMessage.authorId === user?.id ? "justify-end" : "justify-start"
-        )}
-      >
-        {children}
-      </div>
-    </ContextMenu>
+            {children}
+          </div>
+        </ContextMenu>
+      )}
+    </>
   );
 };
 

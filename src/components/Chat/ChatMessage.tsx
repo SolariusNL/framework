@@ -16,9 +16,10 @@ import MessageContextMenu, { deleteMessage } from "./MessageContextMenu";
 
 type ChatMessageProps = {
   message: ChatMessage;
+  noActions?: boolean;
 };
 
-const ChatMessage: FC<ChatMessageProps> = ({ message }) => {
+const ChatMessage: FC<ChatMessageProps> = ({ message, noActions }) => {
   const { user } = useAuthorizedUserStore();
   const { preferences } = usePreferences();
   const { colors } = useMantineTheme();
@@ -77,18 +78,22 @@ const ChatMessage: FC<ChatMessageProps> = ({ message }) => {
   );
 
   return message.authorId === user?.id ? (
-    <MessageContextMenu chatMessage={message} key={message.id}>
+    <MessageContextMenu
+      chatMessage={message}
+      key={message.id}
+      ignore={noActions}
+    >
       <div className="group flex gap-2 items-center justify-end">
-        {actionMenu}
+        {!noActions && actionMenu}
         <Paper
           sx={(theme) => ({
-            backgroundColor: theme.colorScheme === "dark" ? color[8] : color[1],
+            backgroundColor: theme.colorScheme === "dark" ? color[8] : color[3],
             textAlign: "right",
             alignSelf: "flex-end",
             maxWidth: "90%",
             "&:hover": {
               backgroundColor:
-                theme.colorScheme === "dark" ? color[9] : color[3],
+                theme.colorScheme === "dark" ? color[9] : color[4],
             },
           })}
           className="transition-all w-fit max-w-full"
@@ -97,7 +102,7 @@ const ChatMessage: FC<ChatMessageProps> = ({ message }) => {
           <Text
             size="sm"
             style={{ wordBreak: "break-word" }}
-            className="pointer-events-none"
+            className="pointer-events-none dark:text-gray-300 text-black"
           >
             {message.content}
           </Text>
@@ -130,12 +135,12 @@ const ChatMessage: FC<ChatMessageProps> = ({ message }) => {
           <Text
             size="sm"
             style={{ wordBreak: "break-word" }}
-            className="pointer-events-none"
+            className="pointer-events-none dark:text-white text-black"
           >
             {message.content}
           </Text>
         </Paper>
-        {actionMenu}
+        {!noActions && actionMenu}
       </div>
     </MessageContextMenu>
   );
