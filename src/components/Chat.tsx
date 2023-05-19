@@ -6,6 +6,7 @@ import {
   Badge,
   Box,
   Card,
+  Divider,
   Indicator,
   Stack,
   Text,
@@ -22,12 +23,13 @@ import { useRouter } from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   HiArrowLeft,
+  HiArrowUp,
   HiChatAlt2,
   HiChevronDown,
   HiChevronUp,
   HiCog,
   HiEmojiHappy,
-  HiXCircle,
+  HiXCircle
 } from "react-icons/hi";
 import SocketContext from "../contexts/Socket";
 import useAmoled from "../stores/useAmoled";
@@ -83,6 +85,7 @@ const Chat: React.FC = () => {
   const socket = useContext(SocketContext);
   const messagesRef = useRef<HTMLDivElement>(null);
   const [audio, setAudio] = useState<HTMLAudioElement | null>();
+  let previousTimestamp: number | null = null;
 
   useOnClickOutside(pickerRef, () => setPicker(false));
 
@@ -490,9 +493,52 @@ const Chat: React.FC = () => {
                                   new Date(a.createdAt).getTime() -
                                   new Date(b.createdAt).getTime()
                               )
-                              .map((message) => (
-                                <ChatMsg message={message} key={message.id} />
-                              ))
+                              .map((message) => {
+                                const currentTimestamp = new Date(
+                                  message.createdAt
+                                ).getTime();
+                                const timeDiff = previousTimestamp
+                                  ? currentTimestamp - previousTimestamp
+                                  : 0;
+                                const timeDiffHrs = Math.floor(
+                                  timeDiff / (1000 * 60 * 60)
+                                );
+                                let dividerLabel = null;
+                                if (timeDiffHrs >= 8) {
+                                  if (timeDiffHrs < 24) {
+                                    dividerLabel = "Today";
+                                  } else {
+                                    const daysDiff = Math.floor(
+                                      timeDiffHrs / 24
+                                    );
+                                    dividerLabel = `${daysDiff} day${
+                                      daysDiff > 1 ? "s" : ""
+                                    } ago`;
+                                  }
+                                }
+                                previousTimestamp = currentTimestamp;
+                                return (
+                                  <>
+                                    {dividerLabel && (
+                                      <div className="flex justify-center items-center mt-2 pointer-events-none">
+                                        <Divider className="w-full" />
+                                        <div className="flex justify-center items-center gap-2 px-3 w-full">
+                                          <HiArrowUp className="text-dimmed whitespace-nowrap flex-nowrap" />
+                                          <Text
+                                            color="dimmed"
+                                            size="sm"
+                                            className="whitespace-nowrap flex-nowrap"
+                                          >
+                                            {dividerLabel}
+                                          </Text>
+                                        </div>
+                                        <Divider className="w-full" />
+                                      </div>
+                                    )}
+                                    <ChatMsg message={message} />
+                                  </>
+                                );
+                              })
                           )}
                           {!conversationDataLoading &&
                             conversationData?.length === 0 && (
