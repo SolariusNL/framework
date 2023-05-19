@@ -21,6 +21,7 @@ import { GetServerSidePropsContext } from "next";
 import { useContext, useEffect, useRef, useState } from "react";
 import { HiArrowSmDown, HiChatAlt2, HiEmojiHappy } from "react-icons/hi";
 import ChatMsg from "../components/Chat/ChatMessage";
+import Dot from "../components/Dot";
 import Framework from "../components/Framework";
 import LoadingIndicator from "../components/LoadingIndicator";
 import ModernEmptyState from "../components/ModernEmptyState";
@@ -291,7 +292,15 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
             setCurrentConversation(friend.id);
           }}
           className="rounded-md"
-          label={friend.username}
+          label={
+            <div className="flex items-center gap-2">
+              <span>{friend.username}</span>
+              {new Date(friend.lastSeen).getTime() >
+                new Date().getTime() - 1000 * 60 * 5 && (
+                <Dot classNames={{ dot: "w-2 h-2" }} color="green" />
+              )}
+            </div>
+          }
           description={
             new Date(friend.lastSeen).getTime() >
             new Date().getTime() - 1000 * 60 * 5
