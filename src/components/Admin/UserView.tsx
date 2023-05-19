@@ -340,7 +340,7 @@ const UserView = ({ user: u, loading }: UserViewProps) => {
                             ["Premium", user.premium],
                             ["Banned", user.banned],
                             ["Tickets", user.tickets],
-                            ["Verified", user.verified],
+                            ["Email Verified", user.verified],
                             ["Bits", user.bits],
                             ["TOTP Enabled", user.otpEnabled],
                             ["Linked Discord", user.discordAccount?.discordId],
