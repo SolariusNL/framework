@@ -23,13 +23,13 @@ import { useRouter } from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   HiArrowLeft,
-  HiArrowUp,
+  HiArrowSmDown,
   HiChatAlt2,
   HiChevronDown,
   HiChevronUp,
   HiCog,
   HiEmojiHappy,
-  HiXCircle
+  HiXCircle,
 } from "react-icons/hi";
 import SocketContext from "../contexts/Socket";
 import useAmoled from "../stores/useAmoled";
@@ -505,16 +505,15 @@ const Chat: React.FC = () => {
                                 );
                                 let dividerLabel = null;
                                 if (timeDiffHrs >= 8) {
-                                  if (timeDiffHrs < 24) {
-                                    dividerLabel = "Today";
-                                  } else {
-                                    const daysDiff = Math.floor(
-                                      timeDiffHrs / 24
-                                    );
-                                    dividerLabel = `${daysDiff} day${
-                                      daysDiff > 1 ? "s" : ""
-                                    } ago`;
-                                  }
+                                  const formattedTimestamp = new Date(
+                                    currentTimestamp
+                                  ).toLocaleString(undefined, {
+                                    weekday: "long",
+                                    year: "numeric",
+                                    month: "numeric",
+                                    day: "numeric",
+                                  });
+                                  dividerLabel = formattedTimestamp;
                                 }
                                 previousTimestamp = currentTimestamp;
                                 return (
@@ -523,7 +522,7 @@ const Chat: React.FC = () => {
                                       <div className="flex justify-center items-center mt-2 pointer-events-none">
                                         <Divider className="w-full" />
                                         <div className="flex justify-center items-center gap-2 px-3 w-full">
-                                          <HiArrowUp className="text-dimmed whitespace-nowrap flex-nowrap" />
+                                          <HiArrowSmDown className="text-dimmed whitespace-nowrap flex-nowrap" />
                                           <Text
                                             color="dimmed"
                                             size="sm"

@@ -19,7 +19,7 @@ import { showNotification } from "@mantine/notifications";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext } from "next";
 import { useContext, useEffect, useRef, useState } from "react";
-import { HiArrowUp, HiChatAlt2, HiEmojiHappy } from "react-icons/hi";
+import { HiArrowSmDown, HiChatAlt2, HiEmojiHappy } from "react-icons/hi";
 import ChatMsg from "../components/Chat/ChatMessage";
 import Framework from "../components/Framework";
 import LoadingIndicator from "../components/LoadingIndicator";
@@ -431,14 +431,18 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
                           );
                           let dividerLabel = null;
                           if (timeDiffHrs >= 8) {
-                            if (timeDiffHrs < 24) {
-                              dividerLabel = "Today";
-                            } else {
-                              const daysDiff = Math.floor(timeDiffHrs / 24);
-                              dividerLabel = `${daysDiff} day${
-                                daysDiff > 1 ? "s" : ""
-                              } ago`;
-                            }
+                            const formattedTimestamp = new Date(
+                              currentTimestamp
+                            ).toLocaleString(undefined, {
+                              weekday: "long",
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                              hour: "numeric",
+                              minute: "numeric",
+                              hour12: true,
+                            });
+                            dividerLabel = formattedTimestamp;
                           }
                           previousTimestamp = currentTimestamp;
                           return (
@@ -447,7 +451,7 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
                                 <div className="flex justify-center items-center mt-2 pointer-events-none">
                                   <Divider className="w-full" />
                                   <div className="flex justify-center items-center gap-2 px-3 w-full">
-                                    <HiArrowUp className="text-dimmed whitespace-nowrap flex-nowrap" />
+                                    <HiArrowSmDown className="text-dimmed whitespace-nowrap flex-nowrap" />
                                     <Text
                                       color="dimmed"
                                       size="sm"
