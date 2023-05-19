@@ -283,50 +283,57 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
         value={friendsSearch}
         onChange={(e) => setFriendsSearch(e.target.value)}
       />
-      {friends.map((friend) => (
-        <NavLink
-          key={friend.id}
-          onClick={() => {
-            setConversating(friend);
-            setConversationOpen(true);
-            setCurrentConversation(friend.id);
-          }}
-          className="rounded-md"
-          label={
-            <div className="flex items-center gap-2">
-              <span>{friend.username}</span>
-              {new Date(friend.lastSeen).getTime() >
-                new Date().getTime() - 1000 * 60 * 5 && (
-                <Dot classNames={{ dot: "w-2 h-2" }} color="green" />
-              )}
-            </div>
-          }
-          description={
-            new Date(friend.lastSeen).getTime() >
-            new Date().getTime() - 1000 * 60 * 5
-              ? "Currently online"
-              : `Last seen ${getRelativeTime(new Date(friend.lastSeen))}`
-          }
-          icon={
-            unreadMessages[friend.id] > 0 ? (
-              <Badge
-                variant="filled"
-                color="red"
-                sx={{ width: 26, height: 26, padding: 0 }}
-              >
-                {String(unreadMessages[friend.id])}
-              </Badge>
-            ) : (
-              <Avatar
-                src={getMediaUrl(friend.avatarUri)}
-                size="sm"
-                className="rounded-full"
-              />
-            )
-          }
-          active={conversating?.id === friend.id}
-        />
-      ))}
+      {friends
+        .sort((f) => {
+          return (
+            new Date(f.lastSeen).getTime() >
+            new Date().getTime() - 1000 * 60 * 5 ? -1 : 1
+          );
+        })
+        .map((friend) => (
+          <NavLink
+            key={friend.id}
+            onClick={() => {
+              setConversating(friend);
+              setConversationOpen(true);
+              setCurrentConversation(friend.id);
+            }}
+            className="rounded-md"
+            label={
+              <div className="flex items-center gap-2">
+                <span>{friend.username}</span>
+                {new Date(friend.lastSeen).getTime() >
+                  new Date().getTime() - 1000 * 60 * 5 && (
+                  <Dot classNames={{ dot: "w-2 h-2" }} color="green" />
+                )}
+              </div>
+            }
+            description={
+              new Date(friend.lastSeen).getTime() >
+              new Date().getTime() - 1000 * 60 * 5
+                ? "Currently online"
+                : `Last seen ${getRelativeTime(new Date(friend.lastSeen))}`
+            }
+            icon={
+              unreadMessages[friend.id] > 0 ? (
+                <Badge
+                  variant="filled"
+                  color="red"
+                  sx={{ width: 26, height: 26, padding: 0 }}
+                >
+                  {String(unreadMessages[friend.id])}
+                </Badge>
+              ) : (
+                <Avatar
+                  src={getMediaUrl(friend.avatarUri)}
+                  size="sm"
+                  className="rounded-full"
+                />
+              )
+            }
+            active={conversating?.id === friend.id}
+          />
+        ))}
       {friends.length == 0 && (
         <ShadedCard>
           <ModernEmptyState
