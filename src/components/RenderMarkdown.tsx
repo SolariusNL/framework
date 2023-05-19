@@ -1,4 +1,5 @@
-import { Sx, TypographyStylesProvider } from "@mantine/core";
+import { Anchor, Sx, Text, TypographyStylesProvider } from "@mantine/core";
+import { openConfirmModal } from "@mantine/modals";
 import { marked } from "marked";
 import sanitize from "sanitize-html";
 import clsx from "../util/clsx";
@@ -13,7 +14,53 @@ export const parse = (markdown: string) => {
           "<a href='/profile/$1'>@$1</a>"
         );
       }
-      return token;
+      if (token.type === "html") {
+        const hrefRegex = /href="(.+?)"/g;
+        const href = hrefRegex.exec(token.text)?.[1];
+        if (href) {
+          if (href.startsWith("/")) return token;
+
+          const id = Math.random().toString(36).slice(2);
+          token.text = token.text.replace(
+            hrefRegex,
+            `href="${href}" data-link-id="link-${id}"`
+          );
+
+          if (typeof window !== "undefined") {
+            const listener = (e: MouseEvent) => {
+              const target = document.querySelector(
+                `[data-link-id="link-${id}"]`
+              ) as HTMLAnchorElement;
+              if (target?.contains(e.target as Node)) {
+                e.preventDefault();
+                openConfirmModal({
+                  title: "Confirm link",
+                  children: (
+                    <>
+                      <div className="flex justify-center flex-col gap-2 text-center">
+                        <Text size="sm" color="dimmed">
+                          Are you sure you want to visit this link?
+                        </Text>
+                        <Anchor href={href} target="_blank">
+                          {href}
+                        </Anchor>
+                      </div>
+                    </>
+                  ),
+                  labels: { cancel: "Cancel", confirm: "Open link" },
+                  onConfirm: () => {
+                    window.open(href, "_blank");
+                  },
+                });
+              }
+            };
+
+            document.addEventListener("click", listener);
+          }
+        }
+
+        return token;
+      }
     },
     gfm: true,
     breaks: true,
@@ -82,7 +129,11 @@ const RenderMarkdown: React.FC<
     >
       <div
         dangerouslySetInnerHTML={{
-          __html: sanitize(parse(children || "")),
+          __html: sanitize(parse(children || ""), {
+            allowedAttributes: {
+              a: ["href", "data-link-id"],
+            },
+          }),
         }}
         style={{
           ...(clamp && {
