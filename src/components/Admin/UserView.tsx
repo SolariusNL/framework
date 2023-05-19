@@ -340,7 +340,7 @@ const UserView = ({ user: u, loading }: UserViewProps) => {
                             ["Premium", user.premium],
                             ["Banned", user.banned],
                             ["Tickets", user.tickets],
-                            ["Email Verified", user.verified],
+                            ["Verified", user.verified],
                             ["Bits", user.bits],
                             ["TOTP Enabled", user.otpEnabled],
                             ["Linked Discord", user.discordAccount?.discordId],
@@ -403,7 +403,7 @@ const UserView = ({ user: u, loading }: UserViewProps) => {
                             ["Country", user.country],
                             ["Last seen", user.lastSeen],
                             ["Busy", user.busy],
-                            ["Verified", user.emailVerified],
+                            ["Email Verified", user.emailVerified],
                             ["2FA", user.emailRequiredLogin],
                           ]
                             .map((i) => {
