@@ -1,6 +1,9 @@
 import {
   Card,
   Divider,
+  MANTINE_COLORS,
+  MantineColor,
+  Select,
   Stack,
   Switch,
   Text,
@@ -8,7 +11,7 @@ import {
   useMantineColorScheme,
   useMantineTheme,
 } from "@mantine/core";
-import { HiBell, HiChat, HiMoon, HiSun } from "react-icons/hi";
+import { HiBell, HiChat, HiColorSwatch, HiMoon, HiSun } from "react-icons/hi";
 import useAmoled from "../../stores/useAmoled";
 import usePreferences from "../../stores/usePreferences";
 import { Preferences } from "../../util/preferences";
@@ -131,6 +134,29 @@ const AppearanceTab = ({ user }: AppearanceTabProps) => {
                   "@chat/bell": !preferences["@chat/bell"],
                 })
               }
+            />
+          }
+          shaded
+          noUpperBorder
+        />
+        <SideBySide
+          title="Chat bubble color"
+          description="Customize the color of your chat bubbles in conversations."
+          icon={<HiColorSwatch />}
+          right={
+            <Select
+              icon={<HiColorSwatch />}
+              value={String(preferences["@chat/my-color"])}
+              onChange={(v: MantineColor) =>
+                Preferences.setPreferences({
+                  "@chat/my-color": v,
+                })
+              }
+              data={MANTINE_COLORS.map((color) => ({
+                label:
+                  color.charAt(0).toUpperCase() + color.slice(1).toLowerCase(),
+                value: color,
+              }))}
             />
           }
           shaded

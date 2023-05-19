@@ -16,6 +16,36 @@ type MessageContextMenuProps = {
   chatMessage: Pick<ChatMessage, "authorId" | "id" | "createdAt">;
 };
 
+export const deleteMessage = async (id: string) => {
+  openConfirmModal({
+    title: "Confirm deletion",
+    children: (
+      <Text size="sm" color="dimmed">
+        Are you sure you want to delete this message?
+      </Text>
+    ),
+    labels: { confirm: "Yes", cancel: "Nevermind" },
+    confirmProps: {
+      color: "red",
+      leftIcon: <HiTrash />,
+    },
+    async onConfirm() {
+      await fetchJson<IResponseBase>("/api/chat/msg/" + id, {
+        method: "DELETE",
+        auth: true,
+      }).then((res) => {
+        if (res.success) {
+          showNotification({
+            title: "Message deleted",
+            message: "Message successfully deleted.",
+            icon: <HiCheckCircle />,
+          });
+        }
+      });
+    },
+  });
+};
+
 const MessageContextMenu: FC<MessageContextMenuProps> = ({
   children,
   chatMessage,
@@ -42,36 +72,7 @@ const MessageContextMenu: FC<MessageContextMenuProps> = ({
               color="red"
               icon={<HiTrash />}
               onClick={() => {
-                openConfirmModal({
-                  title: "Confirm deletion",
-                  children: (
-                    <Text size="sm" color="dimmed">
-                      Are you sure you want to delete this message?
-                    </Text>
-                  ),
-                  labels: { confirm: "Yes", cancel: "Nevermind" },
-                  confirmProps: {
-                    color: "red",
-                    leftIcon: <HiTrash />,
-                  },
-                  async onConfirm() {
-                    await fetchJson<IResponseBase>(
-                      "/api/chat/msg/" + chatMessage.id,
-                      {
-                        method: "DELETE",
-                        auth: true,
-                      }
-                    ).then((res) => {
-                      if (res.success) {
-                        showNotification({
-                          title: "Message deleted",
-                          message: "Message successfully deleted.",
-                          icon: <HiCheckCircle />,
-                        });
-                      }
-                    });
-                  },
-                });
+                deleteMessage(chatMessage.id);
               }}
             >
               Delete message

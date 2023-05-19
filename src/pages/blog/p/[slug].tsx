@@ -8,7 +8,7 @@ import RenderMarkdown from "../../../components/RenderMarkdown";
 import authorizedRoute from "../../../util/auth";
 import clsx from "../../../util/clsx";
 import prisma from "../../../util/prisma";
-import { BlogPost, blogPostSelect, User } from "../../../util/prisma-types";
+import { BlogPost, User, blogPostSelect } from "../../../util/prisma-types";
 
 interface BlogPostProps {
   post: BlogPost;

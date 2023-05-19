@@ -23,10 +23,11 @@ export type FastFlagNames =
   | "disabled-chat"
   | "banner";
 
-export type UserPreferences = "@chat/bell" | "@chat/enabled";
+export type UserPreferences = "@chat/bell" | "@chat/enabled" | "@chat/my-color";
 export const userPreferences: UserPreferences[] = [
   "@chat/bell",
   "@chat/enabled",
+  "@chat/my-color",
 ];
 export const defaultUserPreferences: Record<
   UserPreferences,
@@ -34,4 +35,5 @@ export const defaultUserPreferences: Record<
 > = {
   "@chat/bell": true,
   "@chat/enabled": true,
+  "@chat/my-color": "blue",
 };
