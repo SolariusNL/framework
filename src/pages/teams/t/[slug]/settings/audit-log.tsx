@@ -49,6 +49,7 @@ type Audit = TeamAuditLog & {
     username: string;
     alias: string;
     avatarUri: string;
+    verified: boolean;
   };
   rows: {
     key: string;

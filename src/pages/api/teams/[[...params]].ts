@@ -755,6 +755,7 @@ class TeamsRouter {
             username: true,
             alias: true,
             avatarUri: true,
+            verified: true,
           },
         },
         rows: true,
