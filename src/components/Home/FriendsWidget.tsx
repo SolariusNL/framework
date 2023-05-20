@@ -22,6 +22,7 @@ import ModernEmptyState from "../ModernEmptyState";
 import ReportUser from "../ReportUser";
 import ShadedButton from "../ShadedButton";
 import ShadedCard from "../ShadedCard";
+import Verified from "../Verified";
 
 export const Section: React.FC<{
   title: string;
@@ -137,7 +138,10 @@ export const Friend: React.FC<{
               </Indicator>
               <div>
                 <div className="flex items-center gap-2">
-                  <Text size="lg">{friend.username}</Text>
+                  <div className="flex items-center gap-1">
+                    {friend.verified && <Verified />}
+                    <Text size="lg">{friend.username}</Text>
+                  </div>
                   {friend.alias && (
                     <Text size="sm" color="dimmed">
                       {friend.alias}

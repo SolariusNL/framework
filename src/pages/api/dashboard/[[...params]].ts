@@ -29,6 +29,7 @@ class DashboardRouter {
         alias: true,
         bio: true,
         lastSeen: true,
+        verified: true,
       },
     });
 
