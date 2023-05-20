@@ -3,9 +3,10 @@ import Link from "next/link";
 import clsx from "../util/clsx";
 import getMediaUrl from "../util/get-media";
 import { User } from "../util/prisma-types";
+import Verified from "./Verified";
 
 type OwnerProps = {
-  user: Pick<User, "username" | "alias" | "avatarUri">;
+  user: Pick<User, "username" | "alias" | "avatarUri" | "verified">;
   size?: number;
   overrideHref?: string;
 } & React.HTMLAttributes<HTMLLIElement>;
@@ -31,8 +32,11 @@ const Owner: React.FC<OwnerProps> = ({
         size={size ?? 38}
       />
       <div className="text-sm leading-4">
-        <div className="text-slate-900 dark:text-slate-200">
-          {user.alias ? user.alias : user.username}
+        <div className="flex items-center gap-1">
+          {user.verified && <Verified className="w-4 h-4" />}
+          <div className="text-slate-900 dark:text-slate-200">
+            {user.alias ? user.alias : user.username}
+          </div>
         </div>
         <div className="mt-1">
           <Link

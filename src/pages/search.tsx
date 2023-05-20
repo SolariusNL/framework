@@ -7,10 +7,10 @@ import authorizedRoute from "../util/auth";
 import prisma from "../util/prisma";
 import {
   Game,
-  gameSelect,
-  nonCurrentUserSelect,
   NonUser,
   User,
+  gameSelect,
+  nonCurrentUserSelect,
 } from "../util/prisma-types";
 
 interface SearchProps {
@@ -99,7 +99,10 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
           OR: [{ username: { contains: String(query), mode: "insensitive" } }],
         },
         take: 100,
-        ...nonCurrentUserSelect,
+        select: {
+          ...nonCurrentUserSelect.select,
+          verified: true,
+        },
       });
 
       return {

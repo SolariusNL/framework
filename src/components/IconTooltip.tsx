@@ -11,6 +11,7 @@ type IconTooltipProps = {
     children: JSX.Element;
   };
   className?: string;
+  stopPropagation?: boolean;
 };
 
 const IconTooltip: React.FC<IconTooltipProps> = ({
@@ -19,13 +20,15 @@ const IconTooltip: React.FC<IconTooltipProps> = ({
   className,
   descriptiveModal,
   descriptiveModalProps,
+  stopPropagation,
 }) => {
   const { colorScheme } = useMantineColorScheme();
 
   return (
     <Tooltip withinPortal zIndex={999999} label={label}>
       <div
-        onClick={() => {
+        onClick={(e: React.MouseEvent<HTMLDivElement>) => {
+          if (stopPropagation) e.stopPropagation();
           if (descriptiveModal)
             openModal({
               title: descriptiveModalProps?.title,

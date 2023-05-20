@@ -973,6 +973,7 @@ class UserRouter {
         role: true,
         id: true,
         lastSeen: true,
+        verified: true,
       },
     });
 

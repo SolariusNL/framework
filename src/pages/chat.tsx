@@ -21,13 +21,13 @@ import { GetServerSidePropsContext } from "next";
 import { useContext, useEffect, useRef, useState } from "react";
 import { HiArrowSmDown, HiChatAlt2, HiEmojiHappy } from "react-icons/hi";
 import ChatMsg from "../components/Chat/ChatMessage";
-import Dot from "../components/Dot";
 import Framework from "../components/Framework";
 import LoadingIndicator from "../components/LoadingIndicator";
 import ModernEmptyState from "../components/ModernEmptyState";
 import Owner from "../components/Owner";
 import sanitizeInappropriateContent from "../components/ReconsiderationPrompt";
 import ShadedCard from "../components/ShadedCard";
+import Verified from "../components/Verified";
 import SocketContext from "../contexts/Socket";
 import SidebarTabNavigation from "../layouts/SidebarTabNavigation";
 import useChatStore from "../stores/useChatStore";
@@ -285,10 +285,10 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
       />
       {friends
         .sort((f) => {
-          return (
-            new Date(f.lastSeen).getTime() >
-            new Date().getTime() - 1000 * 60 * 5 ? -1 : 1
-          );
+          return new Date(f.lastSeen).getTime() >
+            new Date().getTime() - 1000 * 60 * 5
+            ? -1
+            : 1;
         })
         .map((friend) => (
           <NavLink
@@ -300,12 +300,9 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
             }}
             className="rounded-md"
             label={
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
+                {friend.verified && <Verified className="w-4 h-4" />}
                 <span>{friend.username}</span>
-                {new Date(friend.lastSeen).getTime() >
-                  new Date().getTime() - 1000 * 60 * 5 && (
-                  <Dot classNames={{ dot: "w-2 h-2" }} color="green" />
-                )}
               </div>
             }
             description={
@@ -327,7 +324,7 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
                 <Avatar
                   src={getMediaUrl(friend.avatarUri)}
                   size="sm"
-                  className="rounded-full"
+                  className="rounded-full border-solid border-[1px] border-gray-200 dark:border-gray-200/10"
                 />
               )
             }

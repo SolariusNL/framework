@@ -45,6 +45,7 @@ import LoadingIndicator from "./LoadingIndicator";
 import ModernEmptyState from "./ModernEmptyState";
 import sanitizeInappropriateContent from "./ReconsiderationPrompt";
 import ShadedButton from "./ShadedButton";
+import Verified from "./Verified";
 
 const Chat: React.FC = () => {
   const {
@@ -581,7 +582,7 @@ const Chat: React.FC = () => {
                             }}
                             className="rounded-none px-4"
                           >
-                            <div className="flex items-center">
+                            <div className="flex items-start gap-2">
                               {unreadMessages[friend.id] > 0 ? (
                                 <Badge
                                   variant="filled"
@@ -599,11 +600,16 @@ const Chat: React.FC = () => {
                                 />
                               )}
 
-                              <div className="flex items-center">
-                                <Text size="sm" mr={6}>
-                                  {friend.alias || friend.username}
-                                </Text>
-                                <Text size="sm" color="dimmed" mr={16}>
+                              <div className="flex flex-col">
+                                <div className="flex items-center gap-1">
+                                  {friend.verified && (
+                                    <Verified className="w-4 h-4" />
+                                  )}
+                                  <Text size="sm" mr={6}>
+                                    {friend.alias || friend.username}
+                                  </Text>
+                                </div>
+                                <Text size="sm" color="dimmed">
                                   @{friend.username}
                                 </Text>
                               </div>

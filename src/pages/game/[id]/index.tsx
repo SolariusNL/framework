@@ -52,6 +52,7 @@ import ReportUser from "../../../components/ReportUser";
 import ShadedButton from "../../../components/ShadedButton";
 import ShadedCard from "../../../components/ShadedCard";
 import UserContext from "../../../components/UserContext";
+import Verified from "../../../components/Verified";
 import ConnectionTab from "../../../components/ViewGame/Connection";
 import FundsTab from "../../../components/ViewGame/Funds";
 import InfoTab from "../../../components/ViewGame/Info";
@@ -322,9 +323,12 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                   )}
                   <Stack spacing={3}>
                     <div className="flex items-center gap-2">
-                      <Text weight={700}>
-                        {game.team ? game.team.name : game.author.username}
-                      </Text>
+                      <div className="flex items-center gap-2">
+                        {!game.team && game.author.verified && <Verified />}
+                        <Text weight={700}>
+                          {game.team ? game.team.name : game.author.username}
+                        </Text>
+                      </div>
                       {game.team && (
                         <Badge radius="md" size="sm">
                           Team

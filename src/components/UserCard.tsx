@@ -1,7 +1,9 @@
-import { Avatar, Button, Group, Indicator, Paper, Text } from "@mantine/core";
+import { Avatar, Button, Group, Indicator, Text } from "@mantine/core";
 import Link from "next/link";
 import getMediaUrl from "../util/get-media";
 import { NonUser } from "../util/prisma-types";
+import ShadedButton from "./ShadedButton";
+import Verified from "./Verified";
 
 interface UserCardProps {
   user: NonUser;
@@ -10,15 +12,10 @@ interface UserCardProps {
 
 const UserCard = ({ user, minimal }: UserCardProps) => {
   return (
-    <Paper
-      radius="md"
-      withBorder
+    <ShadedButton
       p="lg"
-      sx={(theme) => ({
-        backgroundColor:
-          theme.colorScheme === "dark" ? theme.colors.dark[9] : theme.white,
-      })}
       key={user.id}
+      className="flex flex-col justify-center text-center items-center w-full"
     >
       <Group position="center">
         <Indicator
@@ -37,18 +34,20 @@ const UserCard = ({ user, minimal }: UserCardProps) => {
           />
         </Indicator>
       </Group>
-      <Text
-        align="center"
-        size="lg"
-        weight={500}
-        mt="md"
-        sx={{
-          textDecoration: user.banned ? "line-through" : "none",
-          color: user.banned ? "gray" : "inherit",
-        }}
-      >
-        {user.username}
-      </Text>
+      <div className="flex items-center gap-1 mt-4 mb-2">
+        {user.verified && <Verified />}
+        <Text
+          align="center"
+          size="lg"
+          weight={500}
+          sx={{
+            textDecoration: user.banned ? "line-through" : "none",
+            color: user.banned ? "gray" : "inherit",
+          }}
+        >
+          {user.username}
+        </Text>
+      </div>
       {!minimal && (
         <>
           <Text align="center" color="dimmed" size="sm">
@@ -66,7 +65,7 @@ const UserCard = ({ user, minimal }: UserCardProps) => {
           View Profile
         </Button>
       </Link>
-    </Paper>
+    </ShadedButton>
   );
 };
 

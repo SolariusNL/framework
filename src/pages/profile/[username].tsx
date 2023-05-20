@@ -17,7 +17,6 @@ import React from "react";
 import ReactCountryFlag from "react-country-flag";
 import {
   HiArrowSmLeft,
-  HiBadgeCheck,
   HiCake,
   HiCheck,
   HiChevronDoubleUp,
@@ -43,6 +42,7 @@ import Donate from "../../components/Profile/Donate";
 import Links from "../../components/Profile/Links";
 import ReportUser from "../../components/ReportUser";
 import ShadedCard from "../../components/ShadedCard";
+import Verified from "../../components/Verified";
 import { useUserInformationDialog } from "../../contexts/UserInformationDialog";
 import countries from "../../data/countries";
 import getTimezones from "../../data/timezones";
@@ -215,6 +215,7 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
                 <div className="flex flex-col justify-between h-full">
                   <div className="flex flex-col justify-between">
                     <div className="flex items-center justify-center md:justify-start gap-3">
+                      {viewing.verified && <Verified />}
                       {viewing.role === "ADMIN" && (
                         <IconTooltip
                           label="Soodam.re Staff"
@@ -234,27 +235,6 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
                                   assist you with any issues you may have. If
                                   you have any questions, feel free to contact
                                   them.
-                                </Text>
-                              </div>
-                            ),
-                          }}
-                        />
-                      )}
-                      {viewing.verified && (
-                        <IconTooltip
-                          label="Verified"
-                          icon={<HiBadgeCheck className="text-sky-500 mr-1 w-6 h-6" />}
-                          descriptiveModal
-                          descriptiveModalProps={{
-                            title: "Verified",
-                            children: (
-                              <div className="text-center items-center flex flex-col">
-                                <HiBadgeCheck className="text-sky-500 w-16 h-16" />
-                                <Title order={3} mt="lg">
-                                  Verified
-                                </Title>
-                                <Text size="sm" color="dimmed" mt="md">
-                                  This user is verified.
                                 </Text>
                               </div>
                             ),
