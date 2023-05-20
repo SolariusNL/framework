@@ -16,47 +16,54 @@ export const parse = (markdown: string) => {
       }
       if (token.type === "html") {
         const hrefRegex = /href="(.+?)"/g;
-        const href = hrefRegex.exec(token.text)?.[1];
-        if (href) {
-          if (href.startsWith("/")) return token;
+        let hrefs = token.text.match(hrefRegex);
+        if (!hrefs) return token;
+        let result: string = token.text;
+        if (hrefs.length > 0) {
+          hrefs.forEach((href, i) => {
+            href = href.replace(/href="/g, "").replace(/"/g, "");
+            if (href.startsWith("/")) return token;
 
-          const id = Math.random().toString(36).slice(2);
-          token.text = token.text.replace(
-            hrefRegex,
-            `href="${href}" data-link-id="link-${id}"`
-          );
+            const id = Math.random().toString(36).slice(2);
+            result = result.replace(
+              href,
+              `href="${href}" data-link-id="link-${id}"`
+            );
 
-          if (typeof window !== "undefined") {
-            const listener = (e: MouseEvent) => {
-              const target = document.querySelector(
-                `[data-link-id="link-${id}"]`
-              ) as HTMLAnchorElement;
-              if (target?.contains(e.target as Node)) {
-                e.preventDefault();
-                openConfirmModal({
-                  title: "Confirm link",
-                  children: (
-                    <>
-                      <div className="flex justify-center flex-col gap-2 text-center">
-                        <Text size="sm" color="dimmed">
-                          Are you sure you want to visit this link?
-                        </Text>
-                        <Anchor href={href} target="_blank">
-                          {href}
-                        </Anchor>
-                      </div>
-                    </>
-                  ),
-                  labels: { cancel: "Cancel", confirm: "Open link" },
-                  onConfirm: () => {
-                    window.open(href, "_blank");
-                  },
-                });
-              }
-            };
+            if (typeof window !== "undefined") {
+              const listener = (e: MouseEvent) => {
+                const target = document.querySelector(
+                  `[data-link-id="link-${id}"]`
+                ) as HTMLAnchorElement;
+                if (target?.contains(e.target as Node)) {
+                  e.preventDefault();
+                  openConfirmModal({
+                    title: "Confirm link",
+                    children: (
+                      <>
+                        <div className="flex justify-center flex-col gap-2 text-center">
+                          <Text size="sm" color="dimmed">
+                            Are you sure you want to visit this link?
+                          </Text>
+                          <Anchor href={href} target="_blank">
+                            {href}
+                          </Anchor>
+                        </div>
+                      </>
+                    ),
+                    labels: { cancel: "Cancel", confirm: "Open link" },
+                    onConfirm: () => {
+                      window.open(href, "_blank");
+                    },
+                  });
+                }
+              };
 
-            document.addEventListener("click", listener);
-          }
+              document.addEventListener("click", listener);
+            }
+          });
+
+          token.text = result!;
         }
 
         return token;
