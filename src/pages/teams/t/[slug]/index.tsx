@@ -301,6 +301,7 @@ const TeamView: React.FC<TeamViewProps> = ({ user, team: teamInitial }) => {
                 alias: team.name,
                 username: team.name,
                 avatarUri: team.iconUri,
+                verified: false,
               }}
               size={34}
               overrideHref={`/teams/t/${team.slug}`}
