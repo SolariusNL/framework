@@ -139,12 +139,14 @@ export const Friend: React.FC<{
               <div>
                 <div className="flex items-center gap-2">
                   <div className="flex items-center gap-1">
-                    {friend.verified && <Verified />}
+                    {friend.verified && (
+                      <Verified className="w-[18px] h-[18px]" />
+                    )}
                     <Text size="lg">{friend.username}</Text>
                   </div>
                   {friend.alias && (
                     <Text size="sm" color="dimmed">
-                      {friend.alias}
+                      {friend.alias || "This user has not yet written a bio."}
                     </Text>
                   )}
                 </div>

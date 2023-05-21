@@ -36,6 +36,7 @@ import authorizedRoute from "../util/auth";
 import { useOnClickOutside } from "../util/click-outside";
 import getMediaUrl from "../util/get-media";
 import useMediaQuery from "../util/media-query";
+import isUserOnline from "../util/online";
 import { ChatMessage, NonUser, User } from "../util/prisma-types";
 import { getRelativeTime } from "../util/relative-time";
 import { getMyFriends } from "../util/universe/friends";
@@ -301,13 +302,12 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
             className="rounded-md"
             label={
               <div className="flex items-center gap-1">
-                {friend.verified && <Verified className="w-4 h-4" />}
+                {friend.verified && <Verified className="w-[15px] h-[15px]" />}
                 <span>{friend.username}</span>
               </div>
             }
             description={
-              new Date(friend.lastSeen).getTime() >
-              new Date().getTime() - 1000 * 60 * 5
+              isUserOnline(friend)
                 ? "Currently online"
                 : `Last seen ${getRelativeTime(new Date(friend.lastSeen))}`
             }
@@ -324,7 +324,7 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
                 <Avatar
                   src={getMediaUrl(friend.avatarUri)}
                   size="sm"
-                  className="rounded-full border-solid border-[1px] border-gray-200 dark:border-gray-200/10"
+                  className="rounded-full"
                 />
               )
             }
@@ -403,8 +403,11 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
                       <Owner user={conversating!} />
                     </div>
                     <Text size="sm" color="dimmed" weight="500">
-                      Last seen{" "}
-                      {getRelativeTime(new Date(conversating?.lastSeen!))}
+                      {isUserOnline(conversating!)
+                        ? "Currently online"
+                        : ` Last seen ${getRelativeTime(
+                            new Date(conversating?.lastSeen!)
+                          )}`}
                     </Text>
                   </div>
                 </ShadedCard>

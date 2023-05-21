@@ -33,7 +33,7 @@ const Owner: React.FC<OwnerProps> = ({
       />
       <div className="text-sm leading-4">
         <div className="flex items-center gap-1">
-          {user.verified && <Verified className="w-4 h-4" />}
+          {user.verified && <Verified className="w-[16px] h-[16px]" />}
           <div className="text-slate-900 dark:text-slate-200">
             {user.alias ? user.alias : user.username}
           </div>

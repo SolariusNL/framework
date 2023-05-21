@@ -16,6 +16,7 @@ import {
 import { useForm } from "@mantine/form";
 import { useHotkeys } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
+import { User } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
@@ -23,6 +24,7 @@ import { useRouter } from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   HiArrowLeft,
+  HiArrowRight,
   HiArrowSmDown,
   HiChatAlt2,
   HiChevronDown,
@@ -38,9 +40,11 @@ import usePreferences from "../stores/usePreferences";
 import { useOnClickOutside } from "../util/click-outside";
 import clsx from "../util/clsx";
 import getMediaUrl from "../util/get-media";
+import isUserOnline from "../util/online";
 import { ChatMessage, NonUser } from "../util/prisma-types";
 import { getMyFriends } from "../util/universe/friends";
 import ChatMsg from "./Chat/ChatMessage";
+import Dot from "./Dot";
 import LoadingIndicator from "./LoadingIndicator";
 import ModernEmptyState from "./ModernEmptyState";
 import sanitizeInappropriateContent from "./ReconsiderationPrompt";
@@ -375,6 +379,14 @@ const Chat: React.FC = () => {
                           passHref
                         >
                           <div className="flex gap-2 items-center group cursor-pointer">
+                            {isUserOnline(
+                              conversating as Pick<User, "lastSeen">
+                            ) && (
+                              <Dot
+                                color="green"
+                                classNames={{ dot: "w-[6px] h-[6px]" }}
+                              />
+                            )}
                             <Text
                               color="dimmed"
                               size="sm"
@@ -580,7 +592,7 @@ const Chat: React.FC = () => {
                               setConversationOpen(true);
                               setCurrentConversation(friend.id);
                             }}
-                            className="rounded-none px-4"
+                            className="rounded-none px-4 dark:hover:bg-zinc-900/50 group flex justify-between"
                           >
                             <div className="flex items-start gap-2">
                               {unreadMessages[friend.id] > 0 ? (
@@ -603,17 +615,24 @@ const Chat: React.FC = () => {
                               <div className="flex flex-col">
                                 <div className="flex items-center gap-1">
                                   {friend.verified && (
-                                    <Verified className="w-4 h-4" />
+                                    <Verified className="w-[14px] h-[14px]" />
                                   )}
-                                  <Text size="sm" mr={6}>
+                                  <Text size="sm" mr={6} weight={500}>
                                     {friend.alias || friend.username}
                                   </Text>
+                                  {isUserOnline(friend) && (
+                                    <Dot
+                                      color="green"
+                                      classNames={{ dot: "w-[6px] h-[6px]" }}
+                                    />
+                                  )}
                                 </div>
                                 <Text size="sm" color="dimmed">
                                   @{friend.username}
                                 </Text>
                               </div>
                             </div>
+                            <HiArrowRight className="text-dimmed group-hover:opacity-100 transition-all opacity-0" />
                           </ShadedButton>
                         ))}
                         {friends.length === 0 && (

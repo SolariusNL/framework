@@ -177,6 +177,16 @@ model User {
   developerProfile           DeveloperProfile?      @relation("developerProfile")
   preferences                UserPreference[]       @relation("userPreferences")
   verified                   Boolean                @default(false)
+  stories                    Story[]                @relation("stories")
+}
+
+model Story {
+  id        String   @id @default(uuid())
+  author    User     @relation("stories", fields: [authorId], references: [id])
+  authorId  Int
+  createdAt DateTime @default(now())
+  imageUri  String
+  views     Int      @default(0)
 }
 
 model ConnectedAccount {

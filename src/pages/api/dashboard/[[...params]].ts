@@ -30,6 +30,11 @@ class DashboardRouter {
         bio: true,
         lastSeen: true,
         verified: true,
+        _count: {
+          select: {
+            stories: true,
+          },
+        },
       },
     });
 

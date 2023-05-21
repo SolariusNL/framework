@@ -2,7 +2,9 @@ import {
   Button,
   Modal,
   Switch,
+  Text,
   TextInput,
+  Title,
   UnstyledButton,
   useMantineColorScheme,
 } from "@mantine/core";
@@ -14,7 +16,7 @@ import { GetServerSidePropsContext, NextPage } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { HiMail } from "react-icons/hi";
+import { HiChevronRight, HiMail } from "react-icons/hi";
 import Background from "../../components/Background";
 import Descriptive from "../../components/Descriptive";
 import Framework from "../../components/Framework";
@@ -25,7 +27,7 @@ import authorizedRoute from "../../util/auth";
 import clsx from "../../util/clsx";
 import { exclude } from "../../util/exclude";
 import prisma from "../../util/prisma";
-import { BlogPost, blogPostSelect, User } from "../../util/prisma-types";
+import { BlogPost, User, blogPostSelect } from "../../util/prisma-types";
 
 interface BlogProps {
   user: User;
@@ -137,21 +139,21 @@ const Blog: NextPage<BlogProps> = ({ user, posts, featured }) => {
         noContentPadding
       >
         <div className="relative">
-          <Background />
+          <Background className="-z-10" />
           <main className="max-w-[52rem] mx-auto px-4 pb-28 sm:px-6 md:px-8 xl:px-12 lg:max-w-6xl relative">
             <header className="py-16 sm:text-center">
               <h1 className="mb-4 text-3xl sm:text-4xl tracking-tight text-slate-900 font-extrabold dark:text-slate-200">
                 Blog
               </h1>
-              <p className="text-lg text-slate-700 dark:text-slate-400">
+              <Text size="lg" color="dimmed" mb="xl">
                 The latest news and updates from the Soodam.re team.
-              </p>
+              </Text>
               <section className="mt-3 max-w-sm sm:mx-auto sm:px-4">
                 {userStore?.newsletterSubscribed ? (
                   <p className="text-sm text-slate-700 dark:text-slate-400 flex flex-col gap-1">
                     You are subscribed to the newsletter!{" "}
                     <a
-                      className="text-sky-500 hover:text-sky-600 cursor-pointer dark:text-sky-400 no-underline font-semibold"
+                      className="text-sky-500 highlight-sky-400 hover:text-sky-600 cursor-pointer dark:text-sky-400 no-underline font-semibold"
                       onClick={async () => {
                         setLoading(true);
                         await fetch("/api/blog/newsletter/subscribe", {
@@ -215,7 +217,7 @@ const Blog: NextPage<BlogProps> = ({ user, posts, featured }) => {
                   )
                   .map((p) => (
                     <article key={p.slug} className="relative group">
-                      <div className="absolute -inset-y-2.5 -inset-x-4 md:-inset-y-4 md:-inset-x-6 sm:rounded-2xl group-hover:bg-slate-50/70 dark:group-hover:bg-zinc-600/10" />
+                      <div className="absolute -inset-y-2.5 -inset-x-4 md:-inset-y-4 md:-inset-x-6 sm:rounded-2xl group-hover:bg-slate-50/70 dark:group-hover:bg-zinc-800/30 transition-all" />
                       <svg
                         viewBox="0 0 9 9"
                         className="hidden border border-solid border-1 absolute right-full mr-6 top-2 text-zinc-200 dark:text-zinc-600 md:mr-12 w-[calc(0.5rem+1px)] h-[calc(0.5rem+1px)] overflow-visible sm:block rounded-full"
@@ -227,12 +229,15 @@ const Blog: NextPage<BlogProps> = ({ user, posts, featured }) => {
                           stroke="currentColor"
                           className="fill-white dark:fill-zinc-900"
                           strokeWidth="2"
-                        ></circle>
+                        />
                       </svg>
                       <div className="relative">
-                        <h3 className="text-base font-semibold tracking-tight text-slate-900 dark:text-slate-200 pt-8 lg:pt-0">
+                        <Title
+                          order={4}
+                          className="pt-8 lg:pt-0 tracking-tight"
+                        >
                           {p.title}
-                        </h3>
+                        </Title>
                         <div className="mt-2 mb-4">
                           <RenderMarkdown clamp={2}>
                             {p.subtitle}
@@ -242,7 +247,7 @@ const Blog: NextPage<BlogProps> = ({ user, posts, featured }) => {
                           <dt className="sr-only">Date</dt>
                           <dd
                             className={clsx(
-                              "whitespace-nowrap text-sm leading-6 dark:text-slate-400 ml-0"
+                              "whitespace-nowrap text-sm leading-6 text-dimmed ml-0"
                             )}
                           >
                             <time
@@ -267,19 +272,7 @@ const Blog: NextPage<BlogProps> = ({ user, posts, featured }) => {
                             Read more
                             <span className="sr-only">, {p.title}</span>
                           </span>
-                          <svg
-                            className="relative mt-px overflow-visible ml-2.5 text-sky-300 dark:text-sky-700"
-                            width="4"
-                            height="6"
-                            viewBox="0 0 3 6"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <path d="M0 0L3 3L0 6"></path>
-                          </svg>
+                          <HiChevronRight className="relative mt-px overflow-visible ml-1 text-sky-300 dark:text-sky-700" />
                         </a>
                       </Link>
                     </article>
