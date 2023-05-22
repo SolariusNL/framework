@@ -60,6 +60,7 @@ import usePreferences from "../stores/usePreferences";
 import useSidebar from "../stores/useSidebar";
 import logout from "../util/api/logout";
 import { getIpcRenderer } from "../util/electron";
+import { Fw } from "../util/fw";
 import useMediaQuery from "../util/media-query";
 import { User } from "../util/prisma-types";
 import Chat from "./Chat";
@@ -649,7 +650,9 @@ const Framework = ({
             {!mobile && user && (
               <Group>
                 <NotificationFlyout />
-                <CurrencyMenu currencyMenuOpened={currencyMenuOpened} bits />
+                {Fw.Feature.enabled(Fw.FeatureIdentifier.Bits) && (
+                  <CurrencyMenu currencyMenuOpened={currencyMenuOpened} bits />
+                )}
                 <CurrencyMenu currencyMenuOpened={currencyMenuOpened} />
 
                 <UserMenu userMenuOpened={userMenuOpened} />

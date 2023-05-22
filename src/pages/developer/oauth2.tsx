@@ -53,7 +53,9 @@ import IResponseBase from "../../types/api/IResponseBase";
 import abbreviateNumber from "../../util/abbreviate";
 import authorizedRoute from "../../util/auth";
 import fetchJson from "../../util/fetch";
+import { Fw } from "../../util/fw";
 import { User } from "../../util/prisma-types";
+import ServiceUnavailable from "../503";
 import { BLACK } from "../teams/t/[slug]/issue/create";
 
 type OAuth2Props = {
@@ -360,7 +362,7 @@ const OAuth2: React.FC<OAuth2Props> = ({ user }) => {
     return s.name?.toLowerCase().includes(search.toLowerCase());
   };
 
-  return (
+  return Fw.Feature.enabled(Fw.FeatureIdentifier.OAuth2) ? (
     <Developer
       user={user}
       title="OAuth2"
@@ -495,6 +497,8 @@ const OAuth2: React.FC<OAuth2Props> = ({ user }) => {
         )}
       </div>
     </Developer>
+  ) : (
+    <ServiceUnavailable />
   );
 };
 

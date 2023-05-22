@@ -45,8 +45,11 @@ import IResponseBase from "../../types/api/IResponseBase";
 import authorizedRoute from "../../util/auth";
 import clsx from "../../util/clsx";
 import fetchJson from "../../util/fetch";
+import { Fw } from "../../util/fw";
 import { User } from "../../util/prisma-types";
+import NotFound from "../404";
 import { BLACK } from "../teams/t/[slug]/issue/create";
+import ServiceUnavailable from "../503";
 
 type DomainsProps = {
   user: User;
@@ -225,7 +228,7 @@ const Domains: React.FC<DomainsProps> = ({ user }) => {
     fetchDomains();
   }, []);
 
-  return (
+  return Fw.Feature.enabled(Fw.FeatureIdentifier.Domains) ? (
     <Developer
       user={user}
       title="Domains"
@@ -564,6 +567,8 @@ const Domains: React.FC<DomainsProps> = ({ user }) => {
         </SidebarTabNavigation.Content>
       </SidebarTabNavigation>
     </Developer>
+  ) : (
+    <ServiceUnavailable />
   );
 };
 

@@ -24,7 +24,9 @@ import ModernEmptyState from "../../components/ModernEmptyState";
 import apiKeyPermissions from "../../data/apiKeyPermissions";
 import Developer from "../../layouts/DeveloperLayout";
 import authorizedRoute from "../../util/auth";
+import { Fw } from "../../util/fw";
 import { User } from "../../util/prisma-types";
+import ServiceUnavailable from "../503";
 
 interface DeveloperProps {
   user: User;
@@ -157,7 +159,7 @@ const DeveloperAPIKeys: React.FC<DeveloperProps> = ({ user }) => {
     </Modal>
   );
 
-  return (
+  return Fw.Feature.enabled(Fw.FeatureIdentifier.APIKeys) ? (
     <Developer
       user={user}
       title="API Keys"
@@ -314,6 +316,8 @@ const DeveloperAPIKeys: React.FC<DeveloperProps> = ({ user }) => {
         </Table>
       </ScrollArea>
     </Developer>
+  ) : (
+    <ServiceUnavailable />
   );
 };
 

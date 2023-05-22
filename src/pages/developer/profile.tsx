@@ -16,6 +16,7 @@ import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { DeveloperProfile, DeveloperProfileSkill } from "@prisma/client";
 import { GetServerSidePropsContext } from "next";
+import { useRouter } from "next/router";
 import { ReactNode, useEffect, useState } from "react";
 import {
   HiCheck,
@@ -33,10 +34,11 @@ import SidebarTabNavigation from "../../layouts/SidebarTabNavigation";
 import IResponseBase from "../../types/api/IResponseBase";
 import authorizedRoute from "../../util/auth";
 import fetchJson from "../../util/fetch";
+import { Fw } from "../../util/fw";
 import prisma from "../../util/prisma";
 import { NonUser, User, nonCurrentUserSelect } from "../../util/prisma-types";
+import ServiceUnavailable from "../503";
 import { BLACK } from "../teams/t/[slug]/issue/create";
-import { useRouter } from "next/router";
 
 type DeveloperProfileEx = DeveloperProfile & {
   user: NonUser;
@@ -108,6 +110,7 @@ const DeveloperProfile: React.FC<DeveloperProfileProps> = ({
     name: "",
     description: "",
   });
+  const { colorScheme } = useMantineColorScheme();
   const router = useRouter();
   const form = useForm<EditForm>({
     initialValues: {
@@ -168,7 +171,7 @@ const DeveloperProfile: React.FC<DeveloperProfileProps> = ({
     getMyGames();
   }, []);
 
-  return (
+  return Fw.Feature.enabled(Fw.FeatureIdentifier.DevProfiles) ? (
     <Developer
       user={user}
       title="Developer Profile"
@@ -184,7 +187,7 @@ const DeveloperProfile: React.FC<DeveloperProfileProps> = ({
           });
         }}
         title="Add skill"
-        className={useMantineColorScheme().colorScheme}
+        className={colorScheme}
       >
         <Stack spacing="md">
           <TextInput
@@ -419,6 +422,8 @@ const DeveloperProfile: React.FC<DeveloperProfileProps> = ({
         </SidebarTabNavigation.Content>
       </SidebarTabNavigation>
     </Developer>
+  ) : (
+    <ServiceUnavailable />
   );
 };
 

@@ -36,6 +36,7 @@ import {
 import SocketContext from "../contexts/Socket";
 import useAmoled from "../stores/useAmoled";
 import useChatStore from "../stores/useChatStore";
+import useFastFlags from "../stores/useFastFlags";
 import usePreferences from "../stores/usePreferences";
 import { useOnClickOutside } from "../util/click-outside";
 import clsx from "../util/clsx";
@@ -45,6 +46,7 @@ import { ChatMessage, NonUser } from "../util/prisma-types";
 import { getMyFriends } from "../util/universe/friends";
 import ChatMsg from "./Chat/ChatMessage";
 import Dot from "./Dot";
+import InlineError from "./InlineError";
 import LoadingIndicator from "./LoadingIndicator";
 import ModernEmptyState from "./ModernEmptyState";
 import sanitizeInappropriateContent from "./ReconsiderationPrompt";
@@ -67,6 +69,7 @@ const Chat: React.FC = () => {
     useState<boolean>(true);
   const { enabled: amoled } = useAmoled();
   const { preferences } = usePreferences();
+  const { flags } = useFastFlags();
   const messageForm = useForm<{
     message: string;
   }>({
@@ -347,74 +350,322 @@ const Chat: React.FC = () => {
                 stiffness: 100,
               }}
             >
-              <AnimatePresence>
-                {conversationOpen ? (
-                  <motion.div
-                    initial={{ height: 0 }}
-                    animate={{ height: conversationData && "auto" }}
-                    exit={{ height: 0 }}
-                    transition={{
-                      type: "spring",
-                      damping: 20,
-                      stiffness: 100,
-                    }}
+              {flags["disabled-chat"] ? (
+                <InlineError title="Temporarily disabled" className="py-4">
+                  Chat has been temporarily disabled. We apologize for the
+                  inconvenience.
+                </InlineError>
+              ) : (
+                <>
+                  <AnimatePresence>
+                    {conversationOpen ? (
+                      <motion.div
+                        initial={{ height: 0 }}
+                        animate={{ height: conversationData && "auto" }}
+                        exit={{ height: 0 }}
+                        transition={{
+                          type: "spring",
+                          damping: 20,
+                          stiffness: 100,
+                        }}
+                      >
+                        <Card.Section px={16} py={10}>
+                          <div className="flex justify-between items-center">
+                            <Anchor
+                              className="flex gap-1 items-center"
+                              size="sm"
+                              onClick={() => {
+                                setConversationOpen(false);
+                                setConversating(null);
+                                setCurrentConversation(null);
+                                setConversationData([]);
+                              }}
+                            >
+                              <HiArrowLeft />
+                              Go back
+                            </Anchor>
+                            <Link
+                              href={`/profile/${conversating?.username}`}
+                              passHref
+                            >
+                              <div className="flex gap-2 items-center group cursor-pointer">
+                                {isUserOnline(
+                                  conversating as Pick<User, "lastSeen">
+                                ) && (
+                                  <Dot
+                                    color="green"
+                                    classNames={{ dot: "w-[6px] h-[6px]" }}
+                                  />
+                                )}
+                                <Text
+                                  color="dimmed"
+                                  size="sm"
+                                  className="group-hover:font-semibold transition-all group-hover:text-sky-600 dark:group-hover:text-sky-400"
+                                >
+                                  @{conversating?.username}
+                                </Text>
+                                <Avatar
+                                  src={conversating?.avatarUri}
+                                  size="sm"
+                                  radius="xl"
+                                />
+                              </div>
+                            </Link>
+                          </div>
+                        </Card.Section>
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        initial={{ height: 0 }}
+                        animate={{ height: "auto" }}
+                        exit={{ height: 0 }}
+                        transition={{
+                          type: "spring",
+                          damping: 20,
+                          stiffness: 100,
+                        }}
+                      >
+                        <Card.Section
+                          sx={(theme) => ({
+                            backgroundColor:
+                              theme.colorScheme === "dark"
+                                ? theme.colors.dark[9]
+                                : "#FFF",
+                          })}
+                          className={clsx(amoled && "bg-black")}
+                          px={4}
+                          py={2}
+                        >
+                          <TextInput
+                            placeholder="Search for friends..."
+                            className="flex-1"
+                            variant="unstyled"
+                            sx={(theme) => ({
+                              lineHeight: "0px",
+                              "& input": {
+                                paddingLeft: theme.spacing.sm,
+                                paddingRight: theme.spacing.sm,
+                              },
+                              "&::placeholder": {
+                                paddingLeft: theme.spacing.sm,
+                                paddingRight: theme.spacing.sm,
+                              },
+                            })}
+                            autoComplete="off"
+                            value={friendsSearch}
+                            onChange={(e) => setFriendsSearch(e.target.value)}
+                            rightSection={
+                              <Link href="/settings/application" passHref>
+                                <ActionIcon radius="xl" size="sm">
+                                  <HiCog />
+                                </ActionIcon>
+                              </Link>
+                            }
+                          />
+                        </Card.Section>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                  <Card.Section
+                    sx={(theme) => ({
+                      backgroundColor:
+                        theme.colorScheme === "dark"
+                          ? theme.colors.dark[9]
+                          : "#FFF",
+                    })}
+                    className={clsx(amoled && "bg-black")}
+                    p={conversationOpen ? "md" : 0}
+                    withBorder={conversationOpen}
                   >
-                    <Card.Section px={16} py={10}>
-                      <div className="flex justify-between items-center">
-                        <Anchor
-                          className="flex gap-1 items-center"
-                          size="sm"
-                          onClick={() => {
-                            setConversationOpen(false);
-                            setConversating(null);
-                            setCurrentConversation(null);
-                            setConversationData([]);
+                    <AnimatePresence mode="wait" initial={false}>
+                      {conversationOpen ? (
+                        <motion.div
+                          initial={{ y: 20 }}
+                          animate={{ y: 0 }}
+                          exit={{
+                            y: 0,
+                          }}
+                          transition={{
+                            type: "spring",
+                            stiffness: 500,
+                            damping: 30,
+                          }}
+                          key="conversation"
+                        >
+                          <div
+                            style={{
+                              height: 290,
+                              display: "flex",
+                              flexDirection: "column-reverse",
+                              overflowX: "hidden",
+                              overflowY: "auto",
+                            }}
+                            ref={messagesRef}
+                            className="dark:scrollbar-track-zinc-900/20 dark:scrollbar-thumb-zinc-700 scrollbar-track-gray-100/20 scrollbar-thumb-gray-500 scrollbar-thumb-rounded-md scrollbar-thin"
+                          >
+                            <Stack spacing={12}>
+                              {conversationDataLoading ? (
+                                <div className="w-full flex justify-center">
+                                  <LoadingIndicator />
+                                </div>
+                              ) : (
+                                conversationData &&
+                                conversationData
+                                  .sort(
+                                    (a, b) =>
+                                      new Date(a.createdAt).getTime() -
+                                      new Date(b.createdAt).getTime()
+                                  )
+                                  .map((message) => {
+                                    const currentTimestamp = new Date(
+                                      message.createdAt
+                                    ).getTime();
+                                    const timeDiff = previousTimestamp
+                                      ? currentTimestamp - previousTimestamp
+                                      : 0;
+                                    const timeDiffHrs = Math.floor(
+                                      timeDiff / (1000 * 60 * 60)
+                                    );
+                                    let dividerLabel = null;
+                                    if (timeDiffHrs >= 8) {
+                                      const formattedTimestamp = new Date(
+                                        currentTimestamp
+                                      ).toLocaleString(undefined, {
+                                        weekday: "long",
+                                        year: "numeric",
+                                        month: "numeric",
+                                        day: "numeric",
+                                      });
+                                      dividerLabel = formattedTimestamp;
+                                    }
+                                    previousTimestamp = currentTimestamp;
+                                    return (
+                                      <>
+                                        {dividerLabel && (
+                                          <div className="flex justify-center items-center mt-2 pointer-events-none">
+                                            <Divider className="w-full" />
+                                            <div className="flex justify-center items-center gap-2 px-3 w-full">
+                                              <HiArrowSmDown className="text-dimmed whitespace-nowrap flex-nowrap" />
+                                              <Text
+                                                color="dimmed"
+                                                size="sm"
+                                                className="whitespace-nowrap flex-nowrap"
+                                              >
+                                                {dividerLabel}
+                                              </Text>
+                                            </div>
+                                            <Divider className="w-full" />
+                                          </div>
+                                        )}
+                                        <ChatMsg message={message} />
+                                      </>
+                                    );
+                                  })
+                              )}
+                              {!conversationDataLoading &&
+                                conversationData?.length === 0 && (
+                                  <ModernEmptyState
+                                    title="No messages"
+                                    body="Send the first message to start a conversation."
+                                  />
+                                )}
+                            </Stack>
+                          </div>
+                        </motion.div>
+                      ) : (
+                        <motion.div
+                          initial={{
+                            y: conversationOpen ? 20 : 0,
+                          }}
+                          animate={{ x: 0 }}
+                          exit={{
+                            y: conversationOpen ? 20 : 0,
+                          }}
+                          transition={{
+                            type: "spring",
+                            stiffness: 500,
+                            damping: 30,
+                          }}
+                          key="friends"
+                          style={{
+                            height: 290,
+                            overflowX: "hidden",
+                            overflowY: "auto",
                           }}
                         >
-                          <HiArrowLeft />
-                          Go back
-                        </Anchor>
-                        <Link
-                          href={`/profile/${conversating?.username}`}
-                          passHref
-                        >
-                          <div className="flex gap-2 items-center group cursor-pointer">
-                            {isUserOnline(
-                              conversating as Pick<User, "lastSeen">
-                            ) && (
-                              <Dot
-                                color="green"
-                                classNames={{ dot: "w-[6px] h-[6px]" }}
-                              />
+                          <Stack spacing={5} p={0}>
+                            {friends.map((friend) => (
+                              <ShadedButton
+                                key={friend.id}
+                                onClick={() => {
+                                  setConversating(friend);
+                                  setConversationOpen(true);
+                                  setCurrentConversation(friend.id);
+                                }}
+                                className="rounded-none px-4 dark:hover:bg-zinc-900/50 group flex justify-between"
+                              >
+                                <div className="flex items-start gap-2">
+                                  {unreadMessages[friend.id] > 0 ? (
+                                    <Badge
+                                      variant="filled"
+                                      color="red"
+                                      sx={{ width: 24, height: 24, padding: 0 }}
+                                      className="mr-2"
+                                    >
+                                      {String(unreadMessages[friend.id])}
+                                    </Badge>
+                                  ) : (
+                                    <Avatar
+                                      src={getMediaUrl(friend.avatarUri)}
+                                      size={24}
+                                      className="mr-2 rounded-full"
+                                    />
+                                  )}
+
+                                  <div className="flex flex-col">
+                                    <div className="flex items-center gap-1">
+                                      {friend.verified && (
+                                        <Verified className="w-[14px] h-[14px]" />
+                                      )}
+                                      <Text size="sm" mr={6} weight={500}>
+                                        {friend.alias || friend.username}
+                                      </Text>
+                                      {isUserOnline(friend) && (
+                                        <Dot
+                                          color="green"
+                                          classNames={{
+                                            dot: "w-[6px] h-[6px]",
+                                          }}
+                                        />
+                                      )}
+                                    </div>
+                                    <Text size="sm" color="dimmed">
+                                      @{friend.username}
+                                    </Text>
+                                  </div>
+                                </div>
+                                <HiArrowRight className="text-dimmed group-hover:opacity-100 transition-all opacity-0" />
+                              </ShadedButton>
+                            ))}
+                            {friends.length === 0 && (
+                              <div className="flex justify-center">
+                                <div className="flex items-center gap-2 p-8">
+                                  <HiXCircle
+                                    size={12}
+                                    className="flex-shrink-0"
+                                  />
+                                  <Text size="sm" color="dimmed">
+                                    No friends found
+                                  </Text>
+                                </div>
+                              </div>
                             )}
-                            <Text
-                              color="dimmed"
-                              size="sm"
-                              className="group-hover:font-semibold transition-all group-hover:text-sky-600 dark:group-hover:text-sky-400"
-                            >
-                              @{conversating?.username}
-                            </Text>
-                            <Avatar
-                              src={conversating?.avatarUri}
-                              size="sm"
-                              radius="xl"
-                            />
-                          </div>
-                        </Link>
-                      </div>
-                    </Card.Section>
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    initial={{ height: 0 }}
-                    animate={{ height: "auto" }}
-                    exit={{ height: 0 }}
-                    transition={{
-                      type: "spring",
-                      damping: 20,
-                      stiffness: 100,
-                    }}
-                  >
+                          </Stack>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </Card.Section>
+                  {conversationOpen && (
                     <Card.Section
                       sx={(theme) => ({
                         backgroundColor:
@@ -423,310 +674,77 @@ const Chat: React.FC = () => {
                             : "#FFF",
                       })}
                       className={clsx(amoled && "bg-black")}
-                      px={4}
-                      py={2}
                     >
-                      <TextInput
-                        placeholder="Search for friends..."
-                        className="flex-1"
-                        variant="unstyled"
-                        sx={(theme) => ({
-                          lineHeight: "0px",
-                          "& input": {
-                            paddingLeft: theme.spacing.sm,
-                            paddingRight: theme.spacing.sm,
-                          },
-                          "&::placeholder": {
-                            paddingLeft: theme.spacing.sm,
-                            paddingRight: theme.spacing.sm,
-                          },
-                        })}
-                        autoComplete="off"
-                        value={friendsSearch}
-                        onChange={(e) => setFriendsSearch(e.target.value)}
-                        rightSection={
-                          <Link href="/settings/application" passHref>
-                            <ActionIcon radius="xl" size="sm">
-                              <HiCog />
-                            </ActionIcon>
-                          </Link>
-                        }
-                      />
-                    </Card.Section>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-              <Card.Section
-                sx={(theme) => ({
-                  backgroundColor:
-                    theme.colorScheme === "dark"
-                      ? theme.colors.dark[9]
-                      : "#FFF",
-                })}
-                className={clsx(amoled && "bg-black")}
-                p={conversationOpen ? "md" : 0}
-                withBorder={conversationOpen}
-              >
-                <AnimatePresence mode="wait" initial={false}>
-                  {conversationOpen ? (
-                    <motion.div
-                      initial={{ y: 20 }}
-                      animate={{ y: 0 }}
-                      exit={{
-                        y: 0,
-                      }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 500,
-                        damping: 30,
-                      }}
-                      key="conversation"
-                    >
-                      <div
-                        style={{
-                          height: 290,
-                          display: "flex",
-                          flexDirection: "column-reverse",
-                          overflowX: "hidden",
-                          overflowY: "auto",
-                        }}
-                        ref={messagesRef}
-                        className="dark:scrollbar-track-zinc-900/20 dark:scrollbar-thumb-zinc-700 scrollbar-track-gray-100/20 scrollbar-thumb-gray-500 scrollbar-thumb-rounded-md scrollbar-thin"
+                      <form
+                        onSubmit={messageForm.onSubmit((values) =>
+                          sanitizeInappropriateContent(values.message, () =>
+                            sendMessage(values)
+                          )
+                        )}
                       >
-                        <Stack spacing={12}>
-                          {conversationDataLoading ? (
-                            <div className="w-full flex justify-center">
-                              <LoadingIndicator />
-                            </div>
-                          ) : (
-                            conversationData &&
-                            conversationData
-                              .sort(
-                                (a, b) =>
-                                  new Date(a.createdAt).getTime() -
-                                  new Date(b.createdAt).getTime()
-                              )
-                              .map((message) => {
-                                const currentTimestamp = new Date(
-                                  message.createdAt
-                                ).getTime();
-                                const timeDiff = previousTimestamp
-                                  ? currentTimestamp - previousTimestamp
-                                  : 0;
-                                const timeDiffHrs = Math.floor(
-                                  timeDiff / (1000 * 60 * 60)
-                                );
-                                let dividerLabel = null;
-                                if (timeDiffHrs >= 8) {
-                                  const formattedTimestamp = new Date(
-                                    currentTimestamp
-                                  ).toLocaleString(undefined, {
-                                    weekday: "long",
-                                    year: "numeric",
-                                    month: "numeric",
-                                    day: "numeric",
-                                  });
-                                  dividerLabel = formattedTimestamp;
-                                }
-                                previousTimestamp = currentTimestamp;
-                                return (
-                                  <>
-                                    {dividerLabel && (
-                                      <div className="flex justify-center items-center mt-2 pointer-events-none">
-                                        <Divider className="w-full" />
-                                        <div className="flex justify-center items-center gap-2 px-3 w-full">
-                                          <HiArrowSmDown className="text-dimmed whitespace-nowrap flex-nowrap" />
-                                          <Text
-                                            color="dimmed"
-                                            size="sm"
-                                            className="whitespace-nowrap flex-nowrap"
-                                          >
-                                            {dividerLabel}
-                                          </Text>
-                                        </div>
-                                        <Divider className="w-full" />
-                                      </div>
-                                    )}
-                                    <ChatMsg message={message} />
-                                  </>
-                                );
-                              })
-                          )}
-                          {!conversationDataLoading &&
-                            conversationData?.length === 0 && (
-                              <ModernEmptyState
-                                title="No messages"
-                                body="Send the first message to start a conversation."
-                              />
-                            )}
-                        </Stack>
-                      </div>
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      initial={{
-                        y: conversationOpen ? 20 : 0,
-                      }}
-                      animate={{ x: 0 }}
-                      exit={{
-                        y: conversationOpen ? 20 : 0,
-                      }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 500,
-                        damping: 30,
-                      }}
-                      key="friends"
-                      style={{
-                        height: 290,
-                        overflowX: "hidden",
-                        overflowY: "auto",
-                      }}
-                    >
-                      <Stack spacing={5} p={0}>
-                        {friends.map((friend) => (
-                          <ShadedButton
-                            key={friend.id}
-                            onClick={() => {
-                              setConversating(friend);
-                              setConversationOpen(true);
-                              setCurrentConversation(friend.id);
-                            }}
-                            className="rounded-none px-4 dark:hover:bg-zinc-900/50 group flex justify-between"
-                          >
-                            <div className="flex items-start gap-2">
-                              {unreadMessages[friend.id] > 0 ? (
-                                <Badge
-                                  variant="filled"
-                                  color="red"
-                                  sx={{ width: 24, height: 24, padding: 0 }}
-                                  className="mr-2"
+                        <TextInput
+                          placeholder="Type a message..."
+                          className="flex-1 h-12 items-center flex justify-between w-full"
+                          classNames={{
+                            wrapper: "w-full flex",
+                          }}
+                          variant="unstyled"
+                          sx={(theme) => ({
+                            lineHeight: "0px",
+                            "& input": {
+                              paddingLeft: theme.spacing.sm,
+                              paddingRight: theme.spacing.md,
+                              width: "calc(100% - 20px)",
+                            },
+                            "&::placeholder": {
+                              paddingLeft: theme.spacing.sm,
+                              paddingRight: theme.spacing.md,
+                            },
+                          })}
+                          autoComplete="off"
+                          ref={messageInputRef}
+                          rightSection={
+                            <>
+                              <div
+                                ref={pickerRef}
+                                style={{ position: "relative" }}
+                                className="pr-2"
+                              >
+                                <Box
+                                  style={{
+                                    position: "absolute",
+                                    right: 0,
+                                    bottom: 50,
+                                  }}
                                 >
-                                  {String(unreadMessages[friend.id])}
-                                </Badge>
-                              ) : (
-                                <Avatar
-                                  src={getMediaUrl(friend.avatarUri)}
-                                  size={24}
-                                  className="mr-2 rounded-full"
-                                />
-                              )}
-
-                              <div className="flex flex-col">
-                                <div className="flex items-center gap-1">
-                                  {friend.verified && (
-                                    <Verified className="w-[14px] h-[14px]" />
-                                  )}
-                                  <Text size="sm" mr={6} weight={500}>
-                                    {friend.alias || friend.username}
-                                  </Text>
-                                  {isUserOnline(friend) && (
-                                    <Dot
-                                      color="green"
-                                      classNames={{ dot: "w-[6px] h-[6px]" }}
+                                  {picker && (
+                                    <Picker
+                                      navPosition="bottom"
+                                      native
+                                      onEmojiSelect={(emoji: any) => {
+                                        messageForm.setFieldValue(
+                                          "message",
+                                          messageForm.values.message +
+                                            emoji.native
+                                        );
+                                      }}
+                                      previewPosition="none"
+                                      autoFocus
                                     />
                                   )}
-                                </div>
-                                <Text size="sm" color="dimmed">
-                                  @{friend.username}
-                                </Text>
+                                </Box>
+                                <ActionIcon onClick={() => setPicker(!picker)}>
+                                  <HiEmojiHappy />
+                                </ActionIcon>
                               </div>
-                            </div>
-                            <HiArrowRight className="text-dimmed group-hover:opacity-100 transition-all opacity-0" />
-                          </ShadedButton>
-                        ))}
-                        {friends.length === 0 && (
-                          <div className="flex justify-center">
-                            <div className="flex items-center gap-2 p-8">
-                              <HiXCircle size={12} className="flex-shrink-0" />
-                              <Text size="sm" color="dimmed">
-                                No friends found
-                              </Text>
-                            </div>
-                          </div>
-                        )}
-                      </Stack>
-                    </motion.div>
+                            </>
+                          }
+                          {...messageForm.getInputProps("message")}
+                        />
+                      </form>
+                    </Card.Section>
                   )}
-                </AnimatePresence>
-              </Card.Section>
-              {conversationOpen && (
-                <Card.Section
-                  sx={(theme) => ({
-                    backgroundColor:
-                      theme.colorScheme === "dark"
-                        ? theme.colors.dark[9]
-                        : "#FFF",
-                  })}
-                  className={clsx(amoled && "bg-black")}
-                >
-                  <form
-                    onSubmit={messageForm.onSubmit((values) =>
-                      sanitizeInappropriateContent(values.message, () =>
-                        sendMessage(values)
-                      )
-                    )}
-                  >
-                    <TextInput
-                      placeholder="Type a message..."
-                      className="flex-1 h-12 items-center flex justify-between w-full"
-                      classNames={{
-                        wrapper: "w-full flex",
-                      }}
-                      variant="unstyled"
-                      sx={(theme) => ({
-                        lineHeight: "0px",
-                        "& input": {
-                          paddingLeft: theme.spacing.sm,
-                          paddingRight: theme.spacing.md,
-                          width: "calc(100% - 20px)",
-                        },
-                        "&::placeholder": {
-                          paddingLeft: theme.spacing.sm,
-                          paddingRight: theme.spacing.md,
-                        },
-                      })}
-                      autoComplete="off"
-                      ref={messageInputRef}
-                      rightSection={
-                        <>
-                          <div
-                            ref={pickerRef}
-                            style={{ position: "relative" }}
-                            className="pr-2"
-                          >
-                            <Box
-                              style={{
-                                position: "absolute",
-                                right: 0,
-                                bottom: 50,
-                              }}
-                            >
-                              {picker && (
-                                <Picker
-                                  navPosition="bottom"
-                                  native
-                                  onEmojiSelect={(emoji: any) => {
-                                    messageForm.setFieldValue(
-                                      "message",
-                                      messageForm.values.message + emoji.native
-                                    );
-                                  }}
-                                  previewPosition="none"
-                                  autoFocus
-                                />
-                              )}
-                            </Box>
-                            <ActionIcon onClick={() => setPicker(!picker)}>
-                              <HiEmojiHappy />
-                            </ActionIcon>
-                          </div>
-                        </>
-                      }
-                      {...messageForm.getInputProps("message")}
-                    />
-                  </form>
-                </Card.Section>
+                </>
               )}
             </motion.div>
           )}
