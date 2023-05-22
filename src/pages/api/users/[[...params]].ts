@@ -1,5 +1,6 @@
 import {
   NotificationType,
+  Prisma,
   PrivacyPreferences,
   ReceiveNotification,
   TransactionType,
@@ -1063,22 +1064,26 @@ class UserRouter {
     };
   }
 
-  @Get("/@me/statusposts")
+  @Get("/@me/statusposts/:page")
   @Authorized()
-  public async getFriendsStatusPosts(@Account() user: User) {
-    const friends = await prisma.user.findMany({
-      where: {
-        following: {
-          some: {
-            id: user.id,
-          },
-        },
-        followers: {
-          some: {
-            id: user.id,
-          },
+  public async getFriendsStatusPosts(
+    @Account() user: User,
+    @Param("page") page: string
+  ) {
+    const where: Prisma.UserWhereInput = {
+      following: {
+        some: {
+          id: user.id,
         },
       },
+      followers: {
+        some: {
+          id: user.id,
+        },
+      },
+    };
+    const friends = await prisma.user.findMany({
+      where,
       ...nonCurrentUserSelect,
     });
 
@@ -1095,12 +1100,21 @@ class UserRouter {
         user: nonCurrentUserSelect,
       },
       take: 5,
+      skip: 5 * (Number(page) - 1),
+    });
+    const count = await prisma.statusPosts.count({
+      where: {
+        userId: {
+          in: friends.map((f) => f.id).concat(user.id),
+        },
+      },
     });
 
     return {
       success: true,
       message: "Friends status posts retrieved successfully.",
       statusPosts,
+      pages: Math.ceil(count / 5),
     };
   }
 

@@ -5,6 +5,7 @@ import {
   Loader,
   Menu,
   Modal,
+  Pagination,
   Stack,
   Text,
   useMantineColorScheme,
@@ -43,6 +44,8 @@ const FeedWidget: React.FC = () => {
   const [reportOpened, setReportOpened] = useState(false);
   const [reportUser, setReportUser] = useState<NonUser>();
   const [newPost, setNewPost] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pages, setPages] = useState(1);
   const form = useForm<{ status: string }>({
     initialValues: {
       status: "",
@@ -78,7 +81,7 @@ const FeedWidget: React.FC = () => {
 
   const getStatusPosts = async () => {
     setLoading(true);
-    await fetch("/api/users/@me/statusposts", {
+    await fetch("/api/users/@me/statusposts/" + page, {
       headers: {
         Authorization: String(getCookie(".frameworksession")),
       },
@@ -87,6 +90,7 @@ const FeedWidget: React.FC = () => {
       .then((res) => {
         if (res.success) {
           setStatusPosts(res.statusPosts);
+          setPages(res.pages);
         }
       })
       .finally(() => setLoading(false));
@@ -94,7 +98,7 @@ const FeedWidget: React.FC = () => {
 
   useEffect(() => {
     getStatusPosts();
-  }, []);
+  }, [page]);
 
   return (
     <>
@@ -154,6 +158,15 @@ const FeedWidget: React.FC = () => {
           </Button>
         }
       />
+      <div className="flex items-center justify-center text-center mb-4">
+        <Pagination
+          radius="md"
+          withEdges
+          total={pages}
+          page={page}
+          onChange={setPage}
+        />
+      </div>
       {loading ? (
         <ShadedCard className="flex items-center justify-center py-8">
           <Loader />

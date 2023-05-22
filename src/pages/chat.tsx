@@ -18,6 +18,7 @@ import { useHotkeys } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext } from "next";
+import { useRouter } from "next/router";
 import { useContext, useEffect, useRef, useState } from "react";
 import { HiArrowSmDown, HiChatAlt2, HiEmojiHappy } from "react-icons/hi";
 import ChatMsg from "../components/Chat/ChatMessage";
@@ -31,6 +32,7 @@ import Verified from "../components/Verified";
 import SocketContext from "../contexts/Socket";
 import SidebarTabNavigation from "../layouts/SidebarTabNavigation";
 import useChatStore from "../stores/useChatStore";
+import useFastFlags from "../stores/useFastFlags";
 import usePreferences from "../stores/usePreferences";
 import authorizedRoute from "../util/auth";
 import { useOnClickOutside } from "../util/click-outside";
@@ -50,6 +52,7 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
   const mobile = useMediaQuery("768");
   const { currentConversation, setCurrentConversation } = useChatStore();
   const { preferences } = usePreferences();
+  const { flags } = useFastFlags();
   const [friends, setFriends] = useState<NonUser[]>([]);
   const [friendsSearch, setFriendsSearch] = useState("");
   const [conversationOpen, setConversationOpen] = useState(false);
@@ -80,6 +83,7 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
   const socket = useContext(SocketContext);
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
   const messagesRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
   let previousTimestamp: number | null = null;
 
   useOnClickOutside(pickerRef, () => setPicker(false));
@@ -205,6 +209,9 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
   }, [conversating]);
 
   useEffect(() => {
+    if (flags["disabled-chat"]) {
+      router.push("/503");
+    }
     if (socket) {
       socket?.on("@user/chat", (data) => {
         if (!document.hasFocus() && preferences["@chat/bell"] && audio) {
@@ -302,7 +309,7 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
             className="rounded-md"
             label={
               <div className="flex items-center gap-1">
-                {friend.verified && <Verified className="w-[15px] h-[15px]" />}
+                {friend.verified && <Verified className="w-[14px] h-[14px]" />}
                 <span>{friend.username}</span>
               </div>
             }
