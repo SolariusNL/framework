@@ -6,9 +6,11 @@ import {
   HiUserCircle,
   HiViewList,
 } from "react-icons/hi";
+import { IconType } from "react-icons/lib";
 import Framework from "../components/Framework";
 import IntegratedTabs from "../components/Framework/IntegratedTabs";
 import WrenchScrewdriver from "../icons/WrenchScrewdriver";
+import { Fw } from "../util/fw";
 import { User } from "../util/prisma-types";
 
 type DeveloperLayoutProps = {
@@ -18,12 +20,27 @@ type DeveloperLayoutProps = {
   children: React.ReactNode;
 };
 
-const tabs = [
+const tabs: Array<{
+  0: React.FC;
+  1: string;
+  2: string;
+  3?: Fw.FeatureIdentifier;
+}> = [
   [HiServer, "/developer/servers", "Servers"],
-  [HiGlobe, "/developer/domains", "Domains"],
-  [HiKey, "/developer/api-keys", "API Keys"],
-  [WrenchScrewdriver, "/developer/oauth2", "OAuth2 Applications"],
-  [HiUserCircle, "/developer/profile", "Developer Profile"],
+  [HiGlobe, "/developer/domains", "Domains", Fw.FeatureIdentifier.Domains],
+  [HiKey, "/developer/api-keys", "API Keys", Fw.FeatureIdentifier.APIKeys],
+  [
+    WrenchScrewdriver,
+    "/developer/oauth2",
+    "OAuth2 Applications",
+    Fw.FeatureIdentifier.OAuth2,
+  ],
+  [
+    HiUserCircle,
+    "/developer/profile",
+    "Developer Profile",
+    Fw.FeatureIdentifier.DevProfiles,
+  ],
   [HiViewList, "/developer/activity", "Activity"],
 ];
 
@@ -33,6 +50,22 @@ const Developer: React.FC<DeveloperLayoutProps> = ({
   description,
   children,
 }) => {
+  const Tab = ({
+    href,
+    label,
+    icon: Icon,
+  }: {
+    href: string;
+    label: string;
+    icon: IconType;
+  }) => (
+    <Link href={String(href)} key={String(label)} passHref>
+      <IntegratedTabs.Tab icon={<Icon />} href={String(href)}>
+        {String(label)}
+      </IntegratedTabs.Tab>
+    </Link>
+  );
+
   return (
     <Framework
       user={user}
@@ -42,13 +75,22 @@ const Developer: React.FC<DeveloperLayoutProps> = ({
       activeTab="none"
       integratedTabs={
         <IntegratedTabs>
-          {tabs.map(([Icon, href, label]) => (
-            <Link href={String(href)} key={String(label)} passHref>
-              <IntegratedTabs.Tab icon={<Icon />} href={String(href)}>
-                {String(label)}
-              </IntegratedTabs.Tab>
-            </Link>
-          ))}
+          {tabs
+            .filter((tab) => {
+              if (tab[3]) {
+                return Fw.Feature.enabled(tab[3]);
+              } else {
+                return true;
+              }
+            })
+            .map((tab) => (
+              <Tab
+                href={tab[1]}
+                label={tab[2]}
+                icon={tab[0] as IconType}
+                key={tab[1]}
+              />
+            ))}
         </IntegratedTabs>
       }
     >
