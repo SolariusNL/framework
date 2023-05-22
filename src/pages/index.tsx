@@ -18,7 +18,6 @@ import SubscriptionWidget from "../components/Home/SubscriptionWidget";
 import UpdatesWidget from "../components/Home/UpdatesWidget";
 import SidebarTabNavigation from "../layouts/SidebarTabNavigation";
 import authorizedRoute from "../util/auth";
-import { Fw } from "../util/fw";
 import { User } from "../util/prisma-types";
 
 interface HomeProps {
@@ -112,7 +111,6 @@ const Home: NextPage<HomeProps> = ({ user }) => {
       modernTitle={`${timeMessage}, ${user.username}!`}
       modernSubtitle="Your experience at a glance"
     >
-      {JSON.stringify(Fw.Feature.enabled(Fw.FeatureIdentifier.Domains))}
       <SidebarTabNavigation>
         <SidebarTabNavigation.Sidebar>
           {widgets.map((widget) => (
