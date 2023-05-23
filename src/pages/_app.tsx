@@ -422,6 +422,13 @@ const Framework = (
                     },
                   }),
                 },
+                Anchor: {
+                  styles: {
+                    root: {
+                      pointerEvents: "all",
+                    },
+                  },
+                },
                 Select: {
                   styles: (theme: MantineTheme) => ({
                     item: {

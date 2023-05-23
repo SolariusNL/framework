@@ -11,6 +11,7 @@ import { HiClipboard, HiDotsHorizontal, HiTrash } from "react-icons/hi";
 import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
 import usePreferences from "../../stores/usePreferences";
 import clsx from "../../util/clsx";
+import { Fw } from "../../util/fw";
 import { ChatMessage } from "../../util/prisma-types";
 import MessageContextMenu, { deleteMessage } from "./MessageContextMenu";
 
@@ -104,7 +105,7 @@ const ChatMessage: FC<ChatMessageProps> = ({ message, noActions }) => {
             style={{ wordBreak: "break-word" }}
             className="pointer-events-none dark:text-gray-300 text-black"
           >
-            {message.content}
+            {Fw.StringParser.t(message.content).bold().parse()}
           </Text>
         </Paper>
       </div>
@@ -137,7 +138,7 @@ const ChatMessage: FC<ChatMessageProps> = ({ message, noActions }) => {
             style={{ wordBreak: "break-word" }}
             className="pointer-events-none dark:text-gray-300 text-black"
           >
-            {message.content}
+            {Fw.StringParser.t(message.content).bold().parse()}
           </Text>
         </Paper>
         {!noActions && actionMenu}

@@ -1,11 +1,13 @@
 import { Anchor } from "@mantine/core";
 import React from "react";
+import { Fw } from "../fw";
 
 type LinkReplacement = {
   text: string;
   url: string;
   isBold?: boolean;
   cleanText?: string;
+  shouldWarn?: boolean;
 };
 
 type BoldReplacement = {
@@ -36,7 +38,7 @@ export class StringParser {
     return this;
   }
 
-  links(): StringParser {
+  links(options: { warn?: boolean } = {}): StringParser {
     const linkRegex =
       /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi;
     let match;
@@ -44,7 +46,7 @@ export class StringParser {
     while ((match = linkRegex.exec(this.text)) !== null) {
       const url = match[0];
       const text = match[0];
-      this.replacements.push({ text, url });
+      this.replacements.push({ text, url, shouldWarn: options.warn });
     }
 
     return this;
@@ -54,9 +56,9 @@ export class StringParser {
     const parsedElements: React.ReactNode[] = [];
     let lastIndex = 0;
 
-    const sortedReplacements = this.replacements.sort((a, b) => {
-      return this.text.indexOf(a.text) - this.text.indexOf(b.text);
-    });
+    const sortedReplacements = this.replacements.sort(
+      (a, b) => this.text.indexOf(a.text) - this.text.indexOf(b.text)
+    );
 
     sortedReplacements.forEach((replacement) => {
       const startIndex = this.text.indexOf(replacement.text, lastIndex);
@@ -66,43 +68,43 @@ export class StringParser {
         parsedElements.push(this.text.slice(lastIndex, startIndex));
 
         if ("url" in replacement) {
-          if ("isBold" in replacement) {
-            const { cleanText, isBold } = replacement;
-            const element = isBold ? (
-              <span className="font-semibold" key={startIndex}>
-                <Anchor
-                  href={replacement.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {cleanText}
-                </Anchor>
-              </span>
-            ) : (
+          const { url, text, shouldWarn } = replacement;
+          const AnchorElement: React.FC<{ replacement: LinkReplacement }> = (
+            props
+          ) => (
+            <span key={startIndex}>
               <Anchor
-                href={replacement.url}
+                href={shouldWarn ? undefined : url}
                 target="_blank"
                 rel="noopener noreferrer"
-                key={startIndex}
+                onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
+                  if (shouldWarn) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    Fw.Links.externalWarning(url);
+                  }
+                }}
               >
-                {replacement.text}
+                {text}
               </Anchor>
+            </span>
+          );
+
+          if ("isBold" in replacement) {
+            const { isBold } = replacement;
+            const element = isBold ? (
+              <span className="font-semibold" key={startIndex}>
+                <AnchorElement replacement={replacement} />
+              </span>
+            ) : (
+              <AnchorElement replacement={replacement} />
             );
 
             parsedElements.push(element);
           } else {
-            parsedElements.push(
-              <Anchor
-                key={startIndex}
-                href={replacement.url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {replacement.text}
-              </Anchor>
-            );
+            parsedElements.push(<AnchorElement replacement={replacement} />);
           }
-        } else {
+        } else if ("isBold" in replacement) {
           const { cleanText, isBold } = replacement;
           const element = isBold ? (
             <span className="font-semibold" key={startIndex}>

@@ -1,8 +1,8 @@
-import { Anchor, Sx, Text, TypographyStylesProvider } from "@mantine/core";
-import { openConfirmModal } from "@mantine/modals";
+import { Sx, TypographyStylesProvider } from "@mantine/core";
 import { marked } from "marked";
 import sanitize from "sanitize-html";
 import clsx from "../util/clsx";
+import { Fw } from "../util/fw";
 
 export const parse = (markdown: string) => {
   return marked(markdown || "", {
@@ -37,25 +37,7 @@ export const parse = (markdown: string) => {
                 ) as HTMLAnchorElement;
                 if (target?.contains(e.target as Node)) {
                   e.preventDefault();
-                  openConfirmModal({
-                    title: "Confirm link",
-                    children: (
-                      <>
-                        <div className="flex justify-center flex-col gap-2 text-center">
-                          <Text size="sm" color="dimmed">
-                            Are you sure you want to visit this link?
-                          </Text>
-                          <Anchor href={href} target="_blank">
-                            {href}
-                          </Anchor>
-                        </div>
-                      </>
-                    ),
-                    labels: { cancel: "Cancel", confirm: "Open link" },
-                    onConfirm: () => {
-                      window.open(href, "_blank");
-                    },
-                  });
+                  Fw.Links.externalWarning(href);
                 }
               };
 
