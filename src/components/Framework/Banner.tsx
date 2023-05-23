@@ -2,6 +2,7 @@ import { Box, Container, Text, ThemeIcon } from "@mantine/core";
 import { FC, useEffect, useState } from "react";
 import { HiSpeakerphone } from "react-icons/hi";
 import useFastFlags from "../../stores/useFastFlags";
+import { Fw } from "../../util/fw";
 
 const Banner: FC = () => {
   const { flags } = useFastFlags();
@@ -20,13 +21,15 @@ const Banner: FC = () => {
 
   return (
     <>
-      <Box p="sm" className="bg-red-500 text-white">
+      <Box p="sm" className="dark:bg-red-500/50 bg-red-400 text-white">
         <Container className="flex items-center">
-          <ThemeIcon color="yellow" size={28} mr={16}>
+          <ThemeIcon color="red" size={28} mr={16}>
             <HiSpeakerphone />
           </ThemeIcon>
 
-          <Text weight={500}>{String(flags.banner.message)}</Text>
+          <Text>
+            {Fw.StringParser.t(banner.message).bold().links().parse()}
+          </Text>
         </Container>
       </Box>
     </>

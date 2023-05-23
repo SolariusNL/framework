@@ -40,8 +40,8 @@ import useFastFlags from "../stores/useFastFlags";
 import usePreferences from "../stores/usePreferences";
 import { useOnClickOutside } from "../util/click-outside";
 import clsx from "../util/clsx";
+import { Fw } from "../util/fw";
 import getMediaUrl from "../util/get-media";
-import isUserOnline from "../util/online";
 import { ChatMessage, NonUser } from "../util/prisma-types";
 import { getMyFriends } from "../util/universe/friends";
 import ChatMsg from "./Chat/ChatMessage";
@@ -389,7 +389,7 @@ const Chat: React.FC = () => {
                               passHref
                             >
                               <div className="flex gap-2 items-center group cursor-pointer">
-                                {isUserOnline(
+                                {Fw.Activity.online(
                                   conversating as Pick<User, "lastSeen">
                                 ) && (
                                   <Dot
@@ -630,7 +630,7 @@ const Chat: React.FC = () => {
                                       <Text size="sm" mr={6} weight={500}>
                                         {friend.alias || friend.username}
                                       </Text>
-                                      {isUserOnline(friend) && (
+                                      {Fw.Activity.online(friend) && (
                                         <Dot
                                           color="green"
                                           classNames={{

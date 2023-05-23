@@ -211,10 +211,10 @@ const CurrencyMenu = ({
                 <div
                   key={item.label}
                   className={clsx(
-                    "p-4 dark:bg-mantine-paper-dark bg-gray-100 hover:bg-gray-200 dark:hover:bg-mantine-paper-dark/50 cursor-pointer",
+                    "p-4 dark:bg-mantine-paper-dark bg-gray-100 hover:bg-gray-200 dark:hover:bg-mantine-paper-dark/90 cursor-pointer",
                     "transition-all flex items-center justify-center text-center",
                     i === 0 ? "rounded-t-md" : "rounded-b-md",
-                    item.disabled && "opacity-50 pointer-events-none"
+                    item.disabled && "opacity-20 pointer-events-none"
                   )}
                   onClick={() => {
                     item.onClick();

@@ -36,9 +36,9 @@ import useFastFlags from "../stores/useFastFlags";
 import usePreferences from "../stores/usePreferences";
 import authorizedRoute from "../util/auth";
 import { useOnClickOutside } from "../util/click-outside";
+import { Fw } from "../util/fw";
 import getMediaUrl from "../util/get-media";
 import useMediaQuery from "../util/media-query";
-import isUserOnline from "../util/online";
 import { ChatMessage, NonUser, User } from "../util/prisma-types";
 import { getRelativeTime } from "../util/relative-time";
 import { getMyFriends } from "../util/universe/friends";
@@ -314,7 +314,7 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
               </div>
             }
             description={
-              isUserOnline(friend)
+              Fw.Activity.online(friend)
                 ? "Currently online"
                 : `Last seen ${getRelativeTime(new Date(friend.lastSeen))}`
             }
@@ -410,7 +410,7 @@ const Chat: React.FC<ChatProps> = ({ user }) => {
                       <Owner user={conversating!} />
                     </div>
                     <Text size="sm" color="dimmed" weight="500">
-                      {isUserOnline(conversating!)
+                      {Fw.Activity.online(conversating!)
                         ? "Currently online"
                         : ` Last seen ${getRelativeTime(
                             new Date(conversating?.lastSeen!)
