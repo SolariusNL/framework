@@ -315,7 +315,7 @@ const Framework = (
                 },
                 Avatar: {
                   classNames: {
-                    root: "border-solid border-[0.5px] border-gray-200 dark:border-gray-200/5",
+                    root: "border-solid border-[0.5px] border-gray-200 dark:border-gray-100/30",
                   },
                 },
                 Tabs: {

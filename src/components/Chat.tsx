@@ -40,6 +40,7 @@ import {
   HiCog,
   HiEmojiHappy,
   HiLogout,
+  HiPencil,
   HiPlus,
   HiXCircle,
 } from "react-icons/hi";
@@ -137,12 +138,14 @@ const Chat: React.FC = () => {
   const [createConvoOpened, setCreateConvoOpened] = useState(false);
   const [conversationDetailsOpened, setConversationDetailsOpened] =
     useState(false);
+  const [changeNameModalOpened, setChangeNameModalOpened] = useState(false);
   const messageInputRef = useRef<HTMLInputElement>(null);
   const [picker, setPicker] = useState(false);
   const pickerRef = useRef<HTMLDivElement>(null);
   const socket = useContext(SocketContext);
   const messagesRef = useRef<HTMLDivElement>(null);
   const [audio, setAudio] = useState<HTMLAudioElement | null>();
+  const [newGroupName, setNewGroupName] = useState(conversation?.name ?? "");
   const { user } = useAuthorizedUserStore();
   let previousTimestamp: number | null = null;
 
@@ -350,6 +353,15 @@ const Chat: React.FC = () => {
           }
         }
       );
+
+      socket?.on(
+        "@user/chat/conversation/name-changed",
+        (data: { id: string }) => {
+          if (currentConversation === data.id) {
+            fetchConversations();
+          }
+        }
+      );
     }
 
     return () => {
@@ -358,6 +370,7 @@ const Chat: React.FC = () => {
       socket?.off("@user/chat/delete");
       socket?.off("@user/chat/conversation");
       socket?.off("@user/chat/conversation/owner-changed");
+      socket?.off("@user/chat/conversation/name-changed");
     };
   }, [socket, currentConversation]);
 
@@ -368,7 +381,7 @@ const Chat: React.FC = () => {
       opened={createConvoOpened}
       onClose={() => setCreateConvoOpened(false)}
       title="Create a new conversation"
-      className={useMantineColorScheme().colorScheme}
+      className={colorScheme}
     >
       <form
         onSubmit={createConvoForm.onSubmit(
@@ -509,7 +522,7 @@ const Chat: React.FC = () => {
           confirmProps: {
             color: "red",
           },
-          onCancel() {
+          onClose() {
             setConversationDetailsOpened(true);
           },
           async onConfirm() {
@@ -539,12 +552,100 @@ const Chat: React.FC = () => {
       Leave
     </Button>
   );
+  const ChangeNameButton = (
+    <Button
+      leftIcon={<HiPencil />}
+      fullWidth
+      onClick={() => {
+        setConversationDetailsOpened(false);
+        setNewGroupName(conversation?.name ?? "");
+        setChangeNameModalOpened(true);
+      }}
+    >
+      Edit
+    </Button>
+  );
+  const ChangeNameModal = (
+    <Modal
+      opened={changeNameModalOpened}
+      onClose={() => {
+        setChangeNameModalOpened(false);
+        setConversationDetailsOpened(true);
+      }}
+      title="Change conversation name"
+      className={colorScheme}
+    >
+      <>
+        <Text size="sm" color="dimmed">
+          Please provide a new name for this conversation.
+        </Text>
+        <TextInput
+          classNames={BLACK}
+          icon={<HiPencil />}
+          placeholder="Our group"
+          label="New conversation name"
+          description="Enter a new name for this conversation."
+          required
+          value={newGroupName}
+          mt="md"
+          mb="md"
+          onChange={(e) => {
+            setNewGroupName(e.currentTarget.value);
+          }}
+        />
+        {newGroupName.length > 64 || newGroupName.length === 0 ? (
+          <InlineError>
+            Name cannot be longer than 64 characters, and cannot be empty.
+          </InlineError>
+        ) : null}
+        <div className="flex justify-end gap-2 mt-4">
+          <Button
+            variant="default"
+            onClick={() => setChangeNameModalOpened(false)}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={async () => {
+              await fetchJson<IResponseBase>(
+                `/api/chat/conversation/${conversation?.id}/name`,
+                {
+                  method: "PATCH",
+                  auth: true,
+                  body: {
+                    name: newGroupName,
+                  },
+                }
+              ).then((res) => {
+                if (res.success) {
+                  fetchConversations();
+                  setConversation((prev) => ({
+                    ...prev!,
+                    name: newGroupName,
+                  }));
+                  showNotification({
+                    title: "Conversation name changed",
+                    message: `You have changed the name of this conversation to ${newGroupName}.`,
+                    icon: <HiCheckCircle />,
+                  });
+                  setChangeNameModalOpened(false);
+                }
+              });
+            }}
+            disabled={newGroupName.length > 64 || newGroupName.length === 0}
+          >
+            Change name
+          </Button>
+        </div>
+      </>
+    </Modal>
+  );
   const ConversationDetailsModal = (
     <Modal
       opened={conversationDetailsOpened}
       onClose={() => setConversationDetailsOpened(false)}
       title={conversation?.name}
-      className={useMantineColorScheme().colorScheme}
+      className={colorScheme}
     >
       {conversation && (
         <>
@@ -568,6 +669,7 @@ const Chat: React.FC = () => {
               </Text>
             </div>
           </div>
+          <Divider mt="lg" mb="lg" />
           <ScrollArea
             style={{
               maxHeight: 200,
@@ -582,7 +684,7 @@ const Chat: React.FC = () => {
                         participant.id !== user?.id && (
                           <ActionIcon
                             color="red"
-                            className="group-hover:opacity-100 opacity-0 transition-all"
+                            className="group-hover:opacity-100 md:opacity-0 opacity-100 transition-all"
                             onClick={async (e: React.MouseEvent) => {
                               e.preventDefault();
                               e.stopPropagation();
@@ -661,6 +763,7 @@ const Chat: React.FC = () => {
           {user?.id === conversation?.owner.id ? (
             <Button.Group>
               {LeaveButton}
+              {ChangeNameButton}
               <Button
                 leftIcon={<HiPlus />}
                 fullWidth
@@ -669,11 +772,16 @@ const Chat: React.FC = () => {
                   setConversationDetailsOpened(false);
                 }}
               >
-                Add user
+                Invite
               </Button>
             </Button.Group>
           ) : (
-            LeaveButton
+            <>
+              <Button.Group>
+                {LeaveButton}
+                {ChangeNameButton}
+              </Button.Group>
+            </>
           )}
         </>
       )}
@@ -687,6 +795,7 @@ const Chat: React.FC = () => {
         setAddUserOpened(false);
         setConversationDetailsOpened(true);
       }}
+      className={colorScheme}
     >
       <div className="flex justify-center items-center text-center mb-2">
         <Text size="sm" color="dimmed">
@@ -757,6 +866,7 @@ const Chat: React.FC = () => {
       {CreateConversationForm}
       {ConversationDetailsModal}
       {AddUserModal}
+      {ChangeNameModal}
       <motion.div
         className={colorScheme}
         initial={{

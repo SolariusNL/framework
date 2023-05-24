@@ -33,7 +33,7 @@ const InlineUserCard: FC<InlineUserCardProps> = ({
       </div>
       <div className="flex items-center gap-2">
         {props.rightSection}
-        <HiArrowRight className="text-dimmed group-hover:opacity-100 opacity-0 transition-all" />
+        <HiArrowRight className="text-dimmed group-hover:opacity-100 md:opacity-0 opacity-100 transition-all" />
       </div>
     </ShadedButton>
   );

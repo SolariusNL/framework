@@ -158,6 +158,7 @@ class GatewayRouter {
                   disconnect?: { id: number }[];
                 };
                 ownerId?: number;
+                name?: string;
               } = params.args?.data;
 
               if (
@@ -173,6 +174,10 @@ class GatewayRouter {
                 });
               } else if (before.ownerId !== result.ownerId) {
                 socket.emit("@user/chat/conversation/owner-changed", {
+                  id: result.id,
+                });
+              } else if (before.name !== result.name) {
+                socket.emit("@user/chat/conversation/name-changed", {
                   id: result.id,
                 });
               }

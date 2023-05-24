@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
 } from "@storyofams/next-api-decorators";
 import { z } from "zod";
@@ -516,6 +517,52 @@ class ChatRouter {
     return {
       success: true,
       message: "Left conversation",
+    };
+  }
+
+  @Patch("/conversation/:id/name")
+  @Authorized()
+  public async renameConversation(
+    @Account() user: User,
+    @Param("id") id: string,
+    @Body() body: unknown
+  ) {
+    const bodySchema = z.object({
+      name: z.string().min(1).max(60),
+    });
+
+    const { name } = bodySchema.parse(body);
+
+    const conversation = await prisma.chatConversation.findFirst({
+      where: {
+        id,
+        participants: {
+          some: {
+            id: user.id,
+          },
+        },
+      },
+    });
+
+    if (!conversation) {
+      return {
+        success: false,
+        message: "Conversation not found",
+      };
+    }
+
+    await prisma.chatConversation.update({
+      where: {
+        id,
+      },
+      data: {
+        name,
+      },
+    });
+
+    return {
+      success: true,
+      message: "Conversation renamed",
     };
   }
 }
