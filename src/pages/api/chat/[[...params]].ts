@@ -10,6 +10,7 @@ import {
 import { z } from "zod";
 import Authorized, { Account } from "../../../util/api/authorized";
 import registerAutomodHandler from "../../../util/automod";
+import { Fw } from "../../../util/fw";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
 import {
@@ -93,6 +94,14 @@ class ChatRouter {
         content,
       },
       select: chatMessageSelect,
+    });
+    await prisma.chatConversation.update({
+      where: {
+        id: String(id),
+      },
+      data: {
+        updatedAt: new Date(),
+      },
     });
 
     chatAutomod(user.id, content);
@@ -239,7 +248,7 @@ class ChatRouter {
     @Body() body: unknown
   ) {
     const bodySchema = z.object({
-      name: z.string().min(1).max(60),
+      name: z.string().max(32).default(""),
       participants: z.array(z.number()),
     });
 
@@ -283,7 +292,13 @@ class ChatRouter {
 
     await prisma.chatConversation.create({
       data: {
-        name,
+        name:
+          name !== ""
+            ? name
+            : Fw.Strings.limitLength(
+                users.map((u) => u.username).join(", ") + ", " + user.username,
+                32
+              ),
         ownerId: user.id,
         participants: {
           connect: [
@@ -528,7 +543,7 @@ class ChatRouter {
     @Body() body: unknown
   ) {
     const bodySchema = z.object({
-      name: z.string().min(1).max(60),
+      name: z.string().min(1).max(32),
     });
 
     const { name } = bodySchema.parse(body);

@@ -39,6 +39,7 @@ import {
   HiChevronUp,
   HiCog,
   HiEmojiHappy,
+  HiInformationCircle,
   HiLogout,
   HiPencil,
   HiPlus,
@@ -126,9 +127,8 @@ const Chat: React.FC = () => {
     },
     validate: {
       name: (value) => {
-        if (!value) return "Name cannot be empty";
-        if (value.length > 64)
-          return "Name cannot be longer than 64 characters";
+        if (value.length > 32)
+          return "Name cannot be longer than 32 characters";
       },
       participants: (value) => {
         if (value.length === 0) return "You must select at least one user";
@@ -323,6 +323,16 @@ const Chat: React.FC = () => {
               ? prev[data.conversationId] + 1
               : 1,
           }));
+          setConversations((prev) =>
+            prev.map((conversation) =>
+              conversation.id === data.conversationId
+                ? {
+                    ...conversation,
+                    updatedAt: new Date(),
+                  }
+                : conversation
+            )
+          );
         }
       });
 
@@ -407,94 +417,139 @@ const Chat: React.FC = () => {
             })
         )}
       >
-        <Stack spacing={8}>
+        <Stack spacing={"lg"}>
+          <div className="flex flex-col gap-2">
+            <Select
+              classNames={BLACK}
+              label="Participants"
+              description="Select the users you want to add to this conversation."
+              placeholder="Select users..."
+              required
+              itemComponent={UserItemComponent}
+              nothingFound="No users found"
+              data={friends
+                .filter(
+                  (friend) =>
+                    !createConvoForm.values.participants.includes(
+                      String(friend.id) as any
+                    )
+                )
+                .map((friend) => ({
+                  value: String(friend.id),
+                  label: friend.alias
+                    ? `${friend.alias} (@${friend.username})`
+                    : `@${friend.username}`,
+                  avatar: friend.avatarUri,
+                }))}
+              value={null}
+              onChange={(value) => {
+                createConvoForm.insertListItem("participants", value);
+              }}
+            />
+            <ShadedCard className="flex flex-col gap-3">
+              {createConvoForm.values.participants.length > 0 ? (
+                createConvoForm.values.participants.map((participant) => (
+                  <div
+                    className="flex justify-between items-center"
+                    key={participant}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Avatar
+                        src={getMediaUrl(
+                          friends.find(
+                            (friend) => friend.id === Number(participant)
+                          )!.avatarUri
+                        )}
+                        radius="xl"
+                        size={24}
+                      />
+                      <Text size="sm" weight={500}>
+                        {friends.find(
+                          (friend) => friend.id === Number(participant)
+                        )!.alias
+                          ? friends.find(
+                              (friend) => friend.id === Number(participant)
+                            )!.alias
+                          : friends.find(
+                              (friend) => friend.id === Number(participant)
+                            )!.username}
+                      </Text>
+                    </div>
+                    <CloseButton
+                      size="sm"
+                      onClick={() => {
+                        createConvoForm.removeListItem(
+                          "participants",
+                          createConvoForm.values.participants.indexOf(
+                            participant
+                          )
+                        );
+                      }}
+                    />
+                  </div>
+                ))
+              ) : (
+                <>
+                  <div className="w-full flex items-center justify-center text-center">
+                    <Text size="sm" color="dimmed">
+                      Select users to add to this conversation.
+                    </Text>
+                  </div>
+                </>
+              )}
+            </ShadedCard>
+          </div>
           <TextInput
             icon={<Rocket />}
             placeholder="Our group"
             label="Conversation name"
             description="Give your conversation a name."
-            required
             classNames={BLACK}
+            disabled={createConvoForm.values.participants.length === 1}
             {...createConvoForm.getInputProps("name")}
           />
-          <Select
-            classNames={BLACK}
-            label="Participants"
-            description="Select the users you want to add to this conversation."
-            placeholder="Select users..."
-            required
-            itemComponent={UserItemComponent}
-            nothingFound="No users found"
-            data={friends
-              .filter(
-                (friend) =>
-                  !createConvoForm.values.participants.includes(
-                    String(friend.id) as any
-                  )
-              )
-              .map((friend) => ({
-                value: String(friend.id),
-                label: friend.alias
-                  ? `${friend.alias} (@${friend.username})`
-                  : `@${friend.username}`,
-                avatar: friend.avatarUri,
-              }))}
-            value={null}
-            onChange={(value) => {
-              createConvoForm.insertListItem("participants", value);
-            }}
-          />
-          <ShadedCard className="flex flex-col gap-3">
-            {createConvoForm.values.participants.length > 0 ? (
-              createConvoForm.values.participants.map((participant) => (
-                <div
-                  className="flex justify-between items-center"
-                  key={participant}
-                >
-                  <div className="flex items-center gap-2">
-                    <Avatar
-                      src={getMediaUrl(
-                        friends.find(
-                          (friend) => friend.id === Number(participant)
-                        )!.avatarUri
-                      )}
-                      radius="xl"
-                      size={24}
-                    />
-                    <Text size="sm" weight={500}>
-                      {friends.find(
-                        (friend) => friend.id === Number(participant)
-                      )!.alias
-                        ? friends.find(
-                            (friend) => friend.id === Number(participant)
-                          )!.alias
-                        : friends.find(
-                            (friend) => friend.id === Number(participant)
-                          )!.username}
-                    </Text>
-                  </div>
-                  <CloseButton
-                    size="sm"
-                    onClick={() => {
-                      createConvoForm.removeListItem(
-                        "participants",
-                        createConvoForm.values.participants.indexOf(participant)
-                      );
-                    }}
-                  />
-                </div>
-              ))
-            ) : (
-              <>
-                <div className="w-full flex items-center justify-center text-center">
-                  <Text size="sm" color="dimmed">
-                    Select users to add to this conversation.
-                  </Text>
-                </div>
-              </>
+          {createConvoForm.values.participants.length === 1 && (
+            <InlineError
+              title="Direct message"
+              variant="info"
+              icon={<HiInformationCircle />}
+            >
+              Direct messages cannot have a name, and will be named after the
+              two members of the conversation.
+            </InlineError>
+          )}
+          {createConvoForm.values.participants.length === 1 &&
+            conversations.find(
+              (conversation) =>
+                conversation.participants.length === 2 &&
+                conversation.participants.find(
+                  (participant) =>
+                    participant.id ===
+                    Number(createConvoForm.values.participants[0])
+                )
+            ) && (
+              <InlineError title="Conversation already exists" variant="error">
+                You already have a direct message with this user.
+              </InlineError>
             )}
-          </ShadedCard>
-          <Button mt="md" type="submit" fullWidth size="lg">
+          <Button
+            mt="md"
+            type="submit"
+            fullWidth
+            size="lg"
+            disabled={
+              createConvoForm.values.participants.length === 1 &&
+              conversations.find(
+                (conversation) =>
+                  conversation.participants.length === 2 &&
+                  conversation.participants.find(
+                    (participant) =>
+                      participant.id ===
+                      Number(createConvoForm.values.participants[0])
+                  )
+              ) !== undefined
+            }
+          >
             Create group
           </Button>
         </Stack>
@@ -596,9 +651,9 @@ const Chat: React.FC = () => {
             setNewGroupName(e.currentTarget.value);
           }}
         />
-        {newGroupName.length > 64 || newGroupName.length === 0 ? (
+        {newGroupName.length > 32 || newGroupName.length === 0 ? (
           <InlineError>
-            Name cannot be longer than 64 characters, and cannot be empty.
+            Name cannot be longer than 32 characters, and cannot be empty.
           </InlineError>
         ) : null}
         <div className="flex justify-end gap-2 mt-4">
@@ -635,7 +690,7 @@ const Chat: React.FC = () => {
                 }
               });
             }}
-            disabled={newGroupName.length > 64 || newGroupName.length === 0}
+            disabled={newGroupName.length > 32 || newGroupName.length === 0}
           >
             Change name
           </Button>
@@ -652,25 +707,23 @@ const Chat: React.FC = () => {
     >
       {conversation && (
         <>
-          <div className="grid grid-cols-2 gap-2 mb-5">
-            <div>
-              <Text size="sm" color="dimmed" weight={500} mb="sm">
-                Owner
-              </Text>
-              <Owner user={conversation?.owner!} />
-            </div>
-            <div>
-              <Text size="sm" color="dimmed" weight={500} mb="sm">
-                Participants
-              </Text>
-              <Text>
-                {conversation?.participants.length}{" "}
-                {Fw.Strings.pluralize(
-                  conversation?.participants.length,
-                  "participant"
-                )}
-              </Text>
-            </div>
+          <div className="mb-6">
+            <Text size="sm" color="dimmed" weight={500} mb="sm">
+              Owner
+            </Text>
+            <Owner user={conversation?.owner!} />
+          </div>
+          <div>
+            <Text size="sm" color="dimmed" weight={500} mb="sm">
+              Participants
+            </Text>
+            <Text>
+              {conversation?.participants.length}{" "}
+              {Fw.Strings.pluralize(
+                conversation?.participants.length,
+                "participant"
+              )}
+            </Text>
           </div>
           <Divider mt="lg" mb="lg" />
           <ScrollArea
@@ -684,6 +737,7 @@ const Chat: React.FC = () => {
                   rightSection={
                     <>
                       {user?.id === conversation?.owner.id &&
+                        conversation.participants.length > 2 &&
                         participant.id !== user?.id && (
                           <ActionIcon
                             color="red"
@@ -735,7 +789,7 @@ const Chat: React.FC = () => {
                                     }
                                   });
                                 },
-                                onClose() {
+                                onCancel() {
                                   setConversationDetailsOpened(true);
                                 },
                               });
@@ -751,6 +805,7 @@ const Chat: React.FC = () => {
                 />
               ))}
               {conversation?.participants.length < 10 &&
+                conversation?.participants.length > 2 &&
                 conversation?.owner.id === user?.id && (
                   <div className="p-2 text-center">
                     <Text size="sm" weight={500} color="dimmed">
@@ -761,29 +816,32 @@ const Chat: React.FC = () => {
             </div>
           </ScrollArea>
 
-          <Divider mt="lg" mb="lg" />
-
-          {user?.id === conversation?.owner.id ? (
-            <Button.Group>
-              {LeaveButton}
-              {ChangeNameButton}
-              <Button
-                leftIcon={<HiPlus />}
-                fullWidth
-                onClick={() => {
-                  setAddUserOpened(true);
-                  setConversationDetailsOpened(false);
-                }}
-              >
-                Invite
-              </Button>
-            </Button.Group>
-          ) : (
+          {conversation?.participants.length > 2 && (
             <>
-              <Button.Group>
-                {LeaveButton}
-                {ChangeNameButton}
-              </Button.Group>
+              <Divider mt="lg" mb="lg" />
+              {user?.id === conversation?.owner.id ? (
+                <Button.Group>
+                  {LeaveButton}
+                  {ChangeNameButton}
+                  <Button
+                    leftIcon={<HiPlus />}
+                    fullWidth
+                    onClick={() => {
+                      setAddUserOpened(true);
+                      setConversationDetailsOpened(false);
+                    }}
+                  >
+                    Invite
+                  </Button>
+                </Button.Group>
+              ) : (
+                <>
+                  <Button.Group>
+                    {LeaveButton}
+                    {ChangeNameButton}
+                  </Button.Group>
+                </>
+              )}
             </>
           )}
         </>
@@ -968,9 +1026,9 @@ const Chat: React.FC = () => {
                           }}
                         >
                           <Card.Section px={16} py={10}>
-                            <div className="flex justify-between items-center">
+                            <div className="flex justify-between items-center gap-2">
                               <Anchor
-                                className="flex gap-1 items-center"
+                                className="flex gap-1 items-center w-full"
                                 size="sm"
                                 onClick={() => {
                                   setConversationOpen(false);
@@ -979,19 +1037,26 @@ const Chat: React.FC = () => {
                                   setConversationData([]);
                                 }}
                               >
-                                <HiArrowLeft />
+                                <HiArrowLeft className="flex-shrink-0" />
                                 Go back
                               </Anchor>
-                              <div className="flex gap-2 items-center group cursor-pointer">
+                              <div className="flex gap-2 items-center justify-end truncate w-full">
                                 <Text
                                   color="dimmed"
                                   size="sm"
-                                  className="group-hover:font-semibold transition-all group-hover:text-sky-600 dark:group-hover:text-sky-400"
+                                  className="truncate transition-all cursor-pointer hover:text-sky-600 dark:hover:text-sky-400"
                                   onClick={() => {
                                     setConversationDetailsOpened(true);
                                   }}
                                 >
-                                  {conversation?.name}
+                                  {conversation?.participants.length === 2
+                                    ? `@${
+                                        conversation?.participants.find(
+                                          (participant) =>
+                                            participant.id !== user?.id
+                                        )?.username
+                                      }`
+                                    : conversation?.name}
                                 </Text>
                               </div>
                             </div>
@@ -1242,47 +1307,87 @@ const Chat: React.FC = () => {
                                     }}
                                     className="rounded-none px-4 dark:hover:bg-zinc-900/50 group flex justify-between"
                                   >
-                                    <div className="flex items-start gap-2">
-                                      {unreadMessages[convo.id] > 0 ? (
-                                        <Badge
-                                          variant="filled"
-                                          color="red"
-                                          sx={{
-                                            width: 24,
-                                            height: 24,
-                                            padding: 0,
-                                          }}
-                                          className="mr-2"
-                                        >
-                                          {String(unreadMessages[convo.id])}
-                                        </Badge>
-                                      ) : // if it has only 2 participants, show the other participant's avatar,
-                                      // otherwise merge up to 4 avatars in a 24x24 circle
-                                      convo.participants.length === 2 ? (
-                                        <Avatar
-                                          src={getMediaUrl(
-                                            convo.participants.find(
-                                              (participant) =>
-                                                participant.id !== user?.id
-                                            )!.avatarUri
-                                          )}
-                                          size={24}
-                                          className="mr-2 rounded-full"
-                                        />
-                                      ) : (
-                                        <Avatar
-                                          src={getMediaUrl(
-                                            convo.owner.avatarUri
-                                          )}
-                                          size={24}
-                                          className="mr-2 rounded-full"
-                                        />
-                                      )}
+                                    <div className="flex items-start gap-2 w-full">
+                                      <div className="flex-shrink-0">
+                                        {unreadMessages[convo.id] > 0 ? (
+                                          <Badge
+                                            variant="filled"
+                                            color="red"
+                                            sx={{
+                                              width: 24,
+                                              height: 24,
+                                              padding: 0,
+                                            }}
+                                            className="mr-2"
+                                          >
+                                            {String(unreadMessages[convo.id])}
+                                          </Badge>
+                                        ) : convo.participants.length === 2 ? (
+                                          <Avatar
+                                            src={getMediaUrl(
+                                              convo.participants.find(
+                                                (participant) =>
+                                                  participant.id !== user?.id
+                                              )!.avatarUri
+                                            )}
+                                            size={24}
+                                            className="mr-2 rounded-full"
+                                          />
+                                        ) : (
+                                          <Avatar
+                                            src={getMediaUrl(
+                                              convo.owner.avatarUri
+                                            )}
+                                            size={24}
+                                            className="mr-2 rounded-full"
+                                          />
+                                        )}
+                                      </div>
 
-                                      <div className="flex flex-col">
-                                        <div className="flex items-center gap-2">
-                                          <Text size="sm" mr={6} weight={500}>
-                                            {convo.name}
+                                      <div className="flex flex-col w-full">
+                                        <div className="flex items-center gap-2 w-full">
+                                          <Text
+                                            size="sm"
+                                            mr={6}
+                                            weight={500}
+                                            className="truncate"
+                                            sx={{
+                                              maxWidth: "75%",
+                                            }}
+                                          >
+                                            {convo.participants.length === 2
+                                              ? convo.participants.find(
+                                                  (participant) =>
+                                                    participant.id !== user?.id
+                                                ) && (
+                                                  <span>
+                                                    {convo.participants.find(
+                                                      (participant) =>
+                                                        participant.id !==
+                                                        user?.id
+                                                    )!.alias ||
+                                                      convo.participants.find(
+                                                        (participant) =>
+                                                          participant.id !==
+                                                          user?.id
+                                                      )!.username}
+                                                  </span>
+                                                )
+                                              : convo.name}
+                                            {convo.participants.length ===
+                                              2 && (
+                                              <span className="text-dimmed truncate">
+                                                {" "}
+                                                &middot; @
+                                                {
+                                                  convo.participants.find(
+                                                    (participant) =>
+                                                      participant.id !==
+                                                      user?.id
+                                                  )!.username
+                                                }
+                                              </span>
+                                            )}
                                           </Text>
                                         </div>
 
@@ -1296,11 +1401,14 @@ const Chat: React.FC = () => {
                                             .join(", ")}
                                         >
                                           <Text size="sm" color="dimmed">
-                                            {convo.participants.length}{" "}
-                                            {Fw.Strings.pluralize(
-                                              convo.participants.length,
-                                              "participant"
-                                            )}
+                                            {convo.participants.length !== 2 &&
+                                              convo.participants.length}{" "}
+                                            {convo.participants.length === 2
+                                              ? "Direct message"
+                                              : Fw.Strings.pluralize(
+                                                  convo.participants.length,
+                                                  "participant"
+                                                )}
                                           </Text>
                                         </Tooltip>
                                       </div>
