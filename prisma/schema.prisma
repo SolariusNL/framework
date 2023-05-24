@@ -809,6 +809,7 @@ model ChatConversation {
   updatedAt    DateTime      @default(now())
   name         String        @default("Unnamed conversation")
   xid          String        @default("ready")
+  direct       Boolean       @default(false)
 }
 
 model Employee {

@@ -313,6 +313,7 @@ class ChatRouter {
             })),
           ],
         },
+        direct: participants.length < 2,
       },
       select: {
         id: true,

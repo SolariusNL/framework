@@ -161,25 +161,29 @@ class GatewayRouter {
                 name?: string;
               } = params.args?.data;
 
-              if (
-                before.participants?.disconnect?.some(
-                  (p: { id: number }) => p.id === socket.data.user.id
-                ) ||
-                before.participants?.connect?.some(
-                  (p: { id: number }) => p.id === socket.data.user.id
+              if (before.participants) {
+                if (
+                  before.participants.disconnect?.some(
+                    (p: { id: number }) => p.id === socket.data.user.id
+                  ) ||
+                  (before.participants &&
+                    before.participants.connect?.some(
+                      (p: { id: number }) => p.id === socket.data.user.id
+                    ))
                 )
-              ) {
-                socket.emit("@user/chat/conversation", {
-                  id: result.id,
-                });
-              } else if (before.ownerId !== result.ownerId) {
-                socket.emit("@user/chat/conversation/owner-changed", {
-                  id: result.id,
-                });
-              } else if (before.name !== result.name) {
-                socket.emit("@user/chat/conversation/name-changed", {
-                  id: result.id,
-                });
+                  socket.emit("@user/chat/conversation", {
+                    id: result.id,
+                  });
+              } else if (before.ownerId) {
+                if (before.ownerId !== result.ownerId)
+                  socket.emit("@user/chat/conversation/owner-changed", {
+                    id: result.id,
+                  });
+              } else if (before.name) {
+                if (before.name !== result.name)
+                  socket.emit("@user/chat/conversation/name-changed", {
+                    id: result.id,
+                  });
               }
             }
             if (params.model === "ChatMessage" && params.action === "delete") {

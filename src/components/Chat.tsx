@@ -1,7 +1,6 @@
 import Picker from "@emoji-mart/react";
 import {
   ActionIcon,
-  Anchor,
   Avatar,
   Badge,
   Box,
@@ -17,7 +16,7 @@ import {
   Text,
   TextInput,
   Tooltip,
-  useMantineColorScheme,
+  useMantineColorScheme
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useHotkeys } from "@mantine/hooks";
@@ -30,7 +29,6 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import {
-  HiArrowLeft,
   HiArrowRight,
   HiArrowSmDown,
   HiChatAlt2,
@@ -45,7 +43,7 @@ import {
   HiPlus,
   HiSparkles,
   HiUserGroup,
-  HiXCircle,
+  HiXCircle
 } from "react-icons/hi";
 import SocketContext from "../contexts/Socket";
 import Rocket from "../icons/Rocket";
@@ -522,6 +520,7 @@ const Chat: React.FC = () => {
             conversations.find(
               (conversation) =>
                 conversation.participants.length === 2 &&
+                conversation.direct &&
                 conversation.participants.find(
                   (participant) =>
                     participant.id ===
@@ -542,6 +541,7 @@ const Chat: React.FC = () => {
               conversations.find(
                 (conversation) =>
                   conversation.participants.length === 2 &&
+                  conversation.direct &&
                   conversation.participants.find(
                     (participant) =>
                       participant.id ===
@@ -737,7 +737,7 @@ const Chat: React.FC = () => {
                   rightSection={
                     <>
                       {user?.id === conversation?.owner.id &&
-                        conversation.participants.length > 2 &&
+                        !conversation.direct &&
                         participant.id !== user?.id && (
                           <ActionIcon
                             color="red"
@@ -806,7 +806,8 @@ const Chat: React.FC = () => {
               ))}
               {conversation?.participants.length < 10 &&
                 conversation?.participants.length > 2 &&
-                conversation?.owner.id === user?.id && (
+                conversation?.owner.id === user?.id &&
+                conversation.direct === false && (
                   <div className="p-2 text-center">
                     <Text size="sm" weight={500} color="dimmed">
                       Add more people to this conversation!
@@ -816,7 +817,7 @@ const Chat: React.FC = () => {
             </div>
           </ScrollArea>
 
-          {conversation?.participants.length > 2 && (
+          {!conversation.direct && (
             <>
               <Divider mt="lg" mb="lg" />
               {user?.id === conversation?.owner.id ? (
@@ -998,7 +999,7 @@ const Chat: React.FC = () => {
             {chatOpened && (
               <motion.div
                 initial={{ height: 0 }}
-                animate={{ height: conversationOpen ? "413px" : "330px" }}
+                animate={{ height: conversationOpen ? "418px" : "330px" }}
                 exit={{ height: 0 }}
                 transition={{
                   type: "spring",
@@ -1047,12 +1048,13 @@ const Chat: React.FC = () => {
                                 <Text
                                   color="dimmed"
                                   size="sm"
-                                  className="truncate transition-all cursor-pointer hover:text-sky-600 dark:hover:text-sky-400"
+                                  className="truncate transition-colors duration-500 cursor-pointer hover:text-sky-600 dark:hover:text-sky-400"
                                   onClick={() => {
                                     setConversationDetailsOpened(true);
                                   }}
                                 >
-                                  {conversation?.participants.length === 2
+                                  {conversation?.participants.length === 2 &&
+                                  conversation?.direct
                                     ? `@${
                                         conversation?.participants.find(
                                           (participant) =>
@@ -1330,7 +1332,8 @@ const Chat: React.FC = () => {
                                           >
                                             {String(unreadMessages[convo.id])}
                                           </Badge>
-                                        ) : convo.participants.length === 2 ? (
+                                        ) : convo.participants.length === 2 &&
+                                          convo.direct ? (
                                           <Avatar
                                             src={getMediaUrl(
                                               convo.participants.find(
@@ -1363,7 +1366,8 @@ const Chat: React.FC = () => {
                                               maxWidth: "75%",
                                             }}
                                           >
-                                            {convo.participants.length === 2
+                                            {convo.participants.length === 2 &&
+                                            convo.direct
                                               ? convo.participants.find(
                                                   (participant) =>
                                                     participant.id !== user?.id
@@ -1409,14 +1413,17 @@ const Chat: React.FC = () => {
                                             .join(", ")}
                                         >
                                           <Text size="sm" color="dimmed">
-                                            {convo.participants.length !== 2 &&
-                                              convo.participants.length}{" "}
-                                            {convo.participants.length === 2
-                                              ? "Direct message"
-                                              : Fw.Strings.pluralize(
+                                            {convo.direct ? (
+                                              "Direct message"
+                                            ) : (
+                                              <>
+                                                {convo.participants.length}{" "}
+                                                {Fw.Strings.pluralize(
                                                   convo.participants.length,
                                                   "participant"
                                                 )}
+                                              </>
+                                            )}
                                           </Text>
                                         </Tooltip>
                                       </div>
