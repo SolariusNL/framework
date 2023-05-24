@@ -1026,20 +1026,23 @@ const Chat: React.FC = () => {
                           }}
                         >
                           <Card.Section px={16} py={10}>
-                            <div className="flex justify-between items-center gap-2">
-                              <Anchor
-                                className="flex gap-1 items-center w-full"
-                                size="sm"
-                                onClick={() => {
-                                  setConversationOpen(false);
-                                  setConversation(null);
-                                  setCurrentConversation(null);
-                                  setConversationData([]);
-                                }}
-                              >
-                                <HiArrowLeft className="flex-shrink-0" />
-                                Go back
-                              </Anchor>
+                            <div className="flex justify-between items-center gap-4">
+                              <div className="w-[45%]">
+                                <Button
+                                  variant="subtle"
+                                  className="flex gap-1 text-center items-center"
+                                  size="sm"
+                                  onClick={() => {
+                                    setConversationOpen(false);
+                                    setConversation(null);
+                                    setCurrentConversation(null);
+                                    setConversationData([]);
+                                  }}
+                                  compact
+                                >
+                                  Go back
+                                </Button>
+                              </div>
                               <div className="flex gap-2 items-center justify-end truncate w-full">
                                 <Text
                                   color="dimmed"
@@ -1136,16 +1139,21 @@ const Chat: React.FC = () => {
                                       <HiUserGroup />
                                     </ActionIcon>
                                   </Tooltip>
-                                  <Link href="/settings/application" passHref>
-                                    <Tooltip
-                                      label="Application settings"
-                                      withinPortal
-                                    >
-                                      <ActionIcon radius="xl" size="sm">
-                                        <HiCog />
-                                      </ActionIcon>
-                                    </Tooltip>
-                                  </Link>
+                                  <Tooltip
+                                    label="Application settings"
+                                    withinPortal
+                                  >
+                                    <div>
+                                      <Link
+                                        href="/settings/application"
+                                        passHref
+                                      >
+                                        <ActionIcon radius="xl" size="sm">
+                                          <HiCog />
+                                        </ActionIcon>
+                                      </Link>
+                                    </div>
+                                  </Tooltip>
                                 </div>
                               }
                             />
@@ -1307,7 +1315,7 @@ const Chat: React.FC = () => {
                                     }}
                                     className="rounded-none px-4 dark:hover:bg-zinc-900/50 group flex justify-between"
                                   >
-                                    <div className="flex items-start gap-2 w-full">
+                                    <div className="flex items-start gap-2 w-[90%]">
                                       <div className="flex-shrink-0">
                                         {unreadMessages[convo.id] > 0 ? (
                                           <Badge
