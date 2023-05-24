@@ -25,11 +25,16 @@ export type FastFlagNames =
   | "disabled-chat"
   | "banner";
 
-export type UserPreferences = "@chat/bell" | "@chat/enabled" | "@chat/my-color";
+export type UserPreferences =
+  | "@chat/bell"
+  | "@chat/enabled"
+  | "@chat/my-color"
+  | "@dismissible/chat/conversation-tooltip";
 export const userPreferences: UserPreferences[] = [
   "@chat/bell",
   "@chat/enabled",
   "@chat/my-color",
+  "@dismissible/chat/conversation-tooltip",
 ];
 export const defaultUserPreferences: Record<
   UserPreferences,
@@ -38,6 +43,7 @@ export const defaultUserPreferences: Record<
   "@chat/bell": true,
   "@chat/enabled": true,
   "@chat/my-color": "blue",
+  "@dismissible/chat/conversation-tooltip": false,
 };
 export const userPreferenceValidators: Partial<
   Record<UserPreferences, (value: string | boolean | number) => boolean>

@@ -42,6 +42,8 @@ import {
   HiLogout,
   HiPencil,
   HiPlus,
+  HiSparkles,
+  HiUserGroup,
   HiXCircle,
 } from "react-icons/hi";
 import SocketContext from "../contexts/Socket";
@@ -58,6 +60,7 @@ import clsx from "../util/clsx";
 import fetchJson from "../util/fetch";
 import { Fw } from "../util/fw";
 import getMediaUrl from "../util/get-media";
+import { Preferences } from "../util/preferences";
 import { ChatMessage, NonUser } from "../util/prisma-types";
 import { getMyFriends } from "../util/universe/friends";
 import { UserItemComponent } from "./Admin/Pages/Activity";
@@ -441,7 +444,7 @@ const Chat: React.FC = () => {
               createConvoForm.insertListItem("participants", value);
             }}
           />
-          <ShadedCard className="flex flex-col gap-1">
+          <ShadedCard className="flex flex-col gap-3">
             {createConvoForm.values.participants.length > 0 ? (
               createConvoForm.values.participants.map((participant) => (
                 <div
@@ -1035,11 +1038,50 @@ const Chat: React.FC = () => {
                               value={friendsSearch}
                               onChange={(e) => setFriendsSearch(e.target.value)}
                               rightSection={
-                                <Link href="/settings/application" passHref>
-                                  <ActionIcon radius="xl" size="sm">
-                                    <HiCog />
-                                  </ActionIcon>
-                                </Link>
+                                <div className="flex gap-1 pr-6">
+                                  <Tooltip
+                                    label="New conversation"
+                                    withArrow
+                                    {...(!preferences[
+                                      "@dismissible/chat/conversation-tooltip"
+                                    ] && {
+                                      opened:
+                                        !preferences[
+                                          "@dismissible/chat/conversation-tooltip"
+                                        ],
+                                    })}
+                                  >
+                                    <ActionIcon
+                                      radius="xl"
+                                      size="sm"
+                                      onClick={() => {
+                                        setCreateConvoOpened(true);
+                                        Preferences.setPreferences({
+                                          "@dismissible/chat/conversation-tooltip":
+                                            true,
+                                        });
+                                      }}
+                                      onMouseEnter={() => {
+                                        Preferences.setPreferences({
+                                          "@dismissible/chat/conversation-tooltip":
+                                            true,
+                                        });
+                                      }}
+                                    >
+                                      <HiUserGroup />
+                                    </ActionIcon>
+                                  </Tooltip>
+                                  <Link href="/settings/application" passHref>
+                                    <Tooltip
+                                      label="Application settings"
+                                      withinPortal
+                                    >
+                                      <ActionIcon radius="xl" size="sm">
+                                        <HiCog />
+                                      </ActionIcon>
+                                    </Tooltip>
+                                  </Link>
+                                </div>
                               }
                             />
                           </Card.Section>
@@ -1291,23 +1333,19 @@ const Chat: React.FC = () => {
                                   </div>
                                 </>
                               ) : (
-                                <ShadedButton
-                                  onClick={() => {
-                                    setCreateConvoOpened(true);
-                                  }}
-                                  className="rounded-none px-4 dark:hover:bg-zinc-900/50 group flex justify-between"
-                                >
-                                  <div className="flex flex-col items-start gap-2">
-                                    <Text size="sm" weight={500}>
-                                      Create new conversation
-                                    </Text>
-                                    <Text size="sm" color="dimmed">
-                                      Start a new conversation with your
-                                      friends.
-                                    </Text>
+                                <>
+                                  <div className="flex justify-center">
+                                    <div className="flex items-center gap-2 p-8 pb-2">
+                                      <HiSparkles
+                                        size={12}
+                                        className="flex-shrink-0"
+                                      />
+                                      <Text size="sm" color="dimmed">
+                                        It&apos;s quiet here...
+                                      </Text>
+                                    </div>
                                   </div>
-                                  <HiArrowRight className="text-dimmed group-hover:opacity-100 transition-all opacity-0" />
-                                </ShadedButton>
+                                </>
                               )}
                             </Stack>
                           </motion.div>
