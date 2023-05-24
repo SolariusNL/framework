@@ -17,6 +17,7 @@ import {
   chatMessageSelect,
   nonCurrentUserSelect,
 } from "../../../util/prisma-types";
+import { RateLimitMiddleware } from "../../../util/rate-limit";
 
 const lastEmailSent = new Map<number, Date>();
 const chatAutomod = registerAutomodHandler("Chat message");
@@ -55,6 +56,7 @@ class ChatRouter {
   }
 
   @Post("/conversation/:id/send")
+  @RateLimitMiddleware(75)()
   @Authorized()
   public async sendMessage(
     @Account() user: User,
@@ -242,6 +244,7 @@ class ChatRouter {
   }
 
   @Post("/conversation")
+  @RateLimitMiddleware(5)()
   @Authorized()
   public async createConversation(
     @Account() user: User,
@@ -328,6 +331,7 @@ class ChatRouter {
   }
 
   @Post("/conversation/:id/remove/:userid")
+  @RateLimitMiddleware(15)()
   @Authorized()
   public async removeUserFromConversation(
     @Account() user: User,
@@ -385,6 +389,7 @@ class ChatRouter {
   }
 
   @Post("/conversation/:id/add/:userid")
+  @RateLimitMiddleware(20)()
   @Authorized()
   public async addUserToConversation(
     @Account() user: User,
