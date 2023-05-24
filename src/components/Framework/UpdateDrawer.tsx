@@ -20,6 +20,13 @@ const UpdateDrawer: React.FC = () => {
     href?: string;
   }> = [
     {
+      title: "Conversations 2.0",
+      description:
+        "Introducing Conversations 2.0. Create groups with multiple people in Chat and enjoy improved Chat performance.",
+      badge: BadgeType.NEW,
+      date: new Date("2023-05-25"),
+    },
+    {
       title: "Chat released",
       description:
         "Framework Chat, the successor to Messages is now in general availability.",
