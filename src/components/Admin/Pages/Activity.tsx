@@ -14,10 +14,18 @@ import getAdmins from "../../../util/fetch/getAdmins";
 import getMediaUrl from "../../../util/get-media";
 import ModernEmptyState from "../../ModernEmptyState";
 
-interface UserItemProps extends React.ComponentPropsWithoutRef<"div"> {
+export interface UserItemProps extends React.ComponentPropsWithoutRef<"div"> {
   label: string;
   avatar: string;
 }
+export const UserItemComponent = forwardRef<HTMLDivElement, UserItemProps>(
+  ({ avatar, label, ...others }: UserItemProps, ref) => (
+    <Group noWrap ref={ref} {...others}>
+      <Avatar size={24} src={getMediaUrl(avatar)} radius={999} />
+      <Text>{label}</Text>
+    </Group>
+  )
+);
 
 const Activity: React.FC = () => {
   const [activities, setActivities] = useState<
@@ -105,14 +113,7 @@ const Activity: React.FC = () => {
               .concat([{ label: "All", value: "0", avatar: "" }])}
             label="User"
             placeholder="User filter"
-            itemComponent={forwardRef<HTMLDivElement, UserItemProps>(
-              ({ avatar, label, ...others }: UserItemProps, ref) => (
-                <Group noWrap ref={ref} {...others}>
-                  <Avatar size={24} src={getMediaUrl(avatar)} radius={999} />
-                  <Text>{label}</Text>
-                </Group>
-              )
-            )}
+            itemComponent={UserItemComponent}
             value={String(filter.userId)}
             onChange={(n) => {
               setFilterValue("userId", Number(n));

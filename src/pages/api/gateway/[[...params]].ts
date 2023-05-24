@@ -1,4 +1,4 @@
-import { createHandler, Get, Res } from "@storyofams/next-api-decorators";
+import { Get, Res, createHandler } from "@storyofams/next-api-decorators";
 import http from "http";
 import { NextApiResponse } from "next";
 import { Server } from "socket.io";
@@ -141,13 +141,45 @@ class GatewayRouter {
             if (
               params.model === "ChatMessage" &&
               params.action === "create" &&
-              result.toId === socket.data.user.id
+              result.conversation.participants.some(
+                (p: { id: number }) => p.id === socket.data.user.id
+              ) &&
+              result.authorId !== socket.data.user.id
             ) {
               socket.emit("@user/chat", result);
             }
+            if (
+              params.model === "ChatConversation" &&
+              ["create", "update"].includes(params.action)
+            ) {
+              const before: {
+                participants?: {
+                  connect?: { id: number }[];
+                  disconnect?: { id: number }[];
+                };
+                ownerId?: number;
+              } = params.args?.data;
+
+              if (
+                before.participants?.disconnect?.some(
+                  (p: { id: number }) => p.id === socket.data.user.id
+                ) ||
+                before.participants?.connect?.some(
+                  (p: { id: number }) => p.id === socket.data.user.id
+                )
+              ) {
+                socket.emit("@user/chat/conversation", {
+                  id: result.id,
+                });
+              } else if (before.ownerId !== result.ownerId) {
+                socket.emit("@user/chat/conversation/owner-changed", {
+                  id: result.id,
+                });
+              }
+            }
             if (params.model === "ChatMessage" && params.action === "delete") {
               socket.emit("@user/chat/delete", {
-                id: result.id
+                id: result.id,
               });
             }
             if (

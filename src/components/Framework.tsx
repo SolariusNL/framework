@@ -29,7 +29,6 @@ import { useRouter } from "next/router";
 import React, { useContext, useEffect, useState } from "react";
 import {
   HiArrowLeft,
-  HiChat,
   HiCheckCircle,
   HiCode,
   HiCog,
@@ -42,6 +41,7 @@ import {
   HiLogin,
   HiMail,
   HiOfficeBuilding,
+  HiPhotograph,
   HiSearch,
   HiShieldCheck,
   HiShoppingBag,
@@ -224,11 +224,11 @@ const Framework = ({
       description: "Where imagination comes to life",
     },
     {
-      label: "Chat",
-      href: "/chat",
-      icon: <HiChat />,
+      label: "Social",
+      href: "/social",
+      icon: <HiPhotograph />,
       color: "green",
-      description: "Chat with friends in real time",
+      description: "See what your friends are up to",
     },
     {
       label: "Avatar",

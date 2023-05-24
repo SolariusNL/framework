@@ -1,5 +1,3 @@
-import { ReceiveNotification } from "@prisma/client";
-import { render } from "@react-email/render";
 import {
   Body,
   createHandler,
@@ -9,13 +7,14 @@ import {
   Post,
 } from "@storyofams/next-api-decorators";
 import { z } from "zod";
-import MissedMessage from "../../../../email/emails/missed-message";
 import Authorized, { Account } from "../../../util/api/authorized";
 import registerAutomodHandler from "../../../util/automod";
-import { sendMail } from "../../../util/mail";
 import prisma from "../../../util/prisma";
-import type { ChatMessage, User } from "../../../util/prisma-types";
-import { chatMessageSelect } from "../../../util/prisma-types";
+import type { User } from "../../../util/prisma-types";
+import {
+  chatMessageSelect,
+  nonCurrentUserSelect,
+} from "../../../util/prisma-types";
 
 const lastEmailSent = new Map<number, Date>();
 const chatAutomod = registerAutomodHandler("Chat message");
@@ -25,38 +24,23 @@ class ChatRouter {
   @Authorized()
   public async getConversationWithId(
     @Account() user: User,
-    @Param("id") id: number
+    @Param("id") id: string
   ) {
-    if (user.id === id) {
-      return {
-        error: "You cannot message yourself",
-      };
-    }
-
-    const to = await prisma.user.findUnique({
+    const conversation = await prisma.chatConversation.findUnique({
       where: {
-        id: Number(id),
+        id: String(id),
       },
     });
 
-    if (!to) {
+    if (!conversation) {
       return {
-        error: "User not found",
+        error: "Conversation not found",
       };
     }
 
     const messages = await prisma.chatMessage.findMany({
       where: {
-        OR: [
-          {
-            authorId: Number(id),
-            toId: Number(user.id),
-          },
-          {
-            authorId: Number(user.id),
-            toId: Number(id),
-          },
-        ],
+        conversationId: conversation.id,
       },
       take: 75,
       orderBy: {
@@ -72,7 +56,7 @@ class ChatRouter {
   @Authorized()
   public async sendMessage(
     @Account() user: User,
-    @Param("id") id: number,
+    @Param("id") id: string,
     @Body() body: unknown
   ) {
     const bodySchema = z.object({
@@ -81,21 +65,15 @@ class ChatRouter {
 
     const { content } = bodySchema.parse(body);
 
-    if (user.id === id) {
-      return {
-        error: "You cannot message yourself",
-      };
-    }
-
-    const to = await prisma.user.findUnique({
+    const to = await prisma.chatConversation.findUnique({
       where: {
-        id: Number(id),
+        id: String(id),
       },
     });
 
     if (!to) {
       return {
-        error: "User not found",
+        error: "Conversation not found",
       };
     }
 
@@ -106,37 +84,15 @@ class ChatRouter {
             id: Number(user.id),
           },
         },
-        to: {
+        conversation: {
           connect: {
-            id: Number(id),
+            id: String(id),
           },
         },
         content,
       },
       select: chatMessageSelect,
     });
-
-    if (
-      to.lastSeen &&
-      Date.now() - new Date(to.lastSeen).getTime() > 5 * 60 * 1000 &&
-      to.notificationPreferences.includes(ReceiveNotification.MISSED_MESSAGES)
-    ) {
-      const lastSent = lastEmailSent.get(to.id);
-      if (!lastSent || Date.now() - lastSent.getTime() > 5 * 60 * 1000) {
-        lastEmailSent.set(to.id, new Date());
-
-        sendMail(
-          to.email,
-          `New message from ${user.username}`,
-          render(
-            MissedMessage({
-              from: user.username,
-              message: content,
-            }) as React.ReactElement
-          )
-        );
-      }
-    }
 
     chatAutomod(user.id, content);
 
@@ -175,11 +131,10 @@ class ChatRouter {
 
   @Post("/conversation/:id/read")
   @Authorized()
-  public async readMessage(@Account() user: User, @Param("id") id: number) {
+  public async readMessage(@Account() user: User, @Param("id") id: string) {
     await prisma.chatMessage.updateMany({
       where: {
-        authorId: Number(id),
-        toId: Number(user.id),
+        conversationId: String(id),
       },
       data: {
         seen: true,
@@ -194,39 +149,374 @@ class ChatRouter {
   @Get("/unread")
   @Authorized()
   public async getUnreadMessages(@Account() user: User) {
-    const messages: ChatMessage[] = (await prisma.chatMessage.findMany({
+    const memberOf = await prisma.chatConversation.findMany({
       where: {
-        toId: Number(user.id),
+        OR: [
+          {
+            ownerId: Number(user.id),
+          },
+          {
+            participants: {
+              some: {
+                id: Number(user.id),
+              },
+            },
+          },
+        ],
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    const messages = await prisma.chatMessage.findMany({
+      where: {
+        conversationId: {
+          in: memberOf.map((c) => c.id),
+        },
         seen: false,
-        author: {
-          followers: {
-            some: {
-              id: Number(user.id),
-            },
-          },
-          following: {
-            some: {
-              id: Number(user.id),
-            },
-          },
+        authorId: {
+          not: Number(user.id),
         },
       },
       select: chatMessageSelect,
-    })) as any;
-
-    const conversations: Record<number, typeof messages> = {};
-
-    messages.forEach((message) => {
-      const id = message.authorId;
-
-      if (!conversations[id]) {
-        conversations[id] = [];
-      }
-
-      conversations[id].push(message);
     });
 
+    const conversations: Record<string, typeof messages> = {};
+
+    for (const message of messages) {
+      if (!conversations[message.conversationId as string]) {
+        conversations[message.conversationId as string] = [];
+      }
+
+      conversations[message.conversationId as string].push(message);
+    }
+
     return conversations;
+  }
+
+  @Get("/conversations")
+  @Authorized()
+  public async getConversations(@Account() user: User) {
+    const conversations = await prisma.chatConversation.findMany({
+      where: {
+        OR: [
+          {
+            ownerId: Number(user.id),
+          },
+          {
+            participants: {
+              some: {
+                id: Number(user.id),
+              },
+            },
+          },
+        ],
+      },
+      include: {
+        participants: {
+          select: nonCurrentUserSelect.select,
+        },
+        owner: {
+          select: nonCurrentUserSelect.select,
+        },
+      },
+    });
+
+    return {
+      success: true,
+      data: {
+        conversations,
+      },
+    };
+  }
+
+  @Post("/conversation")
+  @Authorized()
+  public async createConversation(
+    @Account() user: User,
+    @Body() body: unknown
+  ) {
+    const bodySchema = z.object({
+      name: z.string().min(1).max(60),
+      participants: z.array(z.number()),
+    });
+
+    const { name, participants } = bodySchema.parse(body);
+
+    if (participants.length < 1) {
+      return {
+        success: false,
+        message: "You must have at least one participant",
+      };
+    }
+
+    if (participants.length > 10) {
+      return {
+        success: false,
+        message: "You can only have up to 10 participants",
+      };
+    }
+
+    if (participants.includes(user.id)) {
+      return {
+        success: false,
+        message: "You cannot add yourself to a conversation",
+      };
+    }
+
+    const users = await prisma.user.findMany({
+      where: {
+        id: {
+          in: participants,
+        },
+      },
+    });
+
+    if (users.length !== participants.length) {
+      return {
+        success: false,
+        message: "One or more users not found",
+      };
+    }
+
+    await prisma.chatConversation.create({
+      data: {
+        name,
+        ownerId: user.id,
+        participants: {
+          connect: [
+            {
+              id: user.id,
+            },
+            ...users.map((u) => ({
+              id: u.id,
+            })),
+          ],
+        },
+      },
+      select: {
+        id: true,
+        participants: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+
+    return {
+      success: true,
+      message: "Conversation created",
+    };
+  }
+
+  @Post("/conversation/:id/remove/:userid")
+  @Authorized()
+  public async removeUserFromConversation(
+    @Account() user: User,
+    @Param("id") id: string,
+    @Param("userid") userid: string
+  ) {
+    const conversation = await prisma.chatConversation.findFirst({
+      where: {
+        id,
+        ownerId: user.id,
+      },
+    });
+
+    if (!conversation) {
+      return {
+        success: false,
+        message: "Conversation not found",
+      };
+    }
+
+    if (conversation.ownerId === Number(userid)) {
+      return {
+        success: false,
+        message: "You cannot remove yourself from a conversation",
+      };
+    }
+
+    await prisma.chatConversation.update({
+      where: {
+        id,
+      },
+      data: {
+        participants: {
+          disconnect: [
+            {
+              id: Number(userid),
+            },
+          ],
+        },
+      },
+      select: {
+        participants: {
+          select: {
+            id: true,
+          },
+        },
+        id: true,
+      },
+    });
+
+    return {
+      success: true,
+      message: "User removed from conversation",
+    };
+  }
+
+  @Post("/conversation/:id/add/:userid")
+  @Authorized()
+  public async addUserToConversation(
+    @Account() user: User,
+    @Param("id") id: string,
+    @Param("userid") userid: string
+  ) {
+    const conversation = await prisma.chatConversation.findFirst({
+      where: {
+        id,
+        ownerId: user.id,
+      },
+    });
+
+    if (!conversation) {
+      return {
+        success: false,
+        message: "Conversation not found",
+      };
+    }
+
+    await prisma.chatConversation.update({
+      where: {
+        id,
+      },
+      data: {
+        participants: {
+          connect: [
+            {
+              id: Number(userid),
+            },
+          ],
+        },
+      },
+      select: {
+        participants: {
+          select: {
+            id: true,
+          },
+        },
+        id: true,
+      },
+    });
+
+    return {
+      success: true,
+      message: "User added to conversation",
+    };
+  }
+
+  @Post("/conversation/:id/leave")
+  @Authorized()
+  public async leaveConversation(
+    @Account() user: User,
+    @Param("id") id: string
+  ) {
+    const conversation = await prisma.chatConversation.findFirst({
+      where: {
+        id,
+        participants: {
+          some: {
+            id: user.id,
+          },
+        },
+      },
+    });
+
+    if (!conversation) {
+      return {
+        success: false,
+        message: "Conversation not found",
+      };
+    }
+
+    if (conversation.ownerId === user.id) {
+      const newOwner = await prisma.user.findFirst({
+        where: {
+          id: {
+            not: user.id,
+          },
+          participatingConversations: {
+            some: {
+              id,
+            },
+          },
+        },
+      });
+
+      if (!newOwner) {
+        await prisma.chatConversation.update({
+          where: {
+            id,
+          },
+          data: {
+            participants: {
+              disconnect: [
+                {
+                  id: user.id,
+                },
+              ],
+            },
+          },
+        });
+        await prisma.chatMessage.deleteMany({
+          where: {
+            conversationId: id,
+          },
+        });
+        await prisma.chatConversation.delete({
+          where: {
+            id,
+          },
+        });
+
+        return {
+          success: true,
+          message: "Left conversation",
+        };
+      }
+
+      await prisma.chatConversation.update({
+        where: {
+          id,
+        },
+        data: {
+          ownerId: newOwner?.id,
+        },
+      });
+    }
+
+    await prisma.chatConversation.update({
+      where: {
+        id,
+      },
+      data: {
+        participants: {
+          disconnect: [
+            {
+              id: user.id,
+            },
+          ],
+        },
+      },
+    });
+
+    return {
+      success: true,
+      message: "Left conversation",
+    };
   }
 }
 

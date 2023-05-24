@@ -4,6 +4,7 @@ export const nonCurrentUserSelect = {
   select: {
     id: true,
     username: true,
+    alias: true,
     avatarUri: true,
     country: true,
     avatar: true,
@@ -15,7 +16,6 @@ export const nonCurrentUserSelect = {
     lastSeen: true,
     timeZone: true,
     role: true,
-    alias: true,
     previousUsernames: true,
     statusPosts: {
       take: 5,
@@ -380,18 +380,22 @@ export const chatMessageSelect: Prisma.ChatMessageSelect = {
       avatarUri: true,
     },
   },
-  to: {
+  conversation: {
     select: {
       id: true,
-      username: true,
-      avatarUri: true,
+      name: true,
+      participants: {
+        select: {
+          id: true,
+        },
+      },
     },
   },
   content: true,
   createdAt: true,
   authorId: true,
-  toId: true,
   seen: true,
+  conversationId: true,
 };
 
 const chatMessage = Prisma.validator<Prisma.ChatMessageArgs>()({
@@ -401,13 +405,13 @@ const chatMessage = Prisma.validator<Prisma.ChatMessageArgs>()({
         id: true,
         username: true,
         avatarUri: true,
+        alias: true,
       },
     },
-    to: {
+    conversation: {
       select: {
         id: true,
-        username: true,
-        avatarUri: true,
+        name: true,
       },
     },
   },

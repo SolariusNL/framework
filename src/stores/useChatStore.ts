@@ -6,8 +6,8 @@ export const CHAT_KEY = "chat-settings";
 interface ChatStore {
   opened: boolean;
   setOpened: (opened: boolean) => void;
-  currentConversation: number;
-  setCurrentConversation: (id: number | null) => void;
+  currentConversation: string;
+  setCurrentConversation: (id: string | null) => void;
 }
 
 const getInitialState = () => {

@@ -133,8 +133,9 @@ model User {
   otpAuthUrl                 String?
   authoredBlogPosts          BlogPost[]             @relation("blogPosts")
   authoredSupportTickets     SupportTicket[]        @relation("supportTickets")
+  participatingConversations ChatConversation[]     @relation("userConversationParticipants")
+  ownedConversation          ChatConversation[]     @relation("userConversationOwner")
   sentChatMessages           ChatMessage[]          @relation("sentChatMessages")
-  receivedChatMessages       ChatMessage[]          @relation("receivedChatMessages")
   employee                   Employee?              @relation("employee")
   employeeId                 String?                @unique
   apiKeys                    ApiKey[]               @relation("apiKeys")
@@ -787,15 +788,27 @@ enum SupportTicketStatus {
 }
 
 model ChatMessage {
-  id        String   @id @default(uuid())
-  author    User     @relation("sentChatMessages", fields: [authorId], references: [id])
-  authorId  Int
-  to        User     @relation("receivedChatMessages", fields: [toId], references: [id])
-  toId      Int
-  content   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-  seen      Boolean  @default(false)
+  id             String           @id @default(uuid())
+  author         User             @relation("sentChatMessages", fields: [authorId], references: [id])
+  authorId       Int
+  conversation   ChatConversation @relation("chatMessages", fields: [conversationId], references: [id])
+  conversationId String
+  content        String
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @default(now())
+  seen           Boolean          @default(false)
+}
+
+model ChatConversation {
+  id           String        @id @default(uuid())
+  participants User[]        @relation("userConversationParticipants", map: "participants")
+  owner        User          @relation("userConversationOwner", fields: [ownerId], references: [id])
+  ownerId      Int
+  messages     ChatMessage[] @relation("chatMessages")
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @default(now())
+  name         String        @default("Unnamed conversation")
+  xid          String        @default("ready")
 }
 
 model Employee {
