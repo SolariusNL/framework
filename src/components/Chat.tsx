@@ -41,8 +41,8 @@ import {
   HiLogout,
   HiPencil,
   HiPlus,
+  HiSearch,
   HiSparkles,
-  HiUserGroup,
   HiXCircle,
 } from "react-icons/hi";
 import SocketContext from "../contexts/Socket";
@@ -831,8 +831,9 @@ const Chat: React.FC = () => {
             <>
               <Divider mt="lg" mb="lg" />
               {user?.id === conversation?.owner.id ? (
-                <Button.Group>
+                <div className="flex gap-2">
                   {LeaveButton}
+                  <Button.Group>
                   {ChangeNameButton}
                   <Button
                     leftIcon={<HiPlus />}
@@ -842,15 +843,16 @@ const Chat: React.FC = () => {
                       setConversationDetailsOpened(false);
                     }}
                   >
-                    Invite
+                    Add
                   </Button>
-                </Button.Group>
+                  </Button.Group>
+                </div>
               ) : (
                 <>
-                  <Button.Group>
+                  <div className="flex gap-2">
                     {LeaveButton}
                     {ChangeNameButton}
-                  </Button.Group>
+                  </div>
                 </>
               )}
             </>
@@ -1099,76 +1101,76 @@ const Chat: React.FC = () => {
                             px={4}
                             py={2}
                           >
-                            <TextInput
-                              placeholder="Search for conversations..."
-                              className="flex-1"
-                              variant="unstyled"
-                              sx={(theme) => ({
-                                lineHeight: "0px",
-                                "& input": {
-                                  paddingLeft: theme.spacing.sm,
-                                  paddingRight: theme.spacing.sm,
-                                },
-                                "&::placeholder": {
-                                  paddingLeft: theme.spacing.sm,
-                                  paddingRight: theme.spacing.sm,
-                                },
-                              })}
-                              autoComplete="off"
-                              value={friendsSearch}
-                              onChange={(e) => setFriendsSearch(e.target.value)}
-                              rightSection={
-                                <div className="flex gap-1 pr-6">
-                                  <Tooltip
-                                    label="New conversation"
-                                    withArrow
-                                    {...(!preferences[
-                                      "@dismissible/chat/conversation-tooltip"
-                                    ] && {
-                                      opened:
-                                        !preferences[
-                                          "@dismissible/chat/conversation-tooltip"
-                                        ],
-                                    })}
+                            <div className="flex items-center">
+                              <TextInput
+                                placeholder="Find conversation..."
+                                className="w-[80%]"
+                                variant="unstyled"
+                                icon={<HiSearch />}
+                                sx={(theme) => ({
+                                  lineHeight: "0px",
+                                  "& input": {
+                                    paddingLeft: theme.spacing.md * 2.3,
+                                    paddingRight: theme.spacing.sm,
+                                  },
+                                  "&::placeholder": {
+                                    paddingLeft: theme.spacing.sm,
+                                    paddingRight: theme.spacing.sm,
+                                  },
+                                })}
+                                autoComplete="off"
+                                value={friendsSearch}
+                                onChange={(e) =>
+                                  setFriendsSearch(e.target.value)
+                                }
+                              />
+                              <div className="flex gap-1">
+                                <Tooltip
+                                  label="New conversation"
+                                  withArrow
+                                  {...(!preferences[
+                                    "@dismissible/chat/conversation-tooltip"
+                                  ] && {
+                                    opened:
+                                      !preferences[
+                                        "@dismissible/chat/conversation-tooltip"
+                                      ],
+                                  })}
+                                >
+                                  <ActionIcon
+                                    radius="xl"
+                                    size="sm"
+                                    onClick={() => {
+                                      setCreateConvoOpened(true);
+                                      Preferences.setPreferences({
+                                        "@dismissible/chat/conversation-tooltip":
+                                          true,
+                                      });
+                                    }}
+                                    onMouseEnter={() => {
+                                      Preferences.setPreferences({
+                                        "@dismissible/chat/conversation-tooltip":
+                                          true,
+                                      });
+                                    }}
                                   >
-                                    <ActionIcon
-                                      radius="xl"
-                                      size="sm"
-                                      onClick={() => {
-                                        setCreateConvoOpened(true);
-                                        Preferences.setPreferences({
-                                          "@dismissible/chat/conversation-tooltip":
-                                            true,
-                                        });
-                                      }}
-                                      onMouseEnter={() => {
-                                        Preferences.setPreferences({
-                                          "@dismissible/chat/conversation-tooltip":
-                                            true,
-                                        });
-                                      }}
-                                    >
-                                      <HiUserGroup />
-                                    </ActionIcon>
-                                  </Tooltip>
-                                  <Tooltip
-                                    label="Application settings"
-                                    withinPortal
-                                  >
-                                    <div>
-                                      <Link
-                                        href="/settings/application"
-                                        passHref
-                                      >
-                                        <ActionIcon radius="xl" size="sm">
-                                          <HiCog />
-                                        </ActionIcon>
-                                      </Link>
-                                    </div>
-                                  </Tooltip>
-                                </div>
-                              }
-                            />
+                                    <HiPlus />
+                                  </ActionIcon>
+                                </Tooltip>
+                                <Tooltip
+                                  label="Application settings"
+                                  withinPortal
+                                >
+                                  <div>
+                                    <Link href="/settings/application" passHref>
+                                      <ActionIcon radius="xl" size="sm">
+                                        <HiCog />
+                                      </ActionIcon>
+                                    </Link>
+                                  </div>
+                                </Tooltip>
+                              </div>
+                            </div>
                           </Card.Section>
                         </motion.div>
                       )}
