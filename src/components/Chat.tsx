@@ -16,7 +16,7 @@ import {
   Text,
   TextInput,
   Tooltip,
-  useMantineColorScheme
+  useMantineColorScheme,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useHotkeys } from "@mantine/hooks";
@@ -43,7 +43,7 @@ import {
   HiPlus,
   HiSparkles,
   HiUserGroup,
-  HiXCircle
+  HiXCircle,
 } from "react-icons/hi";
 import SocketContext from "../contexts/Socket";
 import Rocket from "../icons/Rocket";
@@ -187,6 +187,16 @@ const Chat: React.FC = () => {
 
       const data = await res.json();
       setConversationData((prev) => [...prev, data]);
+      setConversations((prev) =>
+        prev.map((convo) =>
+          convo.id === conversation.id
+            ? {
+                ...conversation,
+                updatedAt: new Date(),
+              }
+            : convo
+        )
+      );
       messageForm.reset();
     }
   };
