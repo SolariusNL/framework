@@ -1,6 +1,5 @@
 import {
   ActionIcon,
-  Alert,
   Anchor,
   Badge,
   Button,
@@ -9,7 +8,7 @@ import {
   Skeleton,
   Text,
   TextInput,
-  Title,
+  Title
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { openConfirmModal } from "@mantine/modals";
@@ -36,6 +35,7 @@ import Copy from "../../components/Copy";
 import DataGrid from "../../components/DataGrid";
 import Dot from "../../components/Dot";
 import { Section } from "../../components/Home/FriendsWidget";
+import InlineError from "../../components/InlineError";
 import ModernEmptyState from "../../components/ModernEmptyState";
 import ShadedButton from "../../components/ShadedButton";
 import ShadedCard from "../../components/ShadedCard";
@@ -47,9 +47,8 @@ import clsx from "../../util/clsx";
 import fetchJson from "../../util/fetch";
 import { Fw } from "../../util/fw";
 import { User } from "../../util/prisma-types";
-import NotFound from "../404";
-import { BLACK } from "../teams/t/[slug]/issue/create";
 import ServiceUnavailable from "../503";
+import { BLACK } from "../teams/t/[slug]/issue/create";
 
 type DomainsProps = {
   user: User;
@@ -467,13 +466,13 @@ const Domains: React.FC<DomainsProps> = ({ user }) => {
                         ) => e.target.select()}
                       />
                       <div className="mt-5 flex justify-between">
-                        <Alert
-                          color="red"
+                        <InlineError
+                          variant="error"
                           className={clsx(txtError ? "block" : "hidden")}
                           icon={<HiXCircle />}
                         >
                           {txtError}
-                        </Alert>
+                        </InlineError>
                         <Button
                           leftIcon={<HiCheck />}
                           onClick={() => verifyDomainRecord()}
