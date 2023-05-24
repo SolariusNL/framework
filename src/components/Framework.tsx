@@ -424,7 +424,6 @@ const Framework = ({
             bottom: 0,
             right: mobile ? 12 : 40,
           }}
-          zIndex={1000}
         >
           <Chat />
         </Affix>
