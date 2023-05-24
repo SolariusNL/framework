@@ -41,7 +41,14 @@ import {
   HiLogin,
   HiMail,
   HiOfficeBuilding,
-  HiPhotograph,
+  HiOutlineCog,
+  HiOutlineHome,
+  HiOutlineLightBulb,
+  HiOutlineSearch,
+  HiOutlineShoppingBag,
+  HiOutlineSparkles,
+  HiOutlineUser,
+  HiOutlineViewGrid,
   HiSearch,
   HiShieldCheck,
   HiShoppingBag,
@@ -50,7 +57,7 @@ import {
   HiTrash,
   HiUser,
   HiViewGrid,
-  HiXCircle,
+  HiXCircle
 } from "react-icons/hi";
 import SocketContext from "../contexts/Socket";
 import useAmoled from "../stores/useAmoled";
@@ -198,49 +205,49 @@ const Framework = ({
     {
       label: "Home",
       href: "/",
-      icon: <HiHome />,
+      icon: <HiOutlineHome />,
       color: "pink",
       description: "Your experience at a glance",
     },
     {
       label: "Games",
       href: "/games",
-      icon: <HiViewGrid />,
+      icon: <HiOutlineViewGrid />,
       color: "violet",
       description: "Browse Frameworks catalog of immersive games",
     },
     {
       label: "Catalog",
       href: "/catalog",
-      icon: <HiShoppingBag />,
+      icon: <HiOutlineShoppingBag />,
       color: "blue",
       description: "Find some new items for your avatar",
     },
     {
       label: "Invent",
       href: "/invent",
-      icon: <HiLightBulb />,
+      icon: <HiOutlineLightBulb />,
       color: "teal",
       description: "Where imagination comes to life",
     },
     {
       label: "Social",
       href: "/social",
-      icon: <HiPhotograph />,
+      icon: <HiOutlineSparkles />,
       color: "green",
       description: "See what your friends are up to",
     },
     {
       label: "Avatar",
       href: "/avatar",
-      icon: <HiUser />,
+      icon: <HiOutlineUser />,
       color: "orange",
       description: "Manage your avatar",
     },
     {
       label: "Settings",
       href: "/settings/account",
-      icon: <HiCog />,
+      icon: <HiOutlineCog />,
       color: "grape",
       description: "Manage your account and other settings",
     },
@@ -697,7 +704,7 @@ const Framework = ({
                     onClick={() => setSearchPopoverOpen(!searchPopoverOpen)}
                     mb={10}
                   >
-                    <HiSearch />
+                    <HiOutlineSearch />
                   </ActionIcon>
                 </Popover.Target>
 
