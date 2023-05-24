@@ -49,7 +49,6 @@ const ChatMessage: FC<ChatMessageProps> = ({
         onOpen={() => setMenuOpened(true)}
         onClose={() => setMenuOpened(false)}
         withinPortal
-        zIndex={99999}
       >
         <Menu.Target>
           <ActionIcon>
