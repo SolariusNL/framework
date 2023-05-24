@@ -16,6 +16,7 @@ import {
   Stack,
   Text,
   TextInput,
+  Tooltip,
   useMantineColorScheme,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
@@ -385,6 +386,7 @@ const Chat: React.FC = () => {
               if (res.success) {
                 setCreateConvoOpened(false);
                 fetchConversations();
+                createConvoForm.reset();
               }
             })
         )}
@@ -467,7 +469,13 @@ const Chat: React.FC = () => {
                 </div>
               ))
             ) : (
-              <></>
+              <>
+                <div className="w-full flex items-center justify-center text-center">
+                  <Text size="sm" color="dimmed">
+                    Select users to add to this conversation.
+                  </Text>
+                </div>
+              </>
             )}
           </ShadedCard>
           <Button mt="md" type="submit" fullWidth size="lg">
@@ -1096,6 +1104,19 @@ const Chat: React.FC = () => {
                                         >
                                           {String(unreadMessages[convo.id])}
                                         </Badge>
+                                      ) : // if it has only 2 participants, show the other participant's avatar,
+                                      // otherwise merge up to 4 avatars in a 24x24 circle
+                                      convo.participants.length === 2 ? (
+                                        <Avatar
+                                          src={getMediaUrl(
+                                            convo.participants.find(
+                                              (participant) =>
+                                                participant.id !== user?.id
+                                            )!.avatarUri
+                                          )}
+                                          size={24}
+                                          className="mr-2 rounded-full"
+                                        />
                                       ) : (
                                         <Avatar
                                           src={getMediaUrl(
@@ -1113,13 +1134,23 @@ const Chat: React.FC = () => {
                                           </Text>
                                         </div>
 
-                                        <Text size="sm" color="dimmed">
-                                          {convo.participants.length}{" "}
-                                          {Fw.Strings.pluralize(
-                                            convo.participants.length,
-                                            "participant"
-                                          )}
-                                        </Text>
+                                        <Tooltip
+                                          openDelay={250}
+                                          label={convo.participants
+                                            .map(
+                                              (participant) =>
+                                                participant.username
+                                            )
+                                            .join(", ")}
+                                        >
+                                          <Text size="sm" color="dimmed">
+                                            {convo.participants.length}{" "}
+                                            {Fw.Strings.pluralize(
+                                              convo.participants.length,
+                                              "participant"
+                                            )}
+                                          </Text>
+                                        </Tooltip>
                                       </div>
                                     </div>
                                     <HiArrowRight className="text-dimmed group-hover:opacity-100 transition-all opacity-0" />
