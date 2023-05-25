@@ -15,6 +15,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { HiClipboard, HiFlag, HiPlus, HiUser } from "react-icons/hi";
 import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
+import { Fw } from "../../util/fw";
 import getMediaUrl from "../../util/get-media";
 import { NonUser } from "../../util/prisma-types";
 import ContextMenu from "../ContextMenu";
@@ -23,7 +24,6 @@ import ReportUser from "../ReportUser";
 import ShadedButton from "../ShadedButton";
 import ShadedCard from "../ShadedCard";
 import Verified from "../Verified";
-import { Fw } from "../../util/fw";
 
 export const Section: React.FC<{
   title: string;
@@ -81,6 +81,10 @@ export const Friend: React.FC<{
   const [reportOpened, setReportOpened] = useState(false);
   const { copy } = useClipboard();
 
+  if (friend.username.startsWith("[Deleted")) {
+    return <></>;
+  }
+
   return (
     <>
       <ReportUser
@@ -120,7 +124,7 @@ export const Friend: React.FC<{
         }
       >
         <Link href={`/profile/${friend.username}`} passHref className="w-fit">
-          <ShadedButton className="flex flex-col w-fit overflow-hidden">
+          <ShadedButton className="flex flex-col overflow-hidden">
             <div className="flex items-start gap-4 w-fit">
               <Indicator
                 disabled={
