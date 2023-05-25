@@ -2071,9 +2071,6 @@ class AdminRouter {
       },
       data: {
         locked: !user.locked,
-        sessions: {
-          deleteMany: {},
-        },
       },
     });
 
