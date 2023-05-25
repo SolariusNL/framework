@@ -147,7 +147,7 @@ const Register: NextPage = () => {
               {...form.getInputProps("remainLoggedIn")}
             />
           </Group>
-          <Button fullWidth mt="xl" type="submit" mb="sm">
+          <Button fullWidth mt="xl" type="submit">
             Register
           </Button>
           {/**

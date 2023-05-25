@@ -23,6 +23,7 @@ import ReportUser from "../ReportUser";
 import ShadedButton from "../ShadedButton";
 import ShadedCard from "../ShadedCard";
 import Verified from "../Verified";
+import { Fw } from "../../util/fw";
 
 export const Section: React.FC<{
   title: string;
@@ -118,9 +119,9 @@ export const Friend: React.FC<{
           </>
         }
       >
-        <Link href={`/profile/${friend.username}`} passHref>
-          <ShadedButton className="w-full flex flex-col">
-            <div className="flex items-start gap-4">
+        <Link href={`/profile/${friend.username}`} passHref className="w-fit">
+          <ShadedButton className="flex flex-col w-fit overflow-hidden">
+            <div className="flex items-start gap-4 w-fit">
               <Indicator
                 disabled={
                   !friend.lastSeen ||
@@ -136,22 +137,21 @@ export const Friend: React.FC<{
                   radius={999}
                 />
               </Indicator>
-              <div>
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1">
+              <div className="w-fit">
+                <div className="flex items-center gap-2 w-fit truncate">
+                  <div className="flex items-center gap-1 w-fit">
                     {friend.verified && (
                       <Verified className="w-[18px] h-[18px]" />
                     )}
-                    <Text size="lg">{friend.username}</Text>
+                    <Text size="lg">{friend.alias || friend.username}</Text>
                   </div>
-                  {friend.alias && (
-                    <Text size="sm" color="dimmed">
-                      {friend.alias || "This user has not yet written a bio."}
-                    </Text>
-                  )}
+                  <span className="text-dimmed">{Fw.Elements.bullet()}</span>
+                  <Text size="sm" color="dimmed">
+                    @{friend.username}
+                  </Text>
                 </div>
                 <Text size="sm" lineClamp={2} color="dimmed">
-                  {friend.bio}
+                  {friend.bio || "This user has not written a bio."}
                 </Text>
                 {(
                   friend as NonUser & {
