@@ -127,11 +127,7 @@ export const Friend: React.FC<{
           <ShadedButton className="flex flex-col overflow-hidden">
             <div className="flex items-start gap-4 w-fit">
               <Indicator
-                disabled={
-                  !friend.lastSeen ||
-                  new Date(friend.lastSeen) <
-                    new Date(new Date().getTime() - 5 * 60 * 1000)
-                }
+                disabled={Fw.Activity.online(friend)}
                 color="green"
                 inline
               >
