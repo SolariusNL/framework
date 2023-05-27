@@ -789,51 +789,59 @@ const Chat: React.FC = () => {
                 )}
               </Text>
             </div>
-            <div>
-              <Text size="sm" color="dimmed" weight={500} mb="sm">
-                Icon
-              </Text>
-              <div className="flex items-center gap-2">
-                <Avatar
-                  placeholder="..."
-                  src={
-                    (uploadedIcon
-                      ? uploadedIcon
-                      : getMediaUrl(conversation?.iconUri!)) as string
-                  }
-                  size="md"
-                  color={Fw.Strings.color(conversation?.name!)}
-                  ref={iconRef as React.MutableRefObject<HTMLImageElement>}
-                >
-                  {Fw.Strings.initials(conversation?.name!)}
-                </Avatar>
-                {uploadedIcon ? (
-                  <Button.Group className="w-full">
-                    <Button fullWidth color="teal" onClick={() => uploadIcon()}>
-                      <HiCheckCircle />
-                    </Button>
-                    <Button
-                      color="red"
-                      fullWidth
-                      onClick={() => {
-                        setUploadedIcon(null);
+            {!conversation.direct && (
+              <div>
+                <Text size="sm" color="dimmed" weight={500} mb="sm">
+                  Icon
+                </Text>
+                <div className="flex items-center gap-2">
+                  <Avatar
+                    placeholder="..."
+                    src={
+                      (uploadedIcon
+                        ? uploadedIcon
+                        : getMediaUrl(conversation?.iconUri!)) as string
+                    }
+                    size="md"
+                    color={Fw.Strings.color(conversation?.name!)}
+                    ref={iconRef as React.MutableRefObject<HTMLImageElement>}
+                  >
+                    {Fw.Strings.initials(conversation?.name!)}
+                  </Avatar>
+                  {uploadedIcon ? (
+                    <Button.Group className="w-full">
+                      <Button
+                        fullWidth
+                        color="teal"
+                        onClick={() => uploadIcon()}
+                      >
+                        <HiCheckCircle />
+                      </Button>
+                      <Button
+                        color="red"
+                        fullWidth
+                        onClick={() => {
+                          setUploadedIcon(null);
+                        }}
+                      >
+                        <HiXCircle />
+                      </Button>
+                    </Button.Group>
+                  ) : (
+                    <ImageUploader
+                      onFinished={(imgStr) => {
+                        setUploadedIcon(imgStr);
                       }}
-                    >
-                      <HiXCircle />
-                    </Button>
-                  </Button.Group>
-                ) : (
-                  <ImageUploader
-                    onFinished={(imgStr) => {
-                      setUploadedIcon(imgStr);
-                    }}
-                    crop
-                    ratio={1}
-                    imgRef={iconRef as React.MutableRefObject<HTMLImageElement>}
-                  />
-                )}
+                      crop
+                      ratio={1}
+                      imgRef={
+                        iconRef as React.MutableRefObject<HTMLImageElement>
+                      }
+                    />
+                  )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           <Divider mt="lg" mb="lg" />
@@ -1180,7 +1188,14 @@ const Chat: React.FC = () => {
                                 </Text>
                                 <Avatar
                                   placeholder="..."
-                                  src={getMediaUrl(conversation?.iconUri!)}
+                                  src={getMediaUrl(
+                                    conversation?.direct
+                                      ? conversation?.participants.find(
+                                          (participant) =>
+                                            participant.id !== user?.id
+                                        )?.avatarUri!
+                                      : getMediaUrl(conversation?.iconUri!)!
+                                  )}
                                   size="sm"
                                   color={Fw.Strings.color(conversation?.name!)}
                                 >
