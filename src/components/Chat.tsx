@@ -1194,7 +1194,7 @@ const Chat: React.FC = () => {
                                           (participant) =>
                                             participant.id !== user?.id
                                         )?.avatarUri!
-                                      : getMediaUrl(conversation?.iconUri!)!
+                                      : conversation?.iconUri!
                                   )}
                                   size="sm"
                                   color={Fw.Strings.color(conversation?.name!)}
