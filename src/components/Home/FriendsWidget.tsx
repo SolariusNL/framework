@@ -127,7 +127,7 @@ export const Friend: React.FC<{
           <ShadedButton className="flex flex-col overflow-hidden">
             <div className="flex items-start gap-4 w-fit">
               <Indicator
-                disabled={Fw.Activity.online(friend)}
+                disabled={!Fw.Presence.online(friend)}
                 color="green"
                 inline
               >

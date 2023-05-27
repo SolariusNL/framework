@@ -57,6 +57,7 @@ import IResponseBase from "../types/api/IResponseBase";
 import { useOnClickOutside } from "../util/click-outside";
 import clsx from "../util/clsx";
 import fetchJson from "../util/fetch";
+import getFileFromImg from "../util/files";
 import { Fw } from "../util/fw";
 import getMediaUrl from "../util/get-media";
 import { Preferences } from "../util/preferences";
@@ -64,6 +65,7 @@ import { ChatMessage, NonUser } from "../util/prisma-types";
 import { getMyFriends } from "../util/universe/friends";
 import { UserItemComponent } from "./Admin/Pages/Activity";
 import ChatMsg from "./Chat/ChatMessage";
+import ImageUploader from "./ImageUploader";
 import InlineError from "./InlineError";
 import InlineUserCard from "./InlineUserCard";
 import LoadingIndicator from "./LoadingIndicator";
@@ -141,6 +143,8 @@ const Chat: React.FC = () => {
     useState(false);
   const [changeNameModalOpened, setChangeNameModalOpened] = useState(false);
   const messageInputRef = useRef<HTMLInputElement>(null);
+  const [uploadedIcon, setUploadedIcon] = useState<string | null>(null);
+  const iconRef = useRef<HTMLImageElement | null>();
   const [picker, setPicker] = useState(false);
   const pickerRef = useRef<HTMLDivElement>(null);
   const socket = useContext(SocketContext);
@@ -266,6 +270,44 @@ const Chat: React.FC = () => {
         }
       }
     });
+  };
+
+  const uploadIcon = async () => {
+    if (uploadedIcon) {
+      const form = new FormData();
+      form.append("convo", getFileFromImg(uploadedIcon));
+
+      fetch(`/api/media/upload/convo/${conversation?.id}`, {
+        method: "POST",
+        headers: {
+          authorization: String(getCookie(".frameworksession")),
+        },
+        body: form,
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          if (res.success) {
+            setConversation((prev) => ({
+              ...prev!,
+              iconUri: uploadedIcon,
+            }));
+            setUploadedIcon(null);
+            showNotification({
+              title: "Icon uploaded",
+              message:
+                "Icon uploaded successfully. It may take a few minutes to propagate.",
+              icon: <HiCheckCircle />,
+            });
+          }
+        })
+        .catch(() => {
+          showNotification({
+            title: "Failed to upload icon",
+            message: "Failed to upload icon. Please try again.",
+            icon: <HiXCircle />,
+          });
+        });
+    }
   };
 
   useHotkeys([
@@ -630,7 +672,7 @@ const Chat: React.FC = () => {
         setChangeNameModalOpened(true);
       }}
     >
-      Edit
+      Name
     </Button>
   );
   const ChangeNameModal = (
@@ -717,24 +759,83 @@ const Chat: React.FC = () => {
     >
       {conversation && (
         <>
-          <div className="mb-6">
-            <Text size="sm" color="dimmed" weight={500} mb="sm">
-              Owner
-            </Text>
-            <Owner user={conversation?.owner!} />
+          <div className="mb-6 md:gap-y-4 space-y-6 md:grid flex-col md:grid-cols-2">
+            <div>
+              <Text size="sm" color="dimmed" weight={500} mb="sm">
+                Owner
+              </Text>
+              <Owner user={conversation?.owner!} />
+            </div>
+            <div>
+              <Text size="sm" color="dimmed" weight={500} mb="sm">
+                Participants
+              </Text>
+              <Text>
+                {conversation?.participants.length}{" "}
+                {Fw.Strings.pluralize(
+                  conversation?.participants.length,
+                  "participant"
+                )}
+              </Text>
+            </div>
+            <div>
+              <Text size="sm" color="dimmed" weight={500} mb="sm">
+                Created
+              </Text>
+              <Text>
+                {Fw.Dates.format(
+                  new Date(conversation?.createdAt!),
+                  "MMMM dd, yyyy hh:mm"
+                )}
+              </Text>
+            </div>
+            <div>
+              <Text size="sm" color="dimmed" weight={500} mb="sm">
+                Icon
+              </Text>
+              <div className="flex items-center gap-2">
+                <Avatar
+                  placeholder="..."
+                  src={
+                    (uploadedIcon
+                      ? uploadedIcon
+                      : getMediaUrl(conversation?.iconUri!)) as string
+                  }
+                  size="md"
+                  color={Fw.Strings.color(conversation?.name!)}
+                  ref={iconRef as React.MutableRefObject<HTMLImageElement>}
+                >
+                  {Fw.Strings.initials(conversation?.name!)}
+                </Avatar>
+                {uploadedIcon ? (
+                  <Button.Group className="w-full">
+                    <Button fullWidth color="teal" onClick={() => uploadIcon()}>
+                      <HiCheckCircle />
+                    </Button>
+                    <Button
+                      color="red"
+                      fullWidth
+                      onClick={() => {
+                        setUploadedIcon(null);
+                      }}
+                    >
+                      <HiXCircle />
+                    </Button>
+                  </Button.Group>
+                ) : (
+                  <ImageUploader
+                    onFinished={(imgStr) => {
+                      setUploadedIcon(imgStr);
+                    }}
+                    crop
+                    ratio={1}
+                    imgRef={iconRef as React.MutableRefObject<HTMLImageElement>}
+                  />
+                )}
+              </div>
+            </div>
           </div>
-          <div>
-            <Text size="sm" color="dimmed" weight={500} mb="sm">
-              Participants
-            </Text>
-            <Text>
-              {conversation?.participants.length}{" "}
-              {Fw.Strings.pluralize(
-                conversation?.participants.length,
-                "participant"
-              )}
-            </Text>
-          </div>
+
           <Divider mt="lg" mb="lg" />
           <ScrollArea
             style={{
@@ -834,17 +935,17 @@ const Chat: React.FC = () => {
                 <div className="flex gap-2">
                   {LeaveButton}
                   <Button.Group>
-                  {ChangeNameButton}
-                  <Button
-                    leftIcon={<HiPlus />}
-                    fullWidth
-                    onClick={() => {
-                      setAddUserOpened(true);
-                      setConversationDetailsOpened(false);
-                    }}
-                  >
-                    Add
-                  </Button>
+                    {ChangeNameButton}
+                    <Button
+                      leftIcon={<HiPlus />}
+                      fullWidth
+                      onClick={() => {
+                        setAddUserOpened(true);
+                        setConversationDetailsOpened(false);
+                      }}
+                    >
+                      Add
+                    </Button>
                   </Button.Group>
                 </div>
               ) : (
@@ -1056,14 +1157,16 @@ const Chat: React.FC = () => {
                                   Go back
                                 </Button>
                               </div>
-                              <div className="flex gap-2 items-center justify-end truncate w-full">
+                              <div
+                                onClick={() => {
+                                  setConversationDetailsOpened(true);
+                                }}
+                                className="flex gap-2 items-center justify-end cursor-pointer truncate w-full"
+                              >
                                 <Text
                                   color="dimmed"
                                   size="sm"
-                                  className="truncate transition-colors duration-500 cursor-pointer hover:text-sky-600 dark:hover:text-sky-400"
-                                  onClick={() => {
-                                    setConversationDetailsOpened(true);
-                                  }}
+                                  className="truncate transition-colors duration-100 cursor-pointer hover:text-sky-600 dark:hover:text-sky-400"
                                 >
                                   {conversation?.participants.length === 2 &&
                                   conversation?.direct
@@ -1075,6 +1178,14 @@ const Chat: React.FC = () => {
                                       }`
                                     : conversation?.name}
                                 </Text>
+                                <Avatar
+                                  placeholder="..."
+                                  src={getMediaUrl(conversation?.iconUri!)}
+                                  size="sm"
+                                  color={Fw.Strings.color(conversation?.name!)}
+                                >
+                                  {Fw.Strings.initials(conversation?.name!)}
+                                </Avatar>
                               </div>
                             </div>
                           </Card.Section>
@@ -1358,12 +1469,14 @@ const Chat: React.FC = () => {
                                           />
                                         ) : (
                                           <Avatar
-                                            src={getMediaUrl(
-                                              convo.owner.avatarUri
-                                            )}
+                                            placeholder="..."
+                                            src={getMediaUrl(convo?.iconUri!)}
                                             size={24}
-                                            className="mr-2 rounded-full"
-                                          />
+                                            className="rounded-full mr-2"
+                                            color={Fw.Strings.color(convo.name)}
+                                          >
+                                            {Fw.Strings.initials(convo.name)}
+                                          </Avatar>
                                         )}
                                       </div>
 

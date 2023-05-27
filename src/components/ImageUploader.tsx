@@ -13,6 +13,7 @@ interface ImageUploaderProps {
   ratio?: number;
   modalSize?: "sm" | "md" | "lg" | "xl";
   buttonProps?: ButtonProps;
+  onBegin?: () => void;
 }
 
 const Cropper = dynamic(() => import("react-image-crop"), {
@@ -27,6 +28,7 @@ const ImageUploader = ({
   ratio,
   modalSize,
   buttonProps,
+  onBegin,
 }: ImageUploaderProps) => {
   const [img, setImg] = useState<File | null>(null);
   const [croppedImg, setCroppedImg] = useState<string | null>(null);
@@ -159,7 +161,14 @@ const ImageUploader = ({
               button ? (
                 button
               ) : (
-                <Button leftIcon={<HiUpload />} {...props} {...buttonProps}>
+                <Button
+                  leftIcon={<HiUpload />}
+                  onClick={() => {
+                    if (onBegin) onBegin();
+                    props.onClick();
+                  }}
+                  {...buttonProps}
+                >
                   Upload image
                 </Button>
               )

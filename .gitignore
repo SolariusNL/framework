@@ -39,6 +39,7 @@ yarn-error.log*
 /public/icons
 /public/gamepass
 /public/team
+/public/convo
 
 framework.yml
 framework.schema.json

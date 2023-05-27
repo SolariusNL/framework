@@ -18,13 +18,13 @@ export const config = {
   },
 };
 
-const convertToWebp = (file: any) => {
+const convertToWebp = (file: string) => {
   return sharp(file)
     .webp({ quality: 95, alphaQuality: 95, lossless: true })
     .toBuffer()
     .then((data) => data)
     .catch((err) => {
-      console.log(err);
+      console.log("Failed to convert to webp: ", err);
       return file;
     });
 };
@@ -194,6 +194,41 @@ const teamIcons = createMulter("team", async (req, file, cb) => {
   cb(null, team.id + ".webp");
 });
 
+const convoIcons = createMulter("convo", async (req, file, cb) => {
+  const user = await getAccountFromSession(
+    String(req.headers["authorization"])
+  );
+
+  if (!req.params.convoId)
+    return cb(new Error("No conversation id provided"), "");
+
+  const conversation = await prisma.chatConversation.findFirst({
+    where: {
+      id: String(req.params.convoId),
+      participants: {
+        some: {
+          id: user?.id,
+        },
+      },
+    },
+  });
+
+  if (!conversation) return cb(new Error("Conversation not found"), "");
+  if (!String(req.params.convoId))
+    return cb(new Error("Invalid conversation id"), "");
+
+  await prisma.chatConversation.update({
+    where: {
+      id: String(req.params.convoId),
+    },
+    data: {
+      iconUri: `/convo/${conversation.id}.webp`,
+    },
+  });
+
+  cb(null, conversation.id + ".webp");
+});
+
 class MediaRouter {
   @Post("/upload/avatar")
   @Authorized()
@@ -250,6 +285,19 @@ class MediaRouter {
   ) {
     return {
       icon: `/team/${teamId}.webp`,
+      success: true,
+    };
+  }
+
+  @Post("/upload/convo/:convoId")
+  @Authorized()
+  @UseMiddleware(convoIcons.single("convo"))
+  async uploadConversationIcon(
+    @Account() account: User,
+    @Param("convoId") convoId: string
+  ) {
+    return {
+      icon: `/convo/${convoId}.webp`,
       success: true,
     };
   }
