@@ -1188,16 +1188,21 @@ const Chat: React.FC = () => {
                                 </Text>
                                 <Avatar
                                   placeholder="..."
-                                  src={getMediaUrl(
+                                  src={
                                     conversation?.direct
-                                      ? conversation?.participants.find(
-                                          (participant) =>
-                                            participant.id !== user?.id
-                                        )?.avatarUri!
-                                      : conversation?.iconUri!
-                                  )}
+                                      ? getMediaUrl(
+                                          conversation?.participants.find(
+                                            (participant) =>
+                                              participant.id !== user?.id
+                                          )?.avatarUri!
+                                        )
+                                      : getMediaUrl(conversation?.iconUri!)
+                                  }
                                   size="sm"
                                   color={Fw.Strings.color(conversation?.name!)}
+                                  className={clsx(
+                                    conversation?.direct && "rounded-full"
+                                  )}
                                 >
                                   {Fw.Strings.initials(conversation?.name!)}
                                 </Avatar>
