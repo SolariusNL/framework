@@ -51,6 +51,7 @@ import {
 import ContextMenu from "../../components/ContextMenu";
 import ConsoleOutput from "../../components/Developer/ConsoleOutput";
 import ServerContextMenu from "../../components/Developer/ServerContextMenu";
+import FilterIndicator from "../../components/FilterIndicator";
 import { Section } from "../../components/Home/FriendsWidget";
 import ModernEmptyState from "../../components/ModernEmptyState";
 import ShadedButton from "../../components/ShadedButton";
@@ -682,7 +683,7 @@ const Servers: FC<ServersProps> = ({ user }) => {
                             <div
                               className={clsx(
                                 "flex-initial flex-col md:flex-row flex items-center gap-4",
-                                "items-stretch md:items-center mb-8"
+                                "items-stretch md:items-center"
                               )}
                             >
                               <TextInput
@@ -709,8 +710,8 @@ const Servers: FC<ServersProps> = ({ user }) => {
                                               mb="xs"
                                             >
                                               Server search includes an advanced
-                                              search system to easily find what
-                                              you&apos;re looking for.
+                                              search system to help you find
+                                              servers that match your criteria.
                                             </Text>
                                             <Text
                                               size="sm"
@@ -719,11 +720,12 @@ const Servers: FC<ServersProps> = ({ user }) => {
                                             >
                                               If you&apos;re looking for servers
                                               for a specific game, you can
-                                              search for the games name. Or, to
-                                              narrow it down even more, you can
-                                              use the below example to search
-                                              for servers under a game by its
-                                              ID, 25.
+                                              search for it by name or ID. For
+                                              example, if you want to find
+                                              servers for My Game with ID 25,
+                                              you can search for{" "}
+                                              <Code>id:25</Code> or{" "}
+                                              <Code>My Game</Code>.
                                             </Text>
                                             <div className="flex flex-col items-center justify-center mb-4 gap-2">
                                               <Code>id:25</Code>
@@ -799,7 +801,16 @@ const Servers: FC<ServersProps> = ({ user }) => {
                                 placeholder="Sort by"
                               />
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {search.includes("id:") && (
+                              <FilterIndicator
+                                text={`id: ${search.split("id:")[1]}`}
+                                onClick={() =>
+                                  setSearch(search.split("id:")[0])
+                                }
+                                className="mt-2"
+                              />
+                            )}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
                               {servers
                                 .filter(filterFn)
                                 .sort(sortFn)
