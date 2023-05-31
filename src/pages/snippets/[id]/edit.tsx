@@ -1,40 +1,163 @@
 import {
-  Affix,
+  AppShell,
+  Badge,
+  Burger,
   Button,
+  Container,
+  Group,
+  Header,
   Loader,
+  MediaQuery,
+  Navbar,
+  ScrollArea,
+  Stack,
+  Text,
+  TextInput,
+  Textarea,
+  Title,
   Transition,
+  createStyles,
   useMantineColorScheme,
 } from "@mantine/core";
+import { useScrollLock } from "@mantine/hooks";
 import Editor from "@monaco-editor/react";
 import { CodeSnippet } from "@prisma/client";
+import { LayoutGroup, motion } from "framer-motion";
 import { GetServerSidePropsContext, NextPage } from "next";
 import Head from "next/head";
-import React from "react";
-import { HiSave } from "react-icons/hi";
+import React, { useEffect } from "react";
+import {
+  HiCode,
+  HiCog,
+  HiSave,
+  HiTag
+} from "react-icons/hi";
 import Framework from "../../../components/Framework";
+import { Section } from "../../../components/Home/FriendsWidget";
+import SideBySide from "../../../components/Settings/SideBySide";
+import useAmoled from "../../../stores/useAmoled";
 import authorizedRoute from "../../../util/auth";
+import clsx from "../../../util/clsx";
 import { getCookie } from "../../../util/cookies";
+import useMediaQuery from "../../../util/media-query";
 import prisma from "../../../util/prisma";
 import { User } from "../../../util/prisma-types";
+import { BLACK } from "../../teams/t/[slug]/issue/create";
 
-interface EditSnippetProps {
+type EditSnippetProps = {
   user: User;
   snippet: CodeSnippet;
-}
+};
+type ActiveTab = "edit" | "settings";
+
+const useStyles = createStyles((theme, _params, getRef) => {
+  const icon = getRef("icon");
+  return {
+    header: {
+      paddingBottom: theme.spacing.md,
+      marginBottom: theme.spacing.md * 1.5,
+      borderBottom: `1px solid ${
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[4]
+          : theme.colors.gray[2]
+      }`,
+    },
+
+    footer: {
+      paddingTop: theme.spacing.md,
+      marginTop: theme.spacing.md,
+      borderTop: `1px solid ${
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[4]
+          : theme.colors.gray[2]
+      }`,
+    },
+
+    link: {
+      ...theme.fn.focusStyles(),
+      display: "flex",
+      alignItems: "center",
+      textDecoration: "none",
+      fontSize: theme.fontSizes.sm,
+      color:
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[1]
+          : theme.colors.gray[7],
+      padding: `${theme.spacing.xs}px ${theme.spacing.md}px`,
+      borderRadius: theme.radius.md,
+      fontWeight: 500,
+
+      "&:hover": {
+        backgroundColor:
+          theme.colorScheme === "dark" ? theme.colors.dark[8] : theme.white,
+        color: theme.colorScheme === "dark" ? theme.white : theme.black,
+
+        [`& .${icon}`]: {
+          color: theme.colorScheme === "dark" ? theme.white : theme.black,
+        },
+      },
+    },
+
+    linkIcon: {
+      ref: icon,
+      color:
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[2]
+          : theme.colors.gray[6],
+      marginRight: theme.spacing.md + 2,
+    },
+
+    linkActive: {
+      "&, &:hover": {
+        backgroundColor: theme.fn.variant({
+          variant: "light",
+          color: theme.primaryColor,
+        }).background,
+        color: theme.fn.variant({ variant: "light", color: theme.primaryColor })
+          .color,
+        [`& .${icon}`]: {
+          color: theme.fn.variant({
+            variant: "light",
+            color: theme.primaryColor,
+          }).color,
+        },
+      },
+    },
+  };
+});
+
+const items: Array<{
+  label: string;
+  value: ActiveTab;
+  icon: React.ReactNode;
+  subtitle: string;
+}> = [
+  {
+    label: "Edit",
+    icon: <HiCode />,
+    value: "edit",
+    subtitle: "Edit this code snippet",
+  },
+  {
+    label: "Settings",
+    icon: <HiCog />,
+    value: "settings",
+    subtitle: "Edit details about this snippet",
+  },
+];
 
 const EditSnippet: NextPage<EditSnippetProps> = ({ user, snippet }) => {
   const [dirty, setDirty] = React.useState(false);
   const [code, setCode] = React.useState(snippet.code);
   const [updatedCode, setUpdatedCode] = React.useState(snippet.code);
-
+  const [opened, setOpened] = React.useState(false);
+  const { classes, cx, theme } = useStyles();
+  const { enabled: amoled } = useAmoled();
+  const [active, setActive] = React.useState<ActiveTab>("edit");
   const { colorScheme } = useMantineColorScheme();
   const dark = colorScheme === "dark";
-
-  const [isSSR, setIsSSR] = React.useState(true);
-
-  React.useEffect(() => {
-    setIsSSR(false);
-  }, []);
+  const mobile = useMediaQuery("768");
+  const [locked, setLocked] = useScrollLock();
 
   globalThis.onbeforeunload = (event: BeforeUnloadEvent) => {
     const message = "You have unsaved changes.";
@@ -51,6 +174,10 @@ const EditSnippet: NextPage<EditSnippetProps> = ({ user, snippet }) => {
     }
 
     return;
+  };
+
+  const getTab = () => {
+    return items.find((i) => i.value === active);
   };
 
   const saveChanges = async () => {
@@ -82,51 +209,239 @@ const EditSnippet: NextPage<EditSnippetProps> = ({ user, snippet }) => {
       });
   };
 
+  const SidebarItem: React.FC<{
+    onClick?: () => void;
+    icon:
+      | React.ComponentType<
+          React.SVGProps<SVGSVGElement> & { title?: string | undefined }
+        >
+      | React.ReactNode;
+    label: string;
+  }> = ({ onClick, icon: Icon, label }) => (
+    <a className={classes.link + " cursor-pointer"} onClick={onClick}>
+      {typeof Icon === "function" ? (
+        <Icon className={classes.linkIcon} stroke="1.5" />
+      ) : (
+        <Group
+          sx={(theme) => ({
+            marginRight: theme.spacing.sm,
+          })}
+        >
+          {Icon}
+        </Group>
+      )}
+      <span>{label}</span>
+    </a>
+  );
+
+  const links = items.map((item) => (
+    <motion.a
+      className={clsx(
+        "dark:text-zinc-300s font-normal flex cursor-pointer items-center gap-2 w-full md:px-6 px-4 h-9 rounded-md relative transition ease-in-out duration-200",
+        active === item.label.toLowerCase()
+          ? "dark:text-pink-200 text-pink-700 !font-medium"
+          : "dark:hover:text-zinc-200 dark:hover:bg-zinc-700/10",
+        mobile && active === item.label.toLowerCase() && "dark:bg-pink-900/30"
+      )}
+      style={{
+        fontSize: theme.fontSizes.sm,
+      }}
+      key={item.label}
+      onClick={(event) => {
+        setActive(item.value as ActiveTab);
+        event.preventDefault();
+      }}
+    >
+      {active === item.label.toLowerCase() && (
+        <motion.span
+          layoutId="sidebar"
+          className={clsx(
+            "absolute left-0 right-0 top-0 bottom-0 rounded-md bg-pink-900/30",
+            mobile && "hidden"
+          )}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <div className="bg-pink-800 w-[2px] rounded-full absolute top-2.5 left-2.5 h-4" />
+        </motion.span>
+      )}
+      {item.icon}
+      {item.label}
+    </motion.a>
+  ));
+
+  useEffect(() => {
+    setLocked(true);
+  }, []);
+
   return (
     <>
       <Head>
-        {/* @ts-ignore */}
-        <style>
+        <style jsx global>
           {`
-            html, body {
-              overflow: hidden;
+            html,
+            body {
+              overflow: hidden !important;
             }
           `}
         </style>
       </Head>
-
-      <Affix position={{ bottom: 20, right: 20 }}>
-        <Transition transition="slide-up" mounted={dirty}>
-          {(styles) => (
-            <Button
-              size="lg"
-              fullWidth
-              leftIcon={<HiSave />}
-              onClick={saveChanges}
-              disabled={!dirty}
-              style={styles}
+      <Framework
+        noOverflow
+        user={user}
+        footer={false}
+        activeTab="none"
+        noPadding
+      >
+        <AppShell
+          navbar={
+            <Navbar
+              width={{ sm: 300 }}
+              p="md"
+              hiddenBreakpoint="sm"
+              hidden={!opened}
+              sx={{
+                ...(amoled && {
+                  backgroundColor: "black",
+                }),
+              }}
             >
-              {dirty ? "Save Changes" : "Saved"}
-            </Button>
-          )}
-        </Transition>
-      </Affix>
+              <Navbar.Section>
+                <div className={clsx(classes.header, "flex flex-col gap-2")}>
+                  <Group position="apart">
+                    <Title order={3}>{snippet.name}</Title>
+                    <Badge color="grape">{snippet.language}</Badge>
+                  </Group>
+                  <Text size="sm" color="dimmed" lineClamp={2}>
+                    {snippet.description}
+                  </Text>
+                </div>
+              </Navbar.Section>
 
-      <Framework user={user} activeTab="none" noPadding>
-        <Editor
-          defaultLanguage="typescript"
-          defaultValue={snippet.code}
-          loading={<Loader size="xl" />}
-          className="monaco-editor"
-          onChange={(val) => {
-            if (val !== updatedCode) {
-              setDirty(true);
-            }
+              <Navbar.Section
+                grow
+                component={React.forwardRef<HTMLDivElement>((props, ref) => (
+                  <ScrollArea {...props} />
+                ))}
+              >
+                <LayoutGroup id="sidebar">
+                  <div className="flex flex-col gap-y-1">{links}</div>
+                </LayoutGroup>
+              </Navbar.Section>
+              <Navbar.Section grow>
+                <Transition transition="slide-up" mounted={dirty}>
+                  {(styles) => (
+                    <Button
+                      size="lg"
+                      fullWidth
+                      leftIcon={<HiSave />}
+                      onClick={saveChanges}
+                      disabled={!dirty}
+                      style={styles}
+                    >
+                      {dirty ? "Save Changes" : "Saved"}
+                    </Button>
+                  )}
+                </Transition>
+              </Navbar.Section>
+            </Navbar>
+          }
+          padding={0}
+          {...(mobile && {
+            header: (
+              <Header height={50} p="md">
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    height: "100%",
+                  }}
+                >
+                  <MediaQuery largerThan="sm" styles={{ display: "none" }}>
+                    <Burger
+                      opened={opened}
+                      onClick={() => setOpened((o) => !o)}
+                      size="sm"
+                      color={theme.colors.gray[6]}
+                      mr="xl"
+                    />
+                  </MediaQuery>
 
-            setCode(String(val));
-          }}
-          theme={dark ? "vs-dark" : "vs"}
-        />
+                  <div className="flex items-center gap-4">
+                    <Text size="lg" weight={500}>
+                      {getTab()?.label}
+                    </Text>
+                    <Text size="sm" color="dimmed" lineClamp={1}>
+                      {getTab()?.subtitle}
+                    </Text>
+                  </div>
+                </div>
+              </Header>
+            ),
+          })}
+        >
+          <div className={clsx(active === "edit" ? "block" : "hidden")}>
+            <Editor
+              defaultLanguage={snippet.language}
+              defaultValue={snippet.code}
+              loading={<Loader size="xl" />}
+              className="monaco-editor"
+              onChange={(val) => {
+                if (val !== updatedCode) {
+                  setDirty(true);
+                }
+
+                setCode(String(val));
+              }}
+              theme={dark ? "vs-dark" : "vs"}
+            />
+          </div>
+          <div
+            className={clsx(
+              active === "settings" ? "block" : "hidden",
+              "md:py-8 py-2"
+            )}
+          >
+            <Container>
+              <Section
+                title="Details"
+                description="Edit the details of this code snippet"
+              />
+              <Stack spacing="md">
+                <SideBySide
+                  title="Snippet name"
+                  description="Name of the snippet. Quickly summarize what your snippet does. Ex: Get Array Keys"
+                  noUpperBorder
+                  shaded
+                  right={
+                    <TextInput
+                      icon={<HiTag />}
+                      label="Name"
+                      description="Snippet name field"
+                      classNames={BLACK}
+                      value={snippet.name}
+                    />
+                  }
+                />
+                <SideBySide
+                  title="Snippet description"
+                  description="Describe the functionality of this snippet. Document lines of code & what they do."
+                  noUpperBorder
+                  shaded
+                  right={
+                    <Textarea
+                      label="Description"
+                      description="Snippet description field"
+                      classNames={BLACK}
+                      value={snippet.description}
+                    />
+                  }
+                />
+              </Stack>
+            </Container>
+          </div>
+        </AppShell>
       </Framework>
     </>
   );

@@ -1,46 +1,75 @@
 import {
-  ActionIcon,
+  Badge,
   Button,
   Group,
   Modal,
-  Table,
+  Text,
   Textarea,
   TextInput,
-  Title,
-  Tooltip,
+  useMantineColorScheme
 } from "@mantine/core";
+import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
-import { HiCheckCircle, HiPencil, HiPlus, HiViewGrid } from "react-icons/hi";
+import {
+  HiArrowRight,
+  HiCheckCircle,
+  HiPlus,
+  HiTag,
+  HiViewGrid
+} from "react-icons/hi";
+import { BLACK } from "../../pages/teams/t/[slug]/issue/create";
 import { getCookie } from "../../util/cookies";
 import { User } from "../../util/prisma-types";
+import ModernEmptyState from "../ModernEmptyState";
+import ShadedButton from "../ShadedButton";
+import ShadedCard from "../ShadedCard";
 import InventTab from "./InventTab";
 
-interface SnippetsProps {
+type SnippetsProps = {
   user: User;
-}
+};
+type SnippetForm = {
+  name: string;
+  description: string;
+  language: "typescript" | "javascript" | "csharp";
+};
 
 const Snippets = ({ user }: SnippetsProps) => {
   const [createModalOpen, setCreateModalOpen] = React.useState(false);
-  const [enteredName, setEnteredName] = React.useState("");
-  const [enteredDescription, setEnteredDescription] = React.useState("");
   const [loading, setLoading] = React.useState(false);
+  const form = useForm<SnippetForm>({
+    initialValues: {
+      name: "",
+      description: "",
+      language: "typescript",
+    },
+    validate: {
+      name: (value) => {
+        if (!value) return "Name cannot be empty";
+        if (value.length > 30)
+          return "Name cannot be longer than 30 characters";
+      },
+      description: (value) => {
+        if (!value) return "Description cannot be empty";
+        if (value.length > 512)
+          return "Description cannot be longer than 512 characters";
+      },
+    },
+  });
 
   const router = useRouter();
 
-  const createSnippet = async () => {
+  const createSnippet = async (values: SnippetForm) => {
     await fetch("/api/snippets/create", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: String(getCookie(".frameworksession")),
       },
-      body: JSON.stringify({
-        name: enteredName,
-        description: enteredDescription,
-      }),
+      body: JSON.stringify(values),
     })
       .then((res) => res.json())
       .then((res) => {
@@ -68,28 +97,42 @@ const Snippets = ({ user }: SnippetsProps) => {
         opened={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
         title="Create snippet"
+        className={useMantineColorScheme().colorScheme}
       >
-        <TextInput
-          label="Name"
-          description="Name of the snippet."
-          value={enteredName}
-          onChange={(e) => setEnteredName(e.target.value)}
-          maxLength={50}
-          mb={6}
-        />
+        <form onSubmit={form.onSubmit(createSnippet)}>
+          <TextInput
+            label="Name"
+            description="Name of the snippet."
+            maxLength={50}
+            mb="md"
+            classNames={BLACK}
+            required
+            icon={<HiTag />}
+            placeholder="Ban admin command"
+            {...form.getInputProps("name")}
+          />
 
-        <Textarea
-          label="Description"
-          description="Describe exactly what the snippet does. We recommend documenting every line, which will help others understand what the snippet does."
-          value={enteredDescription}
-          onChange={(e) => setEnteredDescription(e.target.value)}
-          maxLength={500}
-          mb={20}
-        />
+          <Textarea
+            label="Description"
+            description="Describe exactly what the snippet does. We recommend documenting every line, which will help others understand what the snippet does."
+            maxLength={500}
+            classNames={BLACK}
+            required
+            placeholder="Snippet adds a ban admin command to your Framework game using the Cosmic CLI API."
+            {...form.getInputProps("description")}
+          />
 
-        <Button loading={loading} leftIcon={<HiPlus />} onClick={createSnippet}>
-          Continue to code
-        </Button>
+          <div className="flex justify-end">
+            <Button
+              loading={loading}
+              leftIcon={<HiPlus />}
+              mt="xl"
+              type="submit"
+            >
+              Continue to code
+            </Button>
+          </div>
+        </form>
       </Modal>
 
       <InventTab
@@ -108,47 +151,46 @@ const Snippets = ({ user }: SnippetsProps) => {
                 variant="default"
                 onClick={() => setCreateModalOpen(true)}
               >
-                Create Code Snippet
+                Create snippet
               </Button>
             </Group>
           </>
         }
         tabSubtitle="Share small code snippets with the community and help others learn programming concepts."
       >
-        <Title order={4} mb="lg">
-          Your snippets
-        </Title>
-        <Table striped>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Description</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {user.snippets.map((snippet) => (
-              <tr key={snippet.id}>
-                <td>{snippet.name}</td>
-                <td>{snippet.description}</td>
-                <td>
-                  <Tooltip label="Edit snippet">
-                    <ActionIcon
-                      variant="light"
-                      onClick={() =>
-                        router.push(`/snippets/${snippet.id}/edit`)
-                      }
-                      size="md"
-                    >
-                      <HiPencil />
-                    </ActionIcon>
-                  </Tooltip>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
+        <div className="grid md:grid-cols-2 grid-cols-1 gap-2">
+          {user.snippets.map((s, i) => (
+            <Link href={`/snippets/${s.id}/edit`} key={i}>
+              <ShadedButton className="w-full flex flex-col gap-4">
+                <div className="flex w-full justify-between items-center">
+                  <Badge radius="md" color="grape" className="cursor-pointer">
+                    {s.language || "TypeScript"}
+                  </Badge>
+                  <div className="text-dimmed">
+                    <HiArrowRight />
+                  </div>
+                </div>
+                <Text size="lg" className="flex items-center gap-2">
+                  {s.name}
+                </Text>
+                <Text color="dimmed" size="sm" lineClamp={2}>
+                  {s.description}
+                </Text>
+                <Text size="sm" color="dimmed">
+                  {s.id.split("-").shift()}
+                </Text>
+              </ShadedButton>
+            </Link>
+          ))}
+          {user.snippets.length === 0 && (
+            <ShadedCard className="col-span-full">
+              <ModernEmptyState
+                title="No snippets"
+                body="You don't have any snippets yet."
+              />
+            </ShadedCard>
+          )}
+        </div>
       </InventTab>
     </>
   );

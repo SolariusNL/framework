@@ -20,6 +20,7 @@ import rateLimitedResource, {
 interface SnippetCreateBody {
   name: string;
   description: string;
+  language: "typescript" | "javascript" | "csharp";
 }
 
 interface UpdateSnippetBody {
@@ -151,20 +152,27 @@ class SnippetsRouter {
       };
     }
 
-    const { name, description } = body;
+    const { name, description, language } = body;
 
-    if (!name || !description) {
+    if (!name || !description || !language) {
       return {
         success: false,
         message: "Missing name or description",
       };
     }
 
+    if (!["typescript", "javascript", "csharp"].includes(language)) {
+      return {
+        success: false,
+        message: "Invalid language",
+      };
+    }
+
     if (
-      name.length > 50 ||
-      description.length > 500 ||
-      name.length < 4 ||
-      description.length < 10
+      name.length > 30 ||
+      description.length > 512 ||
+      name.length < 1 ||
+      description.length < 1
     ) {
       return {
         success: false,
@@ -172,11 +180,28 @@ class SnippetsRouter {
       };
     }
 
+    const code = {
+      typescript: "// Write your code here",
+      javascript: "// Write your code here",
+      csharp: `using System;
+
+namespace HelloWorld
+{
+  class Program
+  {
+    static void Main(string[] args)
+    {
+      Console.WriteLine("Hello World!");    
+    }
+  }
+}`,
+    };
+
     const snippet = await prisma.codeSnippet.create({
       data: {
         name,
         description,
-        code: "// Write your code here",
+        code: code[language],
         user: {
           connect: {
             id: user.id,

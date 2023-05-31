@@ -87,6 +87,7 @@ import TabNav from "./TabNav";
 interface FrameworkProps {
   user: User;
   children: React.ReactNode;
+  footer?: boolean;
   activeTab:
     | "home"
     | "games"
@@ -100,6 +101,7 @@ interface FrameworkProps {
   // @deprecated - use noContentPadding instead
   noPadding?: boolean;
   modernTitle?: string;
+  noOverflow?: boolean;
   modernSubtitle?: string;
   noContentPadding?: boolean;
   immersive?: boolean;
@@ -182,6 +184,8 @@ const Framework = ({
   actions,
   integratedTabs,
   relative,
+  footer = true,
+  noOverflow
 }: FrameworkProps) => {
   const { classes } = frameworkStyles();
   const { opened: sidebarOpened, setOpened: setSidebarOpened } = useSidebar();
@@ -846,6 +850,9 @@ const Framework = ({
                 padding: "0px",
                 maxWidth: "100%",
               }),
+              ...(noOverflow && {
+                overflow: "hidden"
+              })
             }}
           >
             {user && !user.emailVerified && !warningSeen && !isSSR && (
@@ -857,7 +864,7 @@ const Framework = ({
       ) : (
         <div>{children}</div>
       )}
-      {!immersive && <Footer />}
+      {!immersive && footer && <Footer />}
     </SpotlightProvider>
   );
 };

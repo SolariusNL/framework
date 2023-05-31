@@ -22,7 +22,7 @@ const ShadedButton: React.FC<
               ? amoled
                 ? AMOLED_COLORS.paper
                 : theme.colors.dark[6]
-              : theme.colors.gray[0],
+              : theme.colors.gray[1],
         },
         width: "100%",
         display: "flex",

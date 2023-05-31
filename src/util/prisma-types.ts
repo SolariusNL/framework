@@ -66,6 +66,7 @@ const user = Prisma.validator<Prisma.UserArgs>()({
         name: true,
         description: true,
         id: true,
+        language: true,
       },
     },
     emailVerificationInstances: true,
@@ -363,6 +364,7 @@ export const snippetSelect: Prisma.CodeSnippetSelect = {
   code: true,
   name: true,
   description: true,
+  language: true,
 };
 
 const snippet = Prisma.validator<Prisma.CodeSnippetArgs>()({
