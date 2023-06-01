@@ -25,6 +25,8 @@ interface SnippetCreateBody {
 
 interface UpdateSnippetBody {
   code: string;
+  name: string;
+  description: string;
 }
 
 class SnippetsRouter {
@@ -36,12 +38,26 @@ class SnippetsRouter {
     @Body() body: UpdateSnippetBody,
     @Param("id") id: string
   ) {
-    const { code } = body;
+    const { code, name, description } = body;
 
-    if (!code) {
+    if (!name || !description || !code) {
       return {
         success: false,
-        message: "Missing code",
+        message: "Missing name, description or code",
+      };
+    }
+
+    if (
+      name.length > 30 ||
+      description.length > 512 ||
+      name.length < 1 ||
+      description.length < 1 ||
+      code.length < 1 ||
+      code.length > 10000
+    ) {
+      return {
+        success: false,
+        message: "Title, description or code too long",
       };
     }
 
@@ -59,19 +75,14 @@ class SnippetsRouter {
       };
     }
 
-    if (code.length > 10000) {
-      return {
-        success: false,
-        message: "Code too long",
-      };
-    }
-
     await prisma.codeSnippet.update({
       where: {
         id,
       },
       data: {
         code,
+        name,
+        description,
       },
     });
 

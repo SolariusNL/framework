@@ -26,12 +26,7 @@ import { LayoutGroup, motion } from "framer-motion";
 import { GetServerSidePropsContext, NextPage } from "next";
 import Head from "next/head";
 import React, { useEffect } from "react";
-import {
-  HiCode,
-  HiCog,
-  HiSave,
-  HiTag
-} from "react-icons/hi";
+import { HiCode, HiCog, HiSave, HiTag } from "react-icons/hi";
 import Framework from "../../../components/Framework";
 import { Section } from "../../../components/Home/FriendsWidget";
 import SideBySide from "../../../components/Settings/SideBySide";
@@ -148,7 +143,6 @@ const items: Array<{
 
 const EditSnippet: NextPage<EditSnippetProps> = ({ user, snippet }) => {
   const [dirty, setDirty] = React.useState(false);
-  const [code, setCode] = React.useState(snippet.code);
   const [updatedCode, setUpdatedCode] = React.useState(snippet.code);
   const [opened, setOpened] = React.useState(false);
   const { classes, cx, theme } = useStyles();
@@ -158,6 +152,8 @@ const EditSnippet: NextPage<EditSnippetProps> = ({ user, snippet }) => {
   const dark = colorScheme === "dark";
   const mobile = useMediaQuery("768");
   const [locked, setLocked] = useScrollLock();
+  const [updatedSnippet, setUpdatedSnippet] = React.useState(snippet);
+  const [settingsDirty, setSettingsDirty] = React.useState(false);
 
   globalThis.onbeforeunload = (event: BeforeUnloadEvent) => {
     const message = "You have unsaved changes.";
@@ -180,6 +176,10 @@ const EditSnippet: NextPage<EditSnippetProps> = ({ user, snippet }) => {
     return items.find((i) => i.value === active);
   };
 
+  const updateSnippetProperty = (key: keyof CodeSnippet, value: any) => {
+    setUpdatedSnippet((s) => ({ ...s, [key]: value }));
+  };
+
   const saveChanges = async () => {
     await fetch(`/api/snippets/${snippet.id}/update`, {
       method: "POST",
@@ -188,14 +188,14 @@ const EditSnippet: NextPage<EditSnippetProps> = ({ user, snippet }) => {
         Authorization: String(getCookie(".frameworksession")),
       },
       body: JSON.stringify({
-        code,
+        ...updatedSnippet,
       }),
     })
       .then((res) => res.json())
       .then((res) => {
         if (res.success) {
           setDirty(false);
-          setUpdatedCode(code);
+          setSettingsDirty(false);
         } else {
           alert(
             "Something went wrong, and your changes were not saved. Please try again."
@@ -287,6 +287,37 @@ const EditSnippet: NextPage<EditSnippetProps> = ({ user, snippet }) => {
           `}
         </style>
       </Head>
+      <Transition transition="slide-up" mounted={dirty || settingsDirty}>
+        {(styles) => (
+          <div
+            className="flex justify-center items-center"
+            style={{
+              position: "fixed",
+              bottom: 0,
+              left: 0,
+              zIndex: 999,
+              padding: "1rem",
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              ...styles,
+            }}
+          >
+            <div>
+              <Button
+                size="lg"
+                fullWidth
+                leftIcon={<HiSave />}
+                onClick={saveChanges}
+                disabled={!settingsDirty && !dirty}
+              >
+                {dirty ? "Save changes and update" : "Update snippet settings"}
+              </Button>
+            </div>
+          </div>
+        )}
+      </Transition>
       <Framework
         noOverflow
         user={user}
@@ -309,10 +340,21 @@ const EditSnippet: NextPage<EditSnippetProps> = ({ user, snippet }) => {
             >
               <Navbar.Section>
                 <div className={clsx(classes.header, "flex flex-col gap-2")}>
-                  <Group position="apart">
+                  <Group position="apart" className="w-full">
                     <Title order={3}>{snippet.name}</Title>
-                    <Badge color="grape">{snippet.language}</Badge>
+
+                    <MediaQuery largerThan="sm" styles={{ display: "none" }}>
+                      <Burger
+                        opened={opened}
+                        onClick={() => setOpened((o) => !o)}
+                        size="sm"
+                        color={theme.colors.gray[6]}
+                      />
+                    </MediaQuery>
                   </Group>
+                  <div>
+                    <Badge color="grape">{snippet.language}</Badge>
+                  </div>
                   <Text size="sm" color="dimmed" lineClamp={2}>
                     {snippet.description}
                   </Text>
@@ -322,35 +364,19 @@ const EditSnippet: NextPage<EditSnippetProps> = ({ user, snippet }) => {
               <Navbar.Section
                 grow
                 component={React.forwardRef<HTMLDivElement>((props, ref) => (
-                  <ScrollArea {...props} />
+                  <ScrollArea className="h-full" {...props} />
                 ))}
               >
                 <LayoutGroup id="sidebar">
                   <div className="flex flex-col gap-y-1">{links}</div>
                 </LayoutGroup>
               </Navbar.Section>
-              <Navbar.Section grow>
-                <Transition transition="slide-up" mounted={dirty}>
-                  {(styles) => (
-                    <Button
-                      size="lg"
-                      fullWidth
-                      leftIcon={<HiSave />}
-                      onClick={saveChanges}
-                      disabled={!dirty}
-                      style={styles}
-                    >
-                      {dirty ? "Save Changes" : "Saved"}
-                    </Button>
-                  )}
-                </Transition>
-              </Navbar.Section>
             </Navbar>
           }
           padding={0}
           {...(mobile && {
             header: (
-              <Header height={50} p="md">
+              <Header height={50} p="md" mt={69}>
                 <div
                   style={{
                     display: "flex",
@@ -392,7 +418,7 @@ const EditSnippet: NextPage<EditSnippetProps> = ({ user, snippet }) => {
                   setDirty(true);
                 }
 
-                setCode(String(val));
+                updateSnippetProperty("code", String(val));
               }}
               theme={dark ? "vs-dark" : "vs"}
             />
@@ -403,7 +429,12 @@ const EditSnippet: NextPage<EditSnippetProps> = ({ user, snippet }) => {
               "md:py-8 py-2"
             )}
           >
-            <Container>
+            <Container
+              sx={{
+                width: "100%",
+                maxWidth: 800,
+              }}
+            >
               <Section
                 title="Details"
                 description="Edit the details of this code snippet"
@@ -420,7 +451,12 @@ const EditSnippet: NextPage<EditSnippetProps> = ({ user, snippet }) => {
                       label="Name"
                       description="Snippet name field"
                       classNames={BLACK}
-                      value={snippet.name}
+                      value={updatedSnippet.name}
+                      onChange={(e) => {
+                        updateSnippetProperty("name", e.target.value);
+                        setSettingsDirty(true);
+                      }}
+                      max={30}
                     />
                   }
                 />
@@ -434,7 +470,12 @@ const EditSnippet: NextPage<EditSnippetProps> = ({ user, snippet }) => {
                       label="Description"
                       description="Snippet description field"
                       classNames={BLACK}
-                      value={snippet.description}
+                      value={updatedSnippet.description}
+                      maxLength={512}
+                      onChange={(e) => {
+                        updateSnippetProperty("description", e.target.value);
+                        setSettingsDirty(true);
+                      }}
                     />
                   }
                 />
