@@ -136,6 +136,7 @@ model User {
   participatingConversations ChatConversation[]     @relation("userConversationParticipants")
   ownedConversation          ChatConversation[]     @relation("userConversationOwner")
   sentChatMessages           ChatMessage[]          @relation("sentChatMessages")
+  readMessages               ChatMessage[]          @relation("readMessages")
   employee                   Employee?              @relation("employee")
   employeeId                 String?                @unique
   apiKeys                    ApiKey[]               @relation("apiKeys")
@@ -365,7 +366,6 @@ model Message {
   system      Boolean  @default(false)
   important   Boolean  @default(false)
   archived    Boolean  @default(false)
-  read        Boolean  @default(false)
 }
 
 enum GameGenre {
@@ -797,7 +797,7 @@ model ChatMessage {
   content        String
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @default(now())
-  seen           Boolean          @default(false)
+  seenBy         User[]           @relation("readMessages")
 }
 
 model ChatConversation {

@@ -396,7 +396,11 @@ export const chatMessageSelect: Prisma.ChatMessageSelect = {
   content: true,
   createdAt: true,
   authorId: true,
-  seen: true,
+  seenBy: {
+    select: {
+      id: true,
+    },
+  },
   conversationId: true,
 };
 
@@ -505,7 +509,6 @@ export const messageSelect: Prisma.MessageSelect = {
   system: true,
   important: true,
   archived: true,
-  read: true,
 };
 
 const message = Prisma.validator<Prisma.MessageArgs>()({

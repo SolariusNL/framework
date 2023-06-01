@@ -144,14 +144,37 @@ class ChatRouter {
   @Post("/conversation/:id/read")
   @Authorized()
   public async readMessage(@Account() user: User, @Param("id") id: string) {
-    await prisma.chatMessage.updateMany({
+    const msgs = await prisma.chatMessage.findMany({
       where: {
         conversationId: String(id),
       },
-      data: {
-        seen: true,
+      include: {
+        seenBy: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
+
+    if (msgs) {
+      for (const msg of msgs) {
+        if (!msg.seenBy.find((u) => u.id === user.id)) {
+          await prisma.chatMessage.update({
+            where: {
+              id: msg.id,
+            },
+            data: {
+              seenBy: {
+                connect: {
+                  id: user.id,
+                },
+              },
+            },
+          });
+        }
+      }
+    }
 
     return {
       success: true,
@@ -186,7 +209,11 @@ class ChatRouter {
         conversationId: {
           in: memberOf.map((c) => c.id),
         },
-        seen: false,
+        seenBy: {
+          none: {
+            id: Number(user.id),
+          },
+        },
         authorId: {
           not: Number(user.id),
         },
