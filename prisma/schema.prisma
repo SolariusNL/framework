@@ -366,6 +366,7 @@ model Message {
   system      Boolean  @default(false)
   important   Boolean  @default(false)
   archived    Boolean  @default(false)
+  read        Boolean  @default(false)
 }
 
 enum GameGenre {
