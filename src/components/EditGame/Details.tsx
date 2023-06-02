@@ -1,5 +1,4 @@
 import {
-  Alert,
   AspectRatio,
   Button,
   Card,
@@ -27,15 +26,15 @@ import getMediaUrl from "../../util/get-media";
 import { Game } from "../../util/prisma-types";
 import { genreMap } from "../../util/universe/genre";
 import Descriptive from "../Descriptive";
+import Floater from "../Floater";
 import { Section } from "../Home/FriendsWidget";
 import ImageUploader from "../ImageUploader";
 import ModernEmptyState from "../ModernEmptyState";
 import RichText from "../RichText";
+import SaveChanges from "../SaveChanges";
 import SideBySide from "../Settings/SideBySide";
 import ShadedCard from "../ShadedCard";
 import EditGameTab from "./EditGameTab";
-import Floater from "../Floater";
-import SaveChanges from "../SaveChanges";
 
 interface DetailsProps {
   game: Game;
@@ -55,8 +54,9 @@ type CopyrightMetadata = {
   description: string;
 };
 
-const Details = ({ game }: DetailsProps) => {
-  const [updated, setUpdated] = React.useState({});
+const Details = ({ game: g }: DetailsProps) => {
+  const [game, setGame] = React.useState(g);
+  const [updated, setUpdated] = React.useState(game);
   const [detailsLoading, setDetailsLoading] = React.useState(false);
   const [success, setSuccess] = React.useState(false);
   const [uploadedIcon, setUploadedIcon] = React.useState<string | null>(null);
@@ -71,10 +71,16 @@ const Details = ({ game }: DetailsProps) => {
     React.useState<CopyrightMetadata>();
   const iconRef = React.useRef<HTMLImageElement>(null);
   const thumbnailRef = React.useRef<HTMLImageElement>(null);
+  const [dirty, setDirty] = React.useState(false);
+  const [deletedMetadata, setDeletedMetadata] =
+    React.useState<CopyrightMetadata[]>();
+  const [metadataChangeMap, setMetadataChangeMap] = React.useState<
+    Record<string, boolean>
+  >({});
 
   const editable = [
     {
-      property: game.name,
+      property: updated.name,
       label: "Game name",
       description:
         "Use an appealing name that describes your game to drive more traffic.",
@@ -83,7 +89,7 @@ const Details = ({ game }: DetailsProps) => {
       title: "Name",
     },
     {
-      property: game.genre,
+      property: updated.genre,
       label: "Game genre",
       description:
         "Select a genre that best describes your game to help discoverability.",
@@ -96,7 +102,7 @@ const Details = ({ game }: DetailsProps) => {
       title: "Genre",
     },
     {
-      property: game.description,
+      property: updated.description,
       label: "Game description",
       description:
         "Describe your game in detail to help users understand what it's about.",
@@ -117,7 +123,7 @@ const Details = ({ game }: DetailsProps) => {
       ),
     },
     {
-      property: game.maxPlayersPerSession,
+      property: updated.maxPlayersPerSession,
       label: "Players per server",
       description:
         "Set the maximum number of players that can join a server at once.",
@@ -139,7 +145,10 @@ const Details = ({ game }: DetailsProps) => {
             Click on a notice to edit it.
           </Text>
           <Button
-            onClick={async () => await createCopyRightMetadata()}
+            onClick={async () => {
+              await createCopyRightMetadata();
+              setDirty(true);
+            }}
             disabled={copyrightMetadata.length >= 5}
             leftIcon={<HiPlus />}
           >
@@ -182,7 +191,7 @@ const Details = ({ game }: DetailsProps) => {
     },
   });
 
-  const updateDetails = async (afterSave: () => void) => {
+  const updateDetails = async () => {
     setDetailsLoading(true);
     setSuccess(false);
 
@@ -200,8 +209,6 @@ const Details = ({ game }: DetailsProps) => {
         .then((res) => {
           if (res.error) {
             throw new Error(res.error);
-          } else {
-            afterSave();
           }
         });
     }
@@ -251,6 +258,9 @@ const Details = ({ game }: DetailsProps) => {
       })
       .finally(() => {
         setDetailsLoading(false);
+        setDirty(false);
+        setGame(updated);
+        setDeletedMetadata(undefined);
       });
   };
 
@@ -262,6 +272,14 @@ const Details = ({ game }: DetailsProps) => {
       });
     }
   }, [editingMetadata]);
+
+  useEffect(() => {
+    const dirty = Object.keys(updated).some(
+      (key) => updated[key as keyof typeof updated] !== game[key as keyof Game]
+    );
+
+    setDirty(dirty);
+  }, [updated]);
 
   return (
     <>
@@ -291,6 +309,12 @@ const Details = ({ game }: DetailsProps) => {
                 "Your changes have been saved. Make sure to sync your changes using the 'Save' button at the bottom of the page.",
               icon: <HiCheckCircle />,
             });
+            if (
+              editingMetadata?.title !== values.title ||
+              editingMetadata?.description !== values.description
+            ) {
+              setDirty(true);
+            }
           })}
         >
           <Stack spacing={8}>
@@ -325,6 +349,11 @@ const Details = ({ game }: DetailsProps) => {
                       "Your changes have been saved. Make sure to sync your changes using the 'Save' button at the bottom of the page.",
                     icon: <HiCheckCircle />,
                   });
+                  setDirty(true);
+                  setDeletedMetadata((prev) => [
+                    ...(prev || []),
+                    editingMetadata as CopyrightMetadata,
+                  ]);
                 }}
               >
                 Delete
@@ -357,7 +386,7 @@ const Details = ({ game }: DetailsProps) => {
                       <TextInput
                         label={label}
                         description={description}
-                        defaultValue={String(property)}
+                        value={String(property)}
                         onChange={(event) => {
                           setUpdated({
                             ...updated,
@@ -371,7 +400,7 @@ const Details = ({ game }: DetailsProps) => {
                       <Select
                         label={label}
                         description={description}
-                        defaultValue={String(property)}
+                        value={String(property)}
                         data={
                           options ?? ([] as { label: string; value: any }[])
                         }
@@ -390,7 +419,7 @@ const Details = ({ game }: DetailsProps) => {
                               [value.pointer]: e.currentTarget.checked,
                             });
                           }}
-                          defaultChecked={Boolean(property)}
+                          checked={Boolean(property)}
                         />
                       </Descriptive>
                     )}
@@ -399,7 +428,7 @@ const Details = ({ game }: DetailsProps) => {
                       <NumberInput
                         label={label}
                         description={description}
-                        defaultValue={Number(property)}
+                        value={Number(property)}
                         onChange={(s) => {
                           setUpdated({ ...updated, [value.pointer]: s });
                         }}
@@ -477,9 +506,10 @@ const Details = ({ game }: DetailsProps) => {
                             />
                             <Button
                               variant="default"
-                              onClick={async () =>
-                                await createCopyRightMetadata()
-                              }
+                              onClick={async () => {
+                                await createCopyRightMetadata();
+                                setDirty(true);
+                              }}
                             >
                               Create
                             </Button>
@@ -525,7 +555,10 @@ const Details = ({ game }: DetailsProps) => {
             }
             actions={
               <ImageUploader
-                onFinished={(imgStr) => setUploadedIcon(imgStr)}
+                onFinished={(imgStr) => {
+                  setUploadedIcon(imgStr);
+                  setDirty(true);
+                }}
                 crop
                 ratio={1}
                 imgRef={iconRef}
@@ -552,7 +585,10 @@ const Details = ({ game }: DetailsProps) => {
             }
             actions={
               <ImageUploader
-                onFinished={(imgStr) => setUploadedThumbnail(imgStr)}
+                onFinished={(imgStr) => {
+                  setUploadedThumbnail(imgStr);
+                  setDirty(true);
+                }}
                 crop
                 ratio={16 / 9}
                 imgRef={thumbnailRef}
@@ -561,12 +597,20 @@ const Details = ({ game }: DetailsProps) => {
           />
         </Stack>
 
-        <Floater mounted={true}>
+        <Floater mounted={dirty}>
           <SaveChanges
             saveProps={{
-              onClick: updateDetails,
               loading: detailsLoading,
               leftIcon: <HiCloud />,
+            }}
+            onClick={updateDetails}
+            onDiscard={() => {
+              setUpdated(game);
+              setDirty(false);
+              if (deletedMetadata?.length! > 0) {
+                setCopyrightMetadata((prev) => [...prev, ...deletedMetadata!]);
+                setDeletedMetadata([]);
+              }
             }}
           />
         </Floater>

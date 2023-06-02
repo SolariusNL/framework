@@ -1,5 +1,5 @@
 import { Transition } from "@mantine/core";
-import { CSSProperties, FC, useEffect, useRef } from "react";
+import React, { CSSProperties, FC } from "react";
 import clsx from "../util/clsx";
 
 type FloaterProps = {
@@ -15,45 +15,26 @@ const Floater: FC<FloaterProps> = (props) => {
     bottom: "20px",
     ...props.style,
   };
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const updateButtonWidth = () => {
-      if (ref.current) {
-        const parentWidth = (
-          ref.current?.parentNode as ParentNode & { clientWidth: number }
-        ).clientWidth;
-        if (parentWidth) {
-          ref.current.style.width = `${parentWidth}px`;
-        }
-      }
-    };
-
-    updateButtonWidth();
-    window.addEventListener("resize", updateButtonWidth);
-
-    return () => {
-      window.removeEventListener("resize", updateButtonWidth);
-    };
-  }, []);
 
   return (
-    <Transition transition="slide-up" mounted={props.mounted}>
-      {(styles) => (
-        <div
-          style={{
-            ...buttonStyle,
-            ...styles,
-          }}
-          ref={ref}
-          className={clsx(
-            props.className,
-            "flex justify-center items-center w-fit z-[999]"
-          )}
-        >
-          {props.children}
-        </div>
-      )}
-    </Transition>
+    <div className="flex w-full items-center justify-center">
+      <Transition transition="slide-up" mounted={props.mounted}>
+        {(styles) => (
+          <div
+            style={{
+              ...buttonStyle,
+              ...styles,
+            }}
+            className={clsx(
+              props.className,
+              "flex justify-center items-center z-[999] w-fit ml-auto mr-auto"
+            )}
+          >
+            {props.children}
+          </div>
+        )}
+      </Transition>
+    </div>
   );
 };
 
