@@ -271,6 +271,54 @@ const EditSnippet: NextPage<EditSnippetProps> = ({ user, snippet }) => {
     </motion.a>
   ));
 
+  const nav = (
+    <Navbar
+      width={{ sm: 300 }}
+      p="md"
+      hiddenBreakpoint="sm"
+      hidden={!opened}
+      sx={{
+        ...(amoled && {
+          backgroundColor: "black",
+        }),
+      }}
+    >
+      <Navbar.Section>
+        <div className={clsx(classes.header, "flex flex-col gap-2")}>
+          <Group position="apart" className="w-full">
+            <Title order={3}>{snippet.name}</Title>
+
+            <MediaQuery largerThan="sm" styles={{ display: "none" }}>
+              <Burger
+                opened={opened}
+                onClick={() => setOpened((o) => !o)}
+                size="sm"
+                color={theme.colors.gray[6]}
+              />
+            </MediaQuery>
+          </Group>
+          <div>
+            <Badge color="grape">{snippet.language}</Badge>
+          </div>
+          <Text size="sm" color="dimmed" lineClamp={2}>
+            {snippet.description}
+          </Text>
+        </div>
+      </Navbar.Section>
+
+      <Navbar.Section
+        grow
+        component={React.forwardRef<HTMLDivElement>((props, ref) => (
+          <ScrollArea className="h-full" {...props} />
+        ))}
+      >
+        <LayoutGroup id="sidebar">
+          <div className="flex flex-col gap-y-1">{links}</div>
+        </LayoutGroup>
+      </Navbar.Section>
+    </Navbar>
+  );
+
   useEffect(() => {
     setLocked(true);
   }, []);
@@ -326,53 +374,7 @@ const EditSnippet: NextPage<EditSnippetProps> = ({ user, snippet }) => {
         noPadding
       >
         <AppShell
-          navbar={
-            <Navbar
-              width={{ sm: 300 }}
-              p="md"
-              hiddenBreakpoint="sm"
-              hidden={!opened}
-              sx={{
-                ...(amoled && {
-                  backgroundColor: "black",
-                }),
-              }}
-            >
-              <Navbar.Section>
-                <div className={clsx(classes.header, "flex flex-col gap-2")}>
-                  <Group position="apart" className="w-full">
-                    <Title order={3}>{snippet.name}</Title>
-
-                    <MediaQuery largerThan="sm" styles={{ display: "none" }}>
-                      <Burger
-                        opened={opened}
-                        onClick={() => setOpened((o) => !o)}
-                        size="sm"
-                        color={theme.colors.gray[6]}
-                      />
-                    </MediaQuery>
-                  </Group>
-                  <div>
-                    <Badge color="grape">{snippet.language}</Badge>
-                  </div>
-                  <Text size="sm" color="dimmed" lineClamp={2}>
-                    {snippet.description}
-                  </Text>
-                </div>
-              </Navbar.Section>
-
-              <Navbar.Section
-                grow
-                component={React.forwardRef<HTMLDivElement>((props, ref) => (
-                  <ScrollArea className="h-full" {...props} />
-                ))}
-              >
-                <LayoutGroup id="sidebar">
-                  <div className="flex flex-col gap-y-1">{links}</div>
-                </LayoutGroup>
-              </Navbar.Section>
-            </Navbar>
-          }
+          navbar={nav}
           padding={0}
           {...(mobile && {
             header: (

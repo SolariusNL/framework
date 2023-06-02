@@ -34,6 +34,8 @@ import RichText from "../RichText";
 import SideBySide from "../Settings/SideBySide";
 import ShadedCard from "../ShadedCard";
 import EditGameTab from "./EditGameTab";
+import Floater from "../Floater";
+import SaveChanges from "../SaveChanges";
 
 interface DetailsProps {
   game: Game;
@@ -180,7 +182,7 @@ const Details = ({ game }: DetailsProps) => {
     },
   });
 
-  const updateDetails = async () => {
+  const updateDetails = async (afterSave: () => void) => {
     setDetailsLoading(true);
     setSuccess(false);
 
@@ -198,6 +200,8 @@ const Details = ({ game }: DetailsProps) => {
         .then((res) => {
           if (res.error) {
             throw new Error(res.error);
+          } else {
+            afterSave();
           }
         });
     }
@@ -557,20 +561,15 @@ const Details = ({ game }: DetailsProps) => {
           />
         </Stack>
 
-        {success && (
-          <Alert color="green" icon={<HiCheckCircle />} title="Success" mt={30}>
-            Your game has been updated.
-          </Alert>
-        )}
-
-        <Button
-          leftIcon={<HiCloud />}
-          onClick={updateDetails}
-          loading={detailsLoading}
-          mt={30}
-        >
-          Save Changes
-        </Button>
+        <Floater mounted={true}>
+          <SaveChanges
+            saveProps={{
+              onClick: updateDetails,
+              loading: detailsLoading,
+              leftIcon: <HiCloud />,
+            }}
+          />
+        </Floater>
       </EditGameTab>
     </>
   );

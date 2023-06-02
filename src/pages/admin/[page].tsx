@@ -425,7 +425,7 @@ const AdminDashboard: React.FC<{
                 "dark:text-zinc-300s font-normal flex cursor-pointer items-center gap-2 w-full md:px-6 px-4 h-9 rounded-md relative transition ease-in-out duration-200",
                 active === item.label.toLowerCase()
                   ? "dark:text-pink-200 text-pink-700 !font-medium"
-                  : "dark:hover:text-zinc-200 dark:hover:bg-zinc-700/10",
+                  : "dark:hover:text-zinc-200 dark:hover:bg-zinc-900",
                 mobile &&
                   active === item.label.toLowerCase() &&
                   "dark:bg-pink-900/30"
@@ -481,7 +481,7 @@ const AdminDashboard: React.FC<{
                     to: "grape",
                   }}
                 >
-                  Corporate
+                  Admin
                 </Badge>
               </Group>
             </Navbar.Section>
