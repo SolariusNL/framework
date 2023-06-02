@@ -303,12 +303,6 @@ const Details = ({ game: g }: DetailsProps) => {
                 ) || []
             );
             setEditing(false);
-            showNotification({
-              title: "Saved",
-              message:
-                "Your changes have been saved. Make sure to sync your changes using the 'Save' button at the bottom of the page.",
-              icon: <HiCheckCircle />,
-            });
             if (
               editingMetadata?.title !== values.title ||
               editingMetadata?.description !== values.description
@@ -343,12 +337,6 @@ const Details = ({ game: g }: DetailsProps) => {
                       prev.filter((item) => item !== editingMetadata) || []
                   );
                   setEditing(false);
-                  showNotification({
-                    title: "Deleted",
-                    message:
-                      "Your changes have been saved. Make sure to sync your changes using the 'Save' button at the bottom of the page.",
-                    icon: <HiCheckCircle />,
-                  });
                   setDirty(true);
                   setDeletedMetadata((prev) => [
                     ...(prev || []),
@@ -611,6 +599,8 @@ const Details = ({ game: g }: DetailsProps) => {
                 setCopyrightMetadata((prev) => [...prev, ...deletedMetadata!]);
                 setDeletedMetadata([]);
               }
+              setUploadedIcon(null);
+              setUploadedThumbnail(null);
             }}
           />
         </Floater>

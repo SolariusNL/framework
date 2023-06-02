@@ -16,7 +16,7 @@ const SaveChanges: FC<SaveChangesProps> = (props) => {
     <ShadedCard
       withBorder
       p="sm"
-      className="dark:bg-black bg-opacity-50 dark:bg-opacity-50"
+      className="dark:bg-black bg-opacity-50 mx-4 dark:bg-opacity-50"
       style={{
         backdropFilter: "blur(10px)",
         WebkitBackdropFilter: "blur(10px)",
@@ -24,25 +24,29 @@ const SaveChanges: FC<SaveChangesProps> = (props) => {
       }}
       radius="lg"
     >
-      <div className="flex justify-between items-center gap-4 w-full">
+      <div className="flex md:flex-row flex-col justify-between items-center gap-4 w-full">
         <div className="flex items-center gap-2">
+          <div className="md:flex hidden items-center gap-2">
           <IconTooltip icon={<HiInformationCircle />} label="Unsaved changes" />
           <Text weight={500} color="dimmed" size="sm">
             Unsaved changes
           </Text>
+          </div>
           <Text color="dimmed" size="sm">
             {props.label || "You have unsaved changes!"}
           </Text>
         </div>
         <div className="flex gap-2 items-center">
-          <Button
-            variant="subtle"
-            color="gray"
-            size="xs"
-            onClick={props.onDiscard}
-          >
-            Cancel
-          </Button>
+          {props.onDiscard && (
+            <Button
+              variant="subtle"
+              color="gray"
+              size="xs"
+              onClick={props.onDiscard}
+            >
+              Cancel
+            </Button>
+          )}
           <Button onClick={props.onClick} {...props.saveProps}>
             {props.children || "Save Changes"}
           </Button>
