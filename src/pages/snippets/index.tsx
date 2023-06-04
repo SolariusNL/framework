@@ -23,7 +23,7 @@ import UserContext from "../../components/UserContext";
 import authorizedRoute from "../../util/auth";
 import getMediaUrl from "../../util/get-media";
 import prisma from "../../util/prisma";
-import { NonUser, Snippet, snippetSelect, User } from "../../util/prisma-types";
+import { NonUser, Snippet, User, snippetSelect } from "../../util/prisma-types";
 
 interface SnippetsProps {
   user: User;
@@ -95,7 +95,7 @@ const Snippets: NextPage<SnippetsProps> = ({ user, snippets }) => {
       modernSubtitle="Browse community-built snippets to help you build your next project."
     >
       <Group mb="xl">
-        <Link href={"/invent?view=snippets"} passHref>
+        <Link href={"/invent/snippets"} passHref>
           <Button leftIcon={<HiPlus />}>Create Snippet</Button>
         </Link>
         <Group>
