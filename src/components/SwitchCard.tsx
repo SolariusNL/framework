@@ -1,5 +1,6 @@
 import { Card, createStyles, Group, Switch, Text } from "@mantine/core";
 import useAmoled from "../stores/useAmoled";
+import clsx from "../util/clsx";
 import { AMOLED_COLORS } from "../util/constants";
 
 const useStyles = createStyles((theme) => ({
@@ -57,18 +58,10 @@ const SwitchCard: React.FC<SwitchesCardProps> = ({
   const items = data.map((item) => (
     <Group
       position="apart"
-      className={classes.item}
+      className={clsx(classes.item, "bg-transparent")}
       noWrap
       spacing="xl"
       key={item.title}
-      sx={(theme) => ({
-        ...(dark && {
-          backgroundColor:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[9]
-              : "#FFF",
-        }),
-      })}
     >
       <div>
         <Text>{item.title}</Text>
@@ -101,13 +94,26 @@ const SwitchCard: React.FC<SwitchesCardProps> = ({
         }),
       })}
     >
-      <Text size="lg" className={classes.title} weight={500}>
+      <Text size="lg" className={classes.title} weight={500} mb="xs">
         {title}
       </Text>
-      <Text size="xs" color="dimmed" mt={3} mb="xl">
+      <Text size="xs" color="dimmed" mt={3} mb="md">
         {description}
       </Text>
-      <div>{items}</div>
+      <Card
+        sx={(theme) => ({
+          ...(dark && {
+            ...(dark && {
+              backgroundColor:
+                theme.colorScheme === "dark" ? theme.colors.dark[9] : "#FFF",
+            }),
+          }),
+        })}
+        p={0}
+        className="flex flex-col"
+      >
+        {items}
+      </Card>
     </Card>
   );
 };

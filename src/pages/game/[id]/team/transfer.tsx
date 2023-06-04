@@ -46,7 +46,7 @@ const TransferGameToTeam: React.FC<TransferGameToTeamProps> = ({
       .then((res) => res.json())
       .then((res) => {
         if (res.success) {
-          router.push("/invent");
+          router.push("/invent/games");
           showNotification({
             title: "Success",
             message: "Game transferred to team successfully.",
@@ -167,7 +167,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   if (game.teamId) {
     return {
       redirect: {
-        destination: "/invent",
+        destination: "/invent/games",
         permanent: false,
       },
     };

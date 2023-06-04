@@ -1,4 +1,4 @@
-import { Alert, Divider, Stack, Text, Title } from "@mantine/core";
+import { Alert, Stack, Text, Title } from "@mantine/core";
 import { PrivacyPreferences } from "@prisma/client";
 import { useState } from "react";
 import { HiArrowsExpand, HiCheckCircle, HiEye, HiShare } from "react-icons/hi";
@@ -60,13 +60,15 @@ const PrivacyTab = ({ user }: PrivacyTabProps) => {
     FEATURES: {
       USER_DISCOVERY: {
         title: "User discovery",
-        description: "Users can find you through mutual friends with user discovery enabled",
-        label: "Appear in user discovery"
-      }
-    }
+        description:
+          "Users can find you through mutual friends with user discovery enabled",
+        label: "Appear in user discovery",
+      },
+    },
   };
   const categoryDescriptions = {
     ANALYTICS: "Framework will use the following data to improve the platform",
+    FEATURES: "Framework will use the following data to enable features",
   };
   const [updated, setUpdated] = useState<PrivacyPreferences[]>(
     user.privacyPreferences

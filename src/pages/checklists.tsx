@@ -176,7 +176,7 @@ const Checklists: NextPage<ChecklistsProps> = ({ user, checklistData }) => {
         beta
         returnTo={{
           label: "Back to Invent",
-          href: "/invent",
+          href: "/invent/games",
         }}
       >
         <SidebarTabNavigation>

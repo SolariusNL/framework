@@ -57,7 +57,7 @@ import {
   HiTrash,
   HiUser,
   HiViewGrid,
-  HiXCircle
+  HiXCircle,
 } from "react-icons/hi";
 import SocketContext from "../contexts/Socket";
 import useAmoled from "../stores/useAmoled";
@@ -185,7 +185,7 @@ const Framework = ({
   integratedTabs,
   relative,
   footer = true,
-  noOverflow
+  noOverflow,
 }: FrameworkProps) => {
   const { classes } = frameworkStyles();
   const { opened: sidebarOpened, setOpened: setSidebarOpened } = useSidebar();
@@ -229,7 +229,7 @@ const Framework = ({
     },
     {
       label: "Invent",
-      href: "/invent",
+      href: "/invent/games",
       icon: <HiOutlineLightBulb />,
       color: "teal",
       description: "Where imagination comes to life",
@@ -281,7 +281,7 @@ const Framework = ({
       title: "Invent",
       icon: <HiLightBulb />,
       description: "Where dreams are made, create your first game here.",
-      onTrigger: () => router.push("/invent"),
+      onTrigger: () => router.push("/invent/games"),
     },
     {
       title: "Chat",
@@ -851,8 +851,8 @@ const Framework = ({
                 maxWidth: "100%",
               }),
               ...(noOverflow && {
-                overflow: "hidden"
-              })
+                overflow: "hidden",
+              }),
             }}
           >
             {user && !user.emailVerified && !warningSeen && !isSSR && (
