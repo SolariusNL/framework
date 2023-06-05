@@ -3,6 +3,7 @@ import {
   Body,
   Delete,
   Get,
+  Param,
   Post,
   createHandler,
 } from "@storyofams/next-api-decorators";
@@ -16,7 +17,6 @@ import type { User } from "../../../util/prisma-types";
 const domainSchema = z.object({
   domain: z
     .string()
-    // can be apex, or subdomain doesn't matter
     .regex(
       /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$/
     ),
@@ -156,6 +156,32 @@ class DomainRouter {
         domains,
       },
     };
+  }
+
+  @Get("/u/:id")
+  @Authorized()
+  public async getUserDomains(@Param("id") id: number) {
+    const domains = await prisma.domain.findMany({
+      where: {
+        user: {
+          id: Number(id),
+        },
+      },
+    });
+
+    if (!domains) {
+      return {
+        success: false,
+        message: "No domains found or user doesn't exist",
+      };
+    } else {
+      return {
+        success: true,
+        data: {
+          domains,
+        },
+      };
+    }
   }
 
   @Delete("/delete")

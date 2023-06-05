@@ -120,6 +120,7 @@ const Domains: React.FC<DomainsProps> = ({ user }) => {
       }
     });
   };
+  
 
   const createDomain = async (values: Form) => {
     await fetchJson<
