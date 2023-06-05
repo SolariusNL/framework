@@ -113,7 +113,7 @@ const ChatMessage: FC<ChatMessageProps> = ({
             style={{ wordBreak: "break-word" }}
             className="pointer-events-none dark:text-gray-300 text-black"
           >
-            {Fw.StringParser.t(message.content).bold().parse()}
+            {Fw.StringParser.t(message.content).bold().emojis().parse()}
           </Text>
         </Paper>
       </div>
@@ -167,7 +167,7 @@ const ChatMessage: FC<ChatMessageProps> = ({
               style={{ wordBreak: "break-word" }}
               className="pointer-events-none dark:text-gray-300 text-black"
             >
-              {Fw.StringParser.t(message.content).bold().parse()}
+              {Fw.StringParser.t(message.content).bold().emojis().parse()}
             </Text>
           </Paper>
         </div>

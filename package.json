@@ -73,6 +73,7 @@
     "embla-carousel-autoplay": "^7.0.0",
     "embla-carousel-react": "^7.0.0",
     "emoji-mart": "^5.4.0",
+    "emoji-regex": "^10.2.1",
     "fetch-intercept": "^2.4.0",
     "framer-motion": "^7.3.6",
     "fuzzyset.js": "^1.0.7",

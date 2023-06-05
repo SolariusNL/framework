@@ -6,7 +6,7 @@ export const Strings = {
     return num === 1 ? word : `${word}s`;
   },
   limitLength(str: string, limit: number) {
-    return str.length > limit ? `${str.slice(0, limit)}...` : str;
+    return str.length > limit ? `${str.slice(0, limit - 3)}...` : str;
   },
   initials(name: string) {
     const words = name.split(" ");

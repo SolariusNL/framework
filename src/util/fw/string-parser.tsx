@@ -1,4 +1,5 @@
 import { Anchor } from "@mantine/core";
+import emojiRegex from "emoji-regex";
 import React from "react";
 import { Fw } from "../fw";
 
@@ -16,9 +17,19 @@ type BoldReplacement = {
   cleanText: string;
 };
 
+type EmojiReplacement = {
+  text: string;
+  cleanText: string;
+  isEmoji: boolean;
+};
+
 export class StringParser {
   private text: string;
-  private replacements: (BoldReplacement | LinkReplacement)[];
+  private replacements: (
+    | BoldReplacement
+    | LinkReplacement
+    | EmojiReplacement
+  )[];
 
   constructor(text: string) {
     this.text = text;
@@ -47,6 +58,18 @@ export class StringParser {
       const url = match[0];
       const text = match[0];
       this.replacements.push({ text, url, shouldWarn: options.warn });
+    }
+
+    return this;
+  }
+
+  emojis(): StringParser {
+    const regex = emojiRegex();
+    let match;
+
+    while ((match = regex.exec(this.text)) !== null) {
+      const text = match[0];
+      this.replacements.push({ text, cleanText: text, isEmoji: true });
     }
 
     return this;
@@ -112,6 +135,17 @@ export class StringParser {
             </span>
           ) : (
             cleanText
+          );
+
+          parsedElements.push(element);
+        }
+
+        if ("isEmoji" in replacement) {
+          const { cleanText } = replacement;
+          const element = (
+            <span className="text-xl" key={startIndex}>
+              {cleanText}
+            </span>
           );
 
           parsedElements.push(element);
