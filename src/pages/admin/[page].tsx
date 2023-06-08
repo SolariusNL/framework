@@ -441,7 +441,6 @@ const AdminDashboard: React.FC<{
                     "absolute left-0 right-0 top-0 bottom-0 rounded-md bg-pink-900/30",
                     mobile && "hidden"
                   )}
-                  initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                 >
