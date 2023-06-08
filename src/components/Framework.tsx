@@ -93,7 +93,7 @@ interface FrameworkProps {
     | "games"
     | "catalog"
     | "invent"
-    | "chat"
+    | "social"
     | "avatar"
     | "settings"
     | "messages"

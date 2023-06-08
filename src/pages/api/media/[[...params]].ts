@@ -45,7 +45,8 @@ const imageOnly = (req: any, file: any, callback: any) => {
 
 const createMulter = (
   destination: string,
-  nameFunction: (req: any, file: any, cb: any) => any
+  nameFunction: (req: any, file: any, cb: any) => any,
+  alternativeFilter?: (req: any, file: any, cb: any) => any
 ) =>
   multer({
     limits: {
@@ -55,7 +56,7 @@ const createMulter = (
       destination: `./public/${destination}`,
       filename: nameFunction,
     }),
-    fileFilter: imageOnly,
+    fileFilter: alternativeFilter || imageOnly,
   });
 
 const avatars = createMulter("avatars", async (req, file, cb) => {
@@ -229,6 +230,52 @@ const convoIcons = createMulter("convo", async (req, file, cb) => {
   cb(null, conversation.id + ".webp");
 });
 
+const sounds = createMulter(
+  "sounds",
+  async (req, file, cb) => {
+    const user = await getAccountFromSession(
+      String(req.headers["authorization"])
+    );
+
+    if (!req.params.soundId) return cb(new Error("No sound id provided"), "");
+
+    const sound = await prisma.sound.findFirst({
+      where: {
+        id: String(req.params.soundId),
+        authorId: user?.id,
+      },
+    });
+
+    if (!sound) return cb(new Error("Sound not found"), "");
+    if (!String(req.params.soundId))
+      return cb(new Error("Invalid sound id"), "");
+
+    const extension = file.mimetype.split("/")[1];
+    const validExtensions = ["mp3", "wav", "ogg", "mpeg", "webm", "aac"];
+
+    if (!validExtensions.includes(extension))
+      return cb(new Error("Invalid file type"), "");
+
+    await prisma.sound.update({
+      where: {
+        id: String(req.params.soundId),
+      },
+      data: {
+        audioUri: `/sounds/${sound.id}.${extension}`,
+      },
+    });
+
+    cb(null, sound.id + ".webm");
+  },
+  (req, file, cb) => {
+    if (!file.mimetype.startsWith("audio/")) {
+      return cb(new Error("Invalid file type"));
+    }
+
+    cb(null, true);
+  }
+);
+
 class MediaRouter {
   @Post("/upload/avatar")
   @Authorized()
@@ -298,6 +345,19 @@ class MediaRouter {
   ) {
     return {
       icon: `/convo/${convoId}.webp`,
+      success: true,
+    };
+  }
+
+  @Post("/upload/sound/:soundId")
+  @Authorized()
+  @UseMiddleware(sounds.single("sound"))
+  async uploadSound(
+    @Account() account: User,
+    @Param("soundId") soundId: string
+  ) {
+    return {
+      sound: `/sounds/${soundId}.webm`,
       success: true,
     };
   }

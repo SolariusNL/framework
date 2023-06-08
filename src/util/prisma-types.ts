@@ -157,6 +157,7 @@ export const userSelect: Prisma.UserSelect = {
   tickets: true,
   bits: true,
   verified: true,
+  gettingStartedDismissed: true,
   games: {
     include: {
       updates: true,

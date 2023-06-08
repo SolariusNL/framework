@@ -40,6 +40,7 @@ yarn-error.log*
 /public/gamepass
 /public/team
 /public/convo
+/public/sounds
 
 framework.yml
 framework.schema.json

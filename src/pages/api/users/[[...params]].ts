@@ -717,6 +717,13 @@ class UserRouter {
           return true;
         },
       },
+      {
+        name: "gettingStartedDismissed",
+        verify: async (value: any) => {
+          if (typeof value !== "boolean") return false;
+          return true;
+        },
+      },
     ];
 
     for (const field of updatable) {

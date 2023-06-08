@@ -5,6 +5,7 @@ import { combine } from "zustand/middleware";
 export const EXPERIMENTS_KEY = "experiments";
 export enum ExperimentId {
   AmoledDarkMode = "amoled-dark-mode",
+  FrameworkAI = "framework-ai",
 }
 export enum ExperimentStage {
   Alpha = "alpha",
@@ -27,6 +28,13 @@ export const EXPERIMENTS = [
         });
       }
     },
+  },
+  {
+    name: "Framework AI",
+    description: "An experimental AI chatbot to empower your experience",
+    stage: ExperimentStage.Alpha,
+    id: ExperimentId.FrameworkAI,
+    refreshNecessary: false,
   },
 ];
 
