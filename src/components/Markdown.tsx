@@ -1,6 +1,6 @@
 import { ActionIcon, Skeleton, Tabs, Textarea, Tooltip } from "@mantine/core";
 import dynamic from "next/dynamic";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { RiHeading, RiNumber2, RiNumber3, RiNumber4 } from "react-icons/ri";
 import {
   VscBold,

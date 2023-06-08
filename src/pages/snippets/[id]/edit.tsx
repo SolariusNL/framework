@@ -209,35 +209,10 @@ const EditSnippet: NextPage<EditSnippetProps> = ({ user, snippet }) => {
       });
   };
 
-  const SidebarItem: React.FC<{
-    onClick?: () => void;
-    icon:
-      | React.ComponentType<
-          React.SVGProps<SVGSVGElement> & { title?: string | undefined }
-        >
-      | React.ReactNode;
-    label: string;
-  }> = ({ onClick, icon: Icon, label }) => (
-    <a className={classes.link + " cursor-pointer"} onClick={onClick}>
-      {typeof Icon === "function" ? (
-        <Icon className={classes.linkIcon} stroke="1.5" />
-      ) : (
-        <Group
-          sx={(theme) => ({
-            marginRight: theme.spacing.sm,
-          })}
-        >
-          {Icon}
-        </Group>
-      )}
-      <span>{label}</span>
-    </a>
-  );
-
   const links = items.map((item) => (
     <motion.a
       className={clsx(
-        "dark:text-zinc-300s font-normal flex cursor-pointer items-center gap-2 w-full md:px-6 px-4 h-9 rounded-md relative transition ease-in-out duration-200",
+        "dark:text-zinc-300s font-normal flex cursor-pointer items-center gap-2 w-full md:px-6 px-4 h-9 rounded-md relative",
         active === item.label.toLowerCase()
           ? "dark:text-pink-200 text-pink-700 !font-medium"
           : "dark:hover:text-zinc-200 dark:hover:bg-zinc-700/10",
@@ -256,10 +231,8 @@ const EditSnippet: NextPage<EditSnippetProps> = ({ user, snippet }) => {
         <motion.span
           layoutId="sidebar"
           className={clsx(
-            "absolute left-0 right-0 top-0 bottom-0 rounded-md bg-pink-900/30",
-            mobile && "hidden"
+            "absolute left-0 right-0 top-0 bottom-0 rounded-md bg-pink-900/30"
           )}
-          initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
