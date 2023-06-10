@@ -53,6 +53,9 @@ const GameCard = ({ game, onClick }: GameCardProps) => {
         "&:hover": {
           transform: "scale(1.02)",
         },
+        "&:active": {
+          transform: "scale(0.98)",
+        },
       }}
       component="a"
       p={0}

@@ -26,15 +26,10 @@ const Search = ({ mobile }: { mobile?: boolean }) => {
       variant="default"
       type="search"
       styles={{ rightSection: { pointerEvents: "none" } }}
-      rightSectionWidth={90}
-      rightSection={
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <Kbd>Mod</Kbd>
-          <span style={{ margin: "0 5px" }}>+</span>
-          <Kbd>S</Kbd>
-        </div>
-      }
+      rightSectionWidth={30}
+      rightSection={<Kbd>/</Kbd>}
       value={search}
+      autoFocus
       onChange={setSearch}
       data={searchOptions}
       onItemSubmit={(item) => {

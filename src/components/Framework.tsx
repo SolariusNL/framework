@@ -422,10 +422,7 @@ const Framework = ({
     if (typeof window !== "undefined") {
       const handle = (e: KeyboardEvent) => {
         if (
-          e.key === "s" &&
-          // meta or ctrl
-          (e.metaKey || e.ctrlKey) &&
-          // not in input
+          e.keyCode === 191 &&
           document.activeElement?.tagName !== "INPUT" &&
           document.activeElement?.tagName !== "TEXTAREA"
         ) {
@@ -738,7 +735,7 @@ const Framework = ({
                   </ActionIcon>
                 </Popover.Target>
 
-                <Popover.Dropdown>
+                <Popover.Dropdown p={0} className="border-0">
                   <Search />
                 </Popover.Dropdown>
               </Popover>

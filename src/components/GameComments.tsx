@@ -7,10 +7,11 @@ import {
   Stack,
   Textarea,
 } from "@mantine/core";
-import { usePagination } from "@mantine/hooks";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { HiChat } from "react-icons/hi";
+import IResponseBase from "../types/api/IResponseBase";
 import { getCookie } from "../util/cookies";
+import fetchJson from "../util/fetch";
 import getMediaUrl from "../util/get-media";
 import { Game, NonUser, User } from "../util/prisma-types";
 import Comment from "./Comment";
@@ -34,11 +35,9 @@ const GameComments = ({ user, game }: GameCommentsProps) => {
   const [commentText, setCommentText] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [comments, setComments] = useState<Comment[]>(game.comments);
-  const pagination = usePagination({
-    total: Math.ceil(comments.length / 8),
-    initialPage: 1,
-  });
+  const [comments, setComments] = useState<Comment[]>();
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
 
   const submitComment = async () => {
     setLoading(true);
@@ -60,7 +59,7 @@ const GameComments = ({ user, game }: GameCommentsProps) => {
           setError(res.message || "Something went wrong");
         } else {
           setCommentText("");
-          setComments([...comments, res.comment]);
+          setComments([...comments!, res.comment]);
         }
       })
       .catch((err) => {
@@ -70,6 +69,27 @@ const GameComments = ({ user, game }: GameCommentsProps) => {
         setLoading(false);
       });
   };
+
+  const getComments = async () => {
+    await fetchJson<
+      IResponseBase<{
+        comments: Comment[];
+        pages: number;
+      }>
+    >(`/api/games/comments/${game.id}/${page}`, {
+      method: "GET",
+      auth: true,
+    }).then((res) => {
+      if (res.success) {
+        setComments(res.data?.comments!);
+        setTotal(res.data?.pages!);
+      }
+    });
+  };
+
+  useEffect(() => {
+    getComments();
+  }, [page]);
 
   return (
     <>
@@ -126,7 +146,7 @@ const GameComments = ({ user, game }: GameCommentsProps) => {
 
       <Divider mt={24} mb={24} />
 
-      {comments.length == 0 ? (
+      {comments && comments.length == 0 ? (
         <ShadedCard>
           <ModernEmptyState
             title="No comments"
@@ -135,36 +155,38 @@ const GameComments = ({ user, game }: GameCommentsProps) => {
         </ShadedCard>
       ) : (
         <>
-          <Pagination
-            page={pagination.active}
-            onChange={pagination.setPage}
-            total={Math.ceil(comments.length / 8)}
-            mb={24}
-            size="sm"
-            radius="xl"
-            withEdges
-          />
+          <div className="flex justify-center">
+            <Pagination
+              page={page}
+              onChange={setPage}
+              total={total}
+              mb={24}
+              size="sm"
+              radius="xl"
+              withEdges
+            />
+          </div>
           <Stack spacing={10}>
-            {comments
-              .sort(
-                (a, b) =>
-                  new Date(b.createdAt).getTime() -
-                  new Date(a.createdAt).getTime()
-              )
-              .slice((pagination.active - 1) * 8, pagination.active * 8)
-              .map((comment) => (
-                <Comment
-                  user={comment.user}
-                  body={comment.text}
-                  key={Math.floor(Math.random() * 1000000)}
-                  postedAt={comment.createdAt}
-                  id={comment.id}
-                  destroy={() => {
-                    setComments(comments.filter((c) => c.id !== comment.id));
-                  }}
-                  gameId={game.id}
-                />
-              ))}
+            {comments &&
+              comments
+                .sort(
+                  (a, b) =>
+                    new Date(b.createdAt).getTime() -
+                    new Date(a.createdAt).getTime()
+                )
+                .map((comment) => (
+                  <Comment
+                    user={comment.user}
+                    body={comment.text}
+                    key={Math.floor(Math.random() * 1000000)}
+                    postedAt={comment.createdAt}
+                    id={comment.id}
+                    destroy={() => {
+                      setComments(comments.filter((c) => c.id !== comment.id));
+                    }}
+                    gameId={game.id}
+                  />
+                ))}
           </Stack>
         </>
       )}

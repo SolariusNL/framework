@@ -1982,6 +1982,39 @@ class GameRouter {
       success: true,
     };
   }
+
+  @Get("/comments/:gid/:page")
+  async getComments(@Param("gid") gid: string, @Param("page") page: string) {
+    const comments = await prisma.gameComment.findMany({
+      where: {
+        gameId: Number(gid),
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      skip: Number((Number(page) - 1) * 8),
+      take: 8,
+      select: {
+        user: nonCurrentUserSelect,
+        text: true,
+        createdAt: true,
+        id: true,
+      },
+    });
+    const len = await prisma.gameComment.count({
+      where: {
+        gameId: Number(gid),
+      },
+    });
+
+    return <IResponseBase>{
+      success: true,
+      data: {
+        comments,
+        pages: Math.ceil(len / 8),
+      },
+    };
+  }
 }
 
 export default createHandler(GameRouter);

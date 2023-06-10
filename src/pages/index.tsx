@@ -21,7 +21,6 @@ import {
   HiX,
   HiXCircle,
 } from "react-icons/hi";
-import { useSelector } from "react-redux";
 import Framework from "../components/Framework";
 import FeedWidget from "../components/Home/FeedWidget";
 import FriendsWidget, { Section } from "../components/Home/FriendsWidget";
@@ -35,7 +34,6 @@ import FollowMesh from "../components/Mesh/FollowMesh";
 import LikeGameMesh from "../components/Mesh/LikeGameMesh";
 import ReferMesh from "../components/Mesh/ReferMesh";
 import SidebarTabNavigation from "../layouts/SidebarTabNavigation";
-import { RootState } from "../reducers/store";
 import useAuthorizedUserStore from "../stores/useAuthorizedUser";
 import IResponseBase from "../types/api/IResponseBase";
 import authorizedRoute from "../util/auth";
@@ -127,7 +125,6 @@ const Home: NextPage<HomeProps> = ({ user: u }) => {
   }, []);
 
   const [activeIndex, setActiveIndex] = useState(0);
-  const searchOpened = useSelector((state: RootState) => state.search.opened);
 
   return (
     <Framework

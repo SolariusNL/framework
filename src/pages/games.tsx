@@ -4,6 +4,7 @@ import {
   NavLink,
   RangeSlider,
   Select,
+  Skeleton,
   TextInput,
 } from "@mantine/core";
 import { GameGenre } from "@prisma/client";
@@ -337,6 +338,14 @@ const Games: NextPage<GamesProps> = ({ user }) => {
                       />
                     </div>
                   )}
+                  {!games &&
+                    Array.from(Array(25).keys()).map((i) => (
+                      <div className="flex flex-col gap-2" key={i}>
+                        <Skeleton height={150} />
+                        <Skeleton height={20} />
+                        <Skeleton height={45} />
+                      </div>
+                    ))}
                 </div>
               </InfiniteScroll>
             </ShadedCard>
