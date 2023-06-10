@@ -318,14 +318,6 @@ export const gameSelect: Prisma.GameSelect = {
   likedBy: { select: { id: true } },
   dislikedBy: { select: { id: true } },
   connection: true,
-  comments: {
-    select: {
-      text: true,
-      user: nonCurrentUserSelect,
-      createdAt: true,
-      id: true,
-    },
-  },
   playing: true,
   funds: {
     include: {
