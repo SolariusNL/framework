@@ -3,15 +3,7 @@ import { useRouter } from "next/router";
 import React, { useRef } from "react";
 import { HiSearchCircle } from "react-icons/hi";
 
-const Search = ({
-  opened,
-  setOpened,
-  mobile,
-}: {
-  opened?: boolean;
-  setOpened?: (opened: boolean) => void;
-  mobile?: boolean;
-}) => {
+const Search = ({ mobile }: { mobile?: boolean }) => {
   const [search, setSearch] = React.useState("");
   const router = useRouter();
   const searchOptions = [
@@ -39,7 +31,7 @@ const Search = ({
         <div style={{ display: "flex", alignItems: "center" }}>
           <Kbd>Mod</Kbd>
           <span style={{ margin: "0 5px" }}>+</span>
-          <Kbd>E</Kbd>
+          <Kbd>S</Kbd>
         </div>
       }
       value={search}

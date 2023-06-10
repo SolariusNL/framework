@@ -1,7 +1,5 @@
 import { Group, Menu, UnstyledButton } from "@mantine/core";
-import {
-  HiSearch
-} from "react-icons/hi";
+import { HiSearch } from "react-icons/hi";
 import { frameworkStyles } from "../Framework";
 import Search from "./Search";
 

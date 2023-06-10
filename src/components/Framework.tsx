@@ -59,7 +59,10 @@ import {
   HiViewGrid,
   HiXCircle,
 } from "react-icons/hi";
+import { useDispatch, useSelector } from "react-redux";
 import SocketContext from "../contexts/Socket";
+import { setSearch, toggleSearch } from "../reducers/search";
+import { RootState } from "../reducers/store";
 import useAmoled from "../stores/useAmoled";
 import useAuthorizedUserStore from "../stores/useAuthorizedUser";
 import useFeedback from "../stores/useFeedback";
@@ -198,6 +201,8 @@ const Framework = ({
   const [mobileSearchOpened, _setMobileSearchOpened] = useState(false);
   const { setOpened } = useFeedback();
   const { enabled: amoled } = useAmoled();
+  const searchOpened = useSelector((state: RootState) => state.search.opened);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (sidebarOpened) {
@@ -373,7 +378,6 @@ const Framework = ({
     </TabNav.Tab>
   ));
 
-  const [searchPopoverOpen, setSearchPopoverOpen] = useState(false);
   const { user: userStore, setUser: setUserStore } = useAuthorizedUserStore()!;
 
   React.useEffect(() => {
@@ -413,6 +417,28 @@ const Framework = ({
   React.useEffect(() => {
     if (oldCookie) {
       setImpersonating(true);
+    }
+
+    if (typeof window !== "undefined") {
+      const handle = (e: KeyboardEvent) => {
+        if (
+          e.key === "s" &&
+          // meta or ctrl
+          (e.metaKey || e.ctrlKey) &&
+          // not in input
+          document.activeElement?.tagName !== "INPUT" &&
+          document.activeElement?.tagName !== "TEXTAREA"
+        ) {
+          e.preventDefault();
+          dispatch(toggleSearch());
+        }
+      };
+
+      window.addEventListener("keydown", handle);
+
+      return () => {
+        window.removeEventListener("keydown", handle);
+      };
     }
   }, []);
 
@@ -699,13 +725,13 @@ const Framework = ({
                 transition="pop-top-right"
                 position="bottom-end"
                 shadow={"md"}
-                opened={searchPopoverOpen}
-                onChange={setSearchPopoverOpen}
+                opened={searchOpened}
+                onClose={() => dispatch(setSearch(false))}
               >
                 <Popover.Target>
                   <ActionIcon
                     variant="subtle"
-                    onClick={() => setSearchPopoverOpen(!searchPopoverOpen)}
+                    onClick={() => dispatch(toggleSearch())}
                     mb={10}
                   >
                     <HiOutlineSearch />
@@ -713,10 +739,7 @@ const Framework = ({
                 </Popover.Target>
 
                 <Popover.Dropdown>
-                  <Search
-                    opened={searchPopoverOpen}
-                    setOpened={setSearchPopoverOpen}
-                  />
+                  <Search />
                 </Popover.Dropdown>
               </Popover>
             </Group>
