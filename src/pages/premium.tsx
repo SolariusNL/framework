@@ -52,22 +52,8 @@ const Premium: NextPage<PremiumProps> = ({ user }) => {
 
   const plans = [
     {
-      name: "No Subscription",
-      price: [
-        ["$0", "USD"],
-        ["$0", "CAD"],
-        ["€0", "EUR"],
-      ],
-      popular: false,
-      disabled: user.premiumSubscription !== undefined,
-    },
-    {
-      name: "Monthly Subscription",
-      price: [
-        ["$5", "USD"],
-        ["$6", "CAD"],
-        ["€4", "EUR"],
-      ],
+      name: "Premium Bronze",
+      price: [["€4", "EUR"]],
       popular: false,
       disabled:
         user.premiumSubscription &&
@@ -75,12 +61,8 @@ const Premium: NextPage<PremiumProps> = ({ user }) => {
           PremiumSubscriptionType.PREMIUM_ONE_MONTH,
     },
     {
-      name: "Six-monthly Subscription",
-      price: [
-        ["$27", "USD"],
-        ["$28", "CAD"],
-        ["€26", "EUR"],
-      ],
+      name: "Premium Silver",
+      price: [["€26", "EUR"]],
       popular: true,
       disabled:
         user.premiumSubscription &&
@@ -88,17 +70,17 @@ const Premium: NextPage<PremiumProps> = ({ user }) => {
           PremiumSubscriptionType.PREMIUM_SIX_MONTHS,
     },
     {
-      name: "Yearly Subscription",
-      price: [
-        ["$50", "USD"],
-        ["$60", "CAD"],
-        ["€40", "EUR"],
-      ],
+      name: "Premium Gold",
+      price: [["€40", "EUR"]],
       popular: false,
       disabled:
         user.premiumSubscription &&
         user.premiumSubscription.type ===
           PremiumSubscriptionType.PREMIUM_ONE_YEAR,
+    },
+    {
+      name: "Premium Lifetime",
+      price: [["€399", "EUR"]],
     },
   ];
 
@@ -206,8 +188,12 @@ const Premium: NextPage<PremiumProps> = ({ user }) => {
                                   {price[0]} {price[1]}
                                 </span>
 
-                                {i !== plan.price.length - 1 && (
-                                  <span key={price[1]}>&#8226;</span>
+                                {plans[plans.length - 1].name !== plan.name && (
+                                  <>
+                                    <span key={price[1]}>&#8226;</span>
+
+                                    <span>per month</span>
+                                  </>
                                 )}
                               </>
                             ))}

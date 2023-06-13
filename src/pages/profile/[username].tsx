@@ -53,7 +53,7 @@ import { exclude } from "../../util/exclude";
 import getMediaUrl from "../../util/get-media";
 import useMediaQuery from "../../util/media-query";
 import prisma from "../../util/prisma";
-import { User } from "../../util/prisma-types";
+import { Game, User } from "../../util/prisma-types";
 
 interface ProfileProps {
   user: User;
@@ -515,7 +515,10 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
                             radius="md"
                           />
                         ) : (
-                          <PlaceholderGameResource height={200} />
+                          <PlaceholderGameResource
+                            height={200}
+                            game={game as Game}
+                          />
                         )}
                         <div className="absolute bottom-0 left-0 w-full h-full rounded-md bg-black bg-opacity-50 backdrop-filter backdrop-blur-sm flex flex-col justify-end p-4">
                           <Title order={4} className="text-white">

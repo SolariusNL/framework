@@ -1,6 +1,12 @@
-import { Paper } from "@mantine/core";
+import React from "react";
 import { Game } from "../util/prisma-types";
-import { gradientPairs } from "./GameCard";
+import BioMesh from "./Mesh/BioMesh";
+import CatalogMesh from "./Mesh/CatalogMesh";
+import CreateGameMesh from "./Mesh/CreateGameMesh";
+import FollowMesh from "./Mesh/FollowMesh";
+import LikeGameMesh from "./Mesh/LikeGameMesh";
+import ReferMesh from "./Mesh/ReferMesh";
+import TealSkyMesh from "./Mesh/TealSkyMesh";
 
 interface PlaceholderGameResourceProps {
   height?: number;
@@ -11,41 +17,40 @@ interface PlaceholderGameResourceProps {
   noBottomRadius?: boolean;
 }
 
+const meshes = [
+  BioMesh,
+  CatalogMesh,
+  CreateGameMesh,
+  FollowMesh,
+  LikeGameMesh,
+  ReferMesh,
+  TealSkyMesh,
+];
+
 const PlaceholderGameResource = ({
   height,
-  radius,
+  radius = 8,
   width,
   game,
   noBottomRadius,
   className,
 }: PlaceholderGameResourceProps) => {
-  function rand() {
-    return gradientPairs[
-      Math.abs(
-        Array.from(`${game?.name}${String(game?.id)}${String(game?.author.username)}` ?? "placeholder")
-          .map((char) => char.charCodeAt(0))
-          .reduce((a, b) => a + b, 0)
-      ) % gradientPairs.length
-    ];
-  }
+  const Mesh = React.useMemo(() => {
+    const mesh = meshes[game?.id! % meshes.length];
+    return mesh || meshes[Math.floor(Math.random() * meshes.length)];
+  }, [game]);
 
-  return (
-    <Paper
-      sx={(theme) => ({
-        background: theme.fn.gradient({
-          from: rand()[0],
-          to: rand()[1],
-        }),
-        height: `${height}px`,
-        width: `${width}px`,
-        ...(radius ? { borderRadius: `${radius}px` } : {}),
-        ...(noBottomRadius
-          ? { borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }
-          : {}),
-      })}
-      className={className}
-    />
-  );
+  return React.cloneElement(<Mesh />, {
+    className,
+    style: {
+      height: `${height}px`,
+      width: `${width}px`,
+      ...(radius ? { borderRadius: `${radius}px` } : {}),
+      ...(noBottomRadius
+        ? { borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }
+        : {}),
+    },
+  });
 };
 
 export default PlaceholderGameResource;
