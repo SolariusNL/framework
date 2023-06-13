@@ -21,6 +21,13 @@ const useStyles = createStyles((theme) => ({
           ? theme.colors.dark[9]
           : theme.colors.gray[0],
     },
+    "&[data-selected=true]": {
+      backgroundColor:
+        theme.colorScheme === "dark"
+          ? theme.colors.blue[9] + "60"
+          : theme.colors.blue[1],
+      border: `1px solid ${theme.colors.blue[4]} !important`,
+    },
   },
 }));
 
@@ -59,9 +66,10 @@ const CheckboxCard = ({
       className={cx(classes.button, className)}
       sx={{
         ...(amoled && {
-          backgroundColor: AMOLED_COLORS.paper
-        })
+          backgroundColor: AMOLED_COLORS.paper,
+        }),
       }}
+      data-selected={value}
     >
       <Checkbox
         checked={value}

@@ -176,7 +176,8 @@ const OAuth2: React.FC<OAuth2Props> = ({ user }) => {
       <Text size="sm" color="dimmed" mb="md">
         Create a new OAuth2 application to integrate your application with
         Framework, allowing users to login with their Framework account and even
-        saving data using our <Code>ApplicationDataService</Code> API.
+        saving data using our <Code>ApplicationDataService</Code> API, free of
+        charge*.
       </Text>
       <form
         onSubmit={form.onSubmit(async (values) => {
@@ -259,6 +260,11 @@ const OAuth2: React.FC<OAuth2Props> = ({ user }) => {
           </Button>
         </div>
       </form>
+      <Text size="sm" color="dimmed" mt="md">
+        * OAuth2 <Code>ApplicationDataService</Code> API grants 10 MB of storage
+        per application. If you need more, please contact us to discuss your
+        needs.
+      </Text>
     </Modal>
   );
 

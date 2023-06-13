@@ -2,7 +2,7 @@ import { Accordion, Badge, Button, Stack, Text, Title } from "@mantine/core";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { useState } from "react";
-import { HiCheck } from "react-icons/hi";
+import { HiCheck, HiLockClosed } from "react-icons/hi";
 import CheckboxCard from "../../components/CheckboxCard";
 import Framework from "../../components/Framework";
 import authorizedRoute from "../../util/auth";
@@ -19,19 +19,19 @@ interface BuyTicketsProps {
  */
 export const products = [
   {
-    name: "Tickets 1000",
+    name: "1,000T$",
     priceId: "price_1M5GjkKrKkWmvq0Ri9nmHUuO",
     price: "€9.99",
     grant: 1000,
   },
   {
-    name: "Tickets 2400",
+    name: "2,400T$",
     priceId: "price_1M5HinKrKkWmvq0RolhK59CB",
     price: "€19.99",
     grant: 2400,
   },
   {
-    name: "Tickets 5000",
+    name: "5,000T$",
     priceId: "price_1M5HjFKrKkWmvq0RhmJdEZga",
     price: "€39.99",
     grant: 5000,
@@ -41,7 +41,7 @@ export const products = [
     altPrice: 49.99,
   },
   {
-    name: "Tickets 10000",
+    name: "10,000T$",
     priceId: "price_1M5HjjKrKkWmvq0RUHMYV0Zn",
     price: "€79.99",
     grant: 10000,
@@ -178,7 +178,7 @@ const BuyTickets: NextPage<BuyTicketsProps> = ({ user }) => {
                       )}
                     </div>
                     <div className="items-center flex gap-2">
-                      <Title order={5}>{product.name}</Title>
+                      <Title order={4}>{product.name}</Title>
                       {product.goodDeal && (
                         <Badge
                           variant="gradient"
@@ -200,11 +200,6 @@ const BuyTickets: NextPage<BuyTicketsProps> = ({ user }) => {
                 description={`You will receive ${product.grant} tickets.`}
                 checked={selected === i}
                 onChange={() => setSelected(i)}
-                style={{
-                  border: product.goodDeal
-                    ? "2px solid #3b82f6"
-                    : "2px solid transparent",
-                }}
               />
             ))}
           </Stack>
@@ -215,9 +210,22 @@ const BuyTickets: NextPage<BuyTicketsProps> = ({ user }) => {
             mt={24}
             leftIcon={<HiCheck />}
             disabled
+            size="lg"
           >
             Purchase
           </Button>
+          <div className="mt-4 flex justify-center items-center gap-2">
+            <HiLockClosed className="text-green-600 flex-shrink-0" />
+            <Text color="green" size="sm">
+              Secure Checkout
+            </Text>
+          </div>
+          <div className="mt-1 flex justify-center text-center">
+            <Text size="sm" color="dimmed">
+              All transactions are secure as long as you see the lock icon in
+              the address bar.
+            </Text>
+          </div>
         </div>
       </div>
     </Framework>
