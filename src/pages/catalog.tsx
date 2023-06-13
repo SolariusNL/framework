@@ -1,6 +1,8 @@
-import { Divider, Grid, SegmentedControl, Stack, Switch } from "@mantine/core";
+import { Button, Checkbox, Divider, Grid, Stack, Switch } from "@mantine/core";
+import { CatalogItemType } from "@prisma/client";
 import { GetServerSidePropsContext, NextPage } from "next";
 import React from "react";
+import { HiX } from "react-icons/hi";
 import Framework from "../components/Framework";
 import ModernEmptyState from "../components/ModernEmptyState";
 import ShadedCard from "../components/ShadedCard";
@@ -15,16 +17,18 @@ interface Filter {
   unavailableItems: boolean;
   limitedItems: boolean;
   lowStock: boolean;
-  category: "hats" | "faces" | "shirts" | "pants";
+  category: CatalogItemType | "all";
 }
 
+const defaultFilter: Filter = {
+  unavailableItems: false,
+  limitedItems: true,
+  lowStock: true,
+  category: "all",
+};
+
 const Catalog: NextPage<CatalogProps> = ({ user }) => {
-  const [filter, setFilter] = React.useState<Filter | undefined>({
-    unavailableItems: false,
-    limitedItems: true,
-    lowStock: true,
-    category: "hats",
-  });
+  const [filter, setFilter] = React.useState<Filter | undefined>(defaultFilter);
 
   const changeFilterValue = (key: keyof Filter, value: any) => {
     setFilter({ ...(filter as Filter), [key as keyof Filter]: value });
@@ -38,15 +42,8 @@ const Catalog: NextPage<CatalogProps> = ({ user }) => {
       modernSubtitle="Browse our catalog and find some new accessories for your avatar."
     >
       <Grid columns={24}>
-        <Grid.Col span={16}>
-          <ModernEmptyState
-            title="No items"
-            body="No items found for your filters."
-            shaded
-          />
-        </Grid.Col>
         <Grid.Col span={8}>
-          <ShadedCard title="Filters" titleWithBorder>
+          <ShadedCard title="Filters">
             <Stack spacing={10}>
               <Switch
                 label="Show unavailable items"
@@ -62,28 +59,49 @@ const Catalog: NextPage<CatalogProps> = ({ user }) => {
                   changeFilterValue("limitedItems", e.target.checked)
                 }
               />
-              <Switch
-                label="Show items with low stock"
-                checked={filter?.lowStock}
-                onChange={(e) =>
-                  changeFilterValue("lowStock", e.target.checked)
-                }
-              />
-              <Divider mt={15} mb={15} />
-              <SegmentedControl
-                data={[
-                  { label: "Hats", value: "hats" },
-                  { label: "Faces", value: "faces" },
-                  { label: "Shirts", value: "shirts" },
-                  { label: "Pants", value: "pants" },
-                ]}
-                onChange={(v) =>
-                  changeFilterValue("category", v as Filter["category"])
-                }
-                value={filter?.category}
-              />
+              <Divider my="md" />
+              <Stack spacing="xs">
+                {[
+                  { label: "Hats", value: CatalogItemType.HAT },
+                  { label: "Gear", value: CatalogItemType.GEAR },
+                  { label: "Shirts", value: CatalogItemType.SHIRT },
+                  { label: "T-Shirts", value: CatalogItemType.TSHIRT },
+                  { label: "Pants", value: CatalogItemType.PANTS },
+                ].map((item) => (
+                  <Checkbox
+                    label={item.label}
+                    radius="xl"
+                    value={item.value}
+                    key={item.value}
+                    checked={filter?.category === item.value}
+                    onChange={(e) =>
+                      changeFilterValue("category", e.target.value)
+                    }
+                  />
+                ))}
+              </Stack>
             </Stack>
+            {filter !== defaultFilter && (
+              <Button
+                mt="md"
+                fullWidth
+                leftIcon={<HiX />}
+                variant="light"
+                onClick={() => {
+                  setFilter(defaultFilter);
+                }}
+              >
+                Clear filters
+              </Button>
+            )}
           </ShadedCard>
+        </Grid.Col>
+        <Grid.Col span={16}>
+          <ModernEmptyState
+            title="No items"
+            body="No items found for your filters."
+            shaded
+          />
         </Grid.Col>
       </Grid>
     </Framework>

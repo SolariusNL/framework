@@ -48,141 +48,146 @@ enum GiftCodeGrant {
 }
 
 model User {
-  id                         Int                    @id @default(autoincrement())
+  id                         Int                         @id @default(autoincrement())
   username                   String
   email                      String
   password                   String
-  tickets                    Int                    @default(500)
-  bits                       Int                    @default(100)
-  premium                    Boolean                @default(false)
-  createdAt                  DateTime               @default(now())
-  updatedAt                  DateTime               @default(now())
-  role                       Role                   @default(USER)
-  following                  User[]                 @relation("userFollows")
-  followers                  User[]                 @relation("userFollows")
-  sessions                   Session[]              @relation("userSessions")
-  games                      Game[]                 @relation("gameAuthor")
+  tickets                    Int                         @default(500)
+  bits                       Int                         @default(100)
+  premium                    Boolean                     @default(false)
+  createdAt                  DateTime                    @default(now())
+  updatedAt                  DateTime                    @default(now())
+  role                       Role                        @default(USER)
+  following                  User[]                      @relation("userFollows")
+  followers                  User[]                      @relation("userFollows")
+  sessions                   Session[]                   @relation("userSessions")
+  games                      Game[]                      @relation("gameAuthor")
   avatarUri                  String
-  likedGames                 Game[]                 @relation("likedGames")
-  dislikedGames              Game[]                 @relation("dislikedGames")
-  nucleusKeys                NucleusKey[]           @relation("nucleusKeys")
-  gameComments               GameComment[]          @relation("userGameComments")
-  avatar                     Avatar?                @relation("avatar")
-  country                    String                 @default("")
-  snippets                   CodeSnippet[]          @relation("userCodeSnippets")
-  bio                        String                 @default("This user has not yet written a bio.")
-  busy                       Boolean                @default(false)
-  banned                     Boolean                @default(false)
-  locked                     Boolean                @default(false)
-  banReason                  String                 @default("")
+  likedGames                 Game[]                      @relation("likedGames")
+  dislikedGames              Game[]                      @relation("dislikedGames")
+  nucleusKeys                NucleusKey[]                @relation("nucleusKeys")
+  gameComments               GameComment[]               @relation("userGameComments")
+  avatar                     Avatar?                     @relation("avatar")
+  country                    String                      @default("")
+  snippets                   CodeSnippet[]               @relation("userCodeSnippets")
+  bio                        String                      @default("This user has not yet written a bio.")
+  busy                       Boolean                     @default(false)
+  banned                     Boolean                     @default(false)
+  locked                     Boolean                     @default(false)
+  banReason                  String                      @default("")
   banExpires                 DateTime?
-  emailVerificationInstances EmailVerification[]    @relation("emailVerification")
-  emailVerified              Boolean                @default(false)
-  authTickets                NucleusAuthTicket[]    @relation("authTickets")
-  receivedMessages           Message[]              @relation("messageRecipient")
-  sentMessages               Message[]              @relation("messageSender")
-  reports                    UserReport[]           @relation("userReportAuthor")
-  reportedBy                 UserReport[]           @relation("userReportedBy")
-  transactions               Transaction[]          @relation("userTransactions")
-  notifications              Notification[]         @relation("userNotifications")
+  emailVerificationInstances EmailVerification[]         @relation("emailVerification")
+  emailVerified              Boolean                     @default(false)
+  authTickets                NucleusAuthTicket[]         @relation("authTickets")
+  receivedMessages           Message[]                   @relation("messageRecipient")
+  sentMessages               Message[]                   @relation("messageSender")
+  reports                    UserReport[]                @relation("userReportAuthor")
+  reportedBy                 UserReport[]                @relation("userReportedBy")
+  transactions               Transaction[]               @relation("userTransactions")
+  notifications              Notification[]              @relation("userNotifications")
   notificationPreferences    ReceiveNotification[]
-  redeemedGifts              GiftCode[]             @relation("userRedeemedCodes")
-  premiumSubscription        PremiumSubscription?   @relation("userPremiumSubscription")
+  redeemedGifts              GiftCode[]                  @relation("userRedeemedCodes")
+  premiumSubscription        PremiumSubscription?        @relation("userPremiumSubscription")
   lastRandomPrize            DateTime?
   lastDailyBits              DateTime?
-  upvotedComments            GameComment[]          @relation("upvotedComments")
-  downvotedComments          GameComment[]          @relation("downvotedComments")
-  warningViewed              Boolean                @default(false)
-  warning                    String                 @default("")
-  secrets                    Secret[]               @relation("userSecrets")
-  lastSeen                   DateTime               @default(now())
-  enrolledInPreview          Boolean                @default(false)
-  timeZone                   String                 @default("UTC+12")
-  donatedFunds               GameFund[]             @relation("donatedFunds")
-  checklists                 Checklist[]            @relation("userChecklists")
-  connectedAccounts          ConnectedAccount[]     @relation("connectedAccounts")
-  discordAccount             DiscordConnectCode?    @relation("discordAccount")
+  upvotedComments            GameComment[]               @relation("upvotedComments")
+  downvotedComments          GameComment[]               @relation("downvotedComments")
+  warningViewed              Boolean                     @default(false)
+  warning                    String                      @default("")
+  secrets                    Secret[]                    @relation("userSecrets")
+  lastSeen                   DateTime                    @default(now())
+  enrolledInPreview          Boolean                     @default(false)
+  timeZone                   String                      @default("UTC+12")
+  donatedFunds               GameFund[]                  @relation("donatedFunds")
+  checklists                 Checklist[]                 @relation("userChecklists")
+  connectedAccounts          ConnectedAccount[]          @relation("connectedAccounts")
+  discordAccount             DiscordConnectCode?         @relation("discordAccount")
   alias                      String?
   previousUsernames          String[]
   previousEmails             String[]
-  emailRequiredLogin         Boolean                @default(false)
-  emailLoginRequests         EmailLoginRequest[]    @relation("emailLoginRequests")
+  emailRequiredLogin         Boolean                     @default(false)
+  emailLoginRequests         EmailLoginRequest[]         @relation("emailLoginRequests")
   lastUsernameChange         DateTime?
-  statusPosts                StatusPosts[]          @relation("statusPosts")
-  profileLinks               ProfileLink[]          @relation("profileLinks")
-  notes                      UserAdminNotes[]       @relation("adminNotes")
-  authoredNotes              UserAdminNotes[]       @relation("adminNotesAuthor")
+  statusPosts                StatusPosts[]               @relation("statusPosts")
+  profileLinks               ProfileLink[]               @relation("profileLinks")
+  notes                      UserAdminNotes[]            @relation("adminNotes")
+  authoredNotes              UserAdminNotes[]            @relation("adminNotesAuthor")
   hiddenHomeWidgets          String[]
-  adminActivityLogs          AdminActivityLog[]     @relation("adminActivityLog")
-  ownedGamepasses            Gamepass[]             @relation("userGamepasses")
-  playing                    Game?                  @relation("userPlaying", fields: [gameId], references: [id])
+  adminActivityLogs          AdminActivityLog[]          @relation("adminActivityLog")
+  ownedGamepasses            Gamepass[]                  @relation("userGamepasses")
+  playing                    Game?                       @relation("userPlaying", fields: [gameId], references: [id])
   gameId                     Int?
-  punishmentHistory          PunishmentLog[]        @relation("punishmentLog")
-  issuedPunishments          PunishmentLog[]        @relation("punishmentLogAuthor")
-  privacyPreferences         PrivacyPreferences[]   @default([USER_DISCOVERY])
-  passwordResetRequired      Boolean                @default(false)
-  emailResetRequired         Boolean                @default(false)
+  punishmentHistory          PunishmentLog[]             @relation("punishmentLog")
+  issuedPunishments          PunishmentLog[]             @relation("punishmentLogAuthor")
+  privacyPreferences         PrivacyPreferences[]        @default([USER_DISCOVERY])
+  passwordResetRequired      Boolean                     @default(false)
+  emailResetRequired         Boolean                     @default(false)
   adminPermissions           AdminPermission[]
-  authoredAdminArticles      AdminArticle[]         @relation("adminArticles")
-  viewedAdminArticles        AdminArticle[]         @relation("adminArticlesViewed")
-  otpEnabled                 Boolean                @default(false)
-  otpVerified                Boolean                @default(false)
+  authoredAdminArticles      AdminArticle[]              @relation("adminArticles")
+  viewedAdminArticles        AdminArticle[]              @relation("adminArticlesViewed")
+  otpEnabled                 Boolean                     @default(false)
+  otpVerified                Boolean                     @default(false)
   otpAscii                   String?
   otpHex                     String?
   otpBase32                  String?
   otpAuthUrl                 String?
-  authoredBlogPosts          BlogPost[]             @relation("blogPosts")
-  authoredSupportTickets     SupportTicket[]        @relation("supportTickets")
-  participatingConversations ChatConversation[]     @relation("userConversationParticipants")
-  ownedConversation          ChatConversation[]     @relation("userConversationOwner")
-  sentChatMessages           ChatMessage[]          @relation("sentChatMessages")
-  readMessages               ChatMessage[]          @relation("readMessages")
-  employee                   Employee?              @relation("employee")
-  employeeId                 String?                @unique
-  apiKeys                    ApiKey[]               @relation("apiKeys")
-  boardPosts                 PortalBoardPost[]      @relation("portalBoardPosts")
-  upvotedBoardPosts          PortalBoardPost[]      @relation("portalBoardPostUpvotes")
-  downvotedBoardPosts        PortalBoardPost[]      @relation("portalBoardPostDownvotes")
-  referral                   Referral?              @relation("referrals")
+  authoredBlogPosts          BlogPost[]                  @relation("blogPosts")
+  authoredSupportTickets     SupportTicket[]             @relation("supportTickets")
+  participatingConversations ChatConversation[]          @relation("userConversationParticipants")
+  ownedConversation          ChatConversation[]          @relation("userConversationOwner")
+  sentChatMessages           ChatMessage[]               @relation("sentChatMessages")
+  readMessages               ChatMessage[]               @relation("readMessages")
+  employee                   Employee?                   @relation("employee")
+  employeeId                 String?                     @unique
+  apiKeys                    ApiKey[]                    @relation("apiKeys")
+  boardPosts                 PortalBoardPost[]           @relation("portalBoardPosts")
+  upvotedBoardPosts          PortalBoardPost[]           @relation("portalBoardPostUpvotes")
+  downvotedBoardPosts        PortalBoardPost[]           @relation("portalBoardPostDownvotes")
+  referral                   Referral?                   @relation("referrals")
   referralId                 String?
-  usedReferral               Referral?              @relation("usedReferral", fields: [usedReferralId], references: [id])
+  usedReferral               Referral?                   @relation("usedReferral", fields: [usedReferralId], references: [id])
   usedReferralId             String?
-  loginQR                    LoginQR?               @relation("loginQRs")
-  quickLoginEnabled          Boolean                @default(true)
-  privateGameAccess          Game[]                 @relation("privateGameAccess")
-  purchasedGames             Game[]                 @relation("purchasedGames")
-  followedGames              Game[]                 @relation("gameFollowers")
-  passwordResetRequests      PasswordResetRequest[] @relation("passwordResetRequests")
-  createdInvites             Invite[]               @relation("userInvites")
-  claimedSupportTickets      SupportTicket[]        @relation("claimedSupportTickets")
-  apartOf                    Team[]                 @relation("teamMembers")
-  staffOf                    Team[]                 @relation("teamStaff")
-  bannedFrom                 Team[]                 @relation("teamBans")
-  ownedTeams                 Team[]                 @relation("teamOwner")
-  invitedToTeams             Team[]                 @relation("teamInvites")
-  newsletterSubscribed       Boolean                @default(false)
+  loginQR                    LoginQR?                    @relation("loginQRs")
+  quickLoginEnabled          Boolean                     @default(true)
+  privateGameAccess          Game[]                      @relation("privateGameAccess")
+  purchasedGames             Game[]                      @relation("purchasedGames")
+  followedGames              Game[]                      @relation("gameFollowers")
+  passwordResetRequests      PasswordResetRequest[]      @relation("passwordResetRequests")
+  createdInvites             Invite[]                    @relation("userInvites")
+  claimedSupportTickets      SupportTicket[]             @relation("claimedSupportTickets")
+  apartOf                    Team[]                      @relation("teamMembers")
+  staffOf                    Team[]                      @relation("teamStaff")
+  bannedFrom                 Team[]                      @relation("teamBans")
+  ownedTeams                 Team[]                      @relation("teamOwner")
+  invitedToTeams             Team[]                      @relation("teamInvites")
+  newsletterSubscribed       Boolean                     @default(false)
   newsletterEmail            String?
-  oauthApps                  OAuthApplication[]     @relation("oauthApplications")
-  oauthClients               OAuthClient[]          @relation("oauthClients")
+  oauthApps                  OAuthApplication[]          @relation("oauthApplications")
+  oauthClients               OAuthClient[]               @relation("oauthClients")
   lastSurvey                 DateTime?
-  ratings                    Survey[]               @relation("userRatings")
-  createdGiftCodes           GiftCode[]             @relation("createdGiftCodes")
-  outboundTransactions       Transaction[]          @relation("userTransactionsFrom")
-  inboundTransactions        Transaction[]          @relation("userTransactionsTo")
-  authoredIssues             TeamIssue[]            @relation("teamIssues")
-  assignedIssues             TeamIssue[]            @relation("assignedIssues")
-  issueComments              TeamIssueComment[]     @relation("userIssueComments")
-  auditLogs                  TeamAuditLog[]         @relation("audited")
+  ratings                    Survey[]                    @relation("userRatings")
+  createdGiftCodes           GiftCode[]                  @relation("createdGiftCodes")
+  outboundTransactions       Transaction[]               @relation("userTransactionsFrom")
+  inboundTransactions        Transaction[]               @relation("userTransactionsTo")
+  authoredIssues             TeamIssue[]                 @relation("teamIssues")
+  assignedIssues             TeamIssue[]                 @relation("assignedIssues")
+  issueComments              TeamIssueComment[]          @relation("userIssueComments")
+  auditLogs                  TeamAuditLog[]              @relation("audited")
   dismissibleContents        String[]
-  automodTriggers            AutomodTrigger[]       @relation("automodTriggers")
-  domains                    Domain[]               @relation("userDomains")
-  developerProfile           DeveloperProfile?      @relation("developerProfile")
-  preferences                UserPreference[]       @relation("userPreferences")
-  verified                   Boolean                @default(false)
-  stories                    Story[]                @relation("stories")
-  sounds                     Sound[]                @relation("userSounds")
-  starredSounds              Sound[]                @relation("userStarredSounds")
-  gettingStartedDismissed    Boolean                @default(false)
+  automodTriggers            AutomodTrigger[]            @relation("automodTriggers")
+  domains                    Domain[]                    @relation("userDomains")
+  developerProfile           DeveloperProfile?           @relation("developerProfile")
+  preferences                UserPreference[]            @relation("userPreferences")
+  verified                   Boolean                     @default(false)
+  stories                    Story[]                     @relation("stories")
+  sounds                     Sound[]                     @relation("userSounds")
+  starredSounds              Sound[]                     @relation("userStarredSounds")
+  gettingStartedDismissed    Boolean                     @default(false)
+  starredCatalogItems        CatalogItem[]               @relation("starredCatalogItems")
+  starredLimitedCatalogItems LimitedCatalogItem[]        @relation("starredLimitedCatalogItems")
+  limitedReceipts            LimitedCatalogItemReceipt[] @relation("limitedCatalogItemReceiptBuyer")
+  activeResells              LimitedCatalogItemResell[]  @relation("limitedCatalogItemResellSeller")
+  inventory                  Inventory?                  @relation("inventory")
 }
 
 model Story {
@@ -1200,4 +1205,84 @@ model DeveloperProfileSkill {
   profileId   String
   name        String
   description String
+}
+
+model CatalogItem {
+  id          String          @id @default(uuid())
+  createdAt   DateTime        @default(now())
+  name        String
+  description String
+  price       Int
+  priceBits   Int
+  type        CatalogItemType
+  previewUri  String
+  stargazers  User[]          @relation("starredCatalogItems")
+  onSale      Boolean         @default(true)
+  limited     Boolean         @default(false)
+  apartOf     Inventory[]     @relation("standardCatalogItems")
+}
+
+enum CatalogItemType {
+  HAT
+  SHIRT
+  PANTS
+  TSHIRT
+  GEAR
+}
+
+model LimitedCatalogItem {
+  id                 String                      @id @default(uuid())
+  createdAt          DateTime                    @default(now())
+  name               String
+  description        String
+  price              Int
+  type               CatalogItemType
+  previewUri         String
+  stargazers         User[]                      @relation("starredLimitedCatalogItems")
+  limited            Boolean                     @default(true)
+  onSale             Boolean                     @default(true)
+  stock              Int
+  receipts           LimitedCatalogItemReceipt[] @relation("limitedCatalogItemReceipts")
+  recentAveragePrice Int
+  rapLastUpdated     DateTime
+  resells            LimitedCatalogItemResell[]  @relation("limitedCatalogItemResell")
+  items              LimitedInventoryItem[]      @relation("limitedInventoryItems")
+}
+
+model LimitedCatalogItemReceipt {
+  id        String             @id @default(uuid())
+  createdAt DateTime           @default(now())
+  item      LimitedCatalogItem @relation("limitedCatalogItemReceipts", fields: [itemId], references: [id])
+  itemId    String
+  salePrice Int
+  buyer     User               @relation("limitedCatalogItemReceiptBuyer", fields: [buyerId], references: [id])
+  buyerId   Int
+}
+
+model LimitedCatalogItemResell {
+  id        String             @id @default(uuid())
+  createdAt DateTime           @default(now())
+  item      LimitedCatalogItem @relation("limitedCatalogItemResell", fields: [itemId], references: [id])
+  itemId    String
+  seller    User               @relation("limitedCatalogItemResellSeller", fields: [sellerId], references: [id])
+  sellerId  Int
+  price     Int
+}
+
+model Inventory {
+  id        String                 @id @default(uuid())
+  createdAt DateTime               @default(now())
+  user      User                   @relation("inventory", fields: [userId], references: [id])
+  userId    Int                    @unique
+  items     CatalogItem[]          @relation("standardCatalogItems")
+  limited   LimitedInventoryItem[] @relation("limitedInventoryItems")
+}
+
+model LimitedInventoryItem {
+  id          String             @id @default(uuid())
+  inventory   Inventory          @relation("limitedInventoryItems", fields: [inventoryId], references: [id])
+  inventoryId String
+  item        LimitedCatalogItem @relation("limitedInventoryItems", fields: [itemId], references: [id])
+  itemId      String
+  count       Int
 }

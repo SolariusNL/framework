@@ -67,7 +67,13 @@ const Donate = ({ user }: DonateProps) => {
           <div className="flex items-center justify-center gap-2 md:gap-0 mb-6 flex-wrap md:justify-between">
             {[50, 100, 500, 1000, 5000].map((n) => (
               <Chip
-                radius="md"
+                radius="xl"
+                variant="filled"
+                classNames={{
+                  label:
+                    "!bg-zinc-700/50 hover:!bg-zinc-700/70 active:!bg-zinc-700/90",
+                  checkIcon: "!text-white",
+                }}
                 onClick={() => form.setFieldValue("tickets", n)}
                 checked={form.values.tickets === n}
                 key={n}
