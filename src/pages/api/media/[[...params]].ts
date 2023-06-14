@@ -67,7 +67,7 @@ const avatars = createMulter("avatars", async (req, file, cb) => {
   await prisma.user.update({
     where: { id: user?.id },
     data: {
-      avatarUri: `/avatars/${String(user?.username)}.webp`,
+      avatarUri: `/avatars/${String(user?.username)}.webp?at=${Date.now()}`,
     },
   });
 
@@ -96,7 +96,7 @@ const gameThumbnails = createMulter("thumbnails", async (req, file, cb) => {
     where: { id: Number(req.params.gameId) },
     data: {
       gallery: {
-        set: [`/thumbnails/${req.params.gameId}.webp`],
+        set: [`/thumbnails/${req.params.gameId}.webp?at=${Date.now()}`],
       },
     },
   });
@@ -127,7 +127,7 @@ const gameIcons = createMulter("icons", async (req, file, cb) => {
       id: Number.parseInt(req.params.gameId),
     },
     data: {
-      iconUri: `/icons/${game.id}.webp`,
+      iconUri: `/icons/${game.id}.webp?at=${Date.now()}`,
     },
   });
 
@@ -159,7 +159,7 @@ const gamepassIcons = createMulter("gamepass", async (req, file, cb) => {
       id: String(req.params.gamepassId),
     },
     data: {
-      iconUri: `/gamepass/${gamepass.id}.webp`,
+      iconUri: `/gamepass/${gamepass.id}.webp?at=${Date.now()}`,
     },
   });
 
@@ -188,7 +188,7 @@ const teamIcons = createMulter("team", async (req, file, cb) => {
       id: String(req.params.teamId),
     },
     data: {
-      iconUri: `/team/${team.id}.webp`,
+      iconUri: `/team/${team.id}.webp?at=${Date.now()}`,
     },
   });
 
@@ -223,7 +223,7 @@ const convoIcons = createMulter("convo", async (req, file, cb) => {
       id: String(req.params.convoId),
     },
     data: {
-      iconUri: `/convo/${conversation.id}.webp`,
+      iconUri: `/convo/${conversation.id}.webp?at=${Date.now()}`,
     },
   });
 
