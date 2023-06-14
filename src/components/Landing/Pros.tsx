@@ -19,7 +19,6 @@ const useStyles = createStyles((theme) => ({
   },
 
   title: {
-    fontFamily: `Inter, ${theme.fontFamily}`,
     fontSize: 36,
     lineHeight: 1.1,
     marginBottom: theme.spacing.md,
@@ -84,10 +83,7 @@ const Pros = () => {
       <Grid gutter={80}>
         <Col span={12} md={5}>
           <p className="text-pink-700 font-bold text-sm">Why Framework?</p>
-          <Title
-            className={clsx(classes.title, "tracking-tight font-extrabold")}
-            order={2}
-          >
+          <Title className={clsx(classes.title)} order={2}>
             Our standards
           </Title>
           <Text color="dimmed">

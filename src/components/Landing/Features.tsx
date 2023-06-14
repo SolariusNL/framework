@@ -76,7 +76,7 @@ const Features = () => {
       <Grid gutter={80}>
         <Col span={12} md={5}>
           <Title className={classes.title} order={2}>
-            Features
+            Our unique traits
           </Title>
           <Text color="dimmed">
             What makes Framework different from other platforms, like Roblox?

@@ -7,7 +7,6 @@ const useStyles = createStyles((theme) => ({
   },
 
   title: {
-    fontFamily: `Inter, ${theme.fontFamily}`,
     fontSize: 36,
     lineHeight: 1.1,
     marginBottom: theme.spacing.md,

@@ -1,4 +1,5 @@
 import { Accordion, Col, createStyles, Grid, Text, Title } from "@mantine/core";
+import clsx from "../../util/clsx";
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -18,7 +19,13 @@ const Faq: React.FC = () => {
   const { classes } = useStyles();
 
   return (
-    <div className={classes.wrapper}>
+    <div
+      className={clsx(classes.wrapper, "bg-black bg-opacity-50")}
+      style={{
+        backdropFilter: "blur(10px)",
+        WebkitBackdropFilter: "blur(10px)",
+      }}
+    >
       <Grid gutter={80}>
         <Col span={12} md={7}>
           <Accordion>
