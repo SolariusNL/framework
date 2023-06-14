@@ -84,7 +84,7 @@ const Landing: NextPage = () => {
               className={clsx(
                 "font-extrabold text-4xl sm:text-5xl lg:text-6xl tracking-tight text-center",
                 "bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-blue-600",
-                "leading-tight sm:leading-tight lg:leading-tight"
+                "leading-tight sm:leading-tight lg:leading-tight font-title"
               )}
             >
               <Typewriter

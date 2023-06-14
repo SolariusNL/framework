@@ -35,6 +35,7 @@ module.exports = {
     fontFamily: {
       mono: ["Fira Code VF", "monospace"],
       sans: ["Inter var", "sans-serif"],
+      title: ["Mona Sans", "Inter var", "sans-serif"],
     },
   },
   plugins: [
