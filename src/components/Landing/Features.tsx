@@ -28,7 +28,7 @@ const features = [
   {
     title: "Free and open source",
     description:
-      "Framework is free and open source, licensed under the MIT license. Framework is developed by ordinary people around the world, and you can contribute too!",
+      "Framework is free (as in freedom and as in free beer) and open source, licensed under GNU AGPLv3. You can view the source code on our GitLab instance.",
   },
   {
     title: "Privacy first",
