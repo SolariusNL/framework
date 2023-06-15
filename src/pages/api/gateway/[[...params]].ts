@@ -226,6 +226,7 @@ class GatewayRouter {
             },
             data: {
               online: true,
+              hasConnected: true,
             },
           });
 
