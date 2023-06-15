@@ -1,6 +1,6 @@
-import { Menu, Text } from "@mantine/core";
+import { List, Menu, Stack, Text, useMantineColorScheme } from "@mantine/core";
 import { useClipboard } from "@mantine/hooks";
-import { openModal } from "@mantine/modals";
+import { openConfirmModal, openModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import { Prism } from "@mantine/prism";
 import { getCookie } from "cookies-next";
@@ -10,6 +10,7 @@ import {
   HiClipboard,
   HiRefresh,
   HiStop,
+  HiTrash,
   HiXCircle,
 } from "react-icons/hi";
 import { ConnectionWithGameAndKey } from "../../pages/developer/servers";
@@ -25,6 +26,7 @@ const ServerContextMenu: FC<ServerContextMenuProps> = ({
   onRefresh,
 }) => {
   const { copy } = useClipboard();
+  const { colorScheme } = useMantineColorScheme();
 
   return (
     <>
@@ -101,6 +103,33 @@ const ServerContextMenu: FC<ServerContextMenuProps> = ({
         }
       >
         Stop server
+      </Menu.Item>
+      <Menu.Item
+        color="red"
+        icon={<HiTrash />}
+        onClick={() => {
+          openConfirmModal({
+            title: "Delete server",
+            className: colorScheme,
+            children: (
+              <Stack spacing="md">
+                <Text size="sm" color="dimmed">
+                  Are you sure you want to delete this server? This action is
+                  irreversible. The following information will be erased:
+                </Text>
+                <List className="list-disc pl-4 text-sm text-dimmed">
+                  <li>Synced files</li>
+                  <li>CI/CD artifacts</li>
+                  <li>Server logs</li>
+                  <li>Server settings</li>
+                  <li>Backups</li>
+                </List>
+              </Stack>
+            ),
+          });
+        }}
+      >
+        Delete server
       </Menu.Item>
     </>
   );

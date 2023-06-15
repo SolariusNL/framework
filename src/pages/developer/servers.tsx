@@ -48,9 +48,11 @@ import {
   HiWifi,
   HiXCircle,
 } from "react-icons/hi";
+import { useDispatch, useSelector } from "react-redux";
 import ContextMenu from "../../components/ContextMenu";
 import ConsoleOutput from "../../components/Developer/ConsoleOutput";
 import ServerContextMenu from "../../components/Developer/ServerContextMenu";
+import Dot from "../../components/Dot";
 import FilterIndicator from "../../components/FilterIndicator";
 import { Section } from "../../components/Home/FriendsWidget";
 import ModernEmptyState from "../../components/ModernEmptyState";
@@ -59,6 +61,13 @@ import ShadedCard from "../../components/ShadedCard";
 import Rocket from "../../icons/Rocket";
 import Developer from "../../layouts/DeveloperLayout";
 import SidebarTabNavigation from "../../layouts/SidebarTabNavigation";
+import {
+  appendLines,
+  setCanLoadMore,
+  setPage,
+  setStdout,
+} from "../../reducers/stdout";
+import { RootState } from "../../reducers/store";
 import IResponseBase from "../../types/api/IResponseBase";
 import authorizedRoute from "../../util/auth";
 import clsx from "../../util/clsx";
@@ -129,7 +138,6 @@ const Servers: FC<ServersProps> = ({ user }) => {
     useState<ConnectionWithGameAndKey>();
   const [shouldAnimateMainServerPanel, setShouldAnimateMainServerPanel] =
     useState(false);
-  const [stdout, setStdout] = useState<string[]>([]);
   const [games, setGames] = useState<
     Pick<Game, "id" | "name" | "connection">[]
   >([]);
@@ -164,6 +172,8 @@ const Servers: FC<ServersProps> = ({ user }) => {
     },
   });
   const theme = useMantineTheme();
+  const stdout = useSelector((state: RootState) => state.stdout);
+  const dispatch = useDispatch();
 
   const filterFn = (s: ConnectionWithGameAndKey) => {
     if (serverFilter === "all") return true;
@@ -211,16 +221,29 @@ const Servers: FC<ServersProps> = ({ user }) => {
   };
 
   const pollStdout = async () => {
-    await fetch(`/api/cosmic/my/servers/${selectedServer?.id}/stdout`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: String(getCookie(".frameworksession")),
-      },
-    })
+    await fetch(
+      `/api/cosmic/my/servers/${selectedServer?.id}/stdout/${stdout.page}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: String(getCookie(".frameworksession")),
+        },
+      }
+    )
       .then((res) => res.json())
       .then((res) => {
-        setStdout((res as string[]).map((s) => new Convert().toHtml(s)));
+        if (res.length === 0) dispatch(setCanLoadMore(false));
+        else {
+          if (stdout.page === 1)
+            dispatch(
+              setStdout((res as string[]).map((s) => new Convert().toHtml(s)))
+            );
+          else
+            dispatch(
+              appendLines((res as string[]).map((s) => new Convert().toHtml(s)))
+            );
+        }
       });
   };
 
@@ -254,20 +277,24 @@ const Servers: FC<ServersProps> = ({ user }) => {
   }, []);
 
   useEffect(() => {
+    if (!stdout.canLoadMore) return;
     const interval = setInterval(() => {
       if (selectedServer) {
         pollStdout();
       }
     }, 5000);
     return () => clearInterval(interval);
-  }, [selectedServer]);
+  }, [selectedServer, stdout.page]);
 
   useEffect(() => {
-    setStdout([]);
     if (selectedServer) {
       pollStdout();
+    } else {
+      dispatch(setStdout([]));
+      dispatch(setCanLoadMore(true));
+      dispatch(setPage(1));
     }
-  }, [selectedServer]);
+  }, [selectedServer, stdout.page]);
 
   return (
     <Developer
@@ -559,7 +586,7 @@ const Servers: FC<ServersProps> = ({ user }) => {
                           )}
                         </AnimatePresence>
                         <div className="mt-6" />
-                        <ConsoleOutput stdout={stdout} />
+                        <ConsoleOutput />
                         <Divider mt="xl" mb="xl" />
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-3 gap-y-6">
                           {[
@@ -836,26 +863,50 @@ const Servers: FC<ServersProps> = ({ user }) => {
                                         className="w-full flex flex-col gap-4"
                                         onClick={() => setSelectedServer(s)}
                                       >
-                                        <Badge
-                                          radius="md"
-                                          color={s.online ? "green" : "red"}
-                                          className="cursor-pointer"
-                                        >
-                                          {s.online ? "Online" : "Offline"}
-                                        </Badge>
-                                        <Text
-                                          size="lg"
-                                          className="flex items-center gap-2"
-                                        >
-                                          {s.ip}{" "}
-                                          <Text
-                                            size="sm"
-                                            color="dimmed"
-                                            weight={700}
+                                        {!s.hasConnected && (
+                                          <Tooltip label="Server has never connected to Nucleus">
+                                            <Badge
+                                              radius="md"
+                                              color="orange"
+                                              className="cursor-pointer"
+                                            >
+                                              Inactive
+                                            </Badge>
+                                          </Tooltip>
+                                        )}
+                                        <div className="flex items-center gap-3">
+                                          <Tooltip
+                                            label={
+                                              s.online ? "Online" : "Offline"
+                                            }
                                           >
-                                            {s.port}
+                                            <div>
+                                              <Dot
+                                                color={
+                                                  s.online ? "green" : "red"
+                                                }
+                                                classNames={{
+                                                  dot: "w-2 h-2",
+                                                  pulsar: "w-3 h-3",
+                                                }}
+                                                pulse
+                                              />
+                                            </div>
+                                          </Tooltip>
+                                          <Text
+                                            size="lg"
+                                            className="flex items-center gap-2"
+                                          >
+                                            {s.ip}{" "}
+                                            <Text
+                                              size="sm"
+                                              color="dimmed"
+                                              weight={700}
+                                            >
+                                              {s.port}
+                                            </Text>
                                           </Text>
-                                        </Text>
+                                        </div>
                                         <div className="flex justify-between items-center w-full mt-4">
                                           <div className="flex items-center gap-3">
                                             <Avatar

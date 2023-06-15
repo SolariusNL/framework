@@ -514,6 +514,7 @@ model Connection {
   reportedDiskGb   Float?          @default(0)
   protocol         String          @default("P-1000")
   commands         CosmicCommand[] @relation("cosmicCommands")
+  hasConnected     Boolean         @default(false)
 }
 
 model CosmicCommand {

@@ -32,11 +32,12 @@ class CosmicRouter {
     }));
   }
 
-  @Get("/my/servers/:id/stdout")
+  @Get("/my/servers/:id/stdout/:page")
   @Authorized()
   public async getMyServerStdout(
     @Account() user: User,
-    @Param("id") id: string
+    @Param("id") id: string,
+    @Param("page") page: number = 1
   ) {
     const logs = await prisma.nucleusStdout.findMany({
       where: {
@@ -50,7 +51,8 @@ class CosmicRouter {
       orderBy: {
         createdAt: "desc",
       },
-      take: 150,
+      take: 20,
+      skip: (page - 1) * 20,
     });
 
     return logs.map((log) => log.line);
