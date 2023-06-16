@@ -279,7 +279,6 @@ class GatewayRouter {
                   ? NucleusStdoutType.WARNING
                   : NucleusStdoutType.ERROR;
 
-            // only retain last 7500
             const count = await prisma.nucleusStdout.findMany({
               where: {
                 connection: {
@@ -291,7 +290,7 @@ class GatewayRouter {
               },
             });
 
-            if (count.length > 220) {
+            if (count.length > 7500) {
               await prisma.nucleusStdout.deleteMany({
                 where: {
                   connection: {
@@ -313,6 +312,7 @@ class GatewayRouter {
                 },
                 line: data,
                 type,
+                category: match ? match[1] : "unknown",
               },
             });
           });

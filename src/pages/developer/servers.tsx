@@ -63,6 +63,7 @@ import Rocket from "../../icons/Rocket";
 import Developer from "../../layouts/DeveloperLayout";
 import SidebarTabNavigation from "../../layouts/SidebarTabNavigation";
 import {
+  DEFAULT_FILTER,
   appendLines,
   setCanLoadMore,
   setPage,
@@ -223,7 +224,7 @@ const Servers: FC<ServersProps> = ({ user }) => {
 
   const pollStdout = async () => {
     await fetch(
-      `/api/cosmic/my/servers/${selectedServer?.id}/stdout/${stdout.page}`,
+      `/api/cosmic/my/servers/${selectedServer?.id}/stdout/${stdout.page}?category=${stdout.filter.category}`,
       {
         method: "GET",
         headers: {
@@ -234,9 +235,14 @@ const Servers: FC<ServersProps> = ({ user }) => {
     )
       .then((res) => res.json())
       .then((res) => {
-        if (res.length === 0) dispatch(setCanLoadMore(false));
+        if (res.length === 0 && stdout.filter === DEFAULT_FILTER)
+          dispatch(setCanLoadMore(false));
         else {
-          if (stdout.page === 1)
+          if (stdout.filter !== DEFAULT_FILTER)
+            dispatch(
+              setStdout((res as string[]).map((s) => new Convert().toHtml(s)))
+            );
+          else if (stdout.page === 1)
             dispatch(
               setStdout((res as string[]).map((s) => new Convert().toHtml(s)))
             );
@@ -306,7 +312,7 @@ const Servers: FC<ServersProps> = ({ user }) => {
       }
     }, 5000);
     return () => clearInterval(interval);
-  }, [selectedServer, stdout.page]);
+  }, [selectedServer, stdout.page, stdout.filter]);
 
   useEffect(() => {
     if (selectedServer) {
@@ -316,7 +322,7 @@ const Servers: FC<ServersProps> = ({ user }) => {
       dispatch(setCanLoadMore(true));
       dispatch(setPage(1));
     }
-  }, [selectedServer, stdout.page]);
+  }, [selectedServer, stdout.page, stdout.filter]);
 
   return (
     <Developer

@@ -9,7 +9,7 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 import { openModal } from "@mantine/modals";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   HiClock,
   HiFilter,
@@ -18,29 +18,25 @@ import {
   HiSearch,
 } from "react-icons/hi";
 import { useDispatch, useSelector } from "react-redux";
-import { incrementPage } from "../../reducers/stdout";
+import {
+  CATEGORY_REGEX,
+  DATE_REGEX,
+  TIME_REGEX,
+  incrementPage,
+  resetFilter,
+  setFilterParam,
+} from "../../reducers/stdout";
 import { RootState } from "../../reducers/store";
 import DataGrid from "../DataGrid";
 
 type ConsoleOutputProps = React.ComponentPropsWithoutRef<"div">;
-type Filter = {
-  category: LogLevel | "all";
-};
 export type LogLevel = "info" | "debug" | "warn" | "error" | "recv" | "send";
-
-const DEFAULT_FILTER: Filter = {
-  category: "all",
-};
-export const DATE_REGEX = /\[(\d{4}-\d{2}-\d{2})T\d{2}:\d{2}:\d{2}\.\d{3}Z\]/;
-export const CATEGORY_REGEX = /\[framework->(\w+)\]/;
-export const TIME_REGEX = /(\d{2}):(\d{2}):(\d{2})\.(\d{3})Z/;
 
 const ConsoleOutput: React.FC<ConsoleOutputProps> = (props) => {
   const theme = useMantineTheme();
   const stdout = useSelector((state: RootState) => state.stdout);
   const dispatch = useDispatch();
   const [filterOpen, setFilterOpen] = useState(false);
-  const [filter, setFilter] = useState<Filter>(DEFAULT_FILTER);
 
   const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
     const target = event.target as HTMLDivElement;
@@ -50,11 +46,6 @@ const ConsoleOutput: React.FC<ConsoleOutputProps> = (props) => {
     if (scrolledToTop) {
       dispatch(incrementPage());
     }
-  };
-
-  const categoryFilterFn = (line: string) => {
-    if (filter.category === "all") return true;
-    return CATEGORY_REGEX.exec(line)?.[1] === filter.category;
   };
 
   const getTime = (line: string) => {
@@ -82,14 +73,6 @@ const ConsoleOutput: React.FC<ConsoleOutputProps> = (props) => {
     }
   };
 
-  useEffect(() => {
-    if (filter !== DEFAULT_FILTER) {
-      if (stdout.lines.filter((line) => categoryFilterFn(line)).length < 20) {
-        dispatch(incrementPage());
-      }
-    }
-  }, [filter, stdout.lines.length]);
-
   return (
     <>
       <Modal
@@ -109,9 +92,9 @@ const ConsoleOutput: React.FC<ConsoleOutputProps> = (props) => {
               { value: "send", label: "Send" },
             ] as { value: LogLevel | "all"; label: string }[]
           }
-          value={filter.category}
+          value={stdout.filter.category}
           onChange={(value) =>
-            setFilter({ ...filter, category: value as LogLevel | "all" })
+            dispatch(setFilterParam({ category: value as LogLevel }))
           }
           description="Filter console output by category."
           label="Category"
@@ -120,7 +103,7 @@ const ConsoleOutput: React.FC<ConsoleOutputProps> = (props) => {
         <div className="flex justify-end mt-4">
           <Button
             onClick={() => {
-              setFilter(DEFAULT_FILTER);
+              dispatch(resetFilter());
             }}
             variant="default"
           >
@@ -142,7 +125,7 @@ const ConsoleOutput: React.FC<ConsoleOutputProps> = (props) => {
               backgroundColor: "rgba(0, 0, 0, 0.1)",
             }}
           >
-            {stdout.lines.filter((line) => categoryFilterFn(line)).length}
+            {stdout.lines.length}
           </Badge>
           <ActionIcon
             size="lg"
@@ -187,66 +170,63 @@ const ConsoleOutput: React.FC<ConsoleOutputProps> = (props) => {
           {...props}
         >
           <div className="flex gap-2 flex-col-reverse">
-            {stdout.lines
-              .filter((line) => categoryFilterFn(line))
-              .map((s, i) => (
-                <div
-                  className="cursor-pointer hover:bg-zinc-900/75 text-sm p-2 rounded-md text-white"
-                  style={{
-                    fontFamily: "Fira Code VF, monospace",
-                    wordBreak: "break-word",
-                  }}
-                  onClick={() => {
-                    openModal({
-                      title: "Console line details",
-                      className: theme.colorScheme === "dark" ? "dark" : "",
-                      children: (
-                        <>
+            {stdout.lines.map((s, i) => (
+              <div
+                className="cursor-pointer hover:bg-zinc-900/75 text-sm p-2 rounded-md text-white"
+                style={{
+                  fontFamily: "Fira Code VF, monospace",
+                  wordBreak: "break-word",
+                }}
+                onClick={() => {
+                  openModal({
+                    title: "Console line details",
+                    className: theme.colorScheme === "dark" ? "dark" : "",
+                    children: (
+                      <>
+                        <div
+                          className="bg-black rounded-md p-4 text-sm"
+                          style={{
+                            fontFamily: "Fira Code VF, monospace",
+                          }}
+                        >
                           <div
-                            className="bg-black rounded-md p-4 text-sm"
-                            style={{
-                              fontFamily: "Fira Code VF, monospace",
+                            dangerouslySetInnerHTML={{
+                              __html: s,
                             }}
-                          >
-                            <div
-                              dangerouslySetInnerHTML={{
-                                __html: s,
-                              }}
-                            />
-                          </div>
-                          <DataGrid
-                            items={[
-                              {
-                                tooltip: "Date",
-                                value: DATE_REGEX.exec(s)?.[1] ?? "Unknown",
-                                icon: <HiClock />,
-                              },
-                              {
-                                tooltip: "Time",
-                                value: getTime(s) ?? "Unknown",
-                                icon: <HiOutlineClock />,
-                              },
-                              {
-                                tooltip: "Category",
-                                value: (
-                                  <Code>
-                                    {CATEGORY_REGEX.exec(s)?.[1] ?? "info"}
-                                  </Code>
-                                ),
-                                icon: <HiOutlineTag />,
-                              },
-                            ]}
                           />
-                        </>
-                      ),
-                    });
-                  }}
-                  key={i}
-                  dangerouslySetInnerHTML={{ __html: s }}
-                />
-              ))}
-            {stdout.lines.filter((line) => categoryFilterFn(line)).length ===
-              0 && (
+                        </div>
+                        <DataGrid
+                          items={[
+                            {
+                              tooltip: "Date",
+                              value: DATE_REGEX.exec(s)?.[1] ?? "Unknown",
+                              icon: <HiClock />,
+                            },
+                            {
+                              tooltip: "Time",
+                              value: getTime(s) ?? "Unknown",
+                              icon: <HiOutlineClock />,
+                            },
+                            {
+                              tooltip: "Category",
+                              value: (
+                                <Code>
+                                  {CATEGORY_REGEX.exec(s)?.[1] ?? "info"}
+                                </Code>
+                              ),
+                              icon: <HiOutlineTag />,
+                            },
+                          ]}
+                        />
+                      </>
+                    ),
+                  });
+                }}
+                key={i}
+                dangerouslySetInnerHTML={{ __html: s }}
+              />
+            ))}
+            {stdout.lines.length === 0 && (
               <Text color="dimmed">
                 No console output available (with applied filters).
               </Text>

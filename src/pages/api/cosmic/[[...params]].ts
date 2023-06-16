@@ -1,4 +1,9 @@
-import { createHandler, Get, Param } from "@storyofams/next-api-decorators";
+import {
+  createHandler,
+  Get,
+  Param,
+  Query,
+} from "@storyofams/next-api-decorators";
 import Authorized, { Account } from "../../../util/api/authorized";
 import prisma from "../../../util/prisma";
 import type { User } from "../../../util/prisma-types";
@@ -37,7 +42,8 @@ class CosmicRouter {
   public async getMyServerStdout(
     @Account() user: User,
     @Param("id") id: string,
-    @Param("page") page: number = 1
+    @Param("page") page: number = 1,
+    @Query("category") category?: string
   ) {
     const logs = await prisma.nucleusStdout.findMany({
       where: {
@@ -47,6 +53,10 @@ class CosmicRouter {
             authorId: user.id,
           },
         },
+        ...(category &&
+          category !== "all" && {
+            category: String(category),
+          }),
       },
       orderBy: {
         createdAt: "desc",
