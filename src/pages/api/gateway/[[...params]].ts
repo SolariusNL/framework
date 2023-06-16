@@ -279,6 +279,31 @@ class GatewayRouter {
                   ? NucleusStdoutType.WARNING
                   : NucleusStdoutType.ERROR;
 
+            // only retain last 7500
+            const count = await prisma.nucleusStdout.findMany({
+              where: {
+                connection: {
+                  id: socket.data.cosmic.connection.id,
+                },
+              },
+              orderBy: {
+                createdAt: "desc",
+              },
+            });
+
+            if (count.length > 220) {
+              await prisma.nucleusStdout.deleteMany({
+                where: {
+                  connection: {
+                    id: socket.data.cosmic.connection.id,
+                  },
+                  createdAt: {
+                    lte: count[7499].createdAt,
+                  },
+                },
+              });
+            }
+
             await prisma.nucleusStdout.create({
               data: {
                 connection: {

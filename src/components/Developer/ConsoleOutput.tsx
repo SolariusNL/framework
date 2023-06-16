@@ -85,7 +85,7 @@ const ConsoleOutput: React.FC<ConsoleOutputProps> = (props) => {
   useEffect(() => {
     if (filter !== DEFAULT_FILTER) {
       if (stdout.lines.filter((line) => categoryFilterFn(line)).length < 20) {
-        if (stdout.page < 3) dispatch(incrementPage());
+        dispatch(incrementPage());
       }
     }
   }, [filter, stdout.lines.length]);
