@@ -1,3 +1,4 @@
+import { NucleusStdoutType } from "@prisma/client";
 import { Get, Res, createHandler } from "@storyofams/next-api-decorators";
 import http from "http";
 import { NextApiResponse } from "next";
@@ -268,6 +269,16 @@ class GatewayRouter {
           });
 
           socket.on("@cosmic/stdout", async (data) => {
+            const regex = /\[framework->(\w+)\]/;
+            const match = data.match(regex);
+            let type: NucleusStdoutType = NucleusStdoutType.GENERIC;
+
+            if (match === "warn" || match === "error")
+              type =
+                match === "warn"
+                  ? NucleusStdoutType.WARNING
+                  : NucleusStdoutType.ERROR;
+
             await prisma.nucleusStdout.create({
               data: {
                 connection: {
@@ -276,6 +287,7 @@ class GatewayRouter {
                   },
                 },
                 line: data,
+                type,
               },
             });
           });

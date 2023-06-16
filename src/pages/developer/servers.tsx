@@ -50,6 +50,7 @@ import {
 } from "react-icons/hi";
 import { useDispatch, useSelector } from "react-redux";
 import ContextMenu from "../../components/ContextMenu";
+import DataGrid from "../../components/DataGrid";
 import ConsoleOutput from "../../components/Developer/ConsoleOutput";
 import ServerContextMenu from "../../components/Developer/ServerContextMenu";
 import Dot from "../../components/Dot";
@@ -258,6 +259,27 @@ const Servers: FC<ServersProps> = ({ user }) => {
     });
   };
 
+  const commands =
+    selectedServer &&
+    selectedServer.commands.map((c) => (
+      <NavLink
+        key={c.id}
+        icon={<HiOutlineCode />}
+        label={
+          <span>
+            Run
+            <span className="font-mono ml-1 mr-1 font-semibold">{c.name}</span>
+          </span>
+        }
+        className="rounded-md"
+        onClick={() => {
+          setRemoteRun(true);
+          setRemoteRunTarget(c);
+        }}
+        disabled={!selectedServer.online}
+      />
+    ));
+
   useEffect(() => {
     getServers();
     getGames();
@@ -374,6 +396,21 @@ const Servers: FC<ServersProps> = ({ user }) => {
               className="rounded-md"
             />
           ))}
+          <AnimatePresence>
+            {selectedServer && selectedServer.commands.length > 0 && (
+              <motion.div
+                key="commands"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
+                className="md:block hidden"
+              >
+                <Divider mt="md" mb="md" />
+                {commands}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </SidebarTabNavigation.Sidebar>
         <SidebarTabNavigation.Content>
           {activeTab === SidebarValue.CreateServer ? (
@@ -588,86 +625,59 @@ const Servers: FC<ServersProps> = ({ user }) => {
                         <div className="mt-6" />
                         <ConsoleOutput />
                         <Divider mt="xl" mb="xl" />
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 gap-y-6">
-                          {[
+                        <DataGrid
+                          items={[
                             {
                               tooltip: "IP address",
-                              icon: HiServer,
+                              icon: <HiServer />,
                               value: selectedServer.ip,
                             },
                             {
                               tooltip: "Port",
-                              icon: HiWifi,
-                              value: selectedServer.port,
+                              icon: <HiWifi />,
+                              value: <Code>{selectedServer.port}</Code>,
                             },
                             {
                               tooltip: "Game",
-                              icon: HiCubeTransparent,
-                              value: selectedServer.game.name,
+                              icon: <HiCubeTransparent />,
+                              value: (
+                                <Anchor
+                                  href={`/game/${selectedServer.game.id}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  {selectedServer.game.name}
+                                </Anchor>
+                              ),
                             },
                             {
                               tooltip: "CPU cores",
-                              icon: HiChip,
+                              icon: <HiChip />,
                               value: `${selectedServer.reportedCores} cores`,
                             },
                             {
                               tooltip: "Memory",
-                              icon: HiChip,
+                              icon: <HiChip />,
                               value: `${selectedServer.reportedMemoryGb} GB`,
                             },
                             {
                               tooltip: "Disk",
-                              icon: HiFolder,
+                              icon: <HiFolder />,
                               value: `${selectedServer.reportedDiskGb} GB`,
                             },
-                          ].map(({ tooltip, icon: Icon, value }) => (
-                            <Tooltip
-                              label={`${tooltip}: ${value}`}
-                              key={tooltip}
-                            >
-                              <div className="flex flex-col items-center justify-center gap-3">
-                                <div className="flex items-center gap-2">
-                                  <Icon
-                                    color={theme.colors.gray[5]}
-                                    className="flex-shrink-0 flex items-center"
-                                  />
-                                  <Text weight={500}>{tooltip}</Text>
-                                </div>
-                                <Text weight={500} color="dimmed" lineClamp={1}>
-                                  {value}
-                                </Text>
-                              </div>
-                            </Tooltip>
-                          ))}
-                        </div>
-                        {selectedServer &&
-                          selectedServer.commands.length > 0 && (
+                          ]}
+                          defaultCols={2}
+                        />
+                        <div className="md:hidden block">
+                          {selectedServer.commands.length > 0 && (
                             <>
                               <Divider mt="xl" mb="xl" />
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 gap-y-6">
-                                {selectedServer.commands.map((c) => (
-                                  <NavLink
-                                    key={c.id}
-                                    icon={<HiOutlineCode />}
-                                    label={
-                                      <span>
-                                        Run
-                                        <span className="font-mono ml-1 mr-1 font-semibold">
-                                          {c.name}
-                                        </span>
-                                      </span>
-                                    }
-                                    description={c.description}
-                                    className="rounded-md"
-                                    onClick={() => {
-                                      setRemoteRun(true);
-                                      setRemoteRunTarget(c);
-                                    }}
-                                  />
-                                ))}
+                              <div className="grid md:grid-cols-3 gap-2 sm:grid-cols-2 grid-cols-1">
+                                {commands}
                               </div>
                             </>
                           )}
+                        </div>
                       </motion.div>
                     ) : (
                       <motion.div

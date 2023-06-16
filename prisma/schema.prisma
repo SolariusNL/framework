@@ -1065,11 +1065,18 @@ model OAuthClient {
 }
 
 model NucleusStdout {
-  id           String     @id @default(uuid())
-  createdAt    DateTime   @default(now())
+  id           String            @id @default(uuid())
+  createdAt    DateTime          @default(now())
   line         String
   connectionId String
-  connection   Connection @relation("nucleusStdout", fields: [connectionId], references: [id])
+  connection   Connection        @relation("nucleusStdout", fields: [connectionId], references: [id])
+  type         NucleusStdoutType @default(GENERIC)
+}
+
+enum NucleusStdoutType {
+  GENERIC
+  ERROR
+  WARNING
 }
 
 model Survey {
