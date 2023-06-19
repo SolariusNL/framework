@@ -1,5 +1,5 @@
 function getIpcRenderer(): any {
-  return window.require("electron").ipcRenderer;
+  return (window as any).native;
 }
 
 export { getIpcRenderer };

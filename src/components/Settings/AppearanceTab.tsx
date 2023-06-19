@@ -11,9 +11,20 @@ import {
   useMantineColorScheme,
   useMantineTheme,
 } from "@mantine/core";
-import { HiBell, HiChat, HiColorSwatch, HiMoon, HiSun } from "react-icons/hi";
+import isElectron from "is-electron";
+import { useEffect, useState } from "react";
+import {
+  HiBell,
+  HiChat,
+  HiCog,
+  HiColorSwatch,
+  HiDesktopComputer,
+  HiMoon,
+  HiSun,
+} from "react-icons/hi";
 import useAmoled from "../../stores/useAmoled";
 import usePreferences from "../../stores/usePreferences";
+import { getIpcRenderer } from "../../util/electron";
 import { Preferences } from "../../util/preferences";
 import { ChatMessage as IChatMessage, User } from "../../util/prisma-types";
 import ChatMessage from "../Chat/ChatMessage";
@@ -31,6 +42,16 @@ const AppearanceTab = ({ user }: AppearanceTabProps) => {
   const { colors } = useMantineTheme();
   const { enabled: amoled } = useAmoled();
   const { preferences } = usePreferences();
+  const electron = isElectron();
+  const [config, setConfig] = useState<any>();
+  const [autostart, setAutostart] = useState<boolean | undefined>();
+
+  useEffect(() => {
+    if (electron) {
+      setConfig(getIpcRenderer().getConfig());
+      getIpcRenderer().getAutoStart().then(setAutostart);
+    }
+  }, []);
 
   return (
     <SettingsTab tabValue="appearance" tabTitle="Appearance">
@@ -98,6 +119,59 @@ const AppearanceTab = ({ user }: AppearanceTabProps) => {
           ))
         )}
       </div>
+      {electron && (
+        <>
+          <Divider mt="xl" mb="xl" />
+          <Section
+            title="Desktop"
+            description="Customize your desktop client."
+          />
+          <Stack spacing="sm">
+            <SideBySide
+              title="Start with computer"
+              description="Launch Framework when you log in to your computer."
+              icon={<HiDesktopComputer />}
+              right={
+                <Switch
+                  label="Launch on startup"
+                  disabled={typeof autostart === "undefined"}
+                  defaultChecked={autostart ?? false}
+                  onChange={async (v) => {
+                    if (v) {
+                      await getIpcRenderer().enableAutoStart();
+                    } else {
+                      await getIpcRenderer().disableAutoStart();
+                    }
+
+                    setAutostart(Boolean(v));
+                  }}
+                />
+              }
+              shaded
+              noUpperBorder
+            />
+            <SideBySide
+              title="Development mode"
+              description="Enable development mode to use the developer tools. Note that there is no returning from this without a local development environment."
+              icon={<HiCog />}
+              right={
+                <Switch
+                  label="Enable development mode"
+                  defaultChecked={Boolean(config?.build === "dev")}
+                  onChange={() =>
+                    getIpcRenderer().set(
+                      "build",
+                      config?.build === "dev" ? "stable" : "dev"
+                    )
+                  }
+                />
+              }
+              shaded
+              noUpperBorder
+            />
+          </Stack>
+        </>
+      )}
       <Divider mt="xl" mb="xl" />
       <Section
         title="Chat"
