@@ -10,21 +10,20 @@ import {
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { getCookie } from "cookies-next";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import {
   HiCheck,
-  HiExclamationCircle,
   HiInformationCircle,
   HiTrash,
   HiXCircle,
 } from "react-icons/hi";
 import { User } from "../../util/prisma-types";
+import InlineError from "../InlineError";
 import ShadedCard from "../ShadedCard";
 import SettingsTab from "./SettingsTab";
 import SideBySide from "./SideBySide";
-import InlineError from "../InlineError";
-import Link from "next/link";
 
 interface DeleteAccountTabProps {
   user: User;

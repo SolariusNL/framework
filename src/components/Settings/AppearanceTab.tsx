@@ -22,6 +22,7 @@ import {
   HiMoon,
   HiSun,
 } from "react-icons/hi";
+import { BLACK } from "../../pages/teams/t/[slug]/issue/create";
 import useAmoled from "../../stores/useAmoled";
 import usePreferences from "../../stores/usePreferences";
 import { getIpcRenderer } from "../../util/electron";
@@ -145,6 +146,7 @@ const AppearanceTab = ({ user }: AppearanceTabProps) => {
 
                     setAutostart(Boolean(v));
                   }}
+                  classNames={BLACK}
                 />
               }
               shaded
@@ -164,6 +166,7 @@ const AppearanceTab = ({ user }: AppearanceTabProps) => {
                       config?.build === "dev" ? "stable" : "dev"
                     )
                   }
+                  classNames={BLACK}
                 />
               }
               shaded
@@ -191,6 +194,7 @@ const AppearanceTab = ({ user }: AppearanceTabProps) => {
                   "@chat/enabled": !preferences["@chat/enabled"],
                 })
               }
+              classNames={BLACK}
             />
           }
           shaded
@@ -209,6 +213,7 @@ const AppearanceTab = ({ user }: AppearanceTabProps) => {
                   "@chat/bell": !preferences["@chat/bell"],
                 })
               }
+              classNames={BLACK}
             />
           }
           shaded
@@ -234,6 +239,7 @@ const AppearanceTab = ({ user }: AppearanceTabProps) => {
                     color.slice(1).toLowerCase(),
                   value: color,
                 }))}
+                classNames={BLACK}
               />
               <ChatMessage
                 message={

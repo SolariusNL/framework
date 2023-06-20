@@ -337,6 +337,7 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
                 disabled
                 icon={<HiLockClosed />}
                 value="********"
+                classNames={BLACK}
               />
             }
             icon={<HiKey />}
@@ -363,6 +364,7 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
                   description="Your email address"
                   value={user.email}
                   icon={<HiLockClosed />}
+                  classNames={BLACK}
                 />
                 {!user.emailVerified && (
                   <div

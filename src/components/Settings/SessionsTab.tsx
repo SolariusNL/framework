@@ -7,7 +7,7 @@ import {
   Skeleton,
   Stack,
   Text,
-  Tooltip
+  Tooltip,
 } from "@mantine/core";
 import { openConfirmModal } from "@mantine/modals";
 import { OAuthApplication, Session } from "@prisma/client";
@@ -21,8 +21,9 @@ import {
   HiLogout,
   HiOutlineDesktopComputer,
   HiOutlineDeviceMobile,
-  HiQuestionMarkCircle
+  HiQuestionMarkCircle,
 } from "react-icons/hi";
+import { BLACK } from "../../pages/teams/t/[slug]/issue/create";
 import logout from "../../util/api/logout";
 import clsx from "../../util/clsx";
 import { User } from "../../util/prisma-types";
@@ -30,7 +31,7 @@ import {
   Device,
   getOperatingSystemDevice,
   getOperatingSystemEnumFromString,
-  getOperatingSystemString
+  getOperatingSystemString,
 } from "../../util/ua";
 import ModernEmptyState from "../ModernEmptyState";
 import ShadedCard from "../ShadedCard";
@@ -140,6 +141,9 @@ const SessionsTab: React.FC<SessionsTabProps> = ({ user }) => {
                 page={page}
                 onChange={setPage}
                 radius="md"
+                classNames={{
+                  item: BLACK.input,
+                }}
               />
               <Select
                 icon={<HiFilter />}
@@ -153,6 +157,7 @@ const SessionsTab: React.FC<SessionsTabProps> = ({ user }) => {
                   { label: "Staff sessions", value: "staff" },
                   { label: "OAuth applications", value: "oauth" },
                 ]}
+                classNames={BLACK}
               />
             </div>
             {sessions.filter(filterFn).length > 0 ? (

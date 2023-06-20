@@ -26,12 +26,14 @@ import {
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import getTimezones from "../../data/timezones";
+import { BLACK } from "../../pages/teams/t/[slug]/issue/create";
 import { getCookie } from "../../util/cookies";
 import getMediaUrl from "../../util/get-media";
 import { User } from "../../util/prisma-types";
 import CountrySelect from "../CountryPicker";
 import Descriptive from "../Descriptive";
 import ImageUploader from "../ImageUploader";
+import InlineError from "../InlineError";
 import Links from "../Profile/Links";
 import Stateful from "../Stateful";
 import SettingsTab from "./SettingsTab";
@@ -241,11 +243,12 @@ const AccountTab = ({ user }: AccountTabProps) => {
                       604800000 >
                       Date.now() || user.tickets < 500
                   }
+                  classNames={BLACK}
                   mb="md"
                 />
-                <Alert icon={<HiInformationCircle size={14} />}>
+                <InlineError variant="info" title="Notice">
                   You will be charged 500 tickets to change your username.
-                </Alert>
+                </InlineError>
                 {new Date(user.lastUsernameChange as Date).getTime() +
                   604800000 >
                   Date.now() && (
@@ -277,6 +280,7 @@ const AccountTab = ({ user }: AccountTabProps) => {
                     ? "Your alias must be between 3 and 24 characters and can only contain letters, numbers, and underscores."
                     : undefined
                 }
+                classNames={BLACK}
               />
             }
             noUpperBorder
@@ -297,6 +301,7 @@ const AccountTab = ({ user }: AccountTabProps) => {
                   }}
                   minRows={3}
                   mb="sm"
+                  classNames={BLACK}
                 />
                 <Text size="sm" color="dimmed">
                   Describe yourself, your interests, and what you do in less
@@ -342,6 +347,7 @@ const AccountTab = ({ user }: AccountTabProps) => {
                   onChange={(e) => {
                     update("busy", e.currentTarget.checked);
                   }}
+                  classNames={BLACK}
                 />
               </Descriptive>
             }
@@ -365,6 +371,7 @@ const AccountTab = ({ user }: AccountTabProps) => {
                   value: t.value,
                 }))}
                 searchable
+                classNames={BLACK}
               />
             }
             noUpperBorder

@@ -2,6 +2,7 @@ import { Alert, Anchor, Button, Progress, Select, Stack } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { useEffect, useState } from "react";
 import { HiBeaker, HiMicrophone, HiXCircle } from "react-icons/hi";
+import { BLACK } from "../../pages/teams/t/[slug]/issue/create";
 import useMicIdStore from "../../stores/useMicIdStore";
 import { User } from "../../util/prisma-types";
 import SettingsTab from "./SettingsTab";
@@ -120,6 +121,7 @@ const VoiceTab: React.FC<VoiceTabProps> = ({ user }) => {
               placeholder="Select a microphone"
               data={options ?? []}
               value={micId}
+              classNames={BLACK}
               onChange={(value) => setMicId(String(value))}
               nothingFound="No microphones found"
               disabled={!hasPermission}

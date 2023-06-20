@@ -1,5 +1,6 @@
 import { Checkbox, CheckboxProps, Text } from "@mantine/core";
 import { ChangeEvent } from "react";
+import { BLACK } from "../pages/teams/t/[slug]/issue/create";
 
 interface LabelledCheckboxProps {
   label: string;
@@ -13,7 +14,7 @@ const LabelledCheckbox: React.FC<LabelledCheckboxProps & CheckboxProps> = ({
 }) => {
   return (
     <div className="flex gap-3 items-start">
-      <Checkbox {...props} />
+      <Checkbox classNames={BLACK} {...props} />
       <div>
         <Text
           size="sm"

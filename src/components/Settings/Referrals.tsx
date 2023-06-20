@@ -3,6 +3,7 @@ import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { getCookie } from "cookies-next";
 import { HiCheckCircle, HiGift, HiTicket, HiUsers } from "react-icons/hi";
+import { BLACK } from "../../pages/teams/t/[slug]/issue/create";
 import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
 import { User } from "../../util/prisma-types";
 import SettingsTab from "./SettingsTab";
@@ -157,6 +158,7 @@ const ReferralsTab: React.FC<ReferralsTabProps> = ({ user: _user }) => {
                     max={99999999}
                     mb="sm"
                     hideControls
+                    classNames={BLACK}
                     {...enterForm.getInputProps("code")}
                   />
                   <Button variant="subtle" type="submit" fullWidth>
