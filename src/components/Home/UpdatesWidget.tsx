@@ -1,7 +1,8 @@
-import { Loader, Stack } from "@mantine/core";
+import { Button, Loader, Stack } from "@mantine/core";
 import { openModal } from "@mantine/modals";
 import { GameUpdateLog } from "@prisma/client";
 import { getCookie } from "cookies-next";
+import Link from "next/link";
 import React, { useState } from "react";
 import { Game } from "../../util/prisma-types";
 import GameCard from "../GameCard";
@@ -51,7 +52,18 @@ const UpdatesWidget: React.FC = () => {
                   onClick={() => {
                     openModal({
                       title: `Updates for ${game.name}`,
-                      children: <UpdateCard update={game.updateLogs[0]} />,
+                      children: (
+                        <>
+                          <UpdateCard update={game.updateLogs[0]} />
+                          <div className="flex justify-end mt-4">
+                            <Link href="/game/[id]" as={`/game/${game.id}`}>
+                              <Button variant="light" radius="xl">
+                                View game
+                              </Button>
+                            </Link>
+                          </div>
+                        </>
+                      ),
                     });
                   }}
                   game={game}
