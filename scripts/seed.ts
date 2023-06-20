@@ -78,7 +78,6 @@ async function seedDatabase() {
       if (stage.run) {
         logger().info(`Running action ${stage.name}...`);
         await stage.execute().then(() => {
-          // if lkast one, exit after
           if (stage.name === stages[stages.length - 1].name) {
             logger().info("Complete with all tasks");
             process.exit(0);
