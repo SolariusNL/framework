@@ -137,10 +137,11 @@ class AuthRouter {
             os: getOperatingSystemString(os),
             ip: String(ip),
             code: String(emailAuth.code),
-            url: `${process.env.NODE_ENV === "production"
+            url: `${
+              process.env.NODE_ENV === "production"
                 ? "https://framework.soodam.rocks/verifyemail/login"
                 : "http://localhost:3000/verifyemail/login"
-              }/${emailAuth.id}`,
+            }/${emailAuth.id}`,
           }) as React.ReactElement
         )
       );
@@ -328,7 +329,7 @@ class AuthRouter {
       NotificationType.INFO,
       "Welcome to Framework! We hope you enjoy your stay! Framework was built with the goal of being a free, open source game platform to share their creations with the world.",
       "Welcome!"
-    )
+    );
 
     return {
       success: true,
