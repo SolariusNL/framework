@@ -174,6 +174,8 @@ const Chat: React.FC = () => {
 
   const sendMessage = async (values: { message: string }) => {
     const { message } = values;
+    messageForm.reset();
+
     if (conversation) {
       const res = await fetch(
         `/api/chat/conversation/${conversation.id}/send`,
@@ -201,7 +203,6 @@ const Chat: React.FC = () => {
             : convo
         )
       );
-      messageForm.reset();
     }
   };
 
@@ -1643,6 +1644,7 @@ const Chat: React.FC = () => {
                             classNames={{
                               wrapper: "w-full flex",
                             }}
+                            autoFocus
                             variant="unstyled"
                             sx={(theme) => ({
                               lineHeight: "0px",

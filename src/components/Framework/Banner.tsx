@@ -3,6 +3,8 @@ import { FC, useEffect, useState } from "react";
 import { HiSpeakerphone } from "react-icons/hi";
 import useFastFlags from "../../stores/useFastFlags";
 import { Fw } from "../../util/fw";
+import boldPlugin from "../../util/fw/plugins/bold";
+import linkPlugin from "../../util/fw/plugins/links";
 
 const Banner: FC = () => {
   const { flags } = useFastFlags();
@@ -28,7 +30,9 @@ const Banner: FC = () => {
           </ThemeIcon>
 
           <Text>
-            {Fw.StringParser.t(banner.message).bold().links().parse()}
+            {Fw.StringParser.t(banner.message)
+              .addPlugins(boldPlugin, linkPlugin)
+              .parse()}
           </Text>
         </Container>
       </Box>

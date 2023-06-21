@@ -80,6 +80,20 @@ class UserRouter {
     return user;
   }
 
+  @Get("/by/username/:username")
+  public async getUserByUsername(@Param("username") username: string) {
+    const user = await prisma.user.findFirst({
+      where: { username },
+      select: nonCurrentUserSelect.select,
+    });
+
+    if (!user) {
+      throw new BadRequestException("User not found");
+    }
+
+    return user;
+  }
+
   @Post("/@me/verifyemail")
   @Authorized()
   @RateLimitMiddleware(2)()

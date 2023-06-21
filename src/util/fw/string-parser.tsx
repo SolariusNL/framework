@@ -1,156 +1,54 @@
-import { Anchor } from "@mantine/core";
-import emojiRegex from "emoji-regex";
 import React from "react";
-import { Fw } from "../fw";
 
-type LinkReplacement = {
-  text: string;
-  url: string;
-  isBold?: boolean;
-  cleanText?: string;
-  shouldWarn?: boolean;
+export type Plugin = {
+  regex: RegExp;
+  process(match: RegExpExecArray, replacements: Replacement[]): void;
 };
 
-type BoldReplacement = {
+type Replacement = {
   text: string;
-  isBold: boolean;
-  cleanText: string;
-};
-
-type EmojiReplacement = {
-  text: string;
-  cleanText: string;
-  isEmoji: boolean;
+  component: React.ReactNode;
 };
 
 export class StringParser {
   private text: string;
-  private replacements: (
-    | BoldReplacement
-    | LinkReplacement
-    | EmojiReplacement
-  )[];
+  private replacements: Replacement[];
+  private plugins: Plugin[];
 
   constructor(text: string) {
     this.text = text;
     this.replacements = [];
+    this.plugins = [];
   }
 
-  bold(): StringParser {
-    const boldRegex = /\*\*(.*?)\*\*/g;
-    let match;
-
-    while ((match = boldRegex.exec(this.text)) !== null) {
-      const boldText = match[0];
-      const cleanText = match[1];
-      this.replacements.push({ text: boldText, isBold: true, cleanText });
-    }
-
+  addPlugin(plugin: Plugin): StringParser {
+    this.plugins.push(plugin);
     return this;
   }
 
-  links(options: { warn?: boolean } = {}): StringParser {
-    const linkRegex =
-      /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi;
-    let match;
-
-    while ((match = linkRegex.exec(this.text)) !== null) {
-      const url = match[0];
-      const text = match[0];
-      this.replacements.push({ text, url, shouldWarn: options.warn });
-    }
-
-    return this;
-  }
-
-  emojis(): StringParser {
-    const regex = emojiRegex();
-    let match;
-
-    while ((match = regex.exec(this.text)) !== null) {
-      const text = match[0];
-      this.replacements.push({ text, cleanText: text, isEmoji: true });
-    }
-
+  addPlugins(...plugins: Plugin[]): StringParser {
+    this.plugins.push(...plugins);
     return this;
   }
 
   parse(): React.ReactNode[] {
+    this.plugins.forEach((plugin) => {
+      let match;
+      while ((match = plugin.regex.exec(this.text)) !== null) {
+        plugin.process(match, this.replacements);
+      }
+    });
+
     const parsedElements: React.ReactNode[] = [];
     let lastIndex = 0;
 
-    const sortedReplacements = this.replacements.sort(
-      (a, b) => this.text.indexOf(a.text) - this.text.indexOf(b.text)
-    );
-
-    sortedReplacements.forEach((replacement) => {
+    this.replacements.forEach((replacement) => {
       const startIndex = this.text.indexOf(replacement.text, lastIndex);
       const endIndex = startIndex + replacement.text.length;
 
       if (startIndex !== -1) {
         parsedElements.push(this.text.slice(lastIndex, startIndex));
-
-        if ("url" in replacement) {
-          const { url, text, shouldWarn } = replacement;
-          const AnchorElement: React.FC<{ replacement: LinkReplacement }> = (
-            props
-          ) => (
-            <span key={startIndex}>
-              <Anchor
-                href={shouldWarn ? undefined : url}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
-                  if (shouldWarn) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    Fw.Links.externalWarning(url);
-                  }
-                }}
-              >
-                {text}
-              </Anchor>
-            </span>
-          );
-
-          if ("isBold" in replacement) {
-            const { isBold } = replacement;
-            const element = isBold ? (
-              <span className="font-semibold" key={startIndex}>
-                <AnchorElement replacement={replacement} />
-              </span>
-            ) : (
-              <AnchorElement replacement={replacement} />
-            );
-
-            parsedElements.push(element);
-          } else {
-            parsedElements.push(<AnchorElement replacement={replacement} />);
-          }
-        } else if ("isBold" in replacement) {
-          const { cleanText, isBold } = replacement;
-          const element = isBold ? (
-            <span className="font-semibold" key={startIndex}>
-              {cleanText}
-            </span>
-          ) : (
-            cleanText
-          );
-
-          parsedElements.push(element);
-        }
-
-        if ("isEmoji" in replacement) {
-          const { cleanText } = replacement;
-          const element = (
-            <span className="text-xl" key={startIndex}>
-              {cleanText}
-            </span>
-          );
-
-          parsedElements.push(element);
-        }
-
+        parsedElements.push(replacement.component);
         lastIndex = endIndex;
       }
     });
