@@ -4,7 +4,12 @@ import { showNotification } from "@mantine/notifications";
 import { Gamepass } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useState } from "react";
-import { HiCheck, HiCheckCircle, HiTicket } from "react-icons/hi";
+import {
+  HiCheck,
+  HiCheckCircle,
+  HiOutlineTicket,
+  HiTicket,
+} from "react-icons/hi";
 import { useFrameworkUser } from "../../contexts/FrameworkUser";
 import getMediaUrl from "../../util/get-media";
 import { Game } from "../../util/prisma-types";
@@ -84,7 +89,7 @@ const Store: React.FC<StoreProps> = ({ game }) => {
                     price={gamepass.price}
                   />
                   <ShadedButton
-                    className="w-full flex flex-col"
+                    className="w-full flex flex-col hover:bg-black/10"
                     onClick={() => {
                       openConfirmModal({
                         title: gamepass.name,
@@ -147,8 +152,9 @@ const Store: React.FC<StoreProps> = ({ game }) => {
                                 ? theme.colors.dark[8]
                                 : theme.colors.gray[2],
                           })}
+                          className="flex items-center justify-center"
                         >
-                          <></>
+                          <HiOutlineTicket className="text-dimmed" />
                         </ShadedCard>
                       )}
                       <div>
@@ -160,8 +166,7 @@ const Store: React.FC<StoreProps> = ({ game }) => {
                         </div>
                         <Text
                           size="sm"
-                          color="dimmed"
-                          className="flex items-center gap-2"
+                          className="flex items-center gap-2 text-green-700"
                         >
                           <HiTicket />
                           {gamepass.price}T$

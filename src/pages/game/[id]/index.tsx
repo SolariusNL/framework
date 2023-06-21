@@ -1,6 +1,5 @@
 import {
   ActionIcon,
-  Alert,
   AspectRatio,
   Avatar,
   Badge,
@@ -46,6 +45,7 @@ import Framework from "../../../components/Framework";
 import GameComments from "../../../components/GameComments";
 import GameRating from "../../../components/GameRating";
 import ThumbnailCarousel from "../../../components/ImageCarousel";
+import InlineError from "../../../components/InlineError";
 import Launching from "../../../components/Launching";
 import PlaceholderGameResource from "../../../components/PlaceholderGameResource";
 import ReportUser from "../../../components/ReportUser";
@@ -61,6 +61,7 @@ import UpdateLogTab from "../../../components/ViewGame/UpdateLog";
 import Votes from "../../../components/ViewGame/Votes";
 import authorizedRoute from "../../../util/auth";
 import { getIpcRenderer } from "../../../util/electron";
+import { Fw } from "../../../util/fw";
 import getMediaUrl from "../../../util/get-media";
 import useMediaQuery from "../../../util/media-query";
 import prisma from "../../../util/prisma";
@@ -168,17 +169,6 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
       <Framework user={user} activeTab="none">
         <Launching opened={launchingOpen} setOpened={setLaunchingOpen} />
 
-        {game.author.id == user.id && game.connection.length == 0 && (
-          <Alert
-            title="No servers"
-            color="red"
-            mb={16}
-            icon={<HiServer size="28" />}
-          >
-            This game has no servers, meaning it cannot be played. You must add
-            a server to play this game.
-          </Alert>
-        )}
         <Grid columns={24} gutter="xl">
           <Grid.Col span={mobile ? 24 : 16}>
             <Title mb={32}>{game.name}</Title>
@@ -288,7 +278,7 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
             </ReactNoSSR>
           </Grid.Col>
           <Grid.Col span={mobile ? 24 : 8} p={10}>
-            <Group position="apart" pl={0} pr={0} p={10} mb={32}>
+            <Group position="apart" pl={0} pr={0} p={10}>
               <Link
                 href={
                   game.team
@@ -377,7 +367,20 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
               </Group>
             </Group>
 
+            {game.connection.length === 0 ||
+              (!Fw.Arrays.first(game.connection).online && (
+                <InlineError
+                  title="No active servers"
+                  variant="error"
+                  className="mb-4 mt-4"
+                >
+                  This game has no active servers. Please try again later, or
+                  reach out to the game author.
+                </InlineError>
+              ))}
+
             <Button
+              mt="lg"
               color="green"
               leftIcon={<HiPlay />}
               fullWidth

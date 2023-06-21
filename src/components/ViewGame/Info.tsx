@@ -1,7 +1,6 @@
 import {
   Badge,
   Card,
-  Stack,
   Text,
   Title,
   TypographyStylesProvider,
@@ -17,6 +16,7 @@ import {
 import sanitize from "sanitize-html";
 import { Game } from "../../util/prisma-types";
 import { getGenreText } from "../../util/universe/genre";
+import DataGrid from "../DataGrid";
 import ShadedCard from "../ShadedCard";
 import ViewGameTab from "./ViewGameTab";
 
@@ -27,9 +27,6 @@ interface InfoTabProps {
 const InfoTab = ({ game }: InfoTabProps) => {
   return (
     <ViewGameTab value="info" title="Information">
-      <Title order={5} mb={10}>
-        Description
-      </Title>
       <TypographyStylesProvider mb={26}>
         <div
           dangerouslySetInnerHTML={{
@@ -49,58 +46,44 @@ const InfoTab = ({ game }: InfoTabProps) => {
         />
       </TypographyStylesProvider>
 
-      <div className="grid md:grid-cols-3 grid-cols-2 gap-6 gap-y-12">
-        {[
+      <DataGrid
+        items={[
           {
             icon: <HiViewList />,
-            item: getGenreText(game.genre),
-            label: "Genre",
+            value: getGenreText(game.genre),
+            tooltip: "Genre",
           },
           {
             icon: <HiUsers />,
-            item: game.maxPlayersPerSession,
-            label: "Max players",
+            value: game.maxPlayersPerSession,
+            tooltip: "Max players",
           },
           {
             icon: <HiServer />,
-            item: game.playing,
-            label: "Playing",
+            value: game.playing,
+            tooltip: "Playing",
           },
           {
             icon: <HiViewGrid />,
-            item: game.visits,
-            label: "Visits",
+            value: game.visits,
+            tooltip: "Visits",
           },
           {
             icon: <HiShoppingBag />,
-            item: game.paywall ? "Paid access" : "Free access",
-            label: "Paywall",
+            value: game.paywall ? "Paid access" : "Free access",
+            tooltip: "Paywall",
           },
           {
             icon: <HiCode />,
-            item: (
+            value: (
               <Badge>
                 {game.updateLogs[0] ? game.updateLogs[0].tag : "N/A"}
               </Badge>
             ),
-            label: "Latest version",
+            tooltip: "Latest version",
           },
-        ].map((x, i) => (
-          <div key={i} className="flex flex-col gap-2">
-            <Stack spacing={10} align="center">
-              {x.icon}
-              <Text weight={550} mb={6}>
-                {x.label}
-              </Text>
-              {x.label == "Genre" ? (
-                <Badge color="blue">{getGenreText(game.genre)}</Badge>
-              ) : (
-                <Text>{x.item}</Text>
-              )}
-            </Stack>
-          </div>
-        ))}
-      </div>
+        ]}
+      />
 
       {game.copyrightMetadata.length > 0 && (
         <>

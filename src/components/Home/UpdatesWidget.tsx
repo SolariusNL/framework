@@ -1,4 +1,4 @@
-import { Button, Loader, Stack } from "@mantine/core";
+import { Button, Stack } from "@mantine/core";
 import { openModal } from "@mantine/modals";
 import { GameUpdateLog } from "@prisma/client";
 import { getCookie } from "cookies-next";
@@ -6,6 +6,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { Game } from "../../util/prisma-types";
 import GameCard from "../GameCard";
+import LoadingIndicator from "../LoadingIndicator";
 import ModernEmptyState from "../ModernEmptyState";
 import ShadedCard from "../ShadedCard";
 import UpdateCard from "../UpdateCard";
@@ -43,7 +44,7 @@ const UpdatesWidget: React.FC = () => {
         <Stack spacing={24}>
           {loading ? (
             <ShadedCard className="w-full flex justify-center items-center">
-              <Loader />
+              <LoadingIndicator />
             </ShadedCard>
           ) : (
             <div className="grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 gap-4 gap-y-8">

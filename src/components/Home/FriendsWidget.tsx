@@ -2,7 +2,6 @@ import {
   Avatar,
   Divider,
   Indicator,
-  Loader,
   Menu,
   Text,
   Title,
@@ -19,6 +18,7 @@ import { Fw } from "../../util/fw";
 import getMediaUrl from "../../util/get-media";
 import { NonUser } from "../../util/prisma-types";
 import ContextMenu from "../ContextMenu";
+import LoadingIndicator from "../LoadingIndicator";
 import ModernEmptyState from "../ModernEmptyState";
 import ReportUser from "../ReportUser";
 import ShadedButton from "../ShadedButton";
@@ -211,7 +211,7 @@ const FriendsWidget: React.FC = () => {
       />
       {loading ? (
         <ShadedCard className="col-span-2 flex items-center justify-center py-8">
-          <Loader />
+          <LoadingIndicator />
         </ShadedCard>
       ) : (
         <>
@@ -254,7 +254,7 @@ const FriendsWidget: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {loading ? (
           <ShadedCard className="col-span-2 flex items-center justify-center py-8">
-            <Loader />
+            <LoadingIndicator />
           </ShadedCard>
         ) : (
           <>
@@ -281,7 +281,7 @@ const FriendsWidget: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {loading ? (
           <ShadedCard className="col-span-2 flex items-center justify-center py-8">
-            <Loader />
+            <LoadingIndicator />
           </ShadedCard>
         ) : (
           <>

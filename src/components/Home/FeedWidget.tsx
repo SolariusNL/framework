@@ -2,7 +2,6 @@ import {
   ActionIcon,
   Avatar,
   Button,
-  Loader,
   Menu,
   Modal,
   Pagination,
@@ -24,6 +23,7 @@ import { useFrameworkUser } from "../../contexts/FrameworkUser";
 import getMediaUrl from "../../util/get-media";
 import { NonUser } from "../../util/prisma-types";
 import { getRelativeTime } from "../../util/relative-time";
+import LoadingIndicator from "../LoadingIndicator";
 import Markdown, { ToolbarItem } from "../Markdown";
 import ModernEmptyState from "../ModernEmptyState";
 import sanitizeInappropriateContent from "../ReconsiderationPrompt";
@@ -169,7 +169,7 @@ const FeedWidget: React.FC = () => {
       </div>
       {loading ? (
         <ShadedCard className="flex items-center justify-center py-8">
-          <Loader />
+          <LoadingIndicator />
         </ShadedCard>
       ) : (
         <>

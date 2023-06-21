@@ -83,7 +83,7 @@ type CreateIssueForm = {
 
 export const BLACK = {
   icon: "dark:text-white",
-  input: "dark:bg-black dark:text-white",
+  input: "dark:bg-black dark:text-white !border-[1px] !border-black-border",
 };
 
 const TeamIssueCreate: React.FC<TeamIssueCreateProps> = ({ user, team }) => {

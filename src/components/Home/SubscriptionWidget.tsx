@@ -1,8 +1,8 @@
-import { Loader } from "@mantine/core";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
 import { Game } from "../../util/prisma-types";
 import GameCard from "../GameCard";
+import LoadingIndicator from "../LoadingIndicator";
 import ModernEmptyState from "../ModernEmptyState";
 import ShadedCard from "../ShadedCard";
 import { Section } from "./FriendsWidget";
@@ -45,7 +45,7 @@ const SubscriptionWidget: React.FC = () => {
         <div className="grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 gap-4 gap-y-8">
           {loading ? (
             <ShadedCard className="col-span-full flex items-center justify-center py-8">
-              <Loader />
+              <LoadingIndicator />
             </ShadedCard>
           ) : (
             <>

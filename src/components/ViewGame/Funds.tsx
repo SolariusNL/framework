@@ -128,10 +128,8 @@ const FundsTab = ({ game }: FundsTabProps) => {
       </Modal>
 
       <ViewGameTab value="funds" title="Funds">
-        <Text mb={16}>
-          Help support the developer of this game by donating to them, and they
-          will be able to continue to maintain and develop this game to be the
-          best it can be.
+        <Text mb={16} color="dimmed">
+          Love this game? Help the developer out by funding development.
         </Text>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {funds.length > 0 ? (
