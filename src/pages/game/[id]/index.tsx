@@ -133,6 +133,17 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
     );
   };
 
+  const ServerError = (
+    <InlineError
+      title="No active servers"
+      variant="error"
+      className="mb-4 mt-4"
+    >
+      This game has no active servers. Please try again later, or reach out to
+      the game author.
+    </InlineError>
+  );
+
   useEffect(() => {
     getSimilarGames();
     queryFollowing();
@@ -367,17 +378,10 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
               </Group>
             </Group>
 
-            {game.connection.length === 0 ||
-              (!Fw.Arrays.first(game.connection).online && (
-                <InlineError
-                  title="No active servers"
-                  variant="error"
-                  className="mb-4 mt-4"
-                >
-                  This game has no active servers. Please try again later, or
-                  reach out to the game author.
-                </InlineError>
-              ))}
+            {game.connection.length === 0 && ServerError}
+            {game.connection.length > 0 &&
+              !Fw.Arrays.first(game.connection).online &&
+              ServerError}
 
             <Button
               mt="lg"
