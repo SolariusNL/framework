@@ -188,6 +188,7 @@ model User {
   limitedReceipts            LimitedCatalogItemReceipt[] @relation("limitedCatalogItemReceiptBuyer")
   activeResells              LimitedCatalogItemResell[]  @relation("limitedCatalogItemResellSeller")
   inventory                  Inventory?                  @relation("inventory")
+  newLogins                  NewLogin[]                  @relation("newLogins")
 }
 
 model Story {
@@ -341,16 +342,18 @@ model Invite {
 }
 
 model Session {
-  id            String            @id @default(uuid())
-  user          User              @relation("userSessions", fields: [userId], references: [id])
-  userId        Int
-  token         String            @unique
-  ip            String            @default("")
-  ua            String            @default("")
-  os            OperatingSystem   @default(OTHER)
-  impersonation Boolean           @default(false)
-  oauth         OAuthApplication? @relation("oauthSessions", fields: [oauthId], references: [id])
-  oauthId       String?
+  id                String            @id @default(uuid())
+  user              User              @relation("userSessions", fields: [userId], references: [id])
+  userId            Int
+  token             String            @unique
+  ip                String            @default("")
+  ua                String            @default("")
+  os                OperatingSystem   @default(OTHER)
+  impersonation     Boolean           @default(false)
+  oauth             OAuthApplication? @relation("oauthSessions", fields: [oauthId], references: [id])
+  oauthId           String?
+  associatedLogin   NewLogin?         @relation("associatedLoginSessions", fields: [associatedLoginId], references: [id])
+  associatedLoginId String?           @unique
 }
 
 enum OperatingSystem {
@@ -972,8 +975,8 @@ enum GameUpdateLogType {
 
 model PasswordResetRequest {
   id        String   @id @default(uuid())
-  user      User?    @relation("passwordResetRequests", fields: [userId], references: [id])
-  userId    Int?     @unique
+  user      User     @relation("passwordResetRequests", fields: [userId], references: [id])
+  userId    Int
   createdAt DateTime @default(now())
 }
 
@@ -985,6 +988,17 @@ model GameEnvironmentVariable {
   value       String
   environment GameEnvironment
   updatedAt   DateTime        @default(now())
+}
+
+model NewLogin {
+  id        String          @id @default(uuid())
+  user      User            @relation("newLogins", fields: [userId], references: [id])
+  userId    Int
+  createdAt DateTime        @default(now())
+  device    OperatingSystem
+  ip        String
+  completed Boolean         @default(false)
+  session   Session?        @relation("associatedLoginSessions")
 }
 
 enum GameEnvironment {

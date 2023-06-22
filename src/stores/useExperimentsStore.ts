@@ -6,6 +6,7 @@ export const EXPERIMENTS_KEY = "experiments";
 export enum ExperimentId {
   AmoledDarkMode = "amoled-dark-mode",
   FrameworkAI = "framework-ai",
+  LoginManager = "login-manager",
 }
 export enum ExperimentStage {
   Alpha = "alpha",
@@ -34,6 +35,13 @@ export const EXPERIMENTS = [
     description: "An experimental AI chatbot to empower your experience",
     stage: ExperimentStage.Alpha,
     id: ExperimentId.FrameworkAI,
+    refreshNecessary: false,
+  },
+  {
+    name: "Login Manager",
+    description: "An experimental login manager to monitor recent logins",
+    stage: ExperimentStage.Alpha,
+    id: ExperimentId.LoginManager,
     refreshNecessary: false,
   },
 ];

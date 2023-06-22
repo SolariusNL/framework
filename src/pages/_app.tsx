@@ -44,6 +44,7 @@ import { Provider } from "react-redux";
 import "../../flags.config";
 import Descriptive from "../components/Descriptive";
 import ElectronTitlebar from "../components/ElectronTitlebar";
+import LoadingIndicator from "../components/LoadingIndicator";
 import Rating from "../components/Rating";
 import Stateful from "../components/Stateful";
 import { FrameworkUserProvider } from "../contexts/FrameworkUser";
@@ -53,6 +54,7 @@ import { store } from "../reducers/store";
 import useAmoled from "../stores/useAmoled";
 import useFastFlags, { fetchFlags } from "../stores/useFastFlags";
 import useFeedback from "../stores/useFeedback";
+import useFlow from "../stores/useFlow";
 import "../styles/fonts.css";
 import "../styles/framework.css";
 import "../styles/tw.css";
@@ -73,6 +75,7 @@ const Framework = (
   const [amoled, setAmoled] = useState<boolean>(props.amoled);
   const [loading, setLoading] = useState(false);
   const { opened: ratingModal, setOpened: setRatingModal } = useFeedback();
+  const { activeFlow, toggleFlow } = useFlow();
   const [seen, setSeen] = useState(false);
   const { setEnabled } = useAmoled();
 
@@ -824,6 +827,22 @@ const Framework = (
                                   </>
                                 )}
                               </Stateful>
+                            </Modal>
+                          </ReactNoSSR>
+                          <ReactNoSSR>
+                            <Modal
+                              title={activeFlow?.title || "Flow"}
+                              opened={!!activeFlow}
+                              onClose={() => {
+                                toggleFlow(activeFlow!);
+                              }}
+                              withCloseButton={false}
+                            >
+                              {activeFlow?.component || (
+                                <div className="p-8">
+                                  <LoadingIndicator />
+                                </div>
+                              )}
                             </Modal>
                           </ReactNoSSR>
                         </FrameworkUserProvider>

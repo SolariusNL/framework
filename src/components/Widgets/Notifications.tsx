@@ -17,12 +17,18 @@ import {
   HiInformationCircle,
 } from "react-icons/hi";
 import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
-import useMediaQuery from "../../util/media-query";
+import useExperimentsStore, {
+  ExperimentId,
+} from "../../stores/useExperimentsStore";
+import useFlow, { Flows } from "../../stores/useFlow";
+import { Fw } from "../../util/fw";
 import { getRelativeTime } from "../../util/relative-time";
 
 const Notifications: React.FC = () => {
   const [activePage, setActivePage] = useState(1);
   const { user, setUser } = useAuthorizedUserStore()!;
+  const { toggleFlow } = useFlow();
+  const { experiments } = useExperimentsStore();
 
   const typeIcon = (type: NotificationType) => {
     switch (type) {
@@ -57,8 +63,6 @@ const Notifications: React.FC = () => {
       },
     }).catch(() => alert("Error marking notification as read"));
   };
-
-  const mobile = useMediaQuery("768");
 
   return (
     <>
@@ -119,6 +123,17 @@ const Notifications: React.FC = () => {
                       return word + " ";
                     }
                   })}
+                  {experiments.includes(ExperimentId.LoginManager) &&
+                    notification.type === NotificationType.LOGIN && (
+                      <>
+                        <span className="ml-2 mr-2 font-semibold">
+                          {Fw.Elements.bullet()}
+                        </span>
+                        <Anchor onClick={() => toggleFlow(Flows.logins)}>
+                          View logins
+                        </Anchor>
+                      </>
+                    )}
                 </Text>
               </Spoiler>
               <Text size="xs" mt={4} color="dimmed">

@@ -16,6 +16,7 @@ import { z } from "zod";
 import AccountUpdate from "../../../../email/emails/account-update";
 import LoginCode from "../../../../email/emails/login-code";
 import ResetPassword from "../../../../email/emails/reset-password";
+import IResponseBase from "../../../types/api/IResponseBase";
 import Authorized, { Account } from "../../../util/api/authorized";
 import { hashPass, isSamePass } from "../../../util/hash/password";
 import { sendMail } from "../../../util/mail";
@@ -25,7 +26,11 @@ import type { User } from "../../../util/prisma-types";
 import { RateLimitMiddleware } from "../../../util/rate-limit";
 import { verificationEmail } from "../../../util/templates/verification-email";
 import { disableOTP, generateOTP, verifyOTP } from "../../../util/twofa";
-import { getOperatingSystem, getOperatingSystemString } from "../../../util/ua";
+import {
+  getOperatingSystem,
+  getOperatingSystemEnumFromString,
+  getOperatingSystemString,
+} from "../../../util/ua";
 
 interface LoginBody {
   username: string;
@@ -127,6 +132,18 @@ class AuthRouter {
         )} device with IP ${ip}. They've been sent an email to verify their identity. If this wasn't you, you can change your password to prevent this from happening again.`,
         "New Login"
       );
+      await prisma.newLogin.create({
+        data: {
+          user: {
+            connect: {
+              id: account.id,
+            },
+          },
+          ip: String(ip),
+          device: getOperatingSystemEnumFromString(os),
+          completed: false,
+        },
+      });
 
       sendMail(
         account.email,
@@ -191,6 +208,23 @@ class AuthRouter {
         )} device with IP ${ip}`,
         "New Login"
       );
+      await prisma.newLogin.create({
+        data: {
+          user: {
+            connect: {
+              id: account.id,
+            },
+          },
+          ip: String(ip),
+          device: getOperatingSystemEnumFromString(os),
+          session: {
+            connect: {
+              id: session.id,
+            },
+          },
+          completed: true,
+        },
+      });
     }
 
     return {
@@ -730,6 +764,30 @@ class AuthRouter {
 
     return {
       success: true,
+    };
+  }
+
+  @Get("/logins")
+  @Authorized()
+  public async getLogins(@Account() user: User) {
+    const logins = await prisma.newLogin.findMany({
+      where: {
+        userId: user.id,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      take: 10,
+      include: {
+        session: true,
+      },
+    });
+
+    return <IResponseBase>{
+      success: true,
+      data: {
+        logins,
+      },
     };
   }
 }
