@@ -222,8 +222,8 @@ const Framework = (
         openGraph={{
           type: "website",
           locale: "en_US",
-          url: "https://framework.soodam.rocks/",
-          siteName: "Framework - Soodam.re",
+          url: "https://framework.solarius.me/",
+          siteName: "Framework - Solarius",
           images: [
             {
               secureUrl: "/opengraph.png",
@@ -236,13 +236,13 @@ const Framework = (
           title: "Framework",
         }}
         twitter={{
-          handle: "@Soodamre",
-          site: "@Soodamre",
+          handle: "@SolariusBV",
+          site: "@SolariusBV",
           cardType: "summary_large_image",
         }}
         titleTemplate="%s | Framework"
         description="Framework is a free and open-source game platform similar to Roblox. Join the waitlist today and enter a new world."
-        canonical="https://framework.soodam.rocks/"
+        canonical="https://framework.solarius.me/"
       />
 
       <ColorSchemeProvider
@@ -671,7 +671,7 @@ const Framework = (
                               }
                             >
                               <Text size="sm" mb={12}>
-                                Framework and other Soodam.re services use
+                                Framework and other Solarius services use
                                 cookies to help us provide you the best
                                 experience. By continuing to use our services,
                                 you agree to our use of cookies. Read our{" "}

@@ -157,7 +157,7 @@ const Landing: NextPage = () => {
                 color="dimmed"
                 className="text-left md:text-center"
               >
-                Soodam.re B.V. is not affiliated with Roblox Corporation. All
+                Solarius B.V. is not affiliated with Roblox Corporation. All
                 trademarks are property of their respective owners.
               </Text>
             </Container>
@@ -292,7 +292,7 @@ const Landing: NextPage = () => {
                 {
                   title: "Community",
                   description:
-                    "Soodam.re puts community first. We are a community-driven platform, and we listen to our community. We are always open to feedback, and we are always looking for ways to improve the platform.",
+                    "Solarius puts community first. We are a community-driven platform, and we listen to our community. We are always open to feedback, and we are always looking for ways to improve the platform.",
                   icon: <HiUsers />,
                 },
                 {

@@ -12,7 +12,7 @@ const Soodam: FC<
       src="/brand/white.png"
       width={16 || props.width}
       height={16 || props.height}
-      alt="Soodam.re Logo"
+      alt="Solarius Logo"
       quality={100}
       {...props}
     />

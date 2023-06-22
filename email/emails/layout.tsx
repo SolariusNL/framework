@@ -21,10 +21,10 @@ const EmailLayout: React.FC<EmailLayoutProps> = ({
       <Container style={styles.container}>
         <Section style={{ marginTop: "32px" }}>
           <Img
-            src="https://cloud.soodam.rocks/index.php/s/HdJMkjfyxJ5LTPT/preview"
+            src="https://cloud.solarius.me/index.php/s/HdJMkjfyxJ5LTPT/preview"
             width="50"
             height="50"
-            alt="Soodam.re Logo"
+            alt="Solarius Logo"
             style={styles.logo}
           />
         </Section>
@@ -33,7 +33,7 @@ const EmailLayout: React.FC<EmailLayoutProps> = ({
         <Hr style={styles.hr} />
         <Text style={styles.footer}>{footer}</Text>
         <Text style={styles.footer}>
-          Copyright © 2021-2023 Soodam.re B.V. All rights reserved.
+          Copyright © 2021-2023 Solarius B.V. All rights reserved.
         </Text>
       </Container>
     </Section>

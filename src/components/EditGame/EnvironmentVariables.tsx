@@ -115,7 +115,7 @@ const EnvironmentVariables = ({ game }: EnvironmentVariablesProps) => {
           such as API keys, passwords, etc. You can read more about environment
           variables in our{" "}
           <Anchor
-            href="https://wiki.soodam.rocks/docs/cosmic/datastores"
+            href="https://wiki.solarius.me/docs/cosmic/env"
             target="_blank"
             rel="noopener noreferrer"
           >

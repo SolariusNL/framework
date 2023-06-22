@@ -13,7 +13,7 @@ type AccountLockedProps = {
 
 const AccountLocked: FC<AccountLockedProps> = () => {
   return (
-    <OuterUI description="Your account has been locked by a Soodam.re staff member.">
+    <OuterUI description="Your account has been locked by a Solarius staff member.">
       <div className="flex items-center flex-col gap-2 justify-center">
         <HiXCircle className="text-red-500 flex-shrink-0 w-6 h-6" />
         <Text color="red" weight={600} size="lg">
@@ -22,7 +22,7 @@ const AccountLocked: FC<AccountLockedProps> = () => {
       </div>
       <Text size="sm" color="dimmed" mt="sm" align="center">
         Your account has been locked for security purposes. Please contact
-        Soodam.re for additional information regarding the status of your
+        Solarius for additional information regarding the status of your
         account.
       </Text>
       <div className="flex justify-end gap-2 mt-6">
@@ -38,7 +38,7 @@ const AccountLocked: FC<AccountLockedProps> = () => {
         <Button
           leftIcon={<HiMail />}
           component="a"
-          href="mailto:support@soodam.rocks"
+          href="mailto:support@solarius.me"
         >
           Contact us
         </Button>

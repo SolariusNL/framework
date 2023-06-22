@@ -19,7 +19,7 @@ const StaffEmail: React.FC<StaffEmailProps> = ({
   subject = "Need help?",
   content = "Hey, we received your message and since it's been a while, we thought we'd check in to see if you still need help.",
   sender = "Emil Osmicevic",
-  contact = "emil@soodam.rocks",
+  contact = "emil@solarius.me",
 }) => {
   return (
     <Html>
@@ -29,9 +29,9 @@ const StaffEmail: React.FC<StaffEmailProps> = ({
         title={<>{subject}</>}
         footer={
           <>
-            This email was sent by a Soodam.re staff member. If you have any
+            This email was sent by a Solarius staff member. If you have any
             questions, please contact us at our{" "}
-            <Link href="https://framework.soodam.rocks/support">
+            <Link href="https://framework.solarius.me/support">
               support center
             </Link>{" "}
             for assistance.

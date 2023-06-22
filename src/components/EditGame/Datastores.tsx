@@ -63,7 +63,7 @@ const Datastores = ({ game }: DatastoreProps) => {
           store player data, leaderboards, and more. You can read more about
           datastores in our{" "}
           <Anchor
-            href="https://wiki.soodam.rocks/docs/cosmic/datastores"
+            href="https://wiki.solarius.me/docs/cosmic/env"
             target="_blank"
             rel="noopener noreferrer"
           >

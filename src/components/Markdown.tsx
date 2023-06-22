@@ -243,7 +243,7 @@ const Markdown: React.FC<MarkdownProps> = ({
           icon: <VscQuestion />,
           onClick: () => {
             window.open(
-              "https://wiki.soodam.rocks/docs/features/markdown",
+              "https://wiki.solarius.me/docs/features/markdown",
               "_blank"
             );
           },

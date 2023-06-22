@@ -259,7 +259,7 @@ const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
               icon={<HiGlobe />}
               label="Website"
               description="A website for your team to share with the world."
-              placeholder="https://framework.soodam.rocks"
+              placeholder="https://framework.solarius.me"
               classNames={{
                 input: blackInput,
                 icon: "dark:text-white",
@@ -271,7 +271,7 @@ const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
               icon={<HiMail />}
               label="Email"
               description="A way for people to reach your team."
-              placeholder="hi@soodam.rocks"
+              placeholder="hi@solarius.me"
               classNames={{
                 input: blackInput,
                 icon: "dark:text-white",

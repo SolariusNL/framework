@@ -281,14 +281,14 @@ const data = [
     label: "ID",
     group: "Company",
     icon: HiIdentification,
-    href: "https://id.soodam.rocks",
+    href: "https://id.solarius.me",
     external: true,
     render: (
       <ShadedCard className="w-full py-24 flex items-center justify-center">
         <Loader />
       </ShadedCard>
     ),
-    subtitle: "Quick links managed by Soodam.re Employee Identity",
+    subtitle: "Quick links managed by Solarius Employee Identity",
   },
   {
     label: "Experiments",

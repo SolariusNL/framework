@@ -5,7 +5,7 @@ import Badge from "./Badge";
 const AdminBadge = ({ user }: { user: User }) => {
   return (
     <Badge
-      title="Soodam.re"
+      title="Solarius"
       description={`${user.username} is a Framework staff member, and is trusted to help other users.`}
       user={user}
       icon={HiOutlineShieldCheck}

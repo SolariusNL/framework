@@ -24,7 +24,7 @@ const AccountUpdate: React.FC<AccountUpdateProps> = ({
           <>
             This is an automated email to notify you that your account has been
             updated. Contact us at our{" "}
-            <Link href="https://framework.soodam.rocks/support">
+            <Link href="https://framework.solarius.me/support">
               support center
             </Link>{" "}
             if you have any questions.

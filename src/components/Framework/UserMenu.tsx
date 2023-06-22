@@ -72,7 +72,7 @@ const UserMenu = ({
         const apiUrl =
           process.env.NODE_ENV === "development"
             ? "http://10.1.1.5:3000"
-            : "https://framework.soodam.rocks";
+            : "https://framework.solarius.me";
         toDataURL(
           `${apiUrl}/api/auth/loginqr/verify/${data.code}`,
           {
@@ -144,7 +144,7 @@ const UserMenu = ({
 
         <Menu.Dropdown>
           <Menu.Label>
-            👻 Framework - Built by Soodam.re and contributors
+            👻 Framework - Built by Solarius and contributors
           </Menu.Label>
           <Menu.Divider />
           {user?.role == "ADMIN" && (

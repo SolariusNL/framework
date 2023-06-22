@@ -103,7 +103,7 @@ const Invites = () => {
             <TextInput
               label="Recipient email"
               description="The email of the recipient - leave blank to not send an email"
-              placeholder="test@soodam.rocks"
+              placeholder="test@solarius.me"
               {...form.getInputProps("email")}
             />
             <div className="flex justify-end mt-4">

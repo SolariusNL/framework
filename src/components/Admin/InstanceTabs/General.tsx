@@ -20,7 +20,7 @@ const GeneralTab: React.FC = () => {
         setVersion(res.version);
       });
 
-    fetch("https://invent.soodam.rocks/api/v4/projects/4/releases/")
+    fetch("https://invent.solarius.me/api/v4/projects/4/releases/")
       .then((res) => res.json())
       .then((res: Array<{ tag_name: string }>) => {
         setLatestVersion(res[0].tag_name);
@@ -38,7 +38,7 @@ const GeneralTab: React.FC = () => {
             Installed
           </Text>
           <Anchor
-            href={`https://invent.soodam.rocks/Soodam.re/framework/-/releases/${version}`}
+            href={`https://invent.solarius.me/Soodam.re/framework/-/releases/${version}`}
             target="_blank"
             className="flex items-center"
           >
@@ -53,7 +53,7 @@ const GeneralTab: React.FC = () => {
             Latest
           </Text>
           <Anchor
-            href={`https://invent.soodam.rocks/Soodam.re/framework/-/releases/${version}`}
+            href={`https://invent.solarius.me/Soodam.re/framework/-/releases/${version}`}
             target="_blank"
             className="flex items-center"
           >

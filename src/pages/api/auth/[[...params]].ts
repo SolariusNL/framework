@@ -139,7 +139,7 @@ class AuthRouter {
             code: String(emailAuth.code),
             url: `${
               process.env.NODE_ENV === "production"
-                ? "https://framework.soodam.rocks/verifyemail/login"
+                ? "https://framework.solarius.me/verifyemail/login"
                 : "http://localhost:3000/verifyemail/login"
             }/${emailAuth.id}`,
           }) as React.ReactElement
@@ -653,7 +653,7 @@ class AuthRouter {
 
     const url =
       process.env.NODE_ENV === "production"
-        ? "https://framework.soodam.rocks"
+        ? "https://framework.solarius.me"
         : "http://127.0.0.1:3000";
     const endpoint = url + "/forgotpassword?token=" + request.id;
 

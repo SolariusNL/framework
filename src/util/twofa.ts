@@ -3,8 +3,8 @@ import prisma from "./prisma";
 
 const generateOTP = async (uid: number) => {
   const { ascii, hex, base32, otpauth_url } = speakeasy.generateSecret({
-    issuer: "framework.soodam.rocks",
-    name: "support@soodam.rocks",
+    issuer: "framework.solarius.me",
+    name: "support@solarius.me",
     length: 15,
   });
 
@@ -66,4 +66,4 @@ const disableOTP = async (uid: number) => {
   return true;
 };
 
-export { generateOTP, verifyOTP, disableOTP };
+export { disableOTP, generateOTP, verifyOTP };

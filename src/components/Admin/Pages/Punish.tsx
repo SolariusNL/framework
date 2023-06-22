@@ -97,7 +97,7 @@ const AUTOFILL_FIELDS = [
     label: "Cheating",
     description: "The user is cheating in a game.",
     arguments: [],
-    fill: "Exploiting or misusing Soodam.re software is not permitted and will be dealt with to the fullest extent.",
+    fill: "Exploiting or misusing Solarius software is not permitted and will be dealt with to the fullest extent.",
   },
   {
     label: "Discriminatory language",

@@ -1712,7 +1712,7 @@ class AdminRouter {
     await createNotification(
       userId,
       NotificationType.ALERT,
-      `You have been impersonated by ${user.username} for ${reason}. This was done by a Soodam.re staff member. If you did not authorize this, please contact us immediately.`,
+      `You have been impersonated by ${user.username} for ${reason}. This was done by a Solarius staff member. If you did not authorize this, please contact us immediately.`,
       "Impersonation"
     );
 

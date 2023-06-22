@@ -44,12 +44,12 @@ class CheckoutRouter {
       success_url: `${
         process.env.NODE_ENV === "development"
           ? "http://localhost:3000"
-          : "https://framework.soodam.rocks"
+          : "https://framework.solarius.me"
       }/api/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${
         process.env.NODE_ENV === "development"
           ? "http://localhost:3000"
-          : "https://framework.soodam.rocks"
+          : "https://framework.solarius.me"
       }/api/checkout/cancel`,
     };
 

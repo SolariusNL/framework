@@ -161,7 +161,7 @@ const ForgotPassword: React.FC<{
         >
           <TextInput
             label="Your email"
-            placeholder="me@soodam.rocks"
+            placeholder="me@solarius.me"
             required
             {...form.getInputProps("email")}
           />

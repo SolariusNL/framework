@@ -47,7 +47,7 @@ const OAuth2Flow: NextPage<OAuth2FlowProps> = ({
             {app.name}
           </Title>
           {app.verified && (
-            <Tooltip label="Verified by Soodam.re or is an official Soodam.re application.">
+            <Tooltip label="Verified by Solarius or is an official Solarius application.">
               <div className="flex-shrink-0">
                 <HiCheckCircle className="text-teal-500" size={20} />
               </div>

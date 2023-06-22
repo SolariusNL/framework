@@ -1,9 +1,10 @@
 import {
-  Button, FileInput,
+  Button,
+  FileInput,
   Text,
   Textarea,
   TextInput,
-  Title
+  Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
@@ -11,17 +12,18 @@ import { GetServerSideProps } from "next";
 import { useEffect, useState } from "react";
 import {
   HiArrowRight,
-  HiCheckCircle, HiMail,
+  HiCheckCircle,
+  HiMail,
   HiUpload,
   HiUser,
-  HiXCircle
+  HiXCircle,
 } from "react-icons/hi";
 import Framework from "../../components/Framework";
 import { Section } from "../../components/Home/FriendsWidget";
 import ShadedCard from "../../components/ShadedCard";
 import {
   IRedlockVerifyLicenseResponse,
-  StudioKeyType
+  StudioKeyType,
 } from "../../types/api/IRedlockVerifyLicenseResponse";
 import authorizedRoute from "../../util/auth";
 import { REDLOCK } from "../../util/constants";
@@ -272,7 +274,7 @@ const ActivateStudio: React.FC<ActivateStudioProps> = ({ user }) => {
             )}
           </ShadedCard>
           <Text size="sm" color="dimmed" mt="lg" align="center">
-            Protected by Soodam.re RedLock licensing system.
+            Protected by Solarius RedLock licensing system.
           </Text>
         </div>
       </div>

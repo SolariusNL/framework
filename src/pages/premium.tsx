@@ -33,15 +33,15 @@ const Premium: NextPage<PremiumProps> = ({ user }) => {
       "You'll be the first to hear about new updates to the Framework platform, and you'll be able to give feedback on them to help us improve them, similar to early access features.",
     ],
     [
-      "Free access to all Soodam.re services for life",
-      "You'll be able to access all Soodam.re services for free for life, including Framework, Asura, and more.",
+      "Free access to all Solarius services for life",
+      "You'll be able to access all Solarius services for free for life, including Framework, Asura, and more.",
     ],
     [
       "Yearly merchandise",
       "Every year, you'll receive a piece of merchandise from us, such as a t-shirt, mug, or other item.",
     ],
     [
-      "Love from the Soodam.re team",
+      "Love from the Solarius team",
       "You'll be helping us keep the lights on, and we can't thank you enough for that.",
     ],
     [
@@ -219,9 +219,8 @@ const Premium: NextPage<PremiumProps> = ({ user }) => {
               <Text color="dimmed" size="xs" mb={4}>
                 * All prices are in USD, CAD, and EUR. Prices may vary depending
                 on your location. Local taxes may apply depending on your
-                location. All prices are subject to change. Soodam.re,
-                Framework, and other Soodam.re services are trademarks of
-                Soodam.re.
+                location. All prices are subject to change. Solarius, Framework,
+                and other Solarius services are trademarks of Solarius.
               </Text>
 
               <Text color="dimmed" size="xs">

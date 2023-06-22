@@ -12,7 +12,7 @@ const banPresets = [
   "Do not post about, or encourage, the use of exploits on Framework.",
   "We do not permit discriminatory speech, including but not limited to, racism, sexism, homophobia, transphobia, and ableism.",
   "We have determined that you have been engaging in scamming activities on Framework. Please contact support for more information.",
-  "Impersonating Soodam.re staff is not permitted.",
+  "Impersonating Solarius staff is not permitted.",
   "Please do not create content about tragic events, we understand that you may want to express your feelings and condolences, but we cannot risk the possibility of other players behaving inappropriately as a result of your content.",
   "Clothing items resembling Nazi symbolism (red armbands, etc.) are not permitted on Framework and are illegal in the Netherlands under certain circumstances.",
   "Do not threaten or harass other players on Framework.",

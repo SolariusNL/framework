@@ -218,20 +218,20 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
                       {viewing.verified && <Verified />}
                       {viewing.role === "ADMIN" && (
                         <IconTooltip
-                          label="Soodam.re Staff"
+                          label="Solarius Staff"
                           className="flex items-center justify-center"
                           icon={<Soodam />}
                           descriptiveModal
                           descriptiveModalProps={{
-                            title: "Soodam.re Staff",
+                            title: "Solarius Staff",
                             children: (
                               <div className="text-center items-center flex flex-col">
                                 <Soodam height={64} width={64} />
                                 <Title order={3} mt="lg">
-                                  Soodam.re Employee
+                                  Solarius Employee
                                 </Title>
                                 <Text size="sm" color="dimmed" mt="md">
-                                  This user is a Soodam.re employee and can
+                                  This user is a Solarius employee and can
                                   assist you with any issues you may have. If
                                   you have any questions, feel free to contact
                                   them.

@@ -204,7 +204,7 @@ const DMCA: React.FC<DMCAProps> = ({ user }) => {
             <span className="font-semibold">serious offense</span> and can
             result in{" "}
             <span className="font-semibold">
-              legal action either from Soodam.re in defense of the content or
+              legal action either from Solarius in defense of the content or
               from the content owner
             </span>
             .

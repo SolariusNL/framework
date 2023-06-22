@@ -205,10 +205,10 @@ const Footer = () => {
       <Container className={classes.afterFooter}>
         <Stack spacing={8}>
           <Text color="dimmed" size="sm">
-            © 2021-2023 Soodam.re B.V. All rights reserved.
+            © 2021-2023 Solarius B.V. All rights reserved.
           </Text>
           <Text color="dimmed" size="sm">
-            VAT ID: NL-8188.17.147.B01. Soodam.re is based in the Netherlands.
+            VAT ID: NL-8188.17.147.B01. Solarius is based in the Netherlands.
           </Text>
         </Stack>
 

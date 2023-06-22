@@ -542,7 +542,7 @@ const UserView = ({ user: u, loading }: UserViewProps) => {
                       ) : (
                         <ModernEmptyState
                           title="Not an Employee"
-                          body="This user is not an employee of Soodam.re, or has not been registered yet"
+                          body="This user is not an employee of Solarius, or has not been registered yet"
                         />
                       )}
                     </Accordion.Panel>

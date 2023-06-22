@@ -82,7 +82,7 @@ const AboutTab = ({ user }: AboutTabProps) => {
         <Button
           leftIcon={<HiExternalLink />}
           component="a"
-          href="https://invent.soodam.rocks/Soodam.re/framework"
+          href="https://invent.solarius.me/Soodam.re/framework"
           target="_blank"
           rel="noreferrer"
         >
@@ -92,7 +92,7 @@ const AboutTab = ({ user }: AboutTabProps) => {
         <Button
           leftIcon={<HiExternalLink />}
           component="a"
-          href="https://invent.soodam.rocks/Soodam.re/framework/-/issues/new?issue[assignee_id]=&issue[milestone_id]="
+          href="https://invent.solarius.me/Soodam.re/framework/-/issues/new?issue[assignee_id]=&issue[milestone_id]="
           target="_blank"
           rel="noreferrer"
         >
@@ -102,7 +102,7 @@ const AboutTab = ({ user }: AboutTabProps) => {
         <Button
           leftIcon={<HiExternalLink />}
           component="a"
-          href="https://invent.soodam.rocks/Soodam.re/framework/-/blob/main/LICENSE"
+          href="https://invent.solarius.me/Soodam.re/framework/-/blob/main/LICENSE"
           target="_blank"
           rel="noreferrer"
         >

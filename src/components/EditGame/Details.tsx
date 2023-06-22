@@ -15,12 +15,11 @@ import {
   TextInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { showNotification } from "@mantine/notifications";
 import { GameCopyrightMetadata, GameGenre } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import React, { useEffect } from "react";
 import { BsMarkdown } from "react-icons/bs";
-import { HiCheckCircle, HiCloud, HiPlus } from "react-icons/hi";
+import { HiCloud, HiPlus } from "react-icons/hi";
 import getFileFromImg from "../../util/files";
 import getMediaUrl from "../../util/get-media";
 import { Game } from "../../util/prisma-types";
@@ -316,14 +315,14 @@ const Details = ({ game: g }: DetailsProps) => {
               label="Title"
               placeholder="Title of the notice"
               title="Title"
-              description="A quick summary of the notice. Ex: 'Soodam.re Notice'"
+              description="A quick summary of the notice. Ex: 'Solarius Notice'"
               {...metadataForm.getInputProps("title")}
             />
             <TextInput
               label="Description"
               placeholder="Description of the notice"
               title="Description"
-              description="A detailed description of the notice. Ex: 'Copyright 2022 Soodam.re B.V.'"
+              description="A detailed description of the notice. Ex: 'Copyright 2023 Solarius B.V.'"
               {...metadataForm.getInputProps("description")}
             />
             <Group mt={8}>

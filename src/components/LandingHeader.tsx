@@ -106,7 +106,7 @@ const tabs = [
         title: "Discourse",
         description:
           "Join the Framework community on Discourse and get help from other developers",
-        href: "https://discourse.soodam.rocks",
+        href: "https://discourse.solarius.me",
       },
       {
         icon: HiUserGroup,
@@ -126,7 +126,7 @@ const tabs = [
       title: "Join our forums",
       description:
         "Join the Framework community. Get help, share your work, and meet other developers.",
-      href: "https://discourse.soodam.rocks",
+      href: "https://discourse.solarius.me",
       btnText: "Join now",
     },
   },
@@ -142,7 +142,7 @@ const links = [
   },
   {
     title: "Docs",
-    href: "https://wiki.soodam.rocks",
+    href: "https://wiki.solarius.me",
   },
 ];
 

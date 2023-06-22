@@ -146,7 +146,7 @@ const Blog: NextPage<BlogProps> = ({ user, posts, featured }) => {
                 Blog
               </h1>
               <Text size="lg" color="dimmed" mb="xl">
-                The latest news and updates from the Soodam.re team.
+                The latest news and updates from the Solarius team.
               </Text>
               <section className="mt-3 max-w-sm sm:mx-auto sm:px-4">
                 {userStore?.newsletterSubscribed ? (

@@ -144,7 +144,7 @@ const BuyTickets: NextPage<BuyTicketsProps> = ({ user }) => {
           <Text color="dimmed" size="sm" mb={6}>
             You will be charged in EUR. If you are not in the EU, your bank may
             charge you an additional fee. We are not responsible for any fees
-            charged by your bank. Soodam.re reserves the right to change prices,
+            charged by your bank. Solarius reserves the right to change prices,
             at any time. We cannot be held liable for fees associated with
             currency exchange.
           </Text>

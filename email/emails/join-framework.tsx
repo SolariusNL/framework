@@ -1,7 +1,6 @@
 import { Button } from "@react-email/button";
 import { Head } from "@react-email/head";
 import { Html } from "@react-email/html";
-import { Img } from "@react-email/img";
 import { Link } from "@react-email/link";
 import { Preview } from "@react-email/preview";
 import { Section } from "@react-email/section";
@@ -50,7 +49,7 @@ const JoinFramework: React.FC<JoinFrameworkProps> = ({
             pX={20}
             pY={12}
             style={styles.btn}
-            href="https://framework.soodam.rocks/register"
+            href="https://framework.solarius.me/register"
           >
             Create an account
           </Button>
@@ -59,12 +58,12 @@ const JoinFramework: React.FC<JoinFrameworkProps> = ({
           <br />
           or copy and paste this URL into your browser:{" "}
           <Link
-            href="https://framework.soodam.rocks/register"
+            href="https://framework.solarius.me/register"
             target="_blank"
             style={styles.link}
             rel="noreferrer"
           >
-            https://framework.soodam.rocks/register
+            https://framework.solarius.me/register
           </Link>
         </Text>
       </EmailLayout>

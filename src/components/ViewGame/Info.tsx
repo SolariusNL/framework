@@ -36,7 +36,7 @@ const InfoTab = ({ game }: InfoTabProps) => {
                   attribs.href = `http://${
                     process.env.NODE_ENV === "development"
                       ? "localhost:3000"
-                      : "framework.soodam.rocks"
+                      : "framework.solarius.me"
                   }/link?url=${attribs.href}`;
                   return { tagName, attribs };
                 },

@@ -83,7 +83,7 @@ const Maintenance: NextPage = () => {
         inconvenience.
       </Text>
       <a
-        href="https://status.soodam.rocks"
+        href="https://status.solarius.me"
         target="_blank"
         rel="noreferrer"
         className="w-full flex justify-center no-underline mb-10"

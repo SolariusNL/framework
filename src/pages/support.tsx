@@ -30,19 +30,19 @@ import {
   HiUser,
   HiXCircle,
 } from "react-icons/hi";
+import sanitize from "sanitize-html";
 import Descriptive from "../components/Descriptive";
 import Framework from "../components/Framework";
 import { Section } from "../components/Home/FriendsWidget";
 import Markdown, { ToolbarItem } from "../components/Markdown";
 import ModernEmptyState from "../components/ModernEmptyState";
+import RenderMarkdown from "../components/RenderMarkdown";
 import ShadedButton from "../components/ShadedButton";
 import ShadedCard from "../components/ShadedCard";
 import authorizedRoute from "../util/auth";
 import { User } from "../util/prisma-types";
-import { BLACK } from "./teams/t/[slug]/issue/create";
-import RenderMarkdown from "../components/RenderMarkdown";
-import sanitize from "sanitize-html";
 import { supportSanitization } from "../util/sanitize";
+import { BLACK } from "./teams/t/[slug]/issue/create";
 
 interface SupportProps {
   user: User;
@@ -282,7 +282,7 @@ const Support: NextPage<SupportProps> = ({ user }) => {
               inquiry <span className="font-semibold">within 48 hours</span>.
             </Text>
             <Text size="sm" color="dimmed" mb="md">
-              At Soodam.re, we&apos;re committed to providing exceptional
+              At Solarius, we&apos;re committed to providing exceptional
               customer service and support. Whether you&apos;re a current
               customer or simply curious about our company or products, we want
               to make sure that you have all the information you need to make

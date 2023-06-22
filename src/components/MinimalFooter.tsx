@@ -20,7 +20,7 @@ const MinimalFooter: React.FC<{
   return (
     <>
       <Text size="sm" align="center" mb={5} weight={500} color="dimmed">
-        Copyright © 2023 Soodam.re. All rights reserved.
+        Copyright © 2023 Solarius. All rights reserved.
       </Text>
 
       <Stack>

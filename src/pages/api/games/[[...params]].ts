@@ -184,7 +184,7 @@ class GameRouter {
                   tagName,
                   attribs: {
                     ...attribs,
-                    href: `https://framework.soodam.rocks/link?dest=${attribs.href}`,
+                    href: `https://framework.solarius.me/link?dest=${attribs.href}`,
                   },
                 };
               }

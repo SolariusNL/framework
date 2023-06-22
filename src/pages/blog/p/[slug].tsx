@@ -25,7 +25,7 @@ const BlogPost: NextPage<BlogPostProps> = ({ post, user }) => {
         openGraph={{
           title: post.title,
           description: post.subtitle,
-          url: "https://framework.soodam.rocks/blog/p/" + post.slug,
+          url: "https://framework.solarius.me/blog/p/" + post.slug,
           images: [
             {
               secureUrl: "/opengraph.png",

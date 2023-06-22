@@ -169,7 +169,7 @@ const SubscriptionTab = ({ user: _user }: SubscriptionTabProps) => {
                     "Priority support",
                     "Access to exclusive content",
                     "Love from the Framework team",
-                    "Free access to Soodam.re services for life",
+                    "Free access to Solarius services for life",
                   ].map((feature) => (
                     <div className="flex items-center gap-2" key={feature}>
                       <HiCheck

@@ -615,7 +615,7 @@ const Framework = ({
                     </Menu.Item>
                     <Menu.Divider />
                     <Link
-                      href="https://invent.soodam.rocks/Soodam.re/framework"
+                      href="https://invent.solarius.me/Soodam.re/framework"
                       passHref
                     >
                       <Menu.Item icon={<HiExternalLink />}>
@@ -623,7 +623,7 @@ const Framework = ({
                       </Menu.Item>
                     </Link>
                     <Link
-                      href="https://invent.soodam.rocks/Soodam.re/framework/-/issues/new"
+                      href="https://invent.solarius.me/Soodam.re/framework/-/issues/new"
                       passHref
                     >
                       <Menu.Item icon={<HiExternalLink />}>

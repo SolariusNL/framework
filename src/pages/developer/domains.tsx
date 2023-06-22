@@ -8,7 +8,7 @@ import {
   Skeleton,
   Text,
   TextInput,
-  Title
+  Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { openConfirmModal } from "@mantine/modals";
@@ -120,7 +120,6 @@ const Domains: React.FC<DomainsProps> = ({ user }) => {
       }
     });
   };
-  
 
   const createDomain = async (values: Form) => {
     await fetchJson<
@@ -549,7 +548,7 @@ const Domains: React.FC<DomainsProps> = ({ user }) => {
                   <TextInput
                     label="Domain"
                     description="The domain you want to add to your account."
-                    placeholder="docs.soodam.rocks"
+                    placeholder="docs.solarius.me"
                     required
                     classNames={BLACK}
                     icon={<HiGlobe />}

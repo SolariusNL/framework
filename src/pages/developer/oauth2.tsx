@@ -450,7 +450,7 @@ const OAuth2: React.FC<OAuth2Props> = ({ user }) => {
                         children: (
                           <Text size="sm" color="dimmed">
                             This OAuth2 application has been verified for
-                            legitimacy by Soodam.re staff.
+                            legitimacy by Solarius staff.
                           </Text>
                         ),
                       }}

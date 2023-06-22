@@ -5,7 +5,7 @@ import {
   Stack,
   Text,
   TextInput,
-  Title
+  Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { openConfirmModal } from "@mantine/modals";
@@ -60,7 +60,7 @@ const Licenses: React.FC = () => {
         <Text size="sm" color="dimmed" mb="md">
           Studio is protected by our{" "}
           <Anchor
-            href="https://invent.soodam.rocks/Soodam.re/internal/redlock-pk"
+            href="https://invent.solarius.me/Soodam.re/internal/redlock-pk"
             target="_blank"
             rel="noreferrer"
           >

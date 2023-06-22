@@ -62,7 +62,7 @@ const tabs = [
   },
   {
     title: "Servers",
-    desc: "Configure self-hosted Cosmic servers and Soodam.re dedicated servers.",
+    desc: "Configure self-hosted Cosmic servers and Solarius dedicated servers.",
     icon: <HiServer />,
     component: Servers,
   },

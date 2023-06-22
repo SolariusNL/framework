@@ -21,7 +21,7 @@ const stages = [
         await prisma.user
           .create({
             data: {
-              email: "admin@invent.soodam.rocks",
+              email: "admin@solarius.me",
               password: String(
                 await hashPass(
                   Math.random().toString(36).substring(2, 15) +
@@ -82,7 +82,7 @@ async function seedDatabase() {
             logger().info("Complete with all tasks");
             process.exit(0);
           }
-        })
+        });
       }
     }
   } catch (error) {

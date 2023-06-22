@@ -164,7 +164,7 @@ const Redeem: NextPage<RedeemProps> = ({ user }) => {
                 <Accordion.Panel>
                   Gift codes are not transferable and cannot be resold. Gift
                   codes are not redeemable for cash. Off-platform giveaways (on
-                  platforms not associated with Soodam.re or Framework) are not
+                  platforms not associated with Solarius or Framework) are not
                   endorsed by us and are conducted at the sole discretion of the
                   giveaway organizer. We are not responsible for any issues that
                   may arise from the giveaway organizer.
