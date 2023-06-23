@@ -1,7 +1,6 @@
 import {
   Avatar,
   Button,
-  Divider,
   Group,
   Pagination,
   Stack,
@@ -98,6 +97,7 @@ const GameComments = ({ user, game }: GameCommentsProps) => {
         sx={{
           alignItems: "flex-start",
         }}
+        className="mb-4"
       >
         <div
           style={{
@@ -131,7 +131,15 @@ const GameComments = ({ user, game }: GameCommentsProps) => {
             maxLength={500}
             classNames={BLACK}
           />
-          <div className="flex justify-end">
+          <div className="flex justify-between items-center">
+            <Pagination
+              page={page}
+              onChange={setPage}
+              total={total}
+              radius="xl"
+              withEdges
+              size="sm"
+            />
             <Button
               leftIcon={<HiChat />}
               disabled={commentText.length === 0 || commentText.length > 500}
@@ -148,8 +156,6 @@ const GameComments = ({ user, game }: GameCommentsProps) => {
         </Stack>
       </Group>
 
-      <Divider mt="md" mb="md" />
-
       {comments && comments.length == 0 ? (
         <ShadedCard>
           <ModernEmptyState
@@ -159,18 +165,7 @@ const GameComments = ({ user, game }: GameCommentsProps) => {
         </ShadedCard>
       ) : (
         <>
-          <div className="flex justify-center">
-            <Pagination
-              page={page}
-              onChange={setPage}
-              total={total}
-              mb={24}
-              size="sm"
-              radius="xl"
-              withEdges
-            />
-          </div>
-          <Stack spacing={10}>
+          <Stack spacing="sm">
             {comments &&
               comments
                 .sort(

@@ -11,7 +11,7 @@ interface InfoTabProps {
 const InfoTab = ({ game }: InfoTabProps) => {
   return (
     <ViewGameTab value="info" title="About">
-      <TypographyStylesProvider>
+      <TypographyStylesProvider className="text-sm">
         <div
           dangerouslySetInnerHTML={{
             __html: sanitize(game.description, {

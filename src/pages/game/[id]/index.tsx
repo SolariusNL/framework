@@ -400,24 +400,44 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                     }),
               }}
             >
-              <TabNav.Tab icon={<HiInformationCircle />} value="info">
+              <TabNav.Tab
+                icon={<HiInformationCircle />}
+                value="info"
+                className="transition-all"
+              >
                 About
               </TabNav.Tab>
 
-              <TabNav.Tab icon={<HiServer />} value="connection">
+              <TabNav.Tab
+                icon={<HiServer />}
+                value="connection"
+                className="transition-all"
+              >
                 Servers
               </TabNav.Tab>
 
-              <TabNav.Tab icon={<HiCurrencyDollar />} value="funds">
+              <TabNav.Tab
+                icon={<HiCurrencyDollar />}
+                value="funds"
+                className="transition-all"
+              >
                 Funds
               </TabNav.Tab>
 
-              <TabNav.Tab icon={<HiShoppingBag />} value="store">
+              <TabNav.Tab
+                icon={<HiShoppingBag />}
+                value="store"
+                className="transition-all"
+              >
                 Store
               </TabNav.Tab>
 
-              <TabNav.Tab icon={<HiFolder />} value="updatelog">
-                Update Log
+              <TabNav.Tab
+                icon={<HiFolder />}
+                value="updatelog"
+                className="transition-all"
+              >
+                Updates
               </TabNav.Tab>
             </div>
           </TabNav.List>

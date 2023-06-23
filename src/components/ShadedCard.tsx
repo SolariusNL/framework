@@ -22,7 +22,7 @@ const ShadedCard = (
             ? amoled
               ? AMOLED_COLORS.paper
               : theme.colors.dark[9]
-            : theme.colors.gray[0],
+            : theme.colors.gray[0] + "80",
         overflow: "visible",
       })}
       radius="md"

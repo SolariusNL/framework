@@ -35,7 +35,7 @@ const GameRating = ({ game }: GameRatingProps) => {
   };
 
   return (
-    <ShadedCard shadow="md">
+    <ShadedCard>
       <div className="text-center">
         <Badge size="lg" color={getRatingColor(rating)} mb={6}>
           {rating.type}
