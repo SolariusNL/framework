@@ -14,7 +14,11 @@ const ConnectionTab = ({ game }: ConnectionTabProps) => {
   const router = useRouter();
 
   return (
-    <ViewGameTab value="connection" title="Servers">
+    <ViewGameTab
+      value="connection"
+      title="Servers"
+      description="See information about this game's servers."
+    >
       <Table highlightOnHover>
         <thead>
           <tr>

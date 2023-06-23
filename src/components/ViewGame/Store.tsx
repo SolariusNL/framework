@@ -27,7 +27,11 @@ const Store: React.FC<StoreProps> = ({ game }) => {
   const [gamepasses, setGamepasses] = useState(game.gamepasses);
 
   return (
-    <ViewGameTab value="store" title="Store">
+    <ViewGameTab
+      value="store"
+      title="Store"
+      description="Purchase gamepasses to unlock new features in the game."
+    >
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 gap-y-8">
         {gamepasses.length === 0 ? (
           <div className="col-span-full">

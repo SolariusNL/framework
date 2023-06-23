@@ -206,7 +206,7 @@ const Updates = ({ game }: UpdatesProps) => {
         mb="md"
       />
       {updates && updates.length > 0 ? (
-        <Stack spacing={16}>
+        <Stack spacing="xl">
           {updates
             .sort(
               (a, b) =>
@@ -214,7 +214,9 @@ const Updates = ({ game }: UpdatesProps) => {
                 new Date(a.createdAt).getTime()
             )
             .map((update) => (
-              <UpdateCard key={update.id} update={update} />
+              <div key={update.id}>
+                <UpdateCard update={update} sm />
+              </div>
             ))}
         </Stack>
       ) : (

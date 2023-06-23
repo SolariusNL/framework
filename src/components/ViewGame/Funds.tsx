@@ -17,7 +17,7 @@ import { Game } from "../../util/prisma-types";
 import ModernEmptyState from "../ModernEmptyState";
 import PurchaseConfirmation from "../PurchaseConfirmation";
 import RenderMarkdown from "../RenderMarkdown";
-import ShadedCard from "../ShadedCard";
+import ShadedButton from "../ShadedButton";
 import ViewGameTab from "./ViewGameTab";
 
 interface FundsTabProps {
@@ -127,12 +127,16 @@ const FundsTab = ({ game }: FundsTabProps) => {
         </div>
       </Modal>
 
-      <ViewGameTab value="funds" title="Funds">
+      <ViewGameTab
+        value="funds"
+        title="Funds"
+        description="Love this game? Fund it's development to help it flourish."
+      >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {funds.length > 0 ? (
             funds.map((fund) => (
-              <ShadedCard
-                className="text-center cursor-pointer content-center dark:hover:bg-zinc-900/20 transition-colors duration-200 hover:bg-zinc-900/10 ease-in-out"
+              <ShadedButton
+                className="text-center flex flex-col items-center justify-center w-full cursor-pointer content-center transition-colors duration-200 ease-in-out"
                 key={fund.id}
                 onClick={() => {
                   setToFund(fund);
@@ -149,7 +153,7 @@ const FundsTab = ({ game }: FundsTabProps) => {
                 <Title order={4} mb={16}>
                   {fund.name}
                 </Title>
-                <div className="mt-4 flex justify-around items-center">
+                <div className="mt-4 flex justify-around items-center w-full">
                   {[
                     {
                       label: "Raised",
@@ -171,7 +175,7 @@ const FundsTab = ({ game }: FundsTabProps) => {
                     </div>
                   ))}
                 </div>
-              </ShadedCard>
+              </ShadedButton>
             ))
           ) : (
             <div className="col-span-2">

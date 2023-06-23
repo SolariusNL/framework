@@ -1,4 +1,4 @@
-import { Card, Text, Title, TypographyStylesProvider } from "@mantine/core";
+import { Card, Text, TypographyStylesProvider } from "@mantine/core";
 import sanitize from "sanitize-html";
 import { Game } from "../../util/prisma-types";
 import ShadedCard from "../ShadedCard";
@@ -10,7 +10,11 @@ interface InfoTabProps {
 
 const InfoTab = ({ game }: InfoTabProps) => {
   return (
-    <ViewGameTab value="info" title="About">
+    <ViewGameTab
+      value="info"
+      title="About"
+      description="See information about this game."
+    >
       <TypographyStylesProvider className="text-sm">
         <div
           dangerouslySetInnerHTML={{
@@ -32,16 +36,7 @@ const InfoTab = ({ game }: InfoTabProps) => {
 
       {game.copyrightMetadata.length > 0 && (
         <>
-          <Title order={5} mb={6} mt={26}>
-            Copyright
-          </Title>
-          <Text color="dimmed" size="sm" mb={10}>
-            These notices are provided by the authors of the game. They have not
-            been verified for accuracy. If you believe that any of the
-            information below is incorrect or misleading, please contact us, and
-            we will investigate the matter.
-          </Text>
-          <ShadedCard withBorder mt={26}>
+          <ShadedCard withBorder>
             {game.copyrightMetadata.map((x, i) => (
               <Card.Section key={i} withBorder p={12}>
                 <Text weight={500} color="dimmed" size="sm">

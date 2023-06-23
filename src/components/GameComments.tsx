@@ -139,6 +139,9 @@ const GameComments = ({ user, game }: GameCommentsProps) => {
               radius="xl"
               withEdges
               size="sm"
+              classNames={{
+                item: BLACK.input,
+              }}
             />
             <Button
               leftIcon={<HiChat />}
