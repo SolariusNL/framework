@@ -132,9 +132,8 @@ const FundsTab = ({ game }: FundsTabProps) => {
           {funds.length > 0 ? (
             funds.map((fund) => (
               <ShadedCard
-                className="text-center cursor-pointer content-center dark:hover:bg-zinc-900/20 transition-colors duration-200 hover:bg-zinc-200/20 ease-in-out"
+                className="text-center cursor-pointer content-center dark:hover:bg-zinc-900/20 transition-colors duration-200 hover:bg-zinc-900/10 ease-in-out"
                 key={fund.id}
-                withBorder
                 onClick={() => {
                   setToFund(fund);
                   setFundOpen(true);

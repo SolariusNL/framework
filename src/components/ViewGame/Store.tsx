@@ -86,7 +86,6 @@ const Store: React.FC<StoreProps> = ({ game }) => {
                   />
                   <ShadedButton
                     className="w-full flex flex-col"
-                    light
                     onClick={() => {
                       openConfirmModal({
                         title: gamepass.name,
