@@ -1262,7 +1262,12 @@ class GameRouter {
       take: 10,
     });
 
-    return games || [];
+    return <IResponseBase>{
+      success: true,
+      data: {
+        games,
+      },
+    };
   }
 
   @Post("/:id/rating/update")

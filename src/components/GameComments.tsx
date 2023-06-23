@@ -9,6 +9,7 @@ import {
 } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { HiChat } from "react-icons/hi";
+import { BLACK } from "../pages/teams/t/[slug]/issue/create";
 import IResponseBase from "../types/api/IResponseBase";
 import { getCookie } from "../util/cookies";
 import fetchJson from "../util/fetch";
@@ -93,8 +94,6 @@ const GameComments = ({ user, game }: GameCommentsProps) => {
 
   return (
     <>
-      <Divider mt={24} mb={24} />
-
       <Group
         sx={{
           alignItems: "flex-start",
@@ -130,21 +129,26 @@ const GameComments = ({ user, game }: GameCommentsProps) => {
               resize: "none",
             }}
             maxLength={500}
+            classNames={BLACK}
           />
-          <Button
-            leftIcon={<HiChat />}
-            disabled={commentText.length == 0 || commentText.length > 500}
-            onClick={() => {
-              sanitizeInappropriateContent(commentText, () => submitComment());
-            }}
-            loading={loading}
-          >
-            Send
-          </Button>
+          <div className="flex justify-end">
+            <Button
+              leftIcon={<HiChat />}
+              disabled={commentText.length === 0 || commentText.length > 500}
+              onClick={() => {
+                sanitizeInappropriateContent(commentText, () =>
+                  submitComment()
+                );
+              }}
+              loading={loading}
+            >
+              Send
+            </Button>
+          </div>
         </Stack>
       </Group>
 
-      <Divider mt={24} mb={24} />
+      <Divider mt="md" mb="md" />
 
       {comments && comments.length == 0 ? (
         <ShadedCard>

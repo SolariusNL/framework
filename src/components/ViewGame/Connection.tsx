@@ -15,7 +15,7 @@ const ConnectionTab = ({ game }: ConnectionTabProps) => {
 
   return (
     <ViewGameTab value="connection" title="Servers">
-      <Table highlightOnHover mb={10}>
+      <Table highlightOnHover>
         <thead>
           <tr>
             <th>IP Address</th>
@@ -54,8 +54,8 @@ const ConnectionTab = ({ game }: ConnectionTabProps) => {
         </tbody>
       </Table>
 
-      {game.author.id == user?.id && (
-        <Group>
+      {game.author.id === user?.id && (
+        <Group mt="md">
           <Button
             variant="subtle"
             size="xs"

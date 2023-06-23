@@ -128,10 +128,7 @@ const FundsTab = ({ game }: FundsTabProps) => {
       </Modal>
 
       <ViewGameTab value="funds" title="Funds">
-        <Text mb={16} color="dimmed">
-          Love this game? Help the developer out by funding development.
-        </Text>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {funds.length > 0 ? (
             funds.map((fund) => (
               <ShadedCard

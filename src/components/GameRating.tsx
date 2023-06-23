@@ -1,4 +1,5 @@
-import { Badge, Stack, Text, useMantineTheme } from "@mantine/core";
+import { Badge, Stack, Text } from "@mantine/core";
+import { RatingType } from "@prisma/client";
 import { HiChat, HiLibrary, HiXCircle } from "react-icons/hi";
 import { Game } from "../util/prisma-types";
 import {
@@ -12,8 +13,26 @@ interface GameRatingProps {
 }
 
 const GameRating = ({ game }: GameRatingProps) => {
-  const rating = game.rating!;
-  const theme = useMantineTheme();
+  const rating = game.rating! || {
+    type: RatingType.RP,
+    scores: [
+      {
+        category: "SOCIAL",
+        score: 0,
+        description: "Social interactions not rated",
+      },
+      {
+        category: "DRUGS",
+        score: 0,
+        description: "Drug and alcohol references not rated",
+      },
+      {
+        category: "NUDITY",
+        score: 0,
+        description: "Nudity and sexual content not rated",
+      },
+    ],
+  };
 
   return (
     <ShadedCard shadow="md">

@@ -78,7 +78,6 @@ const Votes = ({ game, setGame }: VotesProps) => {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          marginBottom: 32,
         }}
       >
         <Tooltip label="Like">
@@ -87,6 +86,7 @@ const Votes = ({ game, setGame }: VotesProps) => {
             mr={6}
             variant={liked ? "light" : "subtle"}
             color="teal"
+            size="lg"
             disabled={disliked}
             onClick={like}
           >
@@ -108,10 +108,12 @@ const Votes = ({ game, setGame }: VotesProps) => {
               },
             ]}
             mb="sm"
+            size="lg"
             sx={{
               width: "100%",
               alignSelf: "end",
             }}
+            className="transition-all"
           />
         </Tooltip>
         <Tooltip label="Dislike">
@@ -122,6 +124,7 @@ const Votes = ({ game, setGame }: VotesProps) => {
             color="red"
             disabled={liked}
             onClick={dislike}
+            size="lg"
           >
             <HiThumbDown size={14} />
           </ActionIcon>
