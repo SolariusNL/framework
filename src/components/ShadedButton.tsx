@@ -5,6 +5,7 @@ import { AMOLED_COLORS } from "../util/constants";
 const ShadedButton: React.FC<
   ButtonProps & {
     onClick?: () => void;
+    light?: boolean;
   }
 > = (props) => {
   const { enabled: amoled } = useAmoled();
@@ -21,7 +22,11 @@ const ShadedButton: React.FC<
             theme.colorScheme === "dark"
               ? amoled
                 ? AMOLED_COLORS.paper
+                : props.light
+                ? theme.colors.dark[6] + "50"
                 : theme.colors.dark[6]
+              : props.light
+              ? "#FFF"
               : theme.colors.gray[1],
         },
         width: "100%",

@@ -11,7 +11,7 @@ const UpdateLogTab = ({ game }: UpdateLogTabProps) => {
   return (
     <ViewGameTab value="updatelog" title="Update Log">
       {game.updateLogs.length > 0 ? (
-        <UpdateCard update={game.updateLogs[0]} light />
+        <UpdateCard update={game.updateLogs[0]} />
       ) : (
         <ModernEmptyState
           title="No updates yet"

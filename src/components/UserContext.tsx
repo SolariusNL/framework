@@ -42,7 +42,14 @@ const UserContext = ({ user, children, customHref }: UserContextProps) => {
         <HoverCard.Target>
           <div style={{ cursor: "pointer" }}>{children}</div>
         </HoverCard.Target>
-        <HoverCard.Dropdown p="lg">
+        <HoverCard.Dropdown
+          p="lg"
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            pointerEvents: "all",
+            cursor: "default",
+          }}
+        >
           <Group position="apart">
             <Group>
               <Avatar src={getMediaUrl(user.avatarUri)} radius="xl" />

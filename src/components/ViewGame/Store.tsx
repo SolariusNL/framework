@@ -1,22 +1,18 @@
-import { Image, Text } from "@mantine/core";
+import { Avatar, Text } from "@mantine/core";
 import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import { Gamepass } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useState } from "react";
-import {
-  HiCheck,
-  HiCheckCircle,
-  HiOutlineTicket,
-  HiTicket,
-} from "react-icons/hi";
+import { HiCheckCircle, HiTicket } from "react-icons/hi";
 import { useFrameworkUser } from "../../contexts/FrameworkUser";
+import clsx from "../../util/clsx";
+import { Fw } from "../../util/fw";
 import getMediaUrl from "../../util/get-media";
 import { Game } from "../../util/prisma-types";
 import ModernEmptyState from "../ModernEmptyState";
 import PurchaseConfirmation from "../PurchaseConfirmation";
 import ShadedButton from "../ShadedButton";
-import ShadedCard from "../ShadedCard";
 import Stateful from "../Stateful";
 import ViewGameTab from "./ViewGameTab";
 
@@ -32,9 +28,9 @@ const Store: React.FC<StoreProps> = ({ game }) => {
 
   return (
     <ViewGameTab value="store" title="Store">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 gap-y-8">
         {gamepasses.length === 0 ? (
-          <div className="col-span-2">
+          <div className="col-span-full">
             <ModernEmptyState
               title="No gamepasses"
               body="This game has no gamepasses."
@@ -89,7 +85,8 @@ const Store: React.FC<StoreProps> = ({ game }) => {
                     price={gamepass.price}
                   />
                   <ShadedButton
-                    className="w-full flex flex-col hover:bg-black/10"
+                    className="w-full flex flex-col"
+                    light
                     onClick={() => {
                       openConfirmModal({
                         title: gamepass.name,
@@ -132,46 +129,36 @@ const Store: React.FC<StoreProps> = ({ game }) => {
                       });
                     }}
                   >
-                    <div className="flex gap-4">
-                      {gamepass.iconUri ? (
-                        <Image
-                          className="rounded-md"
-                          src={getMediaUrl(gamepass.iconUri)}
-                          width={64}
-                          height={64}
-                          alt={gamepass.name}
-                          radius="md"
-                        />
-                      ) : (
-                        <ShadedCard
-                          sx={(theme) => ({
-                            width: 64,
-                            height: 64,
-                            backgroundColor:
-                              theme.colorScheme === "dark"
-                                ? theme.colors.dark[8]
-                                : theme.colors.gray[2],
-                          })}
-                          className="flex items-center justify-center"
-                        >
-                          <HiOutlineTicket className="text-dimmed" />
-                        </ShadedCard>
+                    <Avatar
+                      className="rounded-md aspect-square w-full h-full bg-cover"
+                      src={getMediaUrl(gamepass.iconUri)}
+                      alt={gamepass.name}
+                      radius="md"
+                      color={Fw.Strings.color(gamepass.name)}
+                    >
+                      {Fw.Strings.initials(gamepass.name)}
+                    </Avatar>
+                    <Text size="lg" mt="md">
+                      {gamepass.name}
+                    </Text>
+                    <div
+                      className={clsx(
+                        "flex items-center gap-2 text-green-700",
+                        gamepass.owners.some((owner) => owner.id === user.id) &&
+                          "opacity-50"
                       )}
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <Text size="lg">{gamepass.name}</Text>
-                          {gamepass.owners.some(
+                    >
+                      <HiTicket className="flex-shrink-0" />
+                      <Text
+                        size="sm"
+                        className={clsx(
+                          gamepass.owners.some(
                             (owner) => owner.id === user.id
-                          ) && <HiCheck className="text-green-500" />}
-                        </div>
-                        <Text
-                          size="sm"
-                          className="flex items-center gap-2 text-green-700"
-                        >
-                          <HiTicket />
-                          {gamepass.price}T$
-                        </Text>
-                      </div>
+                          ) && "line-through"
+                        )}
+                      >
+                        {gamepass.price}T$
+                      </Text>
                     </div>
                   </ShadedButton>
                 </>

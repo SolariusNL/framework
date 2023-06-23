@@ -8,7 +8,7 @@ interface ViewGameTabProps {
 
 const ViewGameTab = ({ value, title, children }: ViewGameTabProps) => {
   return (
-    <Tabs.Panel value={value} pt="md">
+    <Tabs.Panel value={value}>
       <Title order={3} mb={16}>
         {title}
       </Title>

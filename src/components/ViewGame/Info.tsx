@@ -1,22 +1,6 @@
-import {
-  Badge,
-  Card,
-  Text,
-  Title,
-  TypographyStylesProvider,
-} from "@mantine/core";
-import {
-  HiCode,
-  HiServer,
-  HiShoppingBag,
-  HiUsers,
-  HiViewGrid,
-  HiViewList,
-} from "react-icons/hi";
+import { Card, Text, Title, TypographyStylesProvider } from "@mantine/core";
 import sanitize from "sanitize-html";
 import { Game } from "../../util/prisma-types";
-import { getGenreText } from "../../util/universe/genre";
-import DataGrid from "../DataGrid";
 import ShadedCard from "../ShadedCard";
 import ViewGameTab from "./ViewGameTab";
 
@@ -26,8 +10,8 @@ interface InfoTabProps {
 
 const InfoTab = ({ game }: InfoTabProps) => {
   return (
-    <ViewGameTab value="info" title="Information">
-      <TypographyStylesProvider mb={26}>
+    <ViewGameTab value="info" title="About">
+      <TypographyStylesProvider>
         <div
           dangerouslySetInnerHTML={{
             __html: sanitize(game.description, {
@@ -45,45 +29,6 @@ const InfoTab = ({ game }: InfoTabProps) => {
           }}
         />
       </TypographyStylesProvider>
-
-      <DataGrid
-        items={[
-          {
-            icon: <HiViewList />,
-            value: getGenreText(game.genre),
-            tooltip: "Genre",
-          },
-          {
-            icon: <HiUsers />,
-            value: game.maxPlayersPerSession,
-            tooltip: "Max players",
-          },
-          {
-            icon: <HiServer />,
-            value: game.playing,
-            tooltip: "Playing",
-          },
-          {
-            icon: <HiViewGrid />,
-            value: game.visits,
-            tooltip: "Visits",
-          },
-          {
-            icon: <HiShoppingBag />,
-            value: game.paywall ? "Paid access" : "Free access",
-            tooltip: "Paywall",
-          },
-          {
-            icon: <HiCode />,
-            value: (
-              <Badge>
-                {game.updateLogs[0] ? game.updateLogs[0].tag : "N/A"}
-              </Badge>
-            ),
-            tooltip: "Latest version",
-          },
-        ]}
-      />
 
       {game.copyrightMetadata.length > 0 && (
         <>
