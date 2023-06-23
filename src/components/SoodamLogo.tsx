@@ -3,8 +3,8 @@ const SoodamLogo = (
 ): JSX.Element => {
   return (
     <svg
-      width="285"
-      height="66"
+      width="200"
+      height="50"
       viewBox="0 0 285 66"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
