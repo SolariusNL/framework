@@ -1,3 +1,4 @@
+import { Text } from "@mantine/core";
 import { FC } from "react";
 import clsx from "../util/clsx";
 
@@ -30,7 +31,9 @@ const DataGrid: FC<DataGridProps> = ({
         <div className="flex flex-col gap-2 items-center" key={tooltip}>
           <div className="flex items-center gap-2">
             <div className="text-dimmed flex items-center">{icon}</div>
-            <span className="text-sm text-dimmed">{tooltip}</span>
+            <Text color="dimmed" className="text-sm">
+              {tooltip}
+            </Text>
           </div>
           <span className="text-sm font-medium">{value}</span>
         </div>
