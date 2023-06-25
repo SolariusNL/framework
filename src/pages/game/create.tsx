@@ -1,6 +1,7 @@
 import {
   Button,
   Checkbox,
+  Divider,
   NumberInput,
   Select,
   Stack,
@@ -21,6 +22,8 @@ import authorizedRoute from "../../util/auth";
 import { getCookie } from "../../util/cookies";
 import { User } from "../../util/prisma-types";
 import { getGenreText } from "../../util/universe/genre";
+import { BLACK, FormSection } from "../teams/t/[slug]/issue/create";
+import Descriptive from "../../components/Descriptive";
 
 const InlineInput = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -160,24 +163,30 @@ const CreateGame: NextPage<CreateGameProps> = ({ user }) => {
           })}
           className="gap-6 flex flex-col"
         >
-          <ShadedCard>
-            <InlineInput>
-              <InlineInput.Label description="The name of your game. This is the second most important thing after your icon. Make it count, and make it unique!">
-                Game name
-              </InlineInput.Label>
-              <InlineInput.Input>
-                <TextInput
-                  placeholder="My Game"
-                  {...form.getInputProps("gameName")}
-                />
-              </InlineInput.Input>
-            </InlineInput>
-          </ShadedCard>
-          <InlineInput>
-            <InlineInput.Label description="Describe your game in detail using rich text. What is the story? What is the gameplay? What is the goal? Don't be afraid to be creative, we are not Roblox.">
-              Description
-            </InlineInput.Label>
-            <InlineInput.Input>
+          <FormSection
+            title="Details"
+            description="General information about your game like the name and description."
+          >
+            <div className="grid grid-cols-2 gap-4">
+              <TextInput
+                placeholder="My Game"
+                required
+                label="Game name"
+                classNames={BLACK}
+                {...form.getInputProps("gameName")}
+              />
+              <Select
+                data={Object.values(GameGenre).map((genre) => ({
+                  value: genre,
+                  label: getGenreText(genre),
+                }))}
+                required
+                label="Genre"
+                classNames={BLACK}
+                {...form.getInputProps("genre")}
+              />
+            </div>
+            <Descriptive required title="Description">
               <RichText
                 styles={() => ({
                   root: {
@@ -185,6 +194,11 @@ const CreateGame: NextPage<CreateGameProps> = ({ user }) => {
                     overflow: "auto",
                   },
                 })}
+                classNames={{
+                  root: BLACK.input,
+                  toolbar: BLACK.input,
+                  toolbarControl: BLACK.input,
+                }}
                 placeholder="A detailed description of your game."
                 required
                 controls={[
@@ -196,101 +210,76 @@ const CreateGame: NextPage<CreateGameProps> = ({ user }) => {
                 ]}
                 {...form.getInputProps("description")}
               />
-            </InlineInput.Input>
-          </InlineInput>
-          <ShadedCard>
-            <InlineInput>
-              <InlineInput.Label description="What genre is your game? This is important for the discoverability of your game.">
-                Genre
-              </InlineInput.Label>
-              <InlineInput.Input>
-                <Select
-                  data={Object.values(GameGenre).map((genre) => ({
-                    value: genre,
-                    label: getGenreText(genre),
-                  }))}
-                  {...form.getInputProps("genre")}
+            </Descriptive>
+          </FormSection>
+          <FormSection
+            title="Access"
+            description="Adjust access preferences for your game."
+          >
+            <div className="grid grid-cols-2 gap-4">
+              {[
+                {
+                  label: "Public",
+                  description:
+                    "Anyone can join and discover your game. This is the default access level.",
+                  value: "public",
+                },
+                {
+                  label: "Private",
+                  description:
+                    "Only you and invited users can join your game. Recommended for games that are still in development.",
+                  value: "private",
+                },
+                {
+                  label: "Paid",
+                  description:
+                    "Only users who pay can join your game. This is not yet supported.",
+                  value: "paid",
+                  disabled: true,
+                },
+              ].map((option) => (
+                <LabelledRadio
+                  label={option.label}
+                  description={option.description}
+                  value={option.value}
+                  disabled={option.disabled}
+                  key={option.value}
+                  checked={form.values.access === option.value}
+                  classNames={{
+                    radio: BLACK.input,
+                  }}
+                  onChange={(e) =>
+                    form.setFieldValue(
+                      "access",
+                      option.value as "public" | "private" | "paid"
+                    )
+                  }
                 />
-              </InlineInput.Input>
-            </InlineInput>
-          </ShadedCard>
-          <InlineInput>
-            <InlineInput.Label description="How many players can play your game at once?">
-              Max players
-            </InlineInput.Label>
-            <InlineInput.Input>
-              <NumberInput
-                placeholder="15"
-                min={1}
-                max={50}
-                {...form.getInputProps("maxPlayers")}
-              />
-            </InlineInput.Input>
-          </InlineInput>
-          <ShadedCard>
-            <InlineInput>
-              <InlineInput.Label description="What access level do you want your game to have?">
-                Access
-              </InlineInput.Label>
-              <InlineInput.Input>
-                <Stack spacing={8}>
-                  {[
-                    {
-                      label: "Public",
-                      description:
-                        "Anyone can join and discover your game. This is the default access level.",
-                      value: "public",
-                    },
-                    {
-                      label: "Private",
-                      description:
-                        "Only you and invited users can join your game. Recommended for games that are still in development.",
-                      value: "private",
-                    },
-                    {
-                      label: "Paid",
-                      description:
-                        "Only users who pay can join your game. This is not yet supported.",
-                      value: "paid",
-                      disabled: true,
-                    },
-                  ].map((option) => (
-                    <LabelledRadio
-                      label={option.label}
-                      description={option.description}
-                      value={option.value}
-                      disabled={option.disabled}
-                      key={option.value}
-                      checked={form.values.access === option.value}
-                      onChange={(e) =>
-                        form.setFieldValue(
-                          "access",
-                          option.value as "public" | "private" | "paid"
-                        )
-                      }
-                    />
-                  ))}
-                </Stack>
-              </InlineInput.Input>
-            </InlineInput>
-          </ShadedCard>
-          <InlineInput>
-            <InlineInput.Label description="By creating a game, you agree to the Framework community guidelines.">
-              Community guidelines
-            </InlineInput.Label>
-            <InlineInput.Input>
-              <Checkbox
-                required
-                {...form.getInputProps("communityGuidelines")}
-                label="I agree to the Framework community guidelines"
-              />
-            </InlineInput.Input>
-          </InlineInput>
-          <div className="mt-12 flex items-center justify-center">
+              ))}
+            </div>
+            <Divider mt="xs" mb="xs" />
+            <NumberInput
+              placeholder="15"
+              label="Max players"
+              description="Maximum players per session."
+              required
+              min={1}
+              max={50}
+              classNames={BLACK}
+              {...form.getInputProps("maxPlayers")}
+            />
+          </FormSection>
+          <FormSection title="Submit" description="Submit your game.">
+            <Checkbox
+              required
+              {...form.getInputProps("communityGuidelines")}
+              classNames={BLACK}
+              label="I agree to the Framework community guidelines"
+            />
             <Button size="lg" type="submit">
               Create your game
             </Button>
-          </div>
+          </FormSection>
         </form>
       </ReactNoSSR>
     </Framework>

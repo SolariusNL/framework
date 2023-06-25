@@ -135,7 +135,7 @@ const GameComments = ({ user, game }: GameCommentsProps) => {
             <Pagination
               page={page}
               onChange={setPage}
-              total={total}
+              total={total || 1}
               radius="xl"
               withEdges
               size="sm"

@@ -1,8 +1,8 @@
 import {
-  Alert,
   Avatar,
   Button,
   Checkbox,
+  Divider,
   Modal,
   Select,
   Stack,
@@ -13,27 +13,27 @@ import {
 import { ProfileLink } from "@prisma/client";
 import { useRef, useState } from "react";
 import {
-  HiCamera,
   HiClock,
   HiDocumentText,
   HiGlobe,
   HiInformationCircle,
   HiLink,
   HiOfficeBuilding,
+  HiOutlineUser,
+  HiOutlineUserCircle,
   HiPencil,
   HiTrash,
   HiUser,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import getTimezones from "../../data/timezones";
-import { BLACK } from "../../pages/teams/t/[slug]/issue/create";
+import { BLACK, FormSection } from "../../pages/teams/t/[slug]/issue/create";
 import { getCookie } from "../../util/cookies";
 import getMediaUrl from "../../util/get-media";
 import { User } from "../../util/prisma-types";
 import CountrySelect from "../CountryPicker";
 import Descriptive from "../Descriptive";
 import ImageUploader from "../ImageUploader";
-import InlineError from "../InlineError";
 import Links from "../Profile/Links";
 import Stateful from "../Stateful";
 import SettingsTab from "./SettingsTab";
@@ -168,15 +168,14 @@ const AccountTab = ({ user }: AccountTabProps) => {
         success={success}
         setSuccess={setSuccess}
       >
-        <Stack mb={16}>
-          <SideBySide
-            title="Avatar"
-            description="Your avatar is the image that represents you on the site."
-            icon={<HiCamera />}
-            noUpperBorder
-            shaded
-            right={
-              <div className="flex gap-8 justify-between md:justify-start">
+        <Stack spacing={32}>
+          <FormSection
+            title="Personal information"
+            description="Details such as your avatar, username, and bio."
+            noCard
+          >
+            <Stack spacing="lg">
+              <div className="flex gap-8 justify-between">
                 <Avatar
                   src={
                     uploadedAvatarData
@@ -188,139 +187,112 @@ const AccountTab = ({ user }: AccountTabProps) => {
                   radius={99}
                   size={"xl"}
                 />
-                <div className="flex flex-col gap-2">
-                  <ImageUploader
-                    crop={true}
-                    imgRef={imgRef as React.MutableRefObject<HTMLImageElement>}
-                    onFinished={(data) => {
-                      setUploadedAvatarData(data);
-                      setUnsavedChanges(true);
-                    }}
-                    ratio={1}
-                  />
+                <div className="flex flex-col gap-2 w-fit items-end">
+                  <div>
+                    <ImageUploader
+                      crop={true}
+                      imgRef={
+                        imgRef as React.MutableRefObject<HTMLImageElement>
+                      }
+                      onFinished={(data) => {
+                        setUploadedAvatarData(data);
+                        setUnsavedChanges(true);
+                      }}
+                      ratio={1}
+                    />
+                  </div>
                   <Text size="sm" color="dimmed" mt={4}>
-                    The maximum file size allowed is 12mb, only .jpg, .jpeg,
-                    .png, and .webp files are allowed.
+                    JPG, GIF or PNG. 12MB max.
                   </Text>
-                  <Button
-                    leftIcon={<HiTrash />}
-                    onClick={() => {
-                      setUploadedAvatarData(null);
-                      setUnsavedChanges(true);
-                    }}
-                    color="red"
-                    mt="sm"
-                    disabled={!uploadedAvatarData}
-                  >
-                    Remove avatar
-                  </Button>
+                  {uploadedAvatarData && (
+                    <div>
+                      <Button
+                        leftIcon={<HiTrash />}
+                        onClick={() => {
+                          setUploadedAvatarData(null);
+                          setUnsavedChanges(true);
+                        }}
+                        color="red"
+                        mt="sm"
+                      >
+                        Remove avatar
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
-            }
-          />
-          <SideBySide
-            title="Username"
-            description="Your username represents you on the platform."
-            icon={<HiUser />}
-            right={
-              <>
-                <TextInput
-                  label="Username"
-                  description="Your username represents you on Framework."
-                  defaultValue={user.username}
-                  onChange={(e) => {
-                    update("username", e.target.value);
-                  }}
-                  icon={<HiUser />}
-                  error={
-                    updated.username &&
-                    !updated.username.match(/^[a-zA-Z0-9_]{3,24}$/)
-                      ? "Your username must be between 3 and 24 characters and can only contain letters, numbers, and underscores."
-                      : undefined
-                  }
-                  disabled={
-                    new Date(user.lastUsernameChange as Date).getTime() +
-                      604800000 >
-                      Date.now() || user.tickets < 500
-                  }
-                  classNames={BLACK}
-                  mb="md"
-                />
-                <InlineError variant="info" title="Notice">
-                  You will be charged 500 tickets to change your username.
-                </InlineError>
-                {new Date(user.lastUsernameChange as Date).getTime() +
-                  604800000 >
-                  Date.now() && (
-                  <Alert icon={<HiInformationCircle size={14} />} mt={12}>
-                    You can only change your username once every 7 days.
-                  </Alert>
-                )}
-              </>
-            }
-            noUpperBorder
-            shaded
-          />
-          <SideBySide
-            title="Aliases"
-            description="Your aliases are non-unique."
-            icon={<HiUser />}
-            right={
-              <TextInput
-                label="Alias"
-                placeholder="Create an alias"
-                description="Your alias is a non-unique username."
-                defaultValue={user.alias || ""}
-                onChange={(e) => {
-                  update("alias", e.target.value);
-                }}
-                icon={<HiDocumentText />}
-                error={
-                  updated.alias && !updated.alias.match(/^[a-zA-Z0-9_]{3,24}$/)
-                    ? "Your alias must be between 3 and 24 characters and can only contain letters, numbers, and underscores."
-                    : undefined
-                }
-                classNames={BLACK}
-              />
-            }
-            noUpperBorder
-            shaded
-          />
-          <SideBySide
-            title="Bio"
-            description="Tell people about yourself, your interests, and what you do."
-            icon={<HiInformationCircle />}
-            right={
-              <>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1">
+                  <TextInput
+                    label="Username"
+                    defaultValue={user.username}
+                    onChange={(e) => {
+                      update("username", e.target.value);
+                    }}
+                    icon={<HiOutlineUser />}
+                    error={
+                      updated.username &&
+                      !updated.username.match(/^[a-zA-Z0-9_]{3,24}$/)
+                        ? "Your username must be between 3 and 24 characters and can only contain letters, numbers, and underscores."
+                        : undefined
+                    }
+                    disabled={
+                      new Date(user.lastUsernameChange as Date).getTime() +
+                        604800000 >
+                        Date.now() || user.tickets < 500
+                    }
+                    classNames={BLACK}
+                  />
+                  <Text size="sm" color="dimmed">
+                    You&apos;ll be charged 500T$ to change your username.
+                  </Text>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <TextInput
+                    label="Alias"
+                    placeholder="Create an alias"
+                    defaultValue={user.alias || ""}
+                    onChange={(e) => {
+                      update("alias", e.target.value);
+                    }}
+                    icon={<HiOutlineUserCircle />}
+                    error={
+                      updated.alias &&
+                      !updated.alias.match(/^[a-zA-Z0-9_]{3,24}$/)
+                        ? "Your alias must be between 3 and 24 characters and can only contain letters, numbers, and underscores."
+                        : undefined
+                    }
+                    classNames={BLACK}
+                  />
+                  <Text size="sm" color="dimmed">
+                    Your alias is a non-unique username.
+                  </Text>
+                </div>
+              </div>
+              <div className="flex flex-col gap-1">
                 <Textarea
                   label="Bio"
-                  description="Tell other users about yourself."
                   defaultValue={user.bio}
                   onChange={(e) => {
                     update("bio", e.target.value);
                   }}
                   minRows={3}
-                  mb="sm"
                   classNames={BLACK}
                 />
                 <Text size="sm" color="dimmed">
-                  Describe yourself, your interests, and what you do in less
-                  than 200 characters.
+                  Tell other users about yourself.
                 </Text>
-              </>
-            }
-            noUpperBorder
-            shaded
-          />
-          <SideBySide
-            title="Country"
-            description="Represent your nationality on Framework. This will not be used for any purpose other than for social purposes."
-            icon={<HiGlobe />}
-            right={
-              <Descriptive
-                title="Country"
-                description="Represent your country on Framework!"
-              >
+              </div>
+            </Stack>
+          </FormSection>
+          <Divider />
+          <FormSection
+            title="Social"
+            description="Details such as your country, timezone, and availability status."
+            noCard
+          >
+            <div className="grid grid-cols-2 gap-4">
+              <Descriptive title="Country">
                 <CountrySelect
                   defaultValue={user.country}
                   onChange={(code: string) => {
@@ -328,40 +300,9 @@ const AccountTab = ({ user }: AccountTabProps) => {
                   }}
                 />
               </Descriptive>
-            }
-            noUpperBorder
-            shaded
-          />
-          <SideBySide
-            title="Busy"
-            description="Let people know if you are busy, like on vacation or working on something else."
-            icon={<HiOfficeBuilding />}
-            right={
-              <Descriptive
-                title="Busy"
-                description="Let other users know you're busy."
-              >
-                <Checkbox
-                  label="Enable busy status"
-                  defaultChecked={user.busy}
-                  onChange={(e) => {
-                    update("busy", e.currentTarget.checked);
-                  }}
-                  classNames={BLACK}
-                />
-              </Descriptive>
-            }
-            noUpperBorder
-            shaded
-          />
-          <SideBySide
-            title="Timezone"
-            description="Share your time zone so others know when it's a good time to reach out to you."
-            icon={<HiClock />}
-            right={
+
               <Select
                 label="Timezone"
-                description="Select your timezone."
                 defaultValue={user.timeZone}
                 onChange={(e) => {
                   update("timeZone", String(e));
@@ -373,19 +314,23 @@ const AccountTab = ({ user }: AccountTabProps) => {
                 searchable
                 classNames={BLACK}
               />
-            }
-            noUpperBorder
-            shaded
-          />
-          <SideBySide
-            title="Profile Links"
-            description="Add up to 3 links to your social media profiles, websites, or anything else you want to share."
-            icon={<HiLink />}
-            right={
-              <ReactNoSSR>
-                <Links user={user} />
-              </ReactNoSSR>
-            }
+            </div>
+            <Descriptive title="Busy">
+              <Checkbox
+                label="I am busy right now"
+                defaultChecked={user.busy}
+                onChange={(e) => {
+                  update("busy", e.currentTarget.checked);
+                }}
+                classNames={BLACK}
+              />
+            </Descriptive>
+          </FormSection>
+          <Divider />
+          <FormSection
+            title="Links"
+            description="Add links to your profile."
+            noCard
             actions={
               <Stateful>
                 {(open, setOpen) => (
@@ -472,9 +417,11 @@ const AccountTab = ({ user }: AccountTabProps) => {
                 )}
               </Stateful>
             }
-            noUpperBorder
-            shaded
-          />
+          >
+            <ReactNoSSR>
+              <Links user={user} />
+            </ReactNoSSR>
+          </FormSection>
         </Stack>
       </SettingsTab>
     </>

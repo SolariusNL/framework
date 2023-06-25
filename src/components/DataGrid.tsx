@@ -35,7 +35,17 @@ const DataGrid: FC<DataGridProps> = ({
               {tooltip}
             </Text>
           </div>
-          <span className="text-sm font-medium">{value}</span>
+          <span
+            className={clsx("text-sm font-medium")}
+            style={{
+              maxWidth: "100%",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {value}
+          </span>
         </div>
       ))}
     </div>

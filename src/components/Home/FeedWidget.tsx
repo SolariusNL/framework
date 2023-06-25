@@ -162,7 +162,7 @@ const FeedWidget: React.FC = () => {
         <Pagination
           radius="md"
           withEdges
-          total={pages}
+          total={pages || 1}
           page={page}
           onChange={setPage}
         />

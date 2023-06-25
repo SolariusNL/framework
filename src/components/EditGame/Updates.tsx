@@ -201,7 +201,7 @@ const Updates = ({ game }: UpdatesProps) => {
       <Pagination
         radius="md"
         page={updatePage}
-        total={pages}
+        total={pages || 1}
         onChange={setUpdatePage}
         mb="md"
       />

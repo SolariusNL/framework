@@ -51,7 +51,7 @@ const UpdateLogTab = ({ game }: UpdateLogTabProps) => {
               radius="xl"
               page={page}
               onChange={setPage}
-              total={pages}
+              total={pages || 1}
               withEdges
               classNames={{
                 item: BLACK.input,

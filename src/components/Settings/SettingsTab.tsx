@@ -1,7 +1,12 @@
 import { Alert, Button, Group } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import React from "react";
-import { HiCheckCircle, HiSave, HiXCircle } from "react-icons/hi";
+import {
+  HiCheckCircle,
+  HiOutlineSaveAs,
+  HiSave,
+  HiXCircle,
+} from "react-icons/hi";
 import useMediaQuery from "../../util/media-query";
 import ModernEmptyState from "../ModernEmptyState";
 
@@ -75,9 +80,9 @@ const SettingsTab = ({
             </Alert>
           )}
 
-          <Group mt={25}>
+          <div className="flex justify-end mt-6">
             <Button
-              leftIcon={<HiSave />}
+              leftIcon={<HiOutlineSaveAs />}
               onClick={() => {
                 if (saveButtonAction) {
                   saveButtonAction(setLoading, setError);
@@ -89,10 +94,11 @@ const SettingsTab = ({
                 }
               }}
               loading={loading}
+              size="lg"
             >
               {saveButtonLabel}
             </Button>
-          </Group>
+          </div>
         </>
       )}
     </>

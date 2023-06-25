@@ -3,7 +3,7 @@ import { Group, Stack, Text } from "@mantine/core";
 interface DescriptiveProps {
   children: React.ReactNode;
   title: string;
-  description: string | React.ReactNode;
+  description?: string | React.ReactNode;
   required?: boolean;
   className?: string;
 }
@@ -16,7 +16,7 @@ const Descriptive = ({
   className,
 }: DescriptiveProps) => {
   return (
-    <Stack spacing={7} className={className}>
+    <Stack spacing={description ? 7 : 2} className={className}>
       <Stack spacing={0}>
         <Group spacing={3}>
           <Text size="sm" weight={500}>

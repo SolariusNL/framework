@@ -1,5 +1,6 @@
 import {
   ActionIcon,
+  Anchor,
   Avatar,
   Button,
   Menu,
@@ -44,6 +45,7 @@ import authorizedRoute from "../../../../util/auth";
 import getMediaUrl from "../../../../util/get-media";
 import { NonUser, User } from "../../../../util/prisma-types";
 import { getTeam } from "../../../../util/teams";
+import { Fw } from "../../../../util/fw";
 
 export type TeamViewProps = {
   user: User;
@@ -368,7 +370,12 @@ const TeamView: React.FC<TeamViewProps> = ({ user, team: teamInitial }) => {
           {
             tooltip: "Website",
             icon: <HiGlobe />,
-            value: team.website || "Unprovided",
+            value:
+              (
+                <Anchor onClick={() => Fw.Links.externalWarning(team.website!)}>
+                  {team.website}
+                </Anchor>
+              ) || "Unprovided",
           },
           {
             tooltip: "Based in",

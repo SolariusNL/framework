@@ -39,8 +39,10 @@ export const FormSection: React.FC<
   {
     title: string;
     description: string;
+    noCard?: boolean;
+    actions?: React.ReactNode;
   } & React.HTMLAttributes<HTMLDivElement>
-> = ({ title, description, children, ...props }) => {
+> = ({ title, description, children, noCard, actions, ...props }) => {
   return (
     <div className="md:grid md:grid-cols-3 md:gap-7" {...props}>
       <div className="md:col-span-1">
@@ -51,11 +53,18 @@ export const FormSection: React.FC<
           <Text size="sm" color="dimmed">
             {description}
           </Text>
+          {actions && <div className="mt-4">{actions}</div>}
         </div>
       </div>
-      <ShadedCard className="mt-5 md:col-span-2 md:mt-0 gap-6 flex flex-col">
-        {children}
-      </ShadedCard>
+      {noCard ? (
+        <div className="mt-5 md:mt-0 md:col-span-2 gap-6 flex flex-col">
+          {children}
+        </div>
+      ) : (
+        <ShadedCard className="mt-5 md:col-span-2 md:mt-0 gap-6 flex flex-col">
+          {children}
+        </ShadedCard>
+      )}
     </div>
   );
 };

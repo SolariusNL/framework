@@ -273,9 +273,10 @@ const Details = ({ game: g }: DetailsProps) => {
   }, [editingMetadata]);
 
   useEffect(() => {
-    const dirty = Object.keys(updated).some(
-      (key) => updated[key as keyof typeof updated] !== game[key as keyof Game]
-    );
+    const dirty = Object.keys(updated).some((key) => {
+      if (key === "description") return false;
+      return updated[key as keyof typeof updated] !== game[key as keyof Game];
+    });
 
     setDirty(dirty);
   }, [updated]);
