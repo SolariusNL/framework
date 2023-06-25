@@ -1,5 +1,6 @@
 import {
   ActionIcon,
+  Anchor,
   Avatar,
   Badge,
   Button,
@@ -24,7 +25,9 @@ import {
   HiCheckCircle,
   HiCube,
   HiExclamation,
+  HiOutlineCube,
   HiOutlineDesktopComputer,
+  HiOutlineUser,
   HiUser,
   HiX,
 } from "react-icons/hi";
@@ -45,6 +48,7 @@ import {
   nonCurrentUserSelect,
 } from "../../../../../../util/prisma-types";
 import { getTeam } from "../../../../../../util/teams";
+import DataGrid from "../../../../../../components/DataGrid";
 
 export type TeamIssueViewProps = {
   user: User;
@@ -297,55 +301,35 @@ const TeamIssueView: React.FC<TeamIssueViewProps> = ({ user, team, issue }) => {
           ))}
         </div>
       </ShadedCard>
-      <div
-        className={clsx(
-          "mt-6 grid grid-cols-2 content-center md:grid-cols-3 gap-4"
-        )}
-      >
-        {[
+      <DataGrid
+        items={[
           {
-            icon: <HiUser />,
-            label: "Assignee",
-            item: <Owner user={issueState.assignee} />,
+            icon: <HiOutlineUser />,
+            tooltip: "Assignee",
+            value: <Owner user={issueState.assignee} />,
           },
           {
             icon: <HiOutlineDesktopComputer />,
-            label: "Environment",
-            item: <Badge>{issueState.environment}</Badge>,
+            tooltip: "Environment",
+            value: <Badge>{issueState.environment}</Badge>,
           },
           {
-            icon: <HiCube />,
-            label: "Game",
-            item: (
+            icon: <HiOutlineCube />,
+            tooltip: "Game",
+            value: (
               <Link href={`/game/${issueState.game.id}`} passHref>
                 <div className="flex items-center gap-2 cursor-pointer">
                   <Avatar
                     size={24}
                     src={getMediaUrl(issueState.game.iconUri)}
                   />
-                  <Text color="dimmed" size="sm">
-                    {issueState.game.name}
-                  </Text>
+                  <Anchor size="sm">{issueState.game.name}</Anchor>
                 </div>
               </Link>
             ),
           },
-        ].map((x, i) => (
-          <div key={i} className="mb-4">
-            <Stack spacing={10} align="center">
-              {x.icon}
-              <Text weight={550} mb={6}>
-                {x.label}
-              </Text>
-              {typeof x.item === "string" ? (
-                <Text>{x.item}</Text>
-              ) : (
-                <div>{x.item}</div>
-              )}
-            </Stack>
-          </div>
-        ))}
-      </div>
+        ]}
+      />
       <Divider mt="lg" mb="lg" />
       <div className="flex items-center justify-between">
         <div className="flex gap-2 items-center">

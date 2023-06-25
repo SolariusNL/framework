@@ -38,6 +38,7 @@ import getMediaUrl from "../../../../util/get-media";
 import { NonUser, User } from "../../../../util/prisma-types";
 import { getTeam } from "../../../../util/teams";
 import { tags } from "./issue/create";
+import FilterIndicator from "../../../../components/FilterIndicator";
 
 export type TeamViewIssuesProps = {
   user: User;
@@ -228,40 +229,30 @@ const TeamViewIssues: React.FC<TeamViewIssuesProps> = ({ user, team }) => {
       <div className="flex items-center gap-4 mt-6 mb-6">
         <Pagination
           radius="md"
-          total={pages || 16}
+          total={pages || 1}
           page={page}
           onChange={setPage}
         />
         <Chip
-          classNames={{ label: "px-4" }}
+          classNames={{ label: "px-2" }}
           checked={false}
           onClick={() => {
             setTagFilterModal(true);
           }}
-          styles={(theme) => ({
-            label: {
-              backgroundColor:
-                tagFilter.length > 0
-                  ? theme.colors.blue[9] + "85 !important"
-                  : undefined,
-              borderColor:
-                tagFilter.length > 0
-                  ? theme.colors.blue[9] + "85 !important"
-                  : undefined,
-              color: tagFilter.length > 0 ? "white" : undefined,
-            },
-          })}
         >
           <div className="flex items-center gap-2">
-            <HiFilter />
-            <span>
-              Filter by tags
-              {tagFilter.length > 0 && (
-                <span className="font-mono"> ({tagFilter.length})</span>
-              )}
-            </span>
+            <HiFilter className="mx-1/2" />
+            Filter by tags
           </div>
         </Chip>
+        {tagFilter.length > 0 && (
+          <FilterIndicator
+            text={`${tagFilter.length} tags`}
+            onClick={() => {
+              setTagFilter([]);
+            }}
+          />
+        )}
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {loading ? (

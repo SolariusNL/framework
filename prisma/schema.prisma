@@ -1121,6 +1121,7 @@ model TeamIssue {
   comments    TeamIssueComment[]       @relation("issueComments")
   environment TeamIssueEnvironmentType
   tags        String[]
+  locked      Boolean                  @default(false)
 }
 
 enum TeamIssueStatus {
