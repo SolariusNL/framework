@@ -72,7 +72,7 @@ const UpdatesWidget: React.FC = () => {
                 />
               ))}
               {gameUpdates.length === 0 && (
-                <div className="w-full flex justify-center items-center">
+                <div className="w-full flex justify-center items-center col-span-full">
                   <ModernEmptyState
                     title="No updates"
                     body="No updates to show."

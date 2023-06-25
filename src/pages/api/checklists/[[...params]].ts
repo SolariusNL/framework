@@ -1,6 +1,7 @@
 import {
   Body,
   createHandler,
+  Delete,
   Get,
   Param,
   Post,
@@ -237,6 +238,37 @@ class ChecklistRouter {
     await prisma.checklistItem.delete({
       where: {
         id: String(taskId),
+      },
+    });
+
+    return {
+      success: true,
+    };
+  }
+
+  @Delete("/:id/delete")
+  @Authorized()
+  public async deleteChecklist(
+    @Account() user: User,
+    @Param("id") id: string
+  ) {
+    const checklist = await prisma.checklist.findFirst({
+      where: {
+        id: String(id),
+        userId: user.id,
+      },
+    });
+
+    if (!checklist) {
+      return {
+        success: false,
+        message: "Invalid checklist.",
+      };
+    }
+
+    await prisma.checklist.delete({
+      where: {
+        id: String(id),
       },
     });
 

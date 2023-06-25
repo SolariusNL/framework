@@ -10,7 +10,6 @@ import {
   Textarea,
   Title,
   Tooltip,
-  UnstyledButton,
   useMantineTheme,
 } from "@mantine/core";
 import { Calendar } from "@mantine/dates";
@@ -22,7 +21,9 @@ import React from "react";
 import { HiClock, HiTrash } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import { ChecklistTaskUpdateBody } from "../../pages/api/checklists/[[...params]]";
+import clsx from "../../util/clsx";
 import Descriptive from "../Descriptive";
+import ShadedButton from "../ShadedButton";
 import Stateful from "../Stateful";
 
 interface ChecklistTaskProps {
@@ -286,32 +287,16 @@ const ChecklistTask = ({
             </Modal>
           </ReactNoSSR>
 
-          <UnstyledButton
-            sx={(theme) => ({
-              borderRadius: theme.radius.md,
-              color:
-                theme.colorScheme === "dark"
-                  ? theme.colors.dark[0]
-                  : theme.black,
-
-              "&:hover": {
-                backgroundColor:
-                  theme.colorScheme === "dark"
-                    ? theme.colors.dark[6]
-                    : theme.colors.gray[0],
-              },
-              padding: "12px",
-              opacity: taskState.completed ? 0.5 : 1,
-              display: "flex",
-              flexDirection: "column",
-            })}
-            className="h-fit"
+          <ShadedButton
+            className={clsx(
+              "h-fit flex flex-col",
+              task.completed && "opacity-50"
+            )}
             key={taskState.id}
             onClick={() => {
               if (checkboxRef.current?.contains(document.activeElement)) {
                 return;
               }
-
               setState(true);
             }}
           >
@@ -370,7 +355,7 @@ const ChecklistTask = ({
                 Delete
               </Button>
             </motion.div>
-          </UnstyledButton>
+          </ShadedButton>
         </>
       )}
     </Stateful>
