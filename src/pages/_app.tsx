@@ -44,7 +44,6 @@ import { Provider } from "react-redux";
 import "../../flags.config";
 import Descriptive from "../components/Descriptive";
 import ElectronTitlebar from "../components/ElectronTitlebar";
-import LoadingIndicator from "../components/LoadingIndicator";
 import Rating from "../components/Rating";
 import Stateful from "../components/Stateful";
 import { FrameworkUserProvider } from "../contexts/FrameworkUser";
@@ -54,7 +53,7 @@ import { store } from "../reducers/store";
 import useAmoled from "../stores/useAmoled";
 import useFastFlags, { fetchFlags } from "../stores/useFastFlags";
 import useFeedback from "../stores/useFeedback";
-import useFlow from "../stores/useFlow";
+import useFlow, { Flow, Flows } from "../stores/useFlow";
 import "../styles/fonts.css";
 import "../styles/framework.css";
 import "../styles/tw.css";
@@ -829,22 +828,23 @@ const Framework = (
                               </Stateful>
                             </Modal>
                           </ReactNoSSR>
-                          <ReactNoSSR>
+                          {router.query.flow && (
                             <Modal
-                              title={activeFlow?.title || "Flow"}
-                              opened={!!activeFlow}
+                              title={Flows[router.query.flow as Flow].title}
+                              opened={!!router.query.flow}
                               onClose={() => {
-                                toggleFlow(activeFlow!);
+                                router.push(
+                                  router.pathname,
+                                  router.asPath.split("?")[0],
+                                  {
+                                    shallow: true,
+                                  }
+                                );
                               }}
-                              withCloseButton={false}
                             >
-                              {activeFlow?.component || (
-                                <div className="p-8">
-                                  <LoadingIndicator />
-                                </div>
-                              )}
+                              {Flows[router.query.flow as Flow].component}
                             </Modal>
-                          </ReactNoSSR>
+                          )}
                         </FrameworkUserProvider>
                       </NotificationsProvider>
                     </MDXProvider>

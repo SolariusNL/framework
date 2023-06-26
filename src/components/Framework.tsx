@@ -44,6 +44,7 @@ import {
   HiOutlineCog,
   HiOutlineHome,
   HiOutlineLightBulb,
+  HiOutlineLightningBolt,
   HiOutlineSearch,
   HiOutlineShoppingBag,
   HiOutlineSparkles,
@@ -66,6 +67,7 @@ import { RootState } from "../reducers/store";
 import useAmoled from "../stores/useAmoled";
 import useAuthorizedUserStore from "../stores/useAuthorizedUser";
 import useFeedback from "../stores/useFeedback";
+import { Flow } from "../stores/useFlow";
 import usePreferences from "../stores/usePreferences";
 import useSidebar from "../stores/useSidebar";
 import logout from "../util/api/logout";
@@ -580,6 +582,15 @@ const Framework = ({
                       }}
                     >
                       Open DevTools
+                    </Menu.Item>
+                    <Menu.Divider />
+                    <Menu.Item
+                      onClick={() => {
+                        Fw.Flows.toggleFlow(Flow.Logins, router);
+                      }}
+                      icon={<HiOutlineLightningBolt />}
+                    >
+                      Invoke test flow
                     </Menu.Item>
                     <Menu.Divider />
                     <Menu.Item

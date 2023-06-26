@@ -198,6 +198,7 @@ const Settings: NextPage<SettingsProps> = ({ user, activePage }) => {
                             transition={{ type: "spring", duration: 0.5 }}
                             exit={{ height: 0 }}
                             layoutId="settings"
+                            key={tab.value}
                           >
                             {tab.description}
                           </motion.div>

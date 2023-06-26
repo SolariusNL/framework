@@ -8,6 +8,7 @@ import {
 } from "@mantine/core";
 import { Notification, NotificationType } from "@prisma/client";
 import { getCookie } from "cookies-next";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import {
   HiCheckCircle,
@@ -20,14 +21,14 @@ import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
 import useExperimentsStore, {
   ExperimentId,
 } from "../../stores/useExperimentsStore";
-import useFlow, { Flows } from "../../stores/useFlow";
+import { Flow } from "../../stores/useFlow";
 import { Fw } from "../../util/fw";
 import { getRelativeTime } from "../../util/relative-time";
 
 const Notifications: React.FC = () => {
   const [activePage, setActivePage] = useState(1);
   const { user, setUser } = useAuthorizedUserStore()!;
-  const { toggleFlow } = useFlow();
+  const router = useRouter();
   const { experiments } = useExperimentsStore();
 
   const typeIcon = (type: NotificationType) => {
@@ -129,7 +130,11 @@ const Notifications: React.FC = () => {
                         <span className="ml-2 mr-2 font-semibold">
                           {Fw.Elements.bullet()}
                         </span>
-                        <Anchor onClick={() => toggleFlow(Flows.logins)}>
+                        <Anchor
+                          onClick={() =>
+                            Fw.Flows.toggleFlow(Flow.Logins, router)
+                          }
+                        >
                           View logins
                         </Anchor>
                       </>
