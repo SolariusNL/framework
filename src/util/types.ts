@@ -29,12 +29,14 @@ export type UserPreferences =
   | "@chat/bell"
   | "@chat/enabled"
   | "@chat/my-color"
-  | "@dismissible/chat/conversation-tooltip";
+  | "@dismissible/chat/conversation-tooltip"
+  | "@app/secret-gift";
 export const userPreferences: UserPreferences[] = [
   "@chat/bell",
   "@chat/enabled",
   "@chat/my-color",
   "@dismissible/chat/conversation-tooltip",
+  "@app/secret-gift",
 ];
 export const defaultUserPreferences: Record<
   UserPreferences,
@@ -44,10 +46,12 @@ export const defaultUserPreferences: Record<
   "@chat/enabled": true,
   "@chat/my-color": "blue",
   "@dismissible/chat/conversation-tooltip": false,
+  "@app/secret-gift": false,
 };
 export const userPreferenceValidators: Partial<
   Record<UserPreferences, (value: string | boolean | number) => boolean>
 > = {
   "@chat/my-color": (value) =>
     typeof value === "string" && MANTINE_COLORS.includes(value),
+  "@app/secret-gift": (value) => typeof value === "boolean" && value === true,
 };

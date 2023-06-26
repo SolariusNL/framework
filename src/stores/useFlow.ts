@@ -5,9 +5,13 @@ import create from "zustand";
 const LoginFlow = dynamic(() => import("../components/Flows/Logins"), {
   ssr: false,
 });
+const SecretGift = dynamic(() => import("../components/Flows/Gift"), {
+  ssr: false,
+});
 
 export enum Flow {
   Logins = "logins",
+  SecretGift = "secret-gift",
 }
 
 export const Flows: {
@@ -16,6 +20,10 @@ export const Flows: {
   [Flow.Logins]: {
     component: React.createElement(LoginFlow),
     title: "Login management",
+  },
+  [Flow.SecretGift]: {
+    component: React.createElement(SecretGift),
+    title: "Surprise",
   },
 };
 

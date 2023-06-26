@@ -1428,6 +1428,19 @@ class UserRouter {
               },
             },
           });
+
+          if ((key as UserPreferences) === "@app/secret-gift" && value) {
+            await prisma.user.update({
+              where: {
+                id: user.id,
+              },
+              data: {
+                tickets: {
+                  increment: 750,
+                },
+              },
+            });
+          }
         }
       }
     }
