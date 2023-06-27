@@ -1,7 +1,7 @@
 import { useMantineTheme } from "@mantine/core";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import clsx from "../../util/clsx";
+import clsx from "@/util/clsx";
 
 type IntegratedTabsProps = {
   children: React.ReactNode;

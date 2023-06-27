@@ -1,5 +1,5 @@
 import create from "zustand";
-import { User } from "../util/prisma-types";
+import { User } from "@/util/prisma-types";
 
 interface AuthorizedUserStore {
   user: User | null;

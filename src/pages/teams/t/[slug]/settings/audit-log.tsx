@@ -1,3 +1,14 @@
+import ModernEmptyState from "@/components/ModernEmptyState";
+import Owner from "@/components/Owner";
+import ShadedCard from "@/components/ShadedCard";
+import Stateful from "@/components/Stateful";
+import TeamsViewProvider from "@/components/Teams/TeamsView";
+import auditLogMeta from "@/data/auditLog";
+import { TeamType } from "@/pages/teams";
+import authorizedRoute from "@/util/auth";
+import clsx from "@/util/clsx";
+import { NonUser, User } from "@/util/prisma-types";
+import { getTeam } from "@/util/teams";
 import { Group, Pagination, Select, Text, Title } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { Rating, TeamAuditLog, TeamAuditLogType } from "@prisma/client";
@@ -7,17 +18,6 @@ import { GetServerSideProps } from "next";
 import React, { forwardRef, useEffect, useState } from "react";
 import { HiGlobe, HiXCircle } from "react-icons/hi";
 import { IconType } from "react-icons/lib";
-import { TeamType } from "../../..";
-import ModernEmptyState from "../../../../../components/ModernEmptyState";
-import Owner from "../../../../../components/Owner";
-import ShadedCard from "../../../../../components/ShadedCard";
-import Stateful from "../../../../../components/Stateful";
-import TeamsViewProvider from "../../../../../components/Teams/TeamsView";
-import auditLogMeta from "../../../../../data/auditLog";
-import authorizedRoute from "../../../../../util/auth";
-import clsx from "../../../../../util/clsx";
-import { NonUser, User } from "../../../../../util/prisma-types";
-import { getTeam } from "../../../../../util/teams";
 
 const headers = {
   "Content-Type": "application/json",

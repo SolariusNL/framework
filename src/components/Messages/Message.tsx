@@ -1,3 +1,11 @@
+import ReportUser from "@/components/ReportUser";
+import ShadedCard from "@/components/ShadedCard";
+import Stateful from "@/components/Stateful";
+import UserContext from "@/components/UserContext";
+import { useFrameworkUser } from "@/contexts/FrameworkUser";
+import getMediaUrl from "@/util/get-media";
+import { Message } from "@/util/prisma-types";
+import { getRelativeTime } from "@/util/relative-time";
 import {
   ActionIcon,
   Avatar,
@@ -13,14 +21,6 @@ import { getCookie } from "cookies-next";
 import { motion } from "framer-motion";
 import React from "react";
 import { HiDesktopComputer, HiEye, HiFlag, HiStar } from "react-icons/hi";
-import { useFrameworkUser } from "../../contexts/FrameworkUser";
-import getMediaUrl from "../../util/get-media";
-import { Message } from "../../util/prisma-types";
-import { getRelativeTime } from "../../util/relative-time";
-import ReportUser from "../ReportUser";
-import ShadedCard from "../ShadedCard";
-import Stateful from "../Stateful";
-import UserContext from "../UserContext";
 
 interface MessageProps {
   message: Message;

@@ -1,7 +1,7 @@
 import { Checkbox, createStyles, Text, UnstyledButton } from "@mantine/core";
 import { useUncontrolled } from "@mantine/hooks";
-import useAmoled from "../stores/useAmoled";
-import { AMOLED_COLORS } from "../util/constants";
+import useAmoled from "@/stores/useAmoled";
+import { AMOLED_COLORS } from "@/util/constants";
 
 const useStyles = createStyles((theme) => ({
   button: {

@@ -1,3 +1,16 @@
+import { Section } from "@/components/Home/FriendsWidget";
+import LoadingIndicator from "@/components/LoadingIndicator";
+import Markdown, { ToolbarItem } from "@/components/Markdown";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import sanitizeInappropriateContent from "@/components/ReconsiderationPrompt";
+import RenderMarkdown from "@/components/RenderMarkdown";
+import ReportUser from "@/components/ReportUser";
+import ShadedCard from "@/components/ShadedCard";
+import UserContext from "@/components/UserContext";
+import { useFrameworkUser } from "@/contexts/FrameworkUser";
+import getMediaUrl from "@/util/get-media";
+import { NonUser } from "@/util/prisma-types";
+import { getRelativeTime } from "@/util/relative-time";
 import {
   ActionIcon,
   Avatar,
@@ -19,19 +32,6 @@ import {
   HiFlag,
   HiPlus,
 } from "react-icons/hi";
-import { useFrameworkUser } from "../../contexts/FrameworkUser";
-import getMediaUrl from "../../util/get-media";
-import { NonUser } from "../../util/prisma-types";
-import { getRelativeTime } from "../../util/relative-time";
-import LoadingIndicator from "../LoadingIndicator";
-import Markdown, { ToolbarItem } from "../Markdown";
-import ModernEmptyState from "../ModernEmptyState";
-import sanitizeInappropriateContent from "../ReconsiderationPrompt";
-import RenderMarkdown from "../RenderMarkdown";
-import ReportUser from "../ReportUser";
-import ShadedCard from "../ShadedCard";
-import UserContext from "../UserContext";
-import { Section } from "./FriendsWidget";
 
 type StatusPost = StatusPosts & {
   user: NonUser;

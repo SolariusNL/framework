@@ -4,7 +4,7 @@ import { UserAdminNotes } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useState } from "react";
 import { HiCheckCircle } from "react-icons/hi";
-import { NonUser } from "../../util/prisma-types";
+import { NonUser } from "@/util/prisma-types";
 
 interface NoteProps {
   user: NonUser;

@@ -1,5 +1,5 @@
+import { Plugin } from "@/util/fw/string-parser";
 import { randomId } from "@mantine/hooks";
-import { Plugin } from "../string-parser";
 
 const boldPlugin: Plugin = {
   regex: /\*\*(.*?)\*\*/g,

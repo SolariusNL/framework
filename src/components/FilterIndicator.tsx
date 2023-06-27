@@ -1,6 +1,6 @@
 import { CloseButton, Paper, Text } from "@mantine/core";
 import React from "react";
-import clsx from "../util/clsx";
+import clsx from "@/util/clsx";
 
 type FilterIndicatorProps = {
   onClick: () => void;

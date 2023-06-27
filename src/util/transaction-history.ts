@@ -1,5 +1,5 @@
+import prisma from "@/util/prisma";
 import { TransactionType } from "@prisma/client";
-import prisma from "./prisma";
 
 async function logTransaction(
   tickets: number,

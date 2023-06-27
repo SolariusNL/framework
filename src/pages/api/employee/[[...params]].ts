@@ -9,12 +9,12 @@ import {
   Query,
   UnauthorizedException,
 } from "@storyofams/next-api-decorators";
-import { postSelect } from "../../../components/Admin/Employee/Board";
-import { Account, AdminAuthorized } from "../../../util/api/authorized";
-import { sendMail } from "../../../util/mail";
-import prisma from "../../../util/prisma";
-import type { User } from "../../../util/prisma-types";
-import { nonCurrentUserSelect } from "../../../util/prisma-types";
+import { postSelect } from "@/components/Admin/Employee/Board";
+import { Account, AdminAuthorized } from "@/util/api/authorized";
+import { sendMail } from "@/util/mail";
+import prisma from "@/util/prisma";
+import type { User } from "@/util/prisma-types";
+import { nonCurrentUserSelect } from "@/util/prisma-types";
 
 class EmployeeRouter {
   @Get("/my/tasks")

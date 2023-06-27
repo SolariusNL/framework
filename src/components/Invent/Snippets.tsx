@@ -1,3 +1,10 @@
+import InventTab from "@/components/Invent/InventTab";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import ShadedButton from "@/components/ShadedButton";
+import ShadedCard from "@/components/ShadedCard";
+import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
+import { getCookie } from "@/util/cookies";
+import { User } from "@/util/prisma-types";
 import {
   Badge,
   Button,
@@ -6,7 +13,7 @@ import {
   Text,
   Textarea,
   TextInput,
-  useMantineColorScheme
+  useMantineColorScheme,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
@@ -18,15 +25,8 @@ import {
   HiCheckCircle,
   HiPlus,
   HiTag,
-  HiViewGrid
+  HiViewGrid,
 } from "react-icons/hi";
-import { BLACK } from "../../pages/teams/t/[slug]/issue/create";
-import { getCookie } from "../../util/cookies";
-import { User } from "../../util/prisma-types";
-import ModernEmptyState from "../ModernEmptyState";
-import ShadedButton from "../ShadedButton";
-import ShadedCard from "../ShadedCard";
-import InventTab from "./InventTab";
 
 type SnippetsProps = {
   user: User;

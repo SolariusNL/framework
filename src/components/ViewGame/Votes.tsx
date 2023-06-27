@@ -1,8 +1,8 @@
 import { ActionIcon, Progress, Tooltip } from "@mantine/core";
 import { getCookie } from "cookies-next";
 import { HiThumbDown, HiThumbUp } from "react-icons/hi";
-import { useFrameworkUser } from "../../contexts/FrameworkUser";
-import { Game, NonUser } from "../../util/prisma-types";
+import { useFrameworkUser } from "@/contexts/FrameworkUser";
+import { Game, NonUser } from "@/util/prisma-types";
 
 interface VotesProps {
   game: Game;

@@ -1,3 +1,23 @@
+import { PrefCategory } from "@/components/Admin/Pages/Instance";
+import { AdminViewUser } from "@/components/Admin/Pages/Users";
+import type { ReportCategory } from "@/components/ReportUser";
+import IResponseBase from "@/types/api/IResponseBase";
+import { AdminAction } from "@/util/admin-action";
+import Authorized, { Account, AdminAuthorized } from "@/util/api/authorized";
+import { PREMIUM_PAYOUTS } from "@/util/constants";
+import generateGiftCode from "@/util/gift-codes";
+import { hashPass } from "@/util/hash/password";
+import { sendMail } from "@/util/mail";
+import createNotification from "@/util/notifications";
+import prisma from "@/util/prisma";
+import type { NonUser, User } from "@/util/prisma-types";
+import {
+  articleSelect,
+  nonCurrentUserSelect,
+  userSelect,
+} from "@/util/prisma-types";
+import { RateLimitMiddleware } from "@/util/rate-limit";
+import { getOperatingSystem } from "@/util/ua";
 import {
   AdminPermission,
   AutomodTrigger,
@@ -24,37 +44,14 @@ import {
   createHandler,
 } from "@storyofams/next-api-decorators";
 import { randomUUID } from "crypto";
+import AccountUpdate from "email/emails/account-update";
+import JoinFramework from "email/emails/join-framework";
+import StaffEmail from "email/emails/staff-email";
+import SupportTicketClosed from "email/emails/support-ticket-closed";
 import { promises as fs, readFileSync } from "fs";
 import type { NextApiRequest } from "next";
 import { join } from "path";
 import { z } from "zod";
-import AccountUpdate from "../../../../email/emails/account-update";
-import JoinFramework from "../../../../email/emails/join-framework";
-import StaffEmail from "../../../../email/emails/staff-email";
-import SupportTicketClosed from "../../../../email/emails/support-ticket-closed";
-import { PrefCategory } from "../../../components/Admin/Pages/Instance";
-import { AdminViewUser } from "../../../components/Admin/Pages/Users";
-import type { ReportCategory } from "../../../components/ReportUser";
-import IResponseBase from "../../../types/api/IResponseBase";
-import { AdminAction } from "../../../util/admin-action";
-import Authorized, {
-  Account,
-  AdminAuthorized,
-} from "../../../util/api/authorized";
-import { PREMIUM_PAYOUTS } from "../../../util/constants";
-import generateGiftCode from "../../../util/gift-codes";
-import { hashPass } from "../../../util/hash/password";
-import { sendMail } from "../../../util/mail";
-import createNotification from "../../../util/notifications";
-import prisma from "../../../util/prisma";
-import type { NonUser, User } from "../../../util/prisma-types";
-import {
-  articleSelect,
-  nonCurrentUserSelect,
-  userSelect,
-} from "../../../util/prisma-types";
-import { RateLimitMiddleware } from "../../../util/rate-limit";
-import { getOperatingSystem } from "../../../util/ua";
 
 export type AutomodTriggerWithUser = AutomodTrigger & {
   user: NonUser;
@@ -308,7 +305,7 @@ class AdminRouter {
     const packageFile = JSON.parse(
       await fs.readFile(
         new URL("../../../../package.json", import.meta.url),
-        "utf-8"
+        "utf8"
       )
     );
 

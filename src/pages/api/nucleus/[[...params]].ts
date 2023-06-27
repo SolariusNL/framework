@@ -12,12 +12,12 @@ import Authorized, {
   AdminAuthorized,
   Nucleus,
   NucleusAuthorized,
-} from "../../../util/api/authorized";
-import logger from "../../../util/logger";
-import prisma from "../../../util/prisma";
-import type { NucleusKey, User } from "../../../util/prisma-types";
-import { nonCurrentUserSelect } from "../../../util/prisma-types";
-import { RateLimitMiddleware } from "../../../util/rate-limit";
+} from "@/util/api/authorized";
+import logger from "@/util/logger";
+import prisma from "@/util/prisma";
+import type { NucleusKey, User } from "@/util/prisma-types";
+import { nonCurrentUserSelect } from "@/util/prisma-types";
+import { RateLimitMiddleware } from "@/util/rate-limit";
 
 class NucleusRouter {
   @Post("/:key/delete")

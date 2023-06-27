@@ -1,11 +1,11 @@
+import GameCard from "@/components/GameCard";
+import { Section } from "@/components/Home/FriendsWidget";
+import LoadingIndicator from "@/components/LoadingIndicator";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import ShadedCard from "@/components/ShadedCard";
+import { Game } from "@/util/prisma-types";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
-import { Game } from "../../util/prisma-types";
-import GameCard from "../GameCard";
-import LoadingIndicator from "../LoadingIndicator";
-import ModernEmptyState from "../ModernEmptyState";
-import ShadedCard from "../ShadedCard";
-import { Section } from "./FriendsWidget";
 
 const SubscriptionWidget: React.FC = () => {
   const [games, setGames] = useState<

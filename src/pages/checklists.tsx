@@ -32,18 +32,18 @@ import {
   HiViewGrid,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
-import CreateChecklist from "../components/Checklists/CreateChecklist";
-import CreateTask from "../components/Checklists/CreateTask";
-import ChecklistTask from "../components/Checklists/Task";
-import DataGrid from "../components/DataGrid";
-import Descriptive from "../components/Descriptive";
-import Framework from "../components/Framework";
-import ModernEmptyState from "../components/ModernEmptyState";
-import ShadedCard from "../components/ShadedCard";
-import SidebarTabNavigation from "../layouts/SidebarTabNavigation";
-import authorizedRoute from "../util/auth";
-import prisma from "../util/prisma";
-import { User } from "../util/prisma-types";
+import CreateChecklist from "@/components/Checklists/CreateChecklist";
+import CreateTask from "@/components/Checklists/CreateTask";
+import ChecklistTask from "@/components/Checklists/Task";
+import DataGrid from "@/components/DataGrid";
+import Descriptive from "@/components/Descriptive";
+import Framework from "@/components/Framework";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import ShadedCard from "@/components/ShadedCard";
+import SidebarTabNavigation from "@/layouts/SidebarTabNavigation";
+import authorizedRoute from "@/util/auth";
+import prisma from "@/util/prisma";
+import { User } from "@/util/prisma-types";
 import { openConfirmModal } from "@mantine/modals";
 
 interface ChecklistsProps {

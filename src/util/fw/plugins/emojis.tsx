@@ -1,6 +1,6 @@
+import { Plugin } from "@/util/fw/string-parser";
 import { randomId } from "@mantine/hooks";
 import emojiRegex from "emoji-regex";
-import { Plugin } from "../string-parser";
 
 const emojiPlugin: Plugin = {
   regex: emojiRegex(),

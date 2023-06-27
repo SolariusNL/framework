@@ -1,3 +1,14 @@
+import CountrySelect from "@/components/CountryPicker";
+import Descriptive from "@/components/Descriptive";
+import ImageUploader from "@/components/ImageUploader";
+import Links from "@/components/Profile/Links";
+import SettingsTab from "@/components/Settings/SettingsTab";
+import Stateful from "@/components/Stateful";
+import getTimezones from "@/data/timezones";
+import { BLACK, FormSection } from "@/pages/teams/t/[slug]/issue/create";
+import { getCookie } from "@/util/cookies";
+import getMediaUrl from "@/util/get-media";
+import { User } from "@/util/prisma-types";
 import {
   Avatar,
   Button,
@@ -7,37 +18,19 @@ import {
   Select,
   Stack,
   Text,
-  Textarea,
   TextInput,
+  Textarea,
 } from "@mantine/core";
 import { ProfileLink } from "@prisma/client";
 import { useRef, useState } from "react";
 import {
-  HiClock,
-  HiDocumentText,
-  HiGlobe,
-  HiInformationCircle,
   HiLink,
-  HiOfficeBuilding,
   HiOutlineUser,
   HiOutlineUserCircle,
   HiPencil,
   HiTrash,
-  HiUser,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
-import getTimezones from "../../data/timezones";
-import { BLACK, FormSection } from "../../pages/teams/t/[slug]/issue/create";
-import { getCookie } from "../../util/cookies";
-import getMediaUrl from "../../util/get-media";
-import { User } from "../../util/prisma-types";
-import CountrySelect from "../CountryPicker";
-import Descriptive from "../Descriptive";
-import ImageUploader from "../ImageUploader";
-import Links from "../Profile/Links";
-import Stateful from "../Stateful";
-import SettingsTab from "./SettingsTab";
-import SideBySide from "./SideBySide";
 
 interface AccountTabProps {
   user: User;

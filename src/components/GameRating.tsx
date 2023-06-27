@@ -1,12 +1,12 @@
-import { Badge, Stack, Text } from "@mantine/core";
-import { RatingType } from "@prisma/client";
-import { HiChat, HiLibrary, HiXCircle } from "react-icons/hi";
-import { Game } from "../util/prisma-types";
+import ShadedCard from "@/components/ShadedCard";
+import { Game } from "@/util/prisma-types";
 import {
   getRatingColor,
   getRatingTypeDescription,
-} from "../util/universe/ratings";
-import ShadedCard from "./ShadedCard";
+} from "@/util/universe/ratings";
+import { Badge, Stack, Text } from "@mantine/core";
+import { RatingType } from "@prisma/client";
+import { HiChat, HiLibrary, HiXCircle } from "react-icons/hi";
 
 interface GameRatingProps {
   game: Game;

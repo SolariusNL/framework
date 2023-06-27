@@ -16,14 +16,14 @@ import Link from "next/link";
 import { useState } from "react";
 import { HiDownload, HiEye, HiPlus, HiSearch } from "react-icons/hi";
 import InfiniteScroll from "react-infinite-scroller";
-import Framework from "../../components/Framework";
-import ModernEmptyState from "../../components/ModernEmptyState";
-import Stateful from "../../components/Stateful";
-import UserContext from "../../components/UserContext";
-import authorizedRoute from "../../util/auth";
-import getMediaUrl from "../../util/get-media";
-import prisma from "../../util/prisma";
-import { NonUser, Snippet, User, snippetSelect } from "../../util/prisma-types";
+import Framework from "@/components/Framework";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import Stateful from "@/components/Stateful";
+import UserContext from "@/components/UserContext";
+import authorizedRoute from "@/util/auth";
+import getMediaUrl from "@/util/get-media";
+import prisma from "@/util/prisma";
+import { NonUser, Snippet, User, snippetSelect } from "@/util/prisma-types";
 
 interface SnippetsProps {
   user: User;

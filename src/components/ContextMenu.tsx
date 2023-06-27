@@ -1,7 +1,7 @@
 import { Affix, Menu, useMantineColorScheme } from "@mantine/core";
 import { useWindowEvent } from "@mantine/hooks";
 import { useState } from "react";
-import clsx from "../util/clsx";
+import clsx from "@/util/clsx";
 
 type ContextMenuProps = {
   children: React.ReactNode;

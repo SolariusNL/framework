@@ -1,3 +1,31 @@
+import ContextMenu from "@/components/ContextMenu";
+import DataGrid from "@/components/DataGrid";
+import ConsoleOutput from "@/components/Developer/ConsoleOutput";
+import ServerContextMenu from "@/components/Developer/ServerContextMenu";
+import Dot from "@/components/Dot";
+import FilterIndicator from "@/components/FilterIndicator";
+import { Section } from "@/components/Home/FriendsWidget";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import ShadedButton from "@/components/ShadedButton";
+import ShadedCard from "@/components/ShadedCard";
+import Rocket from "@/icons/Rocket";
+import Developer from "@/layouts/DeveloperLayout";
+import SidebarTabNavigation from "@/layouts/SidebarTabNavigation";
+import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
+import {
+  DEFAULT_FILTER,
+  appendLines,
+  setCanLoadMore,
+  setPage,
+  setStdout,
+} from "@/reducers/stdout";
+import { RootState } from "@/reducers/store";
+import IResponseBase from "@/types/api/IResponseBase";
+import authorizedRoute from "@/util/auth";
+import clsx from "@/util/clsx";
+import fetchJson from "@/util/fetch";
+import getMediaUrl from "@/util/get-media";
+import { Game, User } from "@/util/prisma-types";
 import {
   ActionIcon,
   Anchor,
@@ -49,34 +77,6 @@ import {
   HiXCircle,
 } from "react-icons/hi";
 import { useDispatch, useSelector } from "react-redux";
-import ContextMenu from "../../components/ContextMenu";
-import DataGrid from "../../components/DataGrid";
-import ConsoleOutput from "../../components/Developer/ConsoleOutput";
-import ServerContextMenu from "../../components/Developer/ServerContextMenu";
-import Dot from "../../components/Dot";
-import FilterIndicator from "../../components/FilterIndicator";
-import { Section } from "../../components/Home/FriendsWidget";
-import ModernEmptyState from "../../components/ModernEmptyState";
-import ShadedButton from "../../components/ShadedButton";
-import ShadedCard from "../../components/ShadedCard";
-import Rocket from "../../icons/Rocket";
-import Developer from "../../layouts/DeveloperLayout";
-import SidebarTabNavigation from "../../layouts/SidebarTabNavigation";
-import {
-  DEFAULT_FILTER,
-  appendLines,
-  setCanLoadMore,
-  setPage,
-  setStdout,
-} from "../../reducers/stdout";
-import { RootState } from "../../reducers/store";
-import IResponseBase from "../../types/api/IResponseBase";
-import authorizedRoute from "../../util/auth";
-import clsx from "../../util/clsx";
-import fetchJson from "../../util/fetch";
-import getMediaUrl from "../../util/get-media";
-import { Game, User } from "../../util/prisma-types";
-import { BLACK } from "../teams/t/[slug]/issue/create";
 
 type ServersProps = {
   user: User;

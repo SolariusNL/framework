@@ -1,10 +1,10 @@
 import { Box, Container, Text, ThemeIcon } from "@mantine/core";
 import { FC, useEffect, useState } from "react";
 import { HiSpeakerphone } from "react-icons/hi";
-import useFastFlags from "../../stores/useFastFlags";
-import { Fw } from "../../util/fw";
-import boldPlugin from "../../util/fw/plugins/bold";
-import linkPlugin from "../../util/fw/plugins/links";
+import useFastFlags from "@/stores/useFastFlags";
+import { Fw } from "@/util/fw";
+import boldPlugin from "@/util/fw/plugins/bold";
+import linkPlugin from "@/util/fw/plugins/links";
 
 const Banner: FC = () => {
   const { flags } = useFastFlags();

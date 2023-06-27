@@ -13,12 +13,12 @@ import { AdminPermission } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { useState } from "react";
-import Framework from "../../../components/Framework";
-import RichText from "../../../components/RichText";
-import authorizedRoute from "../../../util/auth";
-import getMediaUrl from "../../../util/get-media";
-import prisma from "../../../util/prisma";
-import { Article, articleSelect, User } from "../../../util/prisma-types";
+import Framework from "@/components/Framework";
+import RichText from "@/components/RichText";
+import authorizedRoute from "@/util/auth";
+import getMediaUrl from "@/util/get-media";
+import prisma from "@/util/prisma";
+import { Article, articleSelect, User } from "@/util/prisma-types";
 
 interface ArticleViewProps {
   user: User;

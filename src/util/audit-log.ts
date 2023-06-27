@@ -1,6 +1,6 @@
+import logger from "@/util/logger";
+import prisma from "@/util/prisma";
 import { TeamAuditLogType } from "@prisma/client";
-import logger from "./logger";
-import prisma from "./prisma";
 
 namespace Teams {
   export async function createAuditLog(

@@ -1,6 +1,6 @@
 import { Transition } from "@mantine/core";
 import React, { CSSProperties, FC } from "react";
-import clsx from "../util/clsx";
+import clsx from "@/util/clsx";
 
 type FloaterProps = {
   children: React.ReactNode;

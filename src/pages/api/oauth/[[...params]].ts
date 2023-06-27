@@ -18,14 +18,14 @@ import { randomUUID } from "crypto";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getClientIp } from "request-ip";
 import { z } from "zod";
-import { GetMyOAuth2ApplicationsSelect } from "../../../types/api/IGetMyOAuth2ApplicationsResponse";
-import Authorized, { Account } from "../../../util/api/authorized";
-import { exclude } from "../../../util/exclude";
-import prisma from "../../../util/prisma";
-import type { User } from "../../../util/prisma-types";
-import { nonCurrentUserSelect } from "../../../util/prisma-types";
-import SuccessResponse from "../../../util/response/success";
-import { OperatingSystem } from "../../../util/ua";
+import { GetMyOAuth2ApplicationsSelect } from "@/types/api/IGetMyOAuth2ApplicationsResponse";
+import Authorized, { Account } from "@/util/api/authorized";
+import { exclude } from "@/util/exclude";
+import prisma from "@/util/prisma";
+import type { User } from "@/util/prisma-types";
+import { nonCurrentUserSelect } from "@/util/prisma-types";
+import SuccessResponse from "@/util/response/success";
+import { OperatingSystem } from "@/util/ua";
 
 class OAuth2Router {
   @Get("/authorize")

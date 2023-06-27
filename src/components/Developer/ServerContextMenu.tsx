@@ -13,8 +13,8 @@ import {
   HiTrash,
   HiXCircle,
 } from "react-icons/hi";
-import { ConnectionWithGameAndKey } from "../../pages/developer/servers";
-import shutdownNucleus from "../../util/fetch/shutdownNucleus";
+import { ConnectionWithGameAndKey } from "@/pages/developer/servers";
+import shutdownNucleus from "@/util/fetch/shutdownNucleus";
 
 type ServerContextMenuProps = {
   server: ConnectionWithGameAndKey;

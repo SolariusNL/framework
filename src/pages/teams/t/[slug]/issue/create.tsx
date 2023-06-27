@@ -1,3 +1,12 @@
+import Descriptive from "@/components/Descriptive";
+import Markdown, { ToolbarItem } from "@/components/Markdown";
+import ShadedCard from "@/components/ShadedCard";
+import TeamsViewProvider from "@/components/Teams/TeamsView";
+import UserSelect from "@/components/UserSelect";
+import { TeamType } from "@/pages/teams";
+import authorizedRoute from "@/util/auth";
+import { User } from "@/util/prisma-types";
+import { getTeam } from "@/util/teams";
 import {
   Button,
   MultiSelect,
@@ -14,15 +23,6 @@ import { getCookie } from "cookies-next";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { HiXCircle } from "react-icons/hi";
-import { TeamType } from "../../..";
-import Descriptive from "../../../../../components/Descriptive";
-import Markdown, { ToolbarItem } from "../../../../../components/Markdown";
-import ShadedCard from "../../../../../components/ShadedCard";
-import TeamsViewProvider from "../../../../../components/Teams/TeamsView";
-import UserSelect from "../../../../../components/UserSelect";
-import authorizedRoute from "../../../../../util/auth";
-import { User } from "../../../../../util/prisma-types";
-import { getTeam } from "../../../../../util/teams";
 
 export type TeamIssueCreateProps = {
   user: User;

@@ -1,3 +1,8 @@
+import ModernEmptyState from "@/components/ModernEmptyState";
+import ShadedButton from "@/components/ShadedButton";
+import employeeRoleMeta from "@/data/employeeRoles";
+import getMediaUrl from "@/util/get-media";
+import { NonUser } from "@/util/prisma-types";
 import {
   Avatar,
   Badge,
@@ -14,11 +19,6 @@ import { Employee, EmployeeRole } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { Fragment, useEffect, useState } from "react";
 import { HiArrowRight, HiMail, HiSearch } from "react-icons/hi";
-import employeeRoleMeta from "../../../data/employeeRoles";
-import getMediaUrl from "../../../util/get-media";
-import { NonUser } from "../../../util/prisma-types";
-import ModernEmptyState from "../../ModernEmptyState";
-import ShadedButton from "../../ShadedButton";
 
 const headers = {
   "Content-Type": "application/json",

@@ -1,8 +1,8 @@
+import ConnectionsWidget from "@/components/Widgets/Connections";
 import { Pagination, Select } from "@mantine/core";
 import { Connection } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
-import ConnectionsWidget from "../../Widgets/Connections";
 
 const Cosmic: React.FC = () => {
   const [page, setPage] = useState(1);

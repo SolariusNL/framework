@@ -1,3 +1,10 @@
+import Copy from "@/components/Copy";
+import EditGameTab from "@/components/EditGame/EditGameTab";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import Stateful from "@/components/Stateful";
+import { GameWithDatastore } from "@/pages/game/[id]/edit/[edit]";
+import IResponseBase from "@/types/api/IResponseBase";
+import fetchJson from "@/util/fetch";
 import {
   ActionIcon,
   Anchor,
@@ -16,13 +23,6 @@ import { showNotification } from "@mantine/notifications";
 import { getCookie } from "cookies-next";
 import React from "react";
 import { HiPlus, HiTrash, HiXCircle } from "react-icons/hi";
-import { GameWithDatastore } from "../../pages/game/[id]/edit/[edit]";
-import IResponseBase from "../../types/api/IResponseBase";
-import fetchJson from "../../util/fetch";
-import Copy from "../Copy";
-import ModernEmptyState from "../ModernEmptyState";
-import Stateful from "../Stateful";
-import EditGameTab from "./EditGameTab";
 
 interface DatastoreProps {
   game: GameWithDatastore;

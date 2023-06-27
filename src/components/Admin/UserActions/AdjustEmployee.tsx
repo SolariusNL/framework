@@ -1,3 +1,7 @@
+import Action from "@/components/Admin/UserActions/Action";
+import Stateful from "@/components/Stateful";
+import performAdminAction, { AdminAction } from "@/util/admin-action";
+import { User } from "@/util/prisma-types";
 import {
   Button,
   Checkbox,
@@ -12,10 +16,6 @@ import { EmployeeRole, Role } from "@prisma/client";
 import dayjs from "dayjs";
 import React, { useEffect } from "react";
 import { HiUser } from "react-icons/hi";
-import performAdminAction, { AdminAction } from "../../../util/admin-action";
-import { User } from "../../../util/prisma-types";
-import Stateful from "../../Stateful";
-import Action from "./Action";
 
 interface AdjustEmployeeProps {
   user: User;

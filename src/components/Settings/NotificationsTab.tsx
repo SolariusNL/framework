@@ -1,11 +1,11 @@
+import { updateAccount } from "@/components/Settings/AccountTab";
+import SettingsTab from "@/components/Settings/SettingsTab";
+import SwitchCard from "@/components/SwitchCard";
+import { User } from "@/util/prisma-types";
 import { Alert, Stack, Text } from "@mantine/core";
 import { ReceiveNotification } from "@prisma/client";
 import { useState } from "react";
 import { HiCheckCircle } from "react-icons/hi";
-import { User } from "../../util/prisma-types";
-import SwitchCard from "../SwitchCard";
-import { updateAccount } from "./AccountTab";
-import SettingsTab from "./SettingsTab";
 
 interface NotificationsTabProps {
   user: User;

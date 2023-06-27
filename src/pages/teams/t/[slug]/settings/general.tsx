@@ -1,3 +1,14 @@
+import Descriptive from "@/components/Descriptive";
+import DetailCard from "@/components/DetailCard";
+import ImageUploader from "@/components/ImageUploader";
+import Markdown, { ToolbarItem } from "@/components/Markdown";
+import TeamsViewProvider from "@/components/Teams/TeamsView";
+import getTimezones from "@/data/timezones";
+import { TeamType } from "@/pages/teams";
+import authorizedRoute from "@/util/auth";
+import getMediaUrl from "@/util/get-media";
+import { NonUser, User } from "@/util/prisma-types";
+import { getTeam } from "@/util/teams";
 import {
   Avatar,
   Button,
@@ -19,17 +30,6 @@ import {
   HiMail,
   HiXCircle,
 } from "react-icons/hi";
-import { TeamType } from "../../..";
-import Descriptive from "../../../../../components/Descriptive";
-import DetailCard from "../../../../../components/DetailCard";
-import ImageUploader from "../../../../../components/ImageUploader";
-import Markdown, { ToolbarItem } from "../../../../../components/Markdown";
-import TeamsViewProvider from "../../../../../components/Teams/TeamsView";
-import getTimezones from "../../../../../data/timezones";
-import authorizedRoute from "../../../../../util/auth";
-import getMediaUrl from "../../../../../util/get-media";
-import { NonUser, User } from "../../../../../util/prisma-types";
-import { getTeam } from "../../../../../util/teams";
 
 const headers = {
   "Content-Type": "application/json",

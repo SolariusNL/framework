@@ -1,3 +1,18 @@
+import IResponseBase from "@/types/api/IResponseBase";
+import Authorized, { Account } from "@/util/api/authorized";
+import { hashPass, isSamePass } from "@/util/hash/password";
+import { sendMail } from "@/util/mail";
+import createNotification from "@/util/notifications";
+import prisma from "@/util/prisma";
+import type { User } from "@/util/prisma-types";
+import { RateLimitMiddleware } from "@/util/rate-limit";
+import { verificationEmail } from "@/util/templates/verification-email";
+import { disableOTP, generateOTP, verifyOTP } from "@/util/twofa";
+import {
+  getOperatingSystem,
+  getOperatingSystemEnumFromString,
+  getOperatingSystemString,
+} from "@/util/ua";
 import { NotificationType, OperatingSystem } from "@prisma/client";
 import { render } from "@react-email/render";
 import {
@@ -10,27 +25,12 @@ import {
   createHandler,
 } from "@storyofams/next-api-decorators";
 import { setCookie } from "cookies-next";
+import AccountUpdate from "email/emails/account-update";
+import LoginCode from "email/emails/login-code";
+import ResetPassword from "email/emails/reset-password";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getClientIp } from "request-ip";
 import { z } from "zod";
-import AccountUpdate from "../../../../email/emails/account-update";
-import LoginCode from "../../../../email/emails/login-code";
-import ResetPassword from "../../../../email/emails/reset-password";
-import IResponseBase from "../../../types/api/IResponseBase";
-import Authorized, { Account } from "../../../util/api/authorized";
-import { hashPass, isSamePass } from "../../../util/hash/password";
-import { sendMail } from "../../../util/mail";
-import createNotification from "../../../util/notifications";
-import prisma from "../../../util/prisma";
-import type { User } from "../../../util/prisma-types";
-import { RateLimitMiddleware } from "../../../util/rate-limit";
-import { verificationEmail } from "../../../util/templates/verification-email";
-import { disableOTP, generateOTP, verifyOTP } from "../../../util/twofa";
-import {
-  getOperatingSystem,
-  getOperatingSystemEnumFromString,
-  getOperatingSystemString,
-} from "../../../util/ua";
 
 interface LoginBody {
   username: string;

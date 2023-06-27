@@ -1,8 +1,8 @@
+import EmailTab from "@/components/Admin/InstanceTabs/Email";
+import FlagsTab from "@/components/Admin/InstanceTabs/Flags";
+import GeneralTab from "@/components/Admin/InstanceTabs/General";
+import TabNav from "@/components/TabNav";
 import { getCookie } from "cookies-next";
-import TabNav from "../../TabNav";
-import EmailTab from "../InstanceTabs/Email";
-import FlagsTab from "../InstanceTabs/Flags";
-import GeneralTab from "../InstanceTabs/General";
 
 export enum PrefCategory {
   Email = "email",

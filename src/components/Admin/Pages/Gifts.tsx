@@ -1,3 +1,9 @@
+import Copy from "@/components/Copy";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import giftGrants from "@/data/giftGrants";
+import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
+import getMediaUrl from "@/util/get-media";
+import { NonUser } from "@/util/prisma-types";
 import {
   ActionIcon,
   Avatar,
@@ -9,7 +15,7 @@ import {
   ScrollArea,
   Select,
   Table,
-  Text
+  Text,
 } from "@mantine/core";
 import { openModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
@@ -23,14 +29,8 @@ import {
   HiStar,
   HiTicket,
   HiTrash,
-  HiXCircle
+  HiXCircle,
 } from "react-icons/hi";
-import giftGrants from "../../../data/giftGrants";
-import useAuthorizedUserStore from "../../../stores/useAuthorizedUser";
-import getMediaUrl from "../../../util/get-media";
-import { NonUser } from "../../../util/prisma-types";
-import Copy from "../../Copy";
-import ModernEmptyState from "../../ModernEmptyState";
 
 type Filter = "unused" | "used" | "all" | "premium" | "tickets";
 type Sort = "oldest" | "newest";
@@ -174,12 +174,11 @@ const Gifts: React.FC = () => {
         </Menu>
       </div>
       <Pagination
-            total={pages}
-            page={activePage}
-            onChange={setActivePage}
-            radius="md"
-            
-          />
+        total={pages}
+        page={activePage}
+        onChange={setActivePage}
+        radius="md"
+      />
       <ScrollArea>
         <Table mt="lg" striped>
           <thead>

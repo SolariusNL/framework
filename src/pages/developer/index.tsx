@@ -1,8 +1,7 @@
+import Developer from "@/layouts/DeveloperLayout";
+import authorizedRoute from "@/util/auth";
+import { User } from "@/util/prisma-types";
 import { GetServerSidePropsContext } from "next";
-import Developer from "../../layouts/DeveloperLayout";
-import authorizedRoute from "../../util/auth";
-import { User } from "../../util/prisma-types";
-import Servers from "./servers";
 
 interface DeveloperProps {
   user: User;
@@ -14,6 +13,7 @@ const DeveloperHome: React.FC<DeveloperProps> = ({ user }) => {
       title="Developer"
       description="Manage your development tools, workflows, API keys, servers and more."
     >
+      <></>
     </Developer>
   );
 };

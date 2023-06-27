@@ -1,9 +1,9 @@
+import Stateful from "@/components/Stateful";
 import { Button, ButtonProps, FileButton, Modal } from "@mantine/core";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { HiUpload } from "react-icons/hi";
 import { Crop } from "react-image-crop";
-import Stateful from "./Stateful";
 
 interface ImageUploaderProps {
   button?: React.ReactNode;

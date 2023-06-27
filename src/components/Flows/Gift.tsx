@@ -1,8 +1,8 @@
+import LoadingIndicator from "@/components/LoadingIndicator";
+import { Preferences } from "@/util/preferences";
 import { Text, Title } from "@mantine/core";
 import React from "react";
 import { HiOutlineEmojiSad, HiOutlineSparkles } from "react-icons/hi";
-import { Preferences } from "../../util/preferences";
-import LoadingIndicator from "../LoadingIndicator";
 
 const GiftFlow: React.FC = () => {
   const [initial, setInitial] = React.useState<boolean | undefined>(undefined);

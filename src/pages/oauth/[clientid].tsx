@@ -12,11 +12,11 @@ import {
   HiXCircle,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
-import scopes from "../../data/scopes";
-import OuterUI from "../../layouts/OuterUI";
-import authorizedRoute from "../../util/auth";
-import { exclude } from "../../util/exclude";
-import prisma from "../../util/prisma";
+import scopes from "@/data/scopes";
+import OuterUI from "@/layouts/OuterUI";
+import authorizedRoute from "@/util/auth";
+import { exclude } from "@/util/exclude";
+import prisma from "@/util/prisma";
 
 type OAuth2FlowProps = {
   user: User;

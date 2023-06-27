@@ -8,7 +8,7 @@ import {
   Title,
 } from "@mantine/core";
 import { HiEyeOff, HiLockOpen, HiServer, HiShieldCheck } from "react-icons/hi";
-import clsx from "../../util/clsx";
+import clsx from "@/util/clsx";
 
 const useStyles = createStyles((theme) => ({
   wrapper: {

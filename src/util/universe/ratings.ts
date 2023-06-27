@@ -33,4 +33,4 @@ function getRatingColor(rating: Rating): MantineColor {
     : "gray";
 }
 
-export { getRatingTypeDescription, getRatingColor };
+export { getRatingColor, getRatingTypeDescription };

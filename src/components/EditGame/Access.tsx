@@ -1,3 +1,9 @@
+import Copy from "@/components/Copy";
+import EditGameTab from "@/components/EditGame/EditGameTab";
+import SideBySide from "@/components/Settings/SideBySide";
+import UserSelect from "@/components/UserSelect";
+import getMediaUrl from "@/util/get-media";
+import { Game } from "@/util/prisma-types";
 import {
   Avatar,
   Button,
@@ -18,12 +24,6 @@ import {
   HiTicket,
   HiUsers,
 } from "react-icons/hi";
-import getMediaUrl from "../../util/get-media";
-import { Game } from "../../util/prisma-types";
-import Copy from "../Copy";
-import SideBySide from "../Settings/SideBySide";
-import UserSelect from "../UserSelect";
-import EditGameTab from "./EditGameTab";
 
 interface AccessProps {
   game: Game & {

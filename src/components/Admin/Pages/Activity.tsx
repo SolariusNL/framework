@@ -1,3 +1,6 @@
+import ModernEmptyState from "@/components/ModernEmptyState";
+import getAdmins from "@/util/fetch/getAdmins";
+import getMediaUrl from "@/util/get-media";
 import {
   Avatar,
   Badge,
@@ -10,9 +13,6 @@ import {
 import { AdminActivityLog } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import React, { forwardRef, useEffect, useState } from "react";
-import getAdmins from "../../../util/fetch/getAdmins";
-import getMediaUrl from "../../../util/get-media";
-import ModernEmptyState from "../../ModernEmptyState";
 
 export interface UserItemProps extends React.ComponentPropsWithoutRef<"div"> {
   label: string;

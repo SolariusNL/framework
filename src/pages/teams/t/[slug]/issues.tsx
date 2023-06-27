@@ -1,3 +1,16 @@
+import FilterIndicator from "@/components/FilterIndicator";
+import LabelledCheckbox from "@/components/LabelledCheckbox";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import RenderMarkdown from "@/components/RenderMarkdown";
+import ShadedButton from "@/components/ShadedButton";
+import ShadedCard from "@/components/ShadedCard";
+import TeamsViewProvider from "@/components/Teams/TeamsView";
+import { TeamType } from "@/pages/teams";
+import authorizedRoute from "@/util/auth";
+import clsx from "@/util/clsx";
+import getMediaUrl from "@/util/get-media";
+import { NonUser, User } from "@/util/prisma-types";
+import { getTeam } from "@/util/teams";
 import {
   ActionIcon,
   Avatar,
@@ -25,20 +38,7 @@ import {
   HiSearch,
   HiSortAscending,
 } from "react-icons/hi";
-import { TeamType } from "../..";
-import LabelledCheckbox from "../../../../components/LabelledCheckbox";
-import ModernEmptyState from "../../../../components/ModernEmptyState";
-import RenderMarkdown from "../../../../components/RenderMarkdown";
-import ShadedButton from "../../../../components/ShadedButton";
-import ShadedCard from "../../../../components/ShadedCard";
-import TeamsViewProvider from "../../../../components/Teams/TeamsView";
-import authorizedRoute from "../../../../util/auth";
-import clsx from "../../../../util/clsx";
-import getMediaUrl from "../../../../util/get-media";
-import { NonUser, User } from "../../../../util/prisma-types";
-import { getTeam } from "../../../../util/teams";
 import { tags } from "./issue/create";
-import FilterIndicator from "../../../../components/FilterIndicator";
 
 export type TeamViewIssuesProps = {
   user: User;

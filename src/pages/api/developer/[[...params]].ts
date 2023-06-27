@@ -1,3 +1,8 @@
+import { parse } from "@/components/RenderMarkdown";
+import Authorized, { Account } from "@/util/api/authorized";
+import { exclude } from "@/util/exclude";
+import prisma from "@/util/prisma";
+import type { User } from "@/util/prisma-types";
 import { ApiKeyPermission, Prisma } from "@prisma/client";
 import {
   Body,
@@ -10,11 +15,6 @@ import {
 } from "@storyofams/next-api-decorators";
 import sanitize from "sanitize-html";
 import { ZodArray, ZodLiteral, z } from "zod";
-import { parse } from "../../../components/RenderMarkdown";
-import Authorized, { Account } from "../../../util/api/authorized";
-import { exclude } from "../../../util/exclude";
-import prisma from "../../../util/prisma";
-import type { User } from "../../../util/prisma-types";
 
 class DeveloperRouter {
   @Get("/@me/apikeys")

@@ -1,6 +1,6 @@
-import { isRestricted } from "../data/reconsiderWords";
-import logger from "./logger";
-import prisma from "./prisma";
+import { isRestricted } from "@/data/reconsiderWords";
+import logger from "@/util/logger";
+import prisma from "@/util/prisma";
 
 type AutoModHandler = (uid: number, content: string) => void;
 

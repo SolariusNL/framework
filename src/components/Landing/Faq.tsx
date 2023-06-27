@@ -1,5 +1,5 @@
 import { Accordion, Col, createStyles, Grid, Text, Title } from "@mantine/core";
-import clsx from "../../util/clsx";
+import clsx from "@/util/clsx";
 
 const useStyles = createStyles((theme) => ({
   wrapper: {

@@ -1,5 +1,5 @@
-import { ReturnedFastFlag } from "../stores/useFastFlags";
-import prisma from "./prisma";
+import { ReturnedFastFlag } from "@/stores/useFastFlags";
+import prisma from "@/util/prisma";
 
 const getServerFlags = async () => {
   const flags = await prisma.fastFlag.findMany();

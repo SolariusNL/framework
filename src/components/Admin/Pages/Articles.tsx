@@ -1,3 +1,8 @@
+import RichText from "@/components/RichText";
+import ShadedButton from "@/components/ShadedButton";
+import Stateful from "@/components/Stateful";
+import { useFrameworkUser } from "@/contexts/FrameworkUser";
+import { Article } from "@/util/prisma-types";
 import {
   Badge,
   Button,
@@ -14,11 +19,6 @@ import { getCookie } from "cookies-next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { HiPlusCircle } from "react-icons/hi";
-import { useFrameworkUser } from "../../../contexts/FrameworkUser";
-import { Article } from "../../../util/prisma-types";
-import RichText from "../../RichText";
-import ShadedButton from "../../ShadedButton";
-import Stateful from "../../Stateful";
 
 const Articles: React.FC = () => {
   const user = useFrameworkUser()!;

@@ -1,3 +1,9 @@
+import Descriptive from "@/components/Descriptive";
+import RichText from "@/components/RichText";
+import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
+import getMediaUrl from "@/util/get-media";
+import { nonCurrentUserSelect } from "@/util/prisma-types";
+import { getRelativeTime } from "@/util/relative-time";
 import {
   Avatar,
   Button,
@@ -16,12 +22,6 @@ import { AdminPermission, Prisma } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
 import { HiCheckCircle } from "react-icons/hi";
-import useAuthorizedUserStore from "../../../stores/useAuthorizedUser";
-import getMediaUrl from "../../../util/get-media";
-import { nonCurrentUserSelect } from "../../../util/prisma-types";
-import { getRelativeTime } from "../../../util/relative-time";
-import Descriptive from "../../Descriptive";
-import RichText from "../../RichText";
 
 export const postSelect: Prisma.PortalBoardPostSelect = {
   id: true,

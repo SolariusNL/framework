@@ -1,3 +1,14 @@
+import UserView from "@/components/Admin/UserView";
+import ContextMenu from "@/components/ContextMenu";
+import LoadingIndicator from "@/components/LoadingIndicator";
+import ShadedButton from "@/components/ShadedButton";
+import UserSelect from "@/components/UserSelect";
+import IResponseBase from "@/types/api/IResponseBase";
+import clsx from "@/util/clsx";
+import fetchJson from "@/util/fetch";
+import getMediaUrl from "@/util/get-media";
+import useMediaQuery from "@/util/media-query";
+import { NonUser, User } from "@/util/prisma-types";
 import {
   ActionIcon,
   Avatar,
@@ -7,8 +18,8 @@ import {
   Modal,
   Pagination,
   Text,
-  Textarea,
   TextInput,
+  Textarea,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
@@ -33,17 +44,6 @@ import {
   HiUser,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
-import IResponseBase from "../../../types/api/IResponseBase";
-import clsx from "../../../util/clsx";
-import fetchJson from "../../../util/fetch";
-import getMediaUrl from "../../../util/get-media";
-import useMediaQuery from "../../../util/media-query";
-import { NonUser, User } from "../../../util/prisma-types";
-import ContextMenu from "../../ContextMenu";
-import LoadingIndicator from "../../LoadingIndicator";
-import ShadedButton from "../../ShadedButton";
-import UserSelect from "../../UserSelect";
-import UserView from "../UserView";
 
 export type AdminViewUser = User & {
   sessions: Session[];

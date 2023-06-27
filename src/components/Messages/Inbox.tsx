@@ -1,5 +1,5 @@
-import { Message as Msg } from "../../util/prisma-types";
-import Message from "./Message";
+import Message from "@/components/Messages/Message";
+import { Message as Msg } from "@/util/prisma-types";
 
 interface Inbox {
   messages: Msg[];

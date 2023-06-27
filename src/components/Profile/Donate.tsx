@@ -4,8 +4,8 @@ import { showNotification } from "@mantine/notifications";
 import { getCookie } from "cookies-next";
 import { useState } from "react";
 import { HiReceiptTax, HiTicket } from "react-icons/hi";
-import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
-import { NonUser } from "../../util/prisma-types";
+import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
+import { NonUser } from "@/util/prisma-types";
 
 interface DonateProps {
   user: NonUser;

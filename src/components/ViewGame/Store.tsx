@@ -1,3 +1,13 @@
+import ModernEmptyState from "@/components/ModernEmptyState";
+import PurchaseConfirmation from "@/components/PurchaseConfirmation";
+import ShadedButton from "@/components/ShadedButton";
+import Stateful from "@/components/Stateful";
+import ViewGameTab from "@/components/ViewGame/ViewGameTab";
+import { useFrameworkUser } from "@/contexts/FrameworkUser";
+import clsx from "@/util/clsx";
+import { Fw } from "@/util/fw";
+import getMediaUrl from "@/util/get-media";
+import { Game } from "@/util/prisma-types";
 import { Avatar, Text } from "@mantine/core";
 import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
@@ -5,16 +15,6 @@ import { Gamepass } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useState } from "react";
 import { HiCheckCircle, HiTicket } from "react-icons/hi";
-import { useFrameworkUser } from "../../contexts/FrameworkUser";
-import clsx from "../../util/clsx";
-import { Fw } from "../../util/fw";
-import getMediaUrl from "../../util/get-media";
-import { Game } from "../../util/prisma-types";
-import ModernEmptyState from "../ModernEmptyState";
-import PurchaseConfirmation from "../PurchaseConfirmation";
-import ShadedButton from "../ShadedButton";
-import Stateful from "../Stateful";
-import ViewGameTab from "./ViewGameTab";
 
 interface StoreProps {
   game: Game & {

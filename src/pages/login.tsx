@@ -16,10 +16,10 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { HiExclamation, HiXCircle } from "react-icons/hi";
-import PinInput from "../components/PinInput";
-import OuterUI from "../layouts/OuterUI";
-import authorizedRoute from "../util/auth";
-import { setCookie } from "../util/cookies";
+import PinInput from "@/components/PinInput";
+import OuterUI from "@/layouts/OuterUI";
+import authorizedRoute from "@/util/auth";
+import { setCookie } from "@/util/cookies";
 
 interface FormValues {
   username: string;

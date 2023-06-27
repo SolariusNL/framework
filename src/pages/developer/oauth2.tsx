@@ -1,3 +1,25 @@
+import ContextMenu from "@/components/ContextMenu";
+import Copy from "@/components/Copy";
+import DataGrid from "@/components/DataGrid";
+import IconTooltip from "@/components/IconTooltip";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import ShadedButton from "@/components/ShadedButton";
+import ShadedCard from "@/components/ShadedCard";
+import { ownerDescriptions } from "@/data/scopes";
+import Developer from "@/layouts/DeveloperLayout";
+import ServiceUnavailable from "@/pages/503";
+import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
+import { ICreateNewOAuth2ApplicationResponse } from "@/types/api/ICreateNewOAuth2ApplicationResponse";
+import {
+  IGetMyOAuth2ApplicationsResponse,
+  IOAuthApplication,
+} from "@/types/api/IGetMyOAuth2ApplicationsResponse";
+import IResponseBase from "@/types/api/IResponseBase";
+import abbreviateNumber from "@/util/abbreviate";
+import authorizedRoute from "@/util/auth";
+import fetchJson from "@/util/fetch";
+import { Fw } from "@/util/fw";
+import { User } from "@/util/prisma-types";
 import {
   ActionIcon,
   Anchor,
@@ -12,8 +34,8 @@ import {
   MultiSelectValueProps,
   Skeleton,
   Text,
-  Textarea,
   TextInput,
+  Textarea,
   Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
@@ -35,28 +57,6 @@ import {
   HiTrash,
   HiUserGroup,
 } from "react-icons/hi";
-import ContextMenu from "../../components/ContextMenu";
-import Copy from "../../components/Copy";
-import DataGrid from "../../components/DataGrid";
-import IconTooltip from "../../components/IconTooltip";
-import ModernEmptyState from "../../components/ModernEmptyState";
-import ShadedButton from "../../components/ShadedButton";
-import ShadedCard from "../../components/ShadedCard";
-import { ownerDescriptions } from "../../data/scopes";
-import Developer from "../../layouts/DeveloperLayout";
-import { ICreateNewOAuth2ApplicationResponse } from "../../types/api/ICreateNewOAuth2ApplicationResponse";
-import {
-  IGetMyOAuth2ApplicationsResponse,
-  IOAuthApplication,
-} from "../../types/api/IGetMyOAuth2ApplicationsResponse";
-import IResponseBase from "../../types/api/IResponseBase";
-import abbreviateNumber from "../../util/abbreviate";
-import authorizedRoute from "../../util/auth";
-import fetchJson from "../../util/fetch";
-import { Fw } from "../../util/fw";
-import { User } from "../../util/prisma-types";
-import ServiceUnavailable from "../503";
-import { BLACK } from "../teams/t/[slug]/issue/create";
 
 type OAuth2Props = {
   user: User;

@@ -1,13 +1,13 @@
+import GameCard from "@/components/GameCard";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import TeamsViewProvider from "@/components/Teams/TeamsView";
+import { TeamType } from "@/pages/teams";
+import authorizedRoute from "@/util/auth";
+import prisma from "@/util/prisma";
+import { Game, gameSelect, NonUser, User } from "@/util/prisma-types";
+import { getTeam } from "@/util/teams";
 import { Rating } from "@prisma/client";
 import { GetServerSideProps } from "next";
-import { TeamType } from "../..";
-import GameCard from "../../../../components/GameCard";
-import ModernEmptyState from "../../../../components/ModernEmptyState";
-import TeamsViewProvider from "../../../../components/Teams/TeamsView";
-import authorizedRoute from "../../../../util/auth";
-import prisma from "../../../../util/prisma";
-import { Game, gameSelect, NonUser, User } from "../../../../util/prisma-types";
-import { getTeam } from "../../../../util/teams";
 
 export type TeamViewGamesProps = {
   user: User;

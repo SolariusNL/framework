@@ -1,5 +1,5 @@
+import IResponseBase from "@/types/api/IResponseBase";
 import { OAuthScope, Prisma } from "@prisma/client";
-import IResponseBase from "./IResponseBase";
 
 type IGetMyOAuth2ApplicationsResponse = IResponseBase<{
   apps: Array<IOAuthApplication>;
@@ -15,7 +15,7 @@ type IOAuthApplication = {
   id?: string;
   _count?: {
     clients?: number;
-  }
+  };
 };
 
 const GetMyOAuth2ApplicationsSelect: Prisma.OAuthApplicationSelect = {

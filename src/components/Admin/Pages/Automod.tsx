@@ -1,3 +1,11 @@
+import ModernEmptyState from "@/components/ModernEmptyState";
+import Owner from "@/components/Owner";
+import ShadedCard from "@/components/ShadedCard";
+import Stateful from "@/components/Stateful";
+import { AutomodTriggerWithUser } from "@/pages/api/admin/[[...params]]";
+import IResponseBase from "@/types/api/IResponseBase";
+import clsx from "@/util/clsx";
+import fetchJson from "@/util/fetch";
 import {
   CloseButton,
   Code,
@@ -11,14 +19,6 @@ import { showNotification } from "@mantine/notifications";
 import { AnimatePresence, motion } from "framer-motion";
 import { FC, useEffect, useState } from "react";
 import { HiCheckCircle } from "react-icons/hi";
-import { AutomodTriggerWithUser } from "../../../pages/api/admin/[[...params]]";
-import IResponseBase from "../../../types/api/IResponseBase";
-import clsx from "../../../util/clsx";
-import fetchJson from "../../../util/fetch";
-import ModernEmptyState from "../../ModernEmptyState";
-import Owner from "../../Owner";
-import ShadedCard from "../../ShadedCard";
-import Stateful from "../../Stateful";
 
 const Automod: FC = () => {
   const [entries, setEntries] = useState<AutomodTriggerWithUser[]>();

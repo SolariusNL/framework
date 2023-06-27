@@ -9,10 +9,10 @@ import {
 import { PremiumSubscriptionType } from "@prisma/client";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { HiArrowRight, HiCheckCircle } from "react-icons/hi";
-import Framework from "../components/Framework";
-import authorizedRoute from "../util/auth";
-import useMediaQuery from "../util/media-query";
-import { User } from "../util/prisma-types";
+import Framework from "@/components/Framework";
+import authorizedRoute from "@/util/auth";
+import useMediaQuery from "@/util/media-query";
+import { User } from "@/util/prisma-types";
 
 interface PremiumProps {
   user: User;

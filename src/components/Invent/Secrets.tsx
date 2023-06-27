@@ -1,3 +1,6 @@
+import InventTab from "@/components/Invent/InventTab";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import { User } from "@/util/prisma-types";
 import {
   ActionIcon,
   Button,
@@ -15,9 +18,6 @@ import { Prism } from "@mantine/prism";
 import { getCookie } from "cookies-next";
 import { useState } from "react";
 import { HiCheckCircle, HiCode, HiPlus, HiTrash } from "react-icons/hi";
-import { User } from "../../util/prisma-types";
-import ModernEmptyState from "../ModernEmptyState";
-import InventTab from "./InventTab";
 
 interface SecretsProps {
   user: User;

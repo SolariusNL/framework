@@ -1,3 +1,12 @@
+import LoadingIndicator from "@/components/LoadingIndicator";
+import IResponseBase from "@/types/api/IResponseBase";
+import fetchJson from "@/util/fetch";
+import {
+  Device,
+  getOperatingSystemDevice,
+  getOperatingSystemEnumFromString,
+  getOperatingSystemString,
+} from "@/util/ua";
 import { Badge, Divider, ScrollArea, Text, Title } from "@mantine/core";
 import { NewLogin, Session } from "@prisma/client";
 import { useEffect, useState } from "react";
@@ -7,15 +16,6 @@ import {
   HiOutlineDeviceMobile,
   HiQuestionMarkCircle,
 } from "react-icons/hi";
-import IResponseBase from "../../types/api/IResponseBase";
-import fetchJson from "../../util/fetch";
-import {
-  Device,
-  getOperatingSystemDevice,
-  getOperatingSystemEnumFromString,
-  getOperatingSystemString,
-} from "../../util/ua";
-import LoadingIndicator from "../LoadingIndicator";
 
 export type Login = NewLogin & {
   session: Session;

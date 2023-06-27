@@ -17,15 +17,15 @@ import {
   useEffect,
   useState,
 } from "react";
-import ModernEmptyState from "../components/ModernEmptyState";
-import getMediaUrl from "../util/get-media";
-import { NonUser, User } from "../util/prisma-types";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import getMediaUrl from "@/util/get-media";
+import { NonUser, User } from "@/util/prisma-types";
 import {
   getFollowers,
   getFollowersPages,
   getFollowing,
   getFollowingPages,
-} from "../util/universe/friends";
+} from "@/util/universe/friends";
 
 const UserInformationDialogContext =
   createContext<UserInformationDialogContextType>({

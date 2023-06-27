@@ -1,3 +1,12 @@
+import PunishmentHistory from "@/components/Admin/PunishmentHistory";
+import { Section } from "@/components/Home/FriendsWidget";
+import LabelledCheckbox from "@/components/LabelledCheckbox";
+import LoadingIndicator from "@/components/LoadingIndicator";
+import ShadedCard from "@/components/ShadedCard";
+import Stateful from "@/components/Stateful";
+import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
+import IResponseBase from "@/types/api/IResponseBase";
+import fetchJson from "@/util/fetch";
 import {
   Anchor,
   Button,
@@ -17,15 +26,6 @@ import Link from "next/link";
 import React, { FC } from "react";
 import { HiArrowLeft, HiCheck, HiCheckCircle, HiXCircle } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
-import { BLACK } from "../../../pages/teams/t/[slug]/issue/create";
-import IResponseBase from "../../../types/api/IResponseBase";
-import fetchJson from "../../../util/fetch";
-import { Section } from "../../Home/FriendsWidget";
-import LabelledCheckbox from "../../LabelledCheckbox";
-import LoadingIndicator from "../../LoadingIndicator";
-import ShadedCard from "../../ShadedCard";
-import Stateful from "../../Stateful";
-import PunishmentHistory from "../PunishmentHistory";
 import { AdminViewUser } from "./Users";
 
 type PunishmentForm = {

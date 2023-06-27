@@ -1,3 +1,14 @@
+import ChatMessage from "@/components/Chat/ChatMessage";
+import { Section } from "@/components/Home/FriendsWidget";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import SettingsTab from "@/components/Settings/SettingsTab";
+import SideBySide from "@/components/Settings/SideBySide";
+import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
+import useAmoled from "@/stores/useAmoled";
+import usePreferences from "@/stores/usePreferences";
+import { getIpcRenderer } from "@/util/electron";
+import { Preferences } from "@/util/preferences";
+import { ChatMessage as IChatMessage, User } from "@/util/prisma-types";
 import {
   Card,
   Divider,
@@ -22,17 +33,6 @@ import {
   HiMoon,
   HiSun,
 } from "react-icons/hi";
-import { BLACK } from "../../pages/teams/t/[slug]/issue/create";
-import useAmoled from "../../stores/useAmoled";
-import usePreferences from "../../stores/usePreferences";
-import { getIpcRenderer } from "../../util/electron";
-import { Preferences } from "../../util/preferences";
-import { ChatMessage as IChatMessage, User } from "../../util/prisma-types";
-import ChatMessage from "../Chat/ChatMessage";
-import { Section } from "../Home/FriendsWidget";
-import ModernEmptyState from "../ModernEmptyState";
-import SettingsTab from "./SettingsTab";
-import SideBySide from "./SideBySide";
 
 interface AppearanceTabProps {
   user: User;

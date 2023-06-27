@@ -1,3 +1,3 @@
-import * as Fw from "./fw/index";
+import * as Fw from "@/util/fw/index";
 
 export { Fw };

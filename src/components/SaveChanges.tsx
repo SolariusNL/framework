@@ -1,8 +1,8 @@
+import IconTooltip from "@/components/IconTooltip";
+import ShadedCard from "@/components/ShadedCard";
 import { Button, ButtonProps, Text } from "@mantine/core";
 import { FC } from "react";
 import { HiInformationCircle } from "react-icons/hi";
-import IconTooltip from "./IconTooltip";
-import ShadedCard from "./ShadedCard";
 
 type SaveChangesProps = {
   label?: string;
@@ -27,10 +27,13 @@ const SaveChanges: FC<SaveChangesProps> = (props) => {
       <div className="flex md:flex-row flex-col justify-between items-center gap-4 w-full">
         <div className="flex items-center gap-2">
           <div className="md:flex hidden items-center gap-2">
-          <IconTooltip icon={<HiInformationCircle />} label="Unsaved changes" />
-          <Text weight={500} color="dimmed" size="sm">
-            Unsaved changes
-          </Text>
+            <IconTooltip
+              icon={<HiInformationCircle />}
+              label="Unsaved changes"
+            />
+            <Text weight={500} color="dimmed" size="sm">
+              Unsaved changes
+            </Text>
           </div>
           <Text color="dimmed" size="sm">
             {props.label || "You have unsaved changes!"}

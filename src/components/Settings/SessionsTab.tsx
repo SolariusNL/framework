@@ -1,3 +1,17 @@
+import ModernEmptyState from "@/components/ModernEmptyState";
+import SettingsTab from "@/components/Settings/SettingsTab";
+import SideBySide from "@/components/Settings/SideBySide";
+import ShadedCard from "@/components/ShadedCard";
+import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
+import logout from "@/util/api/logout";
+import clsx from "@/util/clsx";
+import { User } from "@/util/prisma-types";
+import {
+  Device,
+  getOperatingSystemDevice,
+  getOperatingSystemEnumFromString,
+  getOperatingSystemString,
+} from "@/util/ua";
 import {
   Badge,
   Button,
@@ -23,20 +37,6 @@ import {
   HiOutlineDeviceMobile,
   HiQuestionMarkCircle,
 } from "react-icons/hi";
-import { BLACK } from "../../pages/teams/t/[slug]/issue/create";
-import logout from "../../util/api/logout";
-import clsx from "../../util/clsx";
-import { User } from "../../util/prisma-types";
-import {
-  Device,
-  getOperatingSystemDevice,
-  getOperatingSystemEnumFromString,
-  getOperatingSystemString,
-} from "../../util/ua";
-import ModernEmptyState from "../ModernEmptyState";
-import ShadedCard from "../ShadedCard";
-import SettingsTab from "./SettingsTab";
-import SideBySide from "./SideBySide";
 
 type SessionsTabProps = {
   user: User;

@@ -1,3 +1,20 @@
+import NoteTable, { NoteUser } from "@/components/Admin/NoteTable";
+import { AdminViewUser } from "@/components/Admin/Pages/Users";
+import PunishmentHistory from "@/components/Admin/PunishmentHistory";
+import UserActions from "@/components/Admin/UserActions";
+import Copy from "@/components/Copy";
+import { Section } from "@/components/Home/FriendsWidget";
+import LoadingIndicator from "@/components/LoadingIndicator";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import ShadedCard from "@/components/ShadedCard";
+import Stateful from "@/components/Stateful";
+import { useFrameworkUser } from "@/contexts/FrameworkUser";
+import { useUserInformationDialog } from "@/contexts/UserInformationDialog";
+import employeeRoleMeta from "@/data/employeeRoles";
+import IResponseBase from "@/types/api/IResponseBase";
+import clsx from "@/util/clsx";
+import fetchJson from "@/util/fetch";
+import getMediaUrl from "@/util/get-media";
 import {
   Accordion,
   Anchor,
@@ -25,23 +42,6 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import { HiCheck, HiCheckCircle } from "react-icons/hi";
-import { useFrameworkUser } from "../../contexts/FrameworkUser";
-import { useUserInformationDialog } from "../../contexts/UserInformationDialog";
-import employeeRoleMeta from "../../data/employeeRoles";
-import IResponseBase from "../../types/api/IResponseBase";
-import clsx from "../../util/clsx";
-import fetchJson from "../../util/fetch";
-import getMediaUrl from "../../util/get-media";
-import Copy from "../Copy";
-import { Section } from "../Home/FriendsWidget";
-import LoadingIndicator from "../LoadingIndicator";
-import ModernEmptyState from "../ModernEmptyState";
-import ShadedCard from "../ShadedCard";
-import Stateful from "../Stateful";
-import NoteTable, { NoteUser } from "./NoteTable";
-import { AdminViewUser } from "./Pages/Users";
-import PunishmentHistory from "./PunishmentHistory";
-import UserActions from "./UserActions";
 
 interface UserViewProps {
   user: AdminViewUser;

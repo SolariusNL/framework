@@ -1,10 +1,10 @@
-import { Pagination, Select, SelectItem } from "@mantine/core";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import ReportCard from "@/components/ReportCard";
+import { ReportCategory, category } from "@/components/ReportUser";
+import { Report } from "@/util/prisma-types";
+import { Pagination, Select } from "@mantine/core";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
-import { Report } from "../../../util/prisma-types";
-import ModernEmptyState from "../../ModernEmptyState";
-import ReportCard from "../../ReportCard";
-import { category, ReportCategory } from "../../ReportUser";
 
 const Reports = () => {
   const [reports, setReports] = useState<Report[]>();

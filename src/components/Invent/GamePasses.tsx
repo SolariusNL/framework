@@ -1,13 +1,13 @@
+import InventTab from "@/components/Invent/InventTab";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import abbreviateNumber from "@/util/abbreviate";
+import { User } from "@/util/prisma-types";
 import { ActionIcon, Anchor, ScrollArea, Table, Text } from "@mantine/core";
 import { Gamepass } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { HiExternalLink, HiPencil } from "react-icons/hi";
-import abbreviateNumber from "../../util/abbreviate";
-import { User } from "../../util/prisma-types";
-import ModernEmptyState from "../ModernEmptyState";
-import InventTab from "./InventTab";
 
 interface GamePassesProps {
   user: User;

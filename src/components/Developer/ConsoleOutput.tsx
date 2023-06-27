@@ -1,3 +1,13 @@
+import DataGrid from "@/components/DataGrid";
+import {
+  CATEGORY_REGEX,
+  DATE_REGEX,
+  TIME_REGEX,
+  incrementPage,
+  resetFilter,
+  setFilterParam,
+} from "@/reducers/stdout";
+import { RootState } from "@/reducers/store";
 import {
   ActionIcon,
   Badge,
@@ -18,16 +28,6 @@ import {
   HiSearch,
 } from "react-icons/hi";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  CATEGORY_REGEX,
-  DATE_REGEX,
-  TIME_REGEX,
-  incrementPage,
-  resetFilter,
-  setFilterParam,
-} from "../../reducers/stdout";
-import { RootState } from "../../reducers/store";
-import DataGrid from "../DataGrid";
 
 type ConsoleOutputProps = React.ComponentPropsWithoutRef<"div">;
 export type LogLevel = "info" | "debug" | "warn" | "error" | "recv" | "send";

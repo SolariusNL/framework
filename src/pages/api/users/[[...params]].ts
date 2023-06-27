@@ -1,3 +1,24 @@
+import { parse } from "@/components/RenderMarkdown";
+import { category } from "@/components/ReportUser";
+import countries from "@/data/countries";
+import getTimezones from "@/data/timezones";
+import Authorized, { Account } from "@/util/api/authorized";
+import registerAutomodHandler from "@/util/automod";
+import { exclude } from "@/util/exclude";
+import { hashPass, isSamePass } from "@/util/hash/password";
+import { sendMail } from "@/util/mail";
+import createNotification from "@/util/notifications";
+import prisma from "@/util/prisma";
+import type { User } from "@/util/prisma-types";
+import { nonCurrentUserSelect } from "@/util/prisma-types";
+import { RateLimitMiddleware } from "@/util/rate-limit";
+import { verificationEmail } from "@/util/templates/verification-email";
+import { logTransaction } from "@/util/transaction-history";
+import {
+  UserPreferences,
+  userPreferenceValidators,
+  userPreferences,
+} from "@/util/types";
 import {
   NotificationType,
   Prisma,
@@ -18,29 +39,8 @@ import {
   Query,
   createHandler,
 } from "@storyofams/next-api-decorators";
+import AccountUpdate from "email/emails/account-update";
 import sanitize from "sanitize-html";
-import AccountUpdate from "../../../../email/emails/account-update";
-import { parse } from "../../../components/RenderMarkdown";
-import { category } from "../../../components/ReportUser";
-import countries from "../../../data/countries";
-import getTimezones from "../../../data/timezones";
-import Authorized, { Account } from "../../../util/api/authorized";
-import registerAutomodHandler from "../../../util/automod";
-import { exclude } from "../../../util/exclude";
-import { hashPass, isSamePass } from "../../../util/hash/password";
-import { sendMail } from "../../../util/mail";
-import createNotification from "../../../util/notifications";
-import prisma from "../../../util/prisma";
-import type { User } from "../../../util/prisma-types";
-import { nonCurrentUserSelect } from "../../../util/prisma-types";
-import { RateLimitMiddleware } from "../../../util/rate-limit";
-import { verificationEmail } from "../../../util/templates/verification-email";
-import { logTransaction } from "../../../util/transaction-history";
-import {
-  UserPreferences,
-  userPreferenceValidators,
-  userPreferences,
-} from "../../../util/types";
 
 const statusAutomod = registerAutomodHandler("Status update");
 

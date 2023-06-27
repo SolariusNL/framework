@@ -1,10 +1,10 @@
+import { parse } from "@/components/RenderMarkdown";
+import Authorized, { Account } from "@/util/api/authorized";
+import prisma from "@/util/prisma";
+import type { User } from "@/util/prisma-types";
+import { blogPostSelect } from "@/util/prisma-types";
 import { AdminPermission } from "@prisma/client";
 import { Body, createHandler, Post } from "@storyofams/next-api-decorators";
-import { parse } from "../../../components/RenderMarkdown";
-import Authorized, { Account } from "../../../util/api/authorized";
-import prisma from "../../../util/prisma";
-import type { User } from "../../../util/prisma-types";
-import { blogPostSelect } from "../../../util/prisma-types";
 
 class BlogRouter {
   @Post("/create")

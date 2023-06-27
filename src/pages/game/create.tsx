@@ -1,10 +1,19 @@
+import Descriptive from "@/components/Descriptive";
+import Framework from "@/components/Framework";
+import LabelledRadio from "@/components/LabelledRadio";
+import sanitizeInappropriateContent from "@/components/ReconsiderationPrompt";
+import RichText from "@/components/RichText";
+import { BLACK, FormSection } from "@/pages/teams/t/[slug]/issue/create";
+import authorizedRoute from "@/util/auth";
+import { getCookie } from "@/util/cookies";
+import { User } from "@/util/prisma-types";
+import { getGenreText } from "@/util/universe/genre";
 import {
   Button,
   Checkbox,
   Divider,
   NumberInput,
   Select,
-  Stack,
   Text,
   TextInput,
 } from "@mantine/core";
@@ -13,17 +22,6 @@ import { GameGenre } from "@prisma/client";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { useRouter } from "next/router";
 import ReactNoSSR from "react-no-ssr";
-import Framework from "../../components/Framework";
-import LabelledRadio from "../../components/LabelledRadio";
-import sanitizeInappropriateContent from "../../components/ReconsiderationPrompt";
-import RichText from "../../components/RichText";
-import ShadedCard from "../../components/ShadedCard";
-import authorizedRoute from "../../util/auth";
-import { getCookie } from "../../util/cookies";
-import { User } from "../../util/prisma-types";
-import { getGenreText } from "../../util/universe/genre";
-import { BLACK, FormSection } from "../teams/t/[slug]/issue/create";
-import Descriptive from "../../components/Descriptive";
 
 const InlineInput = ({ children }: { children: React.ReactNode }) => {
   return (

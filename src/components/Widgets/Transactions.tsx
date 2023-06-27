@@ -1,13 +1,13 @@
+import ModernEmptyState from "@/components/ModernEmptyState";
+import ShadedCard from "@/components/ShadedCard";
+import { TransactionWithUser } from "@/pages/tickets";
+import getMediaUrl from "@/util/get-media";
+import { User } from "@/util/prisma-types";
 import { Avatar, Badge, Pagination, Stack, Text } from "@mantine/core";
 import { TransactionType } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
 import { HiArrowRight, HiShoppingCart, HiTicket } from "react-icons/hi";
-import { TransactionWithUser } from "../../pages/tickets";
-import getMediaUrl from "../../util/get-media";
-import { User } from "../../util/prisma-types";
-import ModernEmptyState from "../ModernEmptyState";
-import ShadedCard from "../ShadedCard";
 
 interface TransactionWidgetProps {
   user: User;

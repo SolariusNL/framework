@@ -1,10 +1,10 @@
+import ShadedButton from "@/components/ShadedButton";
+import getMediaUrl from "@/util/get-media";
+import { NonUser } from "@/util/prisma-types";
 import { Avatar, ButtonProps, Text } from "@mantine/core";
 import Link from "next/link";
 import { FC } from "react";
 import { HiArrowRight } from "react-icons/hi";
-import getMediaUrl from "../util/get-media";
-import { NonUser } from "../util/prisma-types";
-import ShadedButton from "./ShadedButton";
 
 type InlineUserCardProps = {
   user: NonUser;

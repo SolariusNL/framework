@@ -1,3 +1,7 @@
+import EditGameTab from "@/components/EditGame/EditGameTab";
+import GameRating from "@/components/GameRating";
+import useMediaQuery from "@/util/media-query";
+import { Game } from "@/util/prisma-types";
 import { Badge, Button, Select, Stack, Text, Title } from "@mantine/core";
 import {
   RatingCategory,
@@ -6,10 +10,6 @@ import {
 } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
-import useMediaQuery from "../../util/media-query";
-import { Game } from "../../util/prisma-types";
-import GameRating from "../GameRating";
-import EditGameTab from "./EditGameTab";
 
 interface AgeRatingProps {
   game: Game;

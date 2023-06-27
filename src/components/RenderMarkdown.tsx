@@ -1,8 +1,8 @@
 import { Sx, TypographyStylesProvider } from "@mantine/core";
 import { marked } from "marked";
 import sanitize from "sanitize-html";
-import clsx from "../util/clsx";
-import { Fw } from "../util/fw";
+import clsx from "@/util/clsx";
+import { Fw } from "@/util/fw";
 
 export const parse = (markdown: string) => {
   return marked(markdown || "", {

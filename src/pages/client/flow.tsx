@@ -2,9 +2,9 @@ import { Button, Checkbox, Skeleton, Text } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { useEffect, useState } from "react";
 import { HiCheckCircle } from "react-icons/hi";
-import Framework from "../../components/Framework";
-import authorizedRoute from "../../util/auth";
-import { User } from "../../util/prisma-types";
+import Framework from "@/components/Framework";
+import authorizedRoute from "@/util/auth";
+import { User } from "@/util/prisma-types";
 
 interface FlowProps {
   user: User;

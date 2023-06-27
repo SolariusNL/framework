@@ -1,15 +1,15 @@
+import Background from "@/components/Background";
+import Framework from "@/components/Framework";
+import Owner from "@/components/Owner";
+import RenderMarkdown from "@/components/RenderMarkdown";
+import authorizedRoute from "@/util/auth";
+import clsx from "@/util/clsx";
+import prisma from "@/util/prisma";
+import { BlogPost, User, blogPostSelect } from "@/util/prisma-types";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { NextSeo } from "next-seo";
 import Link from "next/link";
 import { HiChevronLeft } from "react-icons/hi";
-import Background from "../../../components/Background";
-import Framework from "../../../components/Framework";
-import Owner from "../../../components/Owner";
-import RenderMarkdown from "../../../components/RenderMarkdown";
-import authorizedRoute from "../../../util/auth";
-import clsx from "../../../util/clsx";
-import prisma from "../../../util/prisma";
-import { BlogPost, User, blogPostSelect } from "../../../util/prisma-types";
 
 interface BlogPostProps {
   post: BlogPost;

@@ -1,10 +1,10 @@
+import PrefTable from "@/components/Admin/Instance/PrefTable";
+import { PrefCategory, fetchPrefs } from "@/components/Admin/Pages/Instance";
 import { Tabs } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
 import { HiOutlineCheckCircle } from "react-icons/hi";
-import PrefTable from "../Instance/PrefTable";
-import { fetchPrefs, PrefCategory } from "../Pages/Instance";
 
 export async function updateEnv(k: string, v: string) {
   const res = await fetch(`/api/admin/prefs/${k}`, {

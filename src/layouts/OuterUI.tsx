@@ -6,8 +6,8 @@ import {
   useMantineColorScheme,
 } from "@mantine/core";
 import { FC, ReactNode } from "react";
-import MinimalFooter from "../components/MinimalFooter";
-import Background from "../assets/subtlebackground.png";
+import MinimalFooter from "@/components/MinimalFooter";
+import Background from "@/assets/subtlebackground.png";
 
 type OuterUIProps = {
   description: ReactNode;

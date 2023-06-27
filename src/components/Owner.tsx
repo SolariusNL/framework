@@ -1,9 +1,9 @@
+import Verified from "@/components/Verified";
+import clsx from "@/util/clsx";
+import getMediaUrl from "@/util/get-media";
+import { User } from "@/util/prisma-types";
 import { Avatar } from "@mantine/core";
 import Link from "next/link";
-import clsx from "../util/clsx";
-import getMediaUrl from "../util/get-media";
-import { User } from "../util/prisma-types";
-import Verified from "./Verified";
 
 type OwnerProps = {
   user: Pick<User, "username" | "alias" | "avatarUri" | "verified">;

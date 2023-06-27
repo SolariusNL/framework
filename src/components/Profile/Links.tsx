@@ -1,14 +1,14 @@
+import IconTooltip from "@/components/IconTooltip";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import ShadedCard from "@/components/ShadedCard";
+import IResponseBase from "@/types/api/IResponseBase";
+import fetchJson from "@/util/fetch";
+import { Fw } from "@/util/fw";
+import { NonUser } from "@/util/prisma-types";
 import { Anchor, Card, CardProps, Text } from "@mantine/core";
 import { Domain, DomainStatus, ProfileLink } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { HiBadgeCheck } from "react-icons/hi";
-import IResponseBase from "../../types/api/IResponseBase";
-import fetchJson from "../../util/fetch";
-import { Fw } from "../../util/fw";
-import { NonUser } from "../../util/prisma-types";
-import ModernEmptyState from "../ModernEmptyState";
-import ShadedCard from "../ShadedCard";
-import IconTooltip from "../IconTooltip";
 
 interface LinksProps {
   user: NonUser & {

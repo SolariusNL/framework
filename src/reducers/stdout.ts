@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { LogLevel } from "../util/logger";
+import { LogLevel } from "@/util/logger";
 
 export interface StdoutState {
   page: number;

@@ -19,20 +19,20 @@ import {
   HiSparkles,
 } from "react-icons/hi";
 import InfiniteScroll from "react-infinite-scroller";
-import ContextMenu from "../components/ContextMenu";
-import Descriptive from "../components/Descriptive";
-import Framework from "../components/Framework";
-import GameCard from "../components/GameCard";
-import LabelledRadio from "../components/LabelledRadio";
-import ModernEmptyState from "../components/ModernEmptyState";
-import ShadedCard from "../components/ShadedCard";
-import authorizedRoute from "../util/auth";
-import { getCookie } from "../util/cookies";
-import { exclude } from "../util/exclude";
-import useMediaQuery from "../util/media-query";
-import prisma from "../util/prisma";
-import { Game, User, gameSelect } from "../util/prisma-types";
-import { genreMap } from "../util/universe/genre";
+import ContextMenu from "@/components/ContextMenu";
+import Descriptive from "@/components/Descriptive";
+import Framework from "@/components/Framework";
+import GameCard from "@/components/GameCard";
+import LabelledRadio from "@/components/LabelledRadio";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import ShadedCard from "@/components/ShadedCard";
+import authorizedRoute from "@/util/auth";
+import { getCookie } from "@/util/cookies";
+import { exclude } from "@/util/exclude";
+import useMediaQuery from "@/util/media-query";
+import prisma from "@/util/prisma";
+import { Game, User, gameSelect } from "@/util/prisma-types";
+import { genreMap } from "@/util/universe/genre";
 import { BLACK } from "./teams/t/[slug]/issue/create";
 
 interface GamesProps {

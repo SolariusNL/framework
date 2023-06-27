@@ -15,20 +15,20 @@ import {
   HiViewList,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
-import Access from "../../../../components/EditGame/Access";
-import AgeRating from "../../../../components/EditGame/AgeRating";
-import Datastores from "../../../../components/EditGame/Datastores";
-import Details from "../../../../components/EditGame/Details";
-import EnvironmentVariables from "../../../../components/EditGame/EnvironmentVariables";
-import Funding from "../../../../components/EditGame/Funding";
-import Servers from "../../../../components/EditGame/Servers";
-import Store from "../../../../components/EditGame/Store";
-import Updates from "../../../../components/EditGame/Updates";
-import Framework from "../../../../components/Framework";
-import SidebarTabNavigation from "../../../../layouts/SidebarTabNavigation";
-import authorizedRoute from "../../../../util/auth";
-import prisma from "../../../../util/prisma";
-import { Game, User, gameSelect } from "../../../../util/prisma-types";
+import Access from "@/components/EditGame/Access";
+import AgeRating from "@/components/EditGame/AgeRating";
+import Datastores from "@/components/EditGame/Datastores";
+import Details from "@/components/EditGame/Details";
+import EnvironmentVariables from "@/components/EditGame/EnvironmentVariables";
+import Funding from "@/components/EditGame/Funding";
+import Servers from "@/components/EditGame/Servers";
+import Store from "@/components/EditGame/Store";
+import Updates from "@/components/EditGame/Updates";
+import Framework from "@/components/Framework";
+import SidebarTabNavigation from "@/layouts/SidebarTabNavigation";
+import authorizedRoute from "@/util/auth";
+import prisma from "@/util/prisma";
+import { Game, User, gameSelect } from "@/util/prisma-types";
 
 export type GameWithDatastore = Game & {
   datastores: {

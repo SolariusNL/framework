@@ -1,10 +1,10 @@
+import ShadedButton from "@/components/ShadedButton";
+import UserContext from "@/components/UserContext";
+import getMediaUrl from "@/util/get-media";
+import { Report } from "@/util/prisma-types";
+import { getRelativeTime } from "@/util/relative-time";
 import { Avatar, Badge, Text } from "@mantine/core";
 import { useRouter } from "next/router";
-import getMediaUrl from "../util/get-media";
-import { Report } from "../util/prisma-types";
-import { getRelativeTime } from "../util/relative-time";
-import ShadedButton from "./ShadedButton";
-import UserContext from "./UserContext";
 
 interface ReportCardProps {
   report: Report;

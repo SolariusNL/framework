@@ -1,5 +1,3 @@
-import { Tabs } from "@mantine/core";
-
 interface EditGameTabProps {
   value: string;
   children: React.ReactNode;

@@ -1,3 +1,9 @@
+import Copy from "@/components/Copy";
+import { Section } from "@/components/Home/FriendsWidget";
+import ShadedCard from "@/components/ShadedCard";
+import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
+import { REDLOCK } from "@/util/constants";
+import fetchJson from "@/util/fetch";
 import {
   Anchor,
   Button,
@@ -10,12 +16,6 @@ import {
 import { useForm } from "@mantine/form";
 import { openConfirmModal } from "@mantine/modals";
 import { HiArrowRight, HiKey, HiMail, HiUser } from "react-icons/hi";
-import { BLACK } from "../../../pages/teams/t/[slug]/issue/create";
-import { REDLOCK } from "../../../util/constants";
-import fetchJson from "../../../util/fetch";
-import Copy from "../../Copy";
-import { Section } from "../../Home/FriendsWidget";
-import ShadedCard from "../../ShadedCard";
 
 type StudioLicenseForm = {
   fullName: string;

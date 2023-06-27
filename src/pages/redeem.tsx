@@ -16,11 +16,11 @@ import { GetServerSidePropsContext, NextPage } from "next";
 import Link from "next/link";
 import React from "react";
 import Celebration from "react-confetti";
-import Framework from "../components/Framework";
-import ShadedCard from "../components/ShadedCard";
-import authorizedRoute from "../util/auth";
-import useMediaQuery from "../util/media-query";
-import { User } from "../util/prisma-types";
+import Framework from "@/components/Framework";
+import ShadedCard from "@/components/ShadedCard";
+import authorizedRoute from "@/util/auth";
+import useMediaQuery from "@/util/media-query";
+import { User } from "@/util/prisma-types";
 
 export const useStylesredeemCard = createStyles((theme) => ({
   title: {

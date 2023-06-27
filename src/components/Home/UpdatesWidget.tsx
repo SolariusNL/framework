@@ -1,16 +1,16 @@
+import GameCard from "@/components/GameCard";
+import { Section } from "@/components/Home/FriendsWidget";
+import LoadingIndicator from "@/components/LoadingIndicator";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import ShadedCard from "@/components/ShadedCard";
+import UpdateCard from "@/components/UpdateCard";
+import { Game } from "@/util/prisma-types";
 import { Button, Stack } from "@mantine/core";
 import { openModal } from "@mantine/modals";
 import { GameUpdateLog } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import Link from "next/link";
 import React, { useState } from "react";
-import { Game } from "../../util/prisma-types";
-import GameCard from "../GameCard";
-import LoadingIndicator from "../LoadingIndicator";
-import ModernEmptyState from "../ModernEmptyState";
-import ShadedCard from "../ShadedCard";
-import UpdateCard from "../UpdateCard";
-import { Section } from "./FriendsWidget";
 
 const UpdatesWidget: React.FC = () => {
   const [gameUpdates, setGameUpdates] = React.useState<

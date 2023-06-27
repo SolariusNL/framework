@@ -1,3 +1,13 @@
+import Descriptive from "@/components/Descriptive";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import SideBySide from "@/components/Settings/SideBySide";
+import { GenericFastFlag } from "@/pages/api/flags/[[...params]]";
+import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
+import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
+import useFastFlags, { FLAGS } from "@/stores/useFastFlags";
+import IResponseBase from "@/types/api/IResponseBase";
+import clsx from "@/util/clsx";
+import fetchJson from "@/util/fetch";
 import {
   Badge,
   Button,
@@ -21,16 +31,6 @@ import {
   HiPencil,
   HiSearch,
 } from "react-icons/hi";
-import { GenericFastFlag } from "../../../pages/api/flags/[[...params]]";
-import { BLACK } from "../../../pages/teams/t/[slug]/issue/create";
-import useAuthorizedUserStore from "../../../stores/useAuthorizedUser";
-import useFastFlags, { FLAGS } from "../../../stores/useFastFlags";
-import IResponseBase from "../../../types/api/IResponseBase";
-import clsx from "../../../util/clsx";
-import fetchJson from "../../../util/fetch";
-import Descriptive from "../../Descriptive";
-import ModernEmptyState from "../../ModernEmptyState";
-import SideBySide from "../../Settings/SideBySide";
 
 const Flags: FC = () => {
   const { rawFlags: flags, setRawFlags } = useFastFlags();

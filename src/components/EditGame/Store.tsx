@@ -1,3 +1,11 @@
+import Descriptive from "@/components/Descriptive";
+import EditGameTab from "@/components/EditGame/EditGameTab";
+import ImageUploader from "@/components/ImageUploader";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import Stateful from "@/components/Stateful";
+import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
+import abbreviateNumber from "@/util/abbreviate";
+import { Game } from "@/util/prisma-types";
 import {
   ActionIcon,
   Button,
@@ -24,14 +32,6 @@ import {
   HiTrash,
   HiXCircle,
 } from "react-icons/hi";
-import { BLACK } from "../../pages/teams/t/[slug]/issue/create";
-import abbreviateNumber from "../../util/abbreviate";
-import { Game } from "../../util/prisma-types";
-import Descriptive from "../Descriptive";
-import ImageUploader from "../ImageUploader";
-import ModernEmptyState from "../ModernEmptyState";
-import Stateful from "../Stateful";
-import EditGameTab from "./EditGameTab";
 
 interface StoreProps {
   game: Game & {

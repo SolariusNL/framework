@@ -1,7 +1,7 @@
 import { MantineColor, Paper, Text, useMantineTheme } from "@mantine/core";
 import { openModal } from "@mantine/modals";
-import clsx from "../../util/clsx";
-import { User } from "../../util/prisma-types";
+import clsx from "@/util/clsx";
+import { User } from "@/util/prisma-types";
 
 interface BadgeProps {
   user: User;

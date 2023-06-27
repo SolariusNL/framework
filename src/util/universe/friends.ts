@@ -1,5 +1,5 @@
+import { NonUser } from "@/util/prisma-types";
 import { getCookie } from "cookies-next";
-import { NonUser } from "../prisma-types";
 
 const apiUrl = "/api/users";
 
@@ -56,10 +56,10 @@ async function getFollowersPages(uid: number): Promise<number> {
 }
 
 export {
-  getMyFriends,
-  getFollowing,
   getFollowers,
-  getFriendsPages,
-  getFollowingPages,
   getFollowersPages,
+  getFollowing,
+  getFollowingPages,
+  getFriendsPages,
+  getMyFriends,
 };

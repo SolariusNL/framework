@@ -1,5 +1,5 @@
 import create from "zustand";
-import { NonUser } from "../util/prisma-types";
+import { NonUser } from "@/util/prisma-types";
 
 interface CacheStore {
   cachedUsers: Record<number, { user: NonUser; timestamp: number }>;

@@ -1,3 +1,6 @@
+import ModernEmptyState from "@/components/ModernEmptyState";
+import Notifications from "@/components/Widgets/Notifications";
+import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
 import {
   createStyles,
   Group,
@@ -7,9 +10,6 @@ import {
 } from "@mantine/core";
 import { useState } from "react";
 import { HiBell } from "react-icons/hi";
-import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
-import ModernEmptyState from "../ModernEmptyState";
-import Notifications from "../Widgets/Notifications";
 
 const useStyles = createStyles((theme) => ({
   flyout: {

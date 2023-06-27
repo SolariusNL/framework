@@ -2,7 +2,7 @@ import { Tooltip, UnstyledButton } from "@mantine/core";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { HiStar } from "react-icons/hi";
-import clsx from "../util/clsx";
+import clsx from "@/util/clsx";
 
 type RatingProps = React.DetailedHTMLProps<
   React.HTMLAttributes<HTMLDivElement>,

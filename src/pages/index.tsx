@@ -21,24 +21,24 @@ import {
   HiX,
   HiXCircle,
 } from "react-icons/hi";
-import Framework from "../components/Framework";
-import FeedWidget from "../components/Home/FeedWidget";
-import FriendsWidget, { Section } from "../components/Home/FriendsWidget";
-import NotificationsWidget from "../components/Home/NotificationsWidget";
-import SubscriptionWidget from "../components/Home/SubscriptionWidget";
-import UpdatesWidget from "../components/Home/UpdatesWidget";
-import BioMesh from "../components/Mesh/BioMesh";
-import CatalogMesh from "../components/Mesh/CatalogMesh";
-import CreateGameMesh from "../components/Mesh/CreateGameMesh";
-import FollowMesh from "../components/Mesh/FollowMesh";
-import LikeGameMesh from "../components/Mesh/LikeGameMesh";
-import ReferMesh from "../components/Mesh/ReferMesh";
-import SidebarTabNavigation from "../layouts/SidebarTabNavigation";
-import useAuthorizedUserStore from "../stores/useAuthorizedUser";
-import IResponseBase from "../types/api/IResponseBase";
-import authorizedRoute from "../util/auth";
-import fetchJson from "../util/fetch";
-import { User } from "../util/prisma-types";
+import Framework from "@/components/Framework";
+import FeedWidget from "@/components/Home/FeedWidget";
+import FriendsWidget, { Section } from "@/components/Home/FriendsWidget";
+import NotificationsWidget from "@/components/Home/NotificationsWidget";
+import SubscriptionWidget from "@/components/Home/SubscriptionWidget";
+import UpdatesWidget from "@/components/Home/UpdatesWidget";
+import BioMesh from "@/components/Mesh/BioMesh";
+import CatalogMesh from "@/components/Mesh/CatalogMesh";
+import CreateGameMesh from "@/components/Mesh/CreateGameMesh";
+import FollowMesh from "@/components/Mesh/FollowMesh";
+import LikeGameMesh from "@/components/Mesh/LikeGameMesh";
+import ReferMesh from "@/components/Mesh/ReferMesh";
+import SidebarTabNavigation from "@/layouts/SidebarTabNavigation";
+import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
+import IResponseBase from "@/types/api/IResponseBase";
+import authorizedRoute from "@/util/auth";
+import fetchJson from "@/util/fetch";
+import { User } from "@/util/prisma-types";
 
 interface HomeProps {
   user: User;

@@ -1,6 +1,6 @@
 import { Text } from "@mantine/core";
 import { FC } from "react";
-import clsx from "../util/clsx";
+import clsx from "@/util/clsx";
 
 type DataGridItem = {
   tooltip: string;

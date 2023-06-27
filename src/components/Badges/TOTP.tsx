@@ -1,5 +1,5 @@
 import { HiKey } from "react-icons/hi";
-import { User } from "../../util/prisma-types";
+import { User } from "@/util/prisma-types";
 import Badge from "./Badge";
 
 const TOTPBadge = ({ user }: { user: User }) => {

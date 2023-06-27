@@ -1,3 +1,31 @@
+import ChatMsg from "@/components/Chat/ChatMessage";
+import ImageUploader from "@/components/ImageUploader";
+import InlineError from "@/components/InlineError";
+import InlineUserCard from "@/components/InlineUserCard";
+import LoadingIndicator from "@/components/LoadingIndicator";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import Owner from "@/components/Owner";
+import sanitizeInappropriateContent from "@/components/ReconsiderationPrompt";
+import ShadedButton from "@/components/ShadedButton";
+import ShadedCard from "@/components/ShadedCard";
+import SocketContext from "@/contexts/Socket";
+import Rocket from "@/icons/Rocket";
+import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
+import useAmoled from "@/stores/useAmoled";
+import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
+import useChatStore from "@/stores/useChatStore";
+import useFastFlags from "@/stores/useFastFlags";
+import usePreferences from "@/stores/usePreferences";
+import IResponseBase from "@/types/api/IResponseBase";
+import { useOnClickOutside } from "@/util/click-outside";
+import clsx from "@/util/clsx";
+import fetchJson from "@/util/fetch";
+import getFileFromImg from "@/util/files";
+import { Fw } from "@/util/fw";
+import getMediaUrl from "@/util/get-media";
+import { Preferences } from "@/util/preferences";
+import { ChatMessage, NonUser } from "@/util/prisma-types";
+import { getMyFriends } from "@/util/universe/friends";
 import Picker from "@emoji-mart/react";
 import {
   ActionIcon,
@@ -45,35 +73,7 @@ import {
   HiSparkles,
   HiXCircle,
 } from "react-icons/hi";
-import SocketContext from "../contexts/Socket";
-import Rocket from "../icons/Rocket";
-import { BLACK } from "../pages/teams/t/[slug]/issue/create";
-import useAmoled from "../stores/useAmoled";
-import useAuthorizedUserStore from "../stores/useAuthorizedUser";
-import useChatStore from "../stores/useChatStore";
-import useFastFlags from "../stores/useFastFlags";
-import usePreferences from "../stores/usePreferences";
-import IResponseBase from "../types/api/IResponseBase";
-import { useOnClickOutside } from "../util/click-outside";
-import clsx from "../util/clsx";
-import fetchJson from "../util/fetch";
-import getFileFromImg from "../util/files";
-import { Fw } from "../util/fw";
-import getMediaUrl from "../util/get-media";
-import { Preferences } from "../util/preferences";
-import { ChatMessage, NonUser } from "../util/prisma-types";
-import { getMyFriends } from "../util/universe/friends";
 import { UserItemComponent } from "./Admin/Pages/Activity";
-import ChatMsg from "./Chat/ChatMessage";
-import ImageUploader from "./ImageUploader";
-import InlineError from "./InlineError";
-import InlineUserCard from "./InlineUserCard";
-import LoadingIndicator from "./LoadingIndicator";
-import ModernEmptyState from "./ModernEmptyState";
-import Owner from "./Owner";
-import sanitizeInappropriateContent from "./ReconsiderationPrompt";
-import ShadedButton from "./ShadedButton";
-import ShadedCard from "./ShadedCard";
 
 type ChatConversationWithParticipants = ChatConversation & {
   participants: NonUser[];

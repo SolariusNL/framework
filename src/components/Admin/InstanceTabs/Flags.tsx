@@ -1,7 +1,7 @@
+import PrefTable from "@/components/Admin/Instance/PrefTable";
+import { PrefCategory, fetchPrefs } from "@/components/Admin/Pages/Instance";
 import { Tabs } from "@mantine/core";
 import { useEffect, useState } from "react";
-import PrefTable from "../Instance/PrefTable";
-import { fetchPrefs, PrefCategory } from "../Pages/Instance";
 import { updateEnv } from "./Email";
 
 const FlagsTab: React.FC = () => {

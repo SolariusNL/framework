@@ -1,3 +1,8 @@
+import Stateful from "@/components/Stateful";
+import banPresets from "@/data/banPresets";
+import clsx from "@/util/clsx";
+import getMediaUrl from "@/util/get-media";
+import { NonUser } from "@/util/prisma-types";
 import {
   Anchor,
   Avatar,
@@ -16,11 +21,6 @@ import { showNotification } from "@mantine/notifications";
 import { getCookie } from "cookies-next";
 import { useState } from "react";
 import { HiCheckCircle, HiShieldCheck } from "react-icons/hi";
-import banPresets from "../../data/banPresets";
-import clsx from "../../util/clsx";
-import getMediaUrl from "../../util/get-media";
-import { NonUser } from "../../util/prisma-types";
-import Stateful from "../Stateful";
 
 interface IPunishmentForm {
   category: "warning" | "ban";

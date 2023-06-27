@@ -1,3 +1,5 @@
+import Descriptive from "@/components/Descriptive";
+import UserSelect from "@/components/UserSelect";
 import {
   Button,
   Modal,
@@ -5,15 +7,13 @@ import {
   Switch,
   Text,
   Textarea,
-  TextInput
+  TextInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { getCookie } from "cookies-next";
 import React from "react";
 import { HiCheckCircle } from "react-icons/hi";
-import Descriptive from "../Descriptive";
-import UserSelect from "../UserSelect";
 
 interface NewMessageProps {
   opened: boolean;

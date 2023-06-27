@@ -1,3 +1,10 @@
+import ReportUser from "@/components/ReportUser";
+import ShadedCard from "@/components/ShadedCard";
+import UserContext from "@/components/UserContext";
+import { useFrameworkUser } from "@/contexts/FrameworkUser";
+import getMediaUrl from "@/util/get-media";
+import { NonUser } from "@/util/prisma-types";
+import { getRelativeTime } from "@/util/relative-time";
 import {
   ActionIcon,
   Avatar,
@@ -22,13 +29,6 @@ import {
   HiShieldCheck,
   HiTrash,
 } from "react-icons/hi";
-import { useFrameworkUser } from "../contexts/FrameworkUser";
-import getMediaUrl from "../util/get-media";
-import { NonUser } from "../util/prisma-types";
-import { getRelativeTime } from "../util/relative-time";
-import ReportUser from "./ReportUser";
-import ShadedCard from "./ShadedCard";
-import UserContext from "./UserContext";
 
 const useStyles = createStyles((theme) => ({
   comment: {

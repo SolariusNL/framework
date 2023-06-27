@@ -1,3 +1,14 @@
+import Descriptive from "@/components/Descriptive";
+import Framework from "@/components/Framework";
+import { Section } from "@/components/Home/FriendsWidget";
+import Markdown, { ToolbarItem } from "@/components/Markdown";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import RenderMarkdown from "@/components/RenderMarkdown";
+import ShadedButton from "@/components/ShadedButton";
+import ShadedCard from "@/components/ShadedCard";
+import authorizedRoute from "@/util/auth";
+import { User } from "@/util/prisma-types";
+import { supportSanitization } from "@/util/sanitize";
 import {
   Anchor,
   Badge,
@@ -31,17 +42,6 @@ import {
   HiXCircle,
 } from "react-icons/hi";
 import sanitize from "sanitize-html";
-import Descriptive from "../components/Descriptive";
-import Framework from "../components/Framework";
-import { Section } from "../components/Home/FriendsWidget";
-import Markdown, { ToolbarItem } from "../components/Markdown";
-import ModernEmptyState from "../components/ModernEmptyState";
-import RenderMarkdown from "../components/RenderMarkdown";
-import ShadedButton from "../components/ShadedButton";
-import ShadedCard from "../components/ShadedCard";
-import authorizedRoute from "../util/auth";
-import { User } from "../util/prisma-types";
-import { supportSanitization } from "../util/sanitize";
 import { BLACK } from "./teams/t/[slug]/issue/create";
 
 interface SupportProps {

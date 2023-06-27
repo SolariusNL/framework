@@ -1,3 +1,10 @@
+import ShadedCard from "@/components/ShadedCard";
+import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
+import IResponseBase from "@/types/api/IResponseBase";
+import { getCookie } from "@/util/cookies";
+import fetchJson from "@/util/fetch";
+import getMediaUrl from "@/util/get-media";
+import { Game, NonUser, User } from "@/util/prisma-types";
 import {
   Avatar,
   Button,
@@ -8,16 +15,9 @@ import {
 } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { HiChat } from "react-icons/hi";
-import { BLACK } from "../pages/teams/t/[slug]/issue/create";
-import IResponseBase from "../types/api/IResponseBase";
-import { getCookie } from "../util/cookies";
-import fetchJson from "../util/fetch";
-import getMediaUrl from "../util/get-media";
-import { Game, NonUser, User } from "../util/prisma-types";
 import Comment from "./Comment";
 import ModernEmptyState from "./ModernEmptyState";
 import sanitizeInappropriateContent from "./ReconsiderationPrompt";
-import ShadedCard from "./ShadedCard";
 
 interface GameCommentsProps {
   user: User;

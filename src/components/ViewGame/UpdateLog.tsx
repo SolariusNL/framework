@@ -1,17 +1,17 @@
+import ModernEmptyState from "@/components/ModernEmptyState";
+import ShadedButton from "@/components/ShadedButton";
+import ShadedCard from "@/components/ShadedCard";
+import UpdateCard from "@/components/UpdateCard";
+import ViewGameTab from "@/components/ViewGame/ViewGameTab";
+import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
+import clsx from "@/util/clsx";
+import fetchJson from "@/util/fetch";
+import { Fw } from "@/util/fw";
+import { Game } from "@/util/prisma-types";
 import { Avatar, Pagination, Text } from "@mantine/core";
 import { openModal } from "@mantine/modals";
 import { useEffect, useState } from "react";
 import { HiArrowRight } from "react-icons/hi";
-import { BLACK } from "../../pages/teams/t/[slug]/issue/create";
-import clsx from "../../util/clsx";
-import fetchJson from "../../util/fetch";
-import { Fw } from "../../util/fw";
-import { Game } from "../../util/prisma-types";
-import ModernEmptyState from "../ModernEmptyState";
-import ShadedButton from "../ShadedButton";
-import ShadedCard from "../ShadedCard";
-import UpdateCard from "../UpdateCard";
-import ViewGameTab from "./ViewGameTab";
 
 interface UpdateLogTabProps {
   game: Game;

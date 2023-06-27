@@ -1,9 +1,9 @@
-import { createHandler, Post, Req, Res } from "@storyofams/next-api-decorators";
+import { products } from "@/pages/tickets/buy";
+import prisma from "@/util/prisma";
+import { createHandler, Post, Req } from "@storyofams/next-api-decorators";
 import { buffer } from "micro";
 import type { NextApiRequest } from "next";
 import Stripe from "stripe";
-import prisma from "../../../util/prisma";
-import { products } from "../../tickets/buy";
 
 const stripe = new Stripe(String(process.env.STRIPE_SECRET_KEY), {
   apiVersion: "2022-11-15",

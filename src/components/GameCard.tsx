@@ -1,3 +1,8 @@
+import PlaceholderGameResource from "@/components/PlaceholderGameResource";
+import ReportUser from "@/components/ReportUser";
+import getMediaUrl from "@/util/get-media";
+import { Game } from "@/util/prisma-types";
+import { getRatingColor } from "@/util/universe/ratings";
 import {
   AspectRatio,
   Avatar,
@@ -14,11 +19,6 @@ import { randomId } from "@mantine/hooks";
 import Link from "next/link";
 import { useState } from "react";
 import { HiThumbUp, HiUsers } from "react-icons/hi";
-import getMediaUrl from "../util/get-media";
-import { Game } from "../util/prisma-types";
-import { getRatingColor } from "../util/universe/ratings";
-import PlaceholderGameResource from "./PlaceholderGameResource";
-import ReportUser from "./ReportUser";
 
 interface GameCardProps {
   game: Game;

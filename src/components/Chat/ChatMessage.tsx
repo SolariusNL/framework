@@ -1,3 +1,14 @@
+import MessageContextMenu, {
+  deleteMessage,
+} from "@/components/Chat/MessageContextMenu";
+import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
+import usePreferences from "@/stores/usePreferences";
+import clsx from "@/util/clsx";
+import { Fw } from "@/util/fw";
+import boldPlugin from "@/util/fw/plugins/bold";
+import emojiPlugin from "@/util/fw/plugins/emojis";
+import getMediaUrl from "@/util/get-media";
+import { ChatMessage } from "@/util/prisma-types";
 import {
   ActionIcon,
   Avatar,
@@ -10,15 +21,6 @@ import {
 import Link from "next/link";
 import { FC, useState } from "react";
 import { HiClipboard, HiDotsHorizontal, HiTrash } from "react-icons/hi";
-import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
-import usePreferences from "../../stores/usePreferences";
-import clsx from "../../util/clsx";
-import { Fw } from "../../util/fw";
-import boldPlugin from "../../util/fw/plugins/bold";
-import emojiPlugin from "../../util/fw/plugins/emojis";
-import getMediaUrl from "../../util/get-media";
-import { ChatMessage } from "../../util/prisma-types";
-import MessageContextMenu, { deleteMessage } from "./MessageContextMenu";
 
 type ChatMessageProps = {
   message: ChatMessage;

@@ -1,3 +1,6 @@
+import InventTab from "@/components/Invent/InventTab";
+import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
+import { User } from "@/util/prisma-types";
 import {
   Button,
   FileInput,
@@ -18,9 +21,6 @@ import {
   HiTag,
   HiUpload,
 } from "react-icons/hi";
-import { BLACK } from "../../pages/teams/t/[slug]/issue/create";
-import { User } from "../../util/prisma-types";
-import InventTab from "./InventTab";
 
 type SoundsProps = {
   user: User;

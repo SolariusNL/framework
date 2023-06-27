@@ -1,3 +1,33 @@
+import DataGrid from "@/components/DataGrid";
+import Framework from "@/components/Framework";
+import GameComments from "@/components/GameComments";
+import GameRating from "@/components/GameRating";
+import ThumbnailCarousel from "@/components/ImageCarousel";
+import InlineError from "@/components/InlineError";
+import Launching from "@/components/Launching";
+import PlaceholderGameResource from "@/components/PlaceholderGameResource";
+import ReportUser from "@/components/ReportUser";
+import ShadedButton from "@/components/ShadedButton";
+import ShadedCard from "@/components/ShadedCard";
+import TabNav from "@/components/TabNav";
+import UserContext from "@/components/UserContext";
+import Verified from "@/components/Verified";
+import ConnectionTab from "@/components/ViewGame/Connection";
+import FundsTab from "@/components/ViewGame/Funds";
+import InfoTab from "@/components/ViewGame/Info";
+import Store from "@/components/ViewGame/Store";
+import UpdateLogTab from "@/components/ViewGame/UpdateLog";
+import Votes from "@/components/ViewGame/Votes";
+import IResponseBase from "@/types/api/IResponseBase";
+import authorizedRoute from "@/util/auth";
+import { getIpcRenderer } from "@/util/electron";
+import fetchJson from "@/util/fetch";
+import { Fw } from "@/util/fw";
+import getMediaUrl from "@/util/get-media";
+import useMediaQuery from "@/util/media-query";
+import prisma from "@/util/prisma";
+import { Game, NonUser, User, gameSelect } from "@/util/prisma-types";
+import { getGenreText } from "@/util/universe/genre";
 import {
   ActionIcon,
   AspectRatio,
@@ -46,36 +76,6 @@ import {
   HiViewList,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
-import DataGrid from "../../../components/DataGrid";
-import Framework from "../../../components/Framework";
-import GameComments from "../../../components/GameComments";
-import GameRating from "../../../components/GameRating";
-import ThumbnailCarousel from "../../../components/ImageCarousel";
-import InlineError from "../../../components/InlineError";
-import Launching from "../../../components/Launching";
-import PlaceholderGameResource from "../../../components/PlaceholderGameResource";
-import ReportUser from "../../../components/ReportUser";
-import ShadedButton from "../../../components/ShadedButton";
-import ShadedCard from "../../../components/ShadedCard";
-import TabNav from "../../../components/TabNav";
-import UserContext from "../../../components/UserContext";
-import Verified from "../../../components/Verified";
-import ConnectionTab from "../../../components/ViewGame/Connection";
-import FundsTab from "../../../components/ViewGame/Funds";
-import InfoTab from "../../../components/ViewGame/Info";
-import Store from "../../../components/ViewGame/Store";
-import UpdateLogTab from "../../../components/ViewGame/UpdateLog";
-import Votes from "../../../components/ViewGame/Votes";
-import IResponseBase from "../../../types/api/IResponseBase";
-import authorizedRoute from "../../../util/auth";
-import { getIpcRenderer } from "../../../util/electron";
-import fetchJson from "../../../util/fetch";
-import { Fw } from "../../../util/fw";
-import getMediaUrl from "../../../util/get-media";
-import useMediaQuery from "../../../util/media-query";
-import prisma from "../../../util/prisma";
-import { Game, NonUser, User, gameSelect } from "../../../util/prisma-types";
-import { getGenreText } from "../../../util/universe/genre";
 
 type GameWithGamepass = Game & {
   gamepasses: Gamepass[];

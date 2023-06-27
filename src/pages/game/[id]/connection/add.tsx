@@ -4,12 +4,12 @@ import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 import React from "react";
 import { HiXCircle } from "react-icons/hi";
-import Framework from "../../../../components/Framework";
-import authorizedRoute from "../../../../util/auth";
-import { getCookie } from "../../../../util/cookies";
-import useMediaQuery from "../../../../util/media-query";
-import prisma from "../../../../util/prisma";
-import { Game, gameSelect, User } from "../../../../util/prisma-types";
+import Framework from "@/components/Framework";
+import authorizedRoute from "@/util/auth";
+import { getCookie } from "@/util/cookies";
+import useMediaQuery from "@/util/media-query";
+import prisma from "@/util/prisma";
+import { Game, gameSelect, User } from "@/util/prisma-types";
 
 interface AddGameConnectionProps {
   user: User;

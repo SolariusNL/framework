@@ -29,16 +29,16 @@ import {
   HiX,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
-import NoteTable, { NoteUser } from "../../../components/Admin/NoteTable";
-import Punishment from "../../../components/Admin/Punishment";
-import Framework from "../../../components/Framework";
-import ModernEmptyState from "../../../components/ModernEmptyState";
-import ShadedCard from "../../../components/ShadedCard";
-import UserContext from "../../../components/UserContext";
-import authorizedRoute from "../../../util/auth";
-import { exclude } from "../../../util/exclude";
-import getMediaUrl from "../../../util/get-media";
-import prisma from "../../../util/prisma";
+import NoteTable, { NoteUser } from "@/components/Admin/NoteTable";
+import Punishment from "@/components/Admin/Punishment";
+import Framework from "@/components/Framework";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import ShadedCard from "@/components/ShadedCard";
+import UserContext from "@/components/UserContext";
+import authorizedRoute from "@/util/auth";
+import { exclude } from "@/util/exclude";
+import getMediaUrl from "@/util/get-media";
+import prisma from "@/util/prisma";
 import {
   Game,
   gameSelect,
@@ -46,8 +46,8 @@ import {
   NonUser,
   Report,
   User,
-} from "../../../util/prisma-types";
-import Punish from "../../../components/Admin/Pages/Punish";
+} from "@/util/prisma-types";
+import Punish from "@/components/Admin/Pages/Punish";
 
 interface ReportProps {
   user: User;

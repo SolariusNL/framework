@@ -4,9 +4,9 @@ import {
   Param,
   Post,
 } from "@storyofams/next-api-decorators";
-import Authorized, { Account } from "../../../util/api/authorized";
-import prisma from "../../../util/prisma";
-import type { User } from "../../../util/prisma-types";
+import Authorized, { Account } from "@/util/api/authorized";
+import prisma from "@/util/prisma";
+import type { User } from "@/util/prisma-types";
 
 interface CreateSecretBody {
   name: string;

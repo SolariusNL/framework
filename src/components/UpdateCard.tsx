@@ -1,3 +1,7 @@
+import DataGrid from "@/components/DataGrid";
+import ShadedCard from "@/components/ShadedCard";
+import clsx from "@/util/clsx";
+import { Fw } from "@/util/fw";
 import { Text, TypographyStylesProvider } from "@mantine/core";
 import { GameUpdateLog } from "@prisma/client";
 import {
@@ -5,10 +9,6 @@ import {
   HiOutlineClock,
   HiOutlineTag,
 } from "react-icons/hi";
-import clsx from "../util/clsx";
-import { Fw } from "../util/fw";
-import DataGrid from "./DataGrid";
-import ShadedCard from "./ShadedCard";
 
 const UpdateCard: React.FC<{
   update: GameUpdateLog;

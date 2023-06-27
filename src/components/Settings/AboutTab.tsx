@@ -1,10 +1,10 @@
+import SettingsTab from "@/components/Settings/SettingsTab";
+import { getIpcRenderer } from "@/util/electron";
+import { User } from "@/util/prisma-types";
 import { Badge, Button, Skeleton, Text } from "@mantine/core";
 import isElectron from "is-electron";
 import { useEffect, useState } from "react";
 import { HiDownload, HiExternalLink } from "react-icons/hi";
-import { getIpcRenderer } from "../../util/electron";
-import { User } from "../../util/prisma-types";
-import SettingsTab from "./SettingsTab";
 
 interface AboutTabProps {
   user: User;

@@ -1,3 +1,12 @@
+import { categories } from "@/pages/support";
+import Authorized, { Account } from "@/util/api/authorized";
+import getMediaUrl from "@/util/get-media";
+import { sendMail } from "@/util/mail";
+import prisma from "@/util/prisma";
+import type { User } from "@/util/prisma-types";
+import { nonCurrentUserSelect } from "@/util/prisma-types";
+import { RateLimitMiddleware } from "@/util/rate-limit";
+import { supportSanitization } from "@/util/sanitize";
 import { SupportTicketStatus } from "@prisma/client";
 import { render } from "@react-email/render";
 import {
@@ -6,19 +15,10 @@ import {
   Get,
   Post,
 } from "@storyofams/next-api-decorators";
+import AccountUpdate from "email/emails/account-update";
+import SupportTicketCreated from "email/emails/support-ticket-created";
 import sanitize from "sanitize-html";
 import z, { ZodLiteral } from "zod";
-import AccountUpdate from "../../../../email/emails/account-update";
-import SupportTicketCreated from "../../../../email/emails/support-ticket-created";
-import Authorized, { Account } from "../../../util/api/authorized";
-import getMediaUrl from "../../../util/get-media";
-import { sendMail } from "../../../util/mail";
-import prisma from "../../../util/prisma";
-import type { User } from "../../../util/prisma-types";
-import { nonCurrentUserSelect } from "../../../util/prisma-types";
-import { RateLimitMiddleware } from "../../../util/rate-limit";
-import { categories } from "../../support";
-import { supportSanitization } from "../../../util/sanitize";
 
 class SupportRouter {
   @Post("/submit")

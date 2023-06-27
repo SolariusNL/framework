@@ -1,8 +1,8 @@
-import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
-import ModernEmptyState from "../ModernEmptyState";
-import ShadedCard from "../ShadedCard";
-import Notifications from "../Widgets/Notifications";
-import { Section } from "./FriendsWidget";
+import { Section } from "@/components/Home/FriendsWidget";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import ShadedCard from "@/components/ShadedCard";
+import Notifications from "@/components/Widgets/Notifications";
+import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
 
 const NotificationsWidget: React.FC = () => {
   const { user } = useAuthorizedUserStore()!;

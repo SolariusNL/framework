@@ -1,14 +1,12 @@
+import SettingsTab from "@/components/Settings/SettingsTab";
+import useExperimentsStore, { EXPERIMENTS } from "@/stores/useExperimentsStore";
+import { User } from "@/util/prisma-types";
 import { Anchor, Badge, Button, ScrollArea, Table, Text } from "@mantine/core";
 import { openConfirmModal } from "@mantine/modals";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { HiGift } from "react-icons/hi";
-import useExperimentsStore, {
-  EXPERIMENTS,
-} from "../../stores/useExperimentsStore";
-import { User } from "../../util/prisma-types";
-import SettingsTab from "./SettingsTab";
 
 interface BetaTabProps {
   user: User;

@@ -1,3 +1,10 @@
+import ModernEmptyState from "@/components/ModernEmptyState";
+import PurchaseConfirmation from "@/components/PurchaseConfirmation";
+import RenderMarkdown from "@/components/RenderMarkdown";
+import ShadedButton from "@/components/ShadedButton";
+import ViewGameTab from "@/components/ViewGame/ViewGameTab";
+import { useFrameworkUser } from "@/contexts/FrameworkUser";
+import { Game } from "@/util/prisma-types";
 import {
   Badge,
   Button,
@@ -12,13 +19,6 @@ import { GameFund } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useState } from "react";
 import { HiCheckCircle, HiTicket } from "react-icons/hi";
-import { useFrameworkUser } from "../../contexts/FrameworkUser";
-import { Game } from "../../util/prisma-types";
-import ModernEmptyState from "../ModernEmptyState";
-import PurchaseConfirmation from "../PurchaseConfirmation";
-import RenderMarkdown from "../RenderMarkdown";
-import ShadedButton from "../ShadedButton";
-import ViewGameTab from "./ViewGameTab";
 
 interface FundsTabProps {
   game: Game;

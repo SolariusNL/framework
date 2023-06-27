@@ -1,3 +1,11 @@
+import { frameworkStyles } from "@/components/Framework";
+import Bit from "@/icons/Bit";
+import Exchange from "@/icons/Exchange";
+import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
+import IResponseBase from "@/types/api/IResponseBase";
+import abbreviateNumber from "@/util/abbreviate";
+import clsx from "@/util/clsx";
+import fetchJson from "@/util/fetch";
 import {
   Button,
   CloseButton,
@@ -23,14 +31,6 @@ import {
   HiTicket,
   HiViewList,
 } from "react-icons/hi";
-import Bit from "../../icons/Bit";
-import Exchange from "../../icons/Exchange";
-import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
-import IResponseBase from "../../types/api/IResponseBase";
-import abbreviateNumber from "../../util/abbreviate";
-import clsx from "../../util/clsx";
-import fetchJson from "../../util/fetch";
-import { frameworkStyles } from "../Framework";
 
 const CurrencyMenu = ({
   currencyMenuOpened,

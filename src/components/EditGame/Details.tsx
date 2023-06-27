@@ -1,3 +1,17 @@
+import Descriptive from "@/components/Descriptive";
+import EditGameTab from "@/components/EditGame/EditGameTab";
+import Floater from "@/components/Floater";
+import { Section } from "@/components/Home/FriendsWidget";
+import ImageUploader from "@/components/ImageUploader";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import RichText from "@/components/RichText";
+import SaveChanges from "@/components/SaveChanges";
+import SideBySide from "@/components/Settings/SideBySide";
+import ShadedCard from "@/components/ShadedCard";
+import getFileFromImg from "@/util/files";
+import getMediaUrl from "@/util/get-media";
+import { Game } from "@/util/prisma-types";
+import { genreMap } from "@/util/universe/genre";
 import {
   AspectRatio,
   Button,
@@ -20,20 +34,6 @@ import { getCookie } from "cookies-next";
 import React, { useEffect } from "react";
 import { BsMarkdown } from "react-icons/bs";
 import { HiCloud, HiPlus } from "react-icons/hi";
-import getFileFromImg from "../../util/files";
-import getMediaUrl from "../../util/get-media";
-import { Game } from "../../util/prisma-types";
-import { genreMap } from "../../util/universe/genre";
-import Descriptive from "../Descriptive";
-import Floater from "../Floater";
-import { Section } from "../Home/FriendsWidget";
-import ImageUploader from "../ImageUploader";
-import ModernEmptyState from "../ModernEmptyState";
-import RichText from "../RichText";
-import SaveChanges from "../SaveChanges";
-import SideBySide from "../Settings/SideBySide";
-import ShadedCard from "../ShadedCard";
-import EditGameTab from "./EditGameTab";
 
 interface DetailsProps {
   game: Game;

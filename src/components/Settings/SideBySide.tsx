@@ -1,8 +1,8 @@
 import { Divider, Text, Title, useMantineTheme } from "@mantine/core";
-import useAmoled from "../../stores/useAmoled";
-import { AMOLED_COLORS } from "../../util/constants";
-import useMediaQuery from "../../util/media-query";
-import clsx from "../../util/clsx";
+import useAmoled from "@/stores/useAmoled";
+import { AMOLED_COLORS } from "@/util/constants";
+import useMediaQuery from "@/util/media-query";
+import clsx from "@/util/clsx";
 
 interface SideBySideProps {
   title: string;

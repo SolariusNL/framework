@@ -1,12 +1,12 @@
+import StudioPromptBackground from "@/assets/subtlebackground.png";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import ShadedCard from "@/components/ShadedCard";
+import clsx from "@/util/clsx";
+import useMediaQuery from "@/util/media-query";
 import { Badge, CloseButton, Group, Tabs, Text, Title } from "@mantine/core";
 import { useLocalStorage } from "@mantine/hooks";
 import Image from "next/image";
 import Link from "next/link";
-import StudioPromptBackground from "../../assets/subtlebackground.png";
-import clsx from "../../util/clsx";
-import useMediaQuery from "../../util/media-query";
-import ModernEmptyState from "../ModernEmptyState";
-import ShadedCard from "../ShadedCard";
 
 interface InventTabProps {
   tabValue: string;

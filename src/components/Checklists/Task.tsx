@@ -1,3 +1,8 @@
+import Descriptive from "@/components/Descriptive";
+import ShadedButton from "@/components/ShadedButton";
+import Stateful from "@/components/Stateful";
+import { ChecklistTaskUpdateBody } from "@/pages/api/checklists/[[...params]]";
+import clsx from "@/util/clsx";
 import {
   Badge,
   Button,
@@ -20,11 +25,6 @@ import { motion } from "framer-motion";
 import React from "react";
 import { HiClock, HiTrash } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
-import { ChecklistTaskUpdateBody } from "../../pages/api/checklists/[[...params]]";
-import clsx from "../../util/clsx";
-import Descriptive from "../Descriptive";
-import ShadedButton from "../ShadedButton";
-import Stateful from "../Stateful";
 
 interface ChecklistTaskProps {
   task: ChecklistItem;

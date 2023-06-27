@@ -1,10 +1,10 @@
+import Markdown from "@/components/Markdown";
+import SideBySide from "@/components/Settings/SideBySide";
+import ShadedCard from "@/components/ShadedCard";
+import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
 import { Stack, TextInput, Title, TitleOrder } from "@mantine/core";
 import { useState } from "react";
 import { HiInbox } from "react-icons/hi";
-import { BLACK } from "../../../pages/teams/t/[slug]/issue/create";
-import Markdown from "../../Markdown";
-import SideBySide from "../../Settings/SideBySide";
-import ShadedCard from "../../ShadedCard";
 
 const Experiments: React.FC = () => {
   const [markdown, setMarkdown] = useState<string>("");

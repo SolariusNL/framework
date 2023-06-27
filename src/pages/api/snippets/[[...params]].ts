@@ -9,13 +9,13 @@ import {
   Res,
 } from "@storyofams/next-api-decorators";
 import type { NextApiRequest, NextApiResponse } from "next";
-import Authorized, { Account } from "../../../util/api/authorized";
-import prisma from "../../../util/prisma";
-import type { User } from "../../../util/prisma-types";
-import { snippetSelect } from "../../../util/prisma-types";
+import Authorized, { Account } from "@/util/api/authorized";
+import prisma from "@/util/prisma";
+import type { User } from "@/util/prisma-types";
+import { snippetSelect } from "@/util/prisma-types";
 import rateLimitedResource, {
   RateLimitMiddleware,
-} from "../../../util/rate-limit";
+} from "@/util/rate-limit";
 
 interface SnippetCreateBody {
   name: string;

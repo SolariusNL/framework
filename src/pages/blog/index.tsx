@@ -1,3 +1,14 @@
+import Background from "@/components/Background";
+import Descriptive from "@/components/Descriptive";
+import Framework from "@/components/Framework";
+import Markdown, { ToolbarItem } from "@/components/Markdown";
+import RenderMarkdown from "@/components/RenderMarkdown";
+import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
+import authorizedRoute from "@/util/auth";
+import clsx from "@/util/clsx";
+import { exclude } from "@/util/exclude";
+import prisma from "@/util/prisma";
+import { BlogPost, User, blogPostSelect } from "@/util/prisma-types";
 import {
   Button,
   Modal,
@@ -17,17 +28,6 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { HiChevronRight, HiMail } from "react-icons/hi";
-import Background from "../../components/Background";
-import Descriptive from "../../components/Descriptive";
-import Framework from "../../components/Framework";
-import Markdown, { ToolbarItem } from "../../components/Markdown";
-import RenderMarkdown from "../../components/RenderMarkdown";
-import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
-import authorizedRoute from "../../util/auth";
-import clsx from "../../util/clsx";
-import { exclude } from "../../util/exclude";
-import prisma from "../../util/prisma";
-import { BlogPost, User, blogPostSelect } from "../../util/prisma-types";
 
 interface BlogProps {
   user: User;

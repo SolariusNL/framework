@@ -12,9 +12,9 @@ import { useForm } from "@mantine/form";
 import type { GetServerSidePropsContext, NextPage } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import OuterUI from "../layouts/OuterUI";
-import authorizedRoute from "../util/auth";
-import { setCookie } from "../util/cookies";
+import OuterUI from "@/layouts/OuterUI";
+import authorizedRoute from "@/util/auth";
+import { setCookie } from "@/util/cookies";
 
 interface FormValues {
   code: string;

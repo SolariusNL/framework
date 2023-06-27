@@ -1,3 +1,17 @@
+import { scoreDescriptions } from "@/components/EditGame/AgeRating";
+import { parse } from "@/components/RenderMarkdown";
+import IResponseBase from "@/types/api/IResponseBase";
+import Authorized, { Account } from "@/util/api/authorized";
+import registerAutomodHandler from "@/util/automod";
+import logger from "@/util/logger";
+import prisma from "@/util/prisma";
+import {
+  gameSelect,
+  nonCurrentUserSelect,
+  type User,
+} from "@/util/prisma-types";
+import { RateLimitMiddleware } from "@/util/rate-limit";
+import { logTransaction } from "@/util/transaction-history";
 import {
   GameEnvironment,
   GameGenre,
@@ -22,20 +36,6 @@ import * as Validate from "class-validator";
 import fetch from "node-fetch";
 import { default as sanitize, default as sanitizeHtml } from "sanitize-html";
 import { z } from "zod";
-import { scoreDescriptions } from "../../../components/EditGame/AgeRating";
-import { parse } from "../../../components/RenderMarkdown";
-import IResponseBase from "../../../types/api/IResponseBase";
-import Authorized, { Account } from "../../../util/api/authorized";
-import registerAutomodHandler from "../../../util/automod";
-import logger from "../../../util/logger";
-import prisma from "../../../util/prisma";
-import {
-  gameSelect,
-  nonCurrentUserSelect,
-  type User,
-} from "../../../util/prisma-types";
-import { RateLimitMiddleware } from "../../../util/rate-limit";
-import { logTransaction } from "../../../util/transaction-history";
 
 const commentAutomod = registerAutomodHandler("Game comment");
 const gameCreateAutomod = registerAutomodHandler("Game creation");

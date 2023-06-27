@@ -1,3 +1,4 @@
+import ShadedButton from "@/components/ShadedButton";
 import {
   Anchor,
   Badge,
@@ -10,7 +11,6 @@ import {
 import { EmployeeTask } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useState } from "react";
-import ShadedButton from "../../ShadedButton";
 
 const TaskCard: React.FC<{
   task: EmployeeTask;

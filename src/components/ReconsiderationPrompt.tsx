@@ -1,8 +1,8 @@
+import ShadedCard from "@/components/ShadedCard";
+import { isRestricted } from "@/data/reconsiderWords";
 import { Anchor, Badge, Code, Divider, Text } from "@mantine/core";
 import { openConfirmModal } from "@mantine/modals";
 import Link from "next/link";
-import { isRestricted } from "../data/reconsiderWords";
-import ShadedCard from "./ShadedCard";
 
 const sanitizeInappropriateContent = (
   content: string,

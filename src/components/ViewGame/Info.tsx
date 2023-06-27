@@ -1,8 +1,8 @@
+import ShadedCard from "@/components/ShadedCard";
+import ViewGameTab from "@/components/ViewGame/ViewGameTab";
+import { Game } from "@/util/prisma-types";
 import { Card, Text, TypographyStylesProvider } from "@mantine/core";
 import sanitize from "sanitize-html";
-import { Game } from "../../util/prisma-types";
-import ShadedCard from "../ShadedCard";
-import ViewGameTab from "./ViewGameTab";
 
 interface InfoTabProps {
   game: Game;

@@ -1,13 +1,13 @@
+import Descriptive from "@/components/Descriptive";
+import Grouped from "@/components/Settings/Grouped";
+import SideBySide from "@/components/Settings/SideBySide";
+import { useFrameworkUser } from "@/contexts/FrameworkUser";
 import { Button, MultiSelect, Stack, Switch, Textarea } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { ReceiveNotification } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useState } from "react";
 import { HiBadgeCheck, HiDocumentText, HiFlag } from "react-icons/hi";
-import { useFrameworkUser } from "../../contexts/FrameworkUser";
-import Descriptive from "../Descriptive";
-import Grouped from "../Settings/Grouped";
-import SideBySide from "../Settings/SideBySide";
 
 const Settings: React.FC = () => {
   const user = useFrameworkUser()!;

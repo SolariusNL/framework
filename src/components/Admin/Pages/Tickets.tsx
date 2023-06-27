@@ -1,3 +1,13 @@
+import ModernEmptyState from "@/components/ModernEmptyState";
+import RenderMarkdown from "@/components/RenderMarkdown";
+import ShadedButton from "@/components/ShadedButton";
+import ShadedCard from "@/components/ShadedCard";
+import Stateful from "@/components/Stateful";
+import UserContext from "@/components/UserContext";
+import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
+import getMediaUrl from "@/util/get-media";
+import { NonUser } from "@/util/prisma-types";
+import { supportSanitization } from "@/util/sanitize";
 import {
   Avatar,
   Badge,
@@ -16,16 +26,6 @@ import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
 import { HiCheckCircle, HiInformationCircle } from "react-icons/hi";
 import sanitize from "sanitize-html";
-import useAuthorizedUserStore from "../../../stores/useAuthorizedUser";
-import getMediaUrl from "../../../util/get-media";
-import { NonUser } from "../../../util/prisma-types";
-import { supportSanitization } from "../../../util/sanitize";
-import ModernEmptyState from "../../ModernEmptyState";
-import RenderMarkdown from "../../RenderMarkdown";
-import ShadedButton from "../../ShadedButton";
-import ShadedCard from "../../ShadedCard";
-import Stateful from "../../Stateful";
-import UserContext from "../../UserContext";
 
 const Tickets: React.FC = () => {
   const [loading, setLoading] = useState(false);

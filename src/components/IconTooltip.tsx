@@ -1,6 +1,6 @@
 import { Tooltip, useMantineColorScheme } from "@mantine/core";
 import { openModal } from "@mantine/modals";
-import clsx from "../util/clsx";
+import clsx from "@/util/clsx";
 
 type IconTooltipProps = {
   label: string;

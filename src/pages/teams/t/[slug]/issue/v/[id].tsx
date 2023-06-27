@@ -1,3 +1,17 @@
+import DataGrid from "@/components/DataGrid";
+import Markdown from "@/components/Markdown";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import Owner from "@/components/Owner";
+import RenderMarkdown from "@/components/RenderMarkdown";
+import ShadedCard from "@/components/ShadedCard";
+import TeamsViewProvider from "@/components/Teams/TeamsView";
+import { TeamType } from "@/pages/teams";
+import authorizedRoute from "@/util/auth";
+import clsx from "@/util/clsx";
+import getMediaUrl from "@/util/get-media";
+import prisma from "@/util/prisma";
+import { NonUser, User, nonCurrentUserSelect } from "@/util/prisma-types";
+import { getTeam } from "@/util/teams";
 import {
   ActionIcon,
   Anchor,
@@ -7,7 +21,6 @@ import {
   Divider,
   Modal,
   Select,
-  Stack,
   Text,
   TextInput,
   Title,
@@ -23,32 +36,12 @@ import {
   HiChat,
   HiCheck,
   HiCheckCircle,
-  HiCube,
   HiExclamation,
   HiOutlineCube,
   HiOutlineDesktopComputer,
   HiOutlineUser,
-  HiUser,
   HiX,
 } from "react-icons/hi";
-import { TeamType } from "../../../..";
-import Markdown from "../../../../../../components/Markdown";
-import ModernEmptyState from "../../../../../../components/ModernEmptyState";
-import Owner from "../../../../../../components/Owner";
-import RenderMarkdown from "../../../../../../components/RenderMarkdown";
-import ShadedCard from "../../../../../../components/ShadedCard";
-import TeamsViewProvider from "../../../../../../components/Teams/TeamsView";
-import authorizedRoute from "../../../../../../util/auth";
-import clsx from "../../../../../../util/clsx";
-import getMediaUrl from "../../../../../../util/get-media";
-import prisma from "../../../../../../util/prisma";
-import {
-  NonUser,
-  User,
-  nonCurrentUserSelect,
-} from "../../../../../../util/prisma-types";
-import { getTeam } from "../../../../../../util/teams";
-import DataGrid from "../../../../../../components/DataGrid";
 
 export type TeamIssueViewProps = {
   user: User;

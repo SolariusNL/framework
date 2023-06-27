@@ -1,6 +1,6 @@
 import { Checkbox, CheckboxProps, Text } from "@mantine/core";
 import { ChangeEvent } from "react";
-import { BLACK } from "../pages/teams/t/[slug]/issue/create";
+import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
 
 interface LabelledCheckboxProps {
   label: string;

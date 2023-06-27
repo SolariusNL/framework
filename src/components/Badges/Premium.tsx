@@ -1,5 +1,5 @@
 import { HiOutlineSparkles } from "react-icons/hi";
-import { User } from "../../util/prisma-types";
+import { User } from "@/util/prisma-types";
 import Badge from "./Badge";
 
 const PremiumBadge = ({ user }: { user: User }) => {

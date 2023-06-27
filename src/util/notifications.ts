@@ -1,11 +1,11 @@
+import prisma from "@/util/prisma";
 import { NotificationType } from "@prisma/client";
-import prisma from "./prisma";
 
 async function createNotification(
   uid: number,
   type: NotificationType,
   message: string,
-  title: string,
+  title: string
 ) {
   await prisma.notification.create({
     data: {

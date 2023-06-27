@@ -1,3 +1,19 @@
+import Descriptive from "@/components/Descriptive";
+import ElectronTitlebar from "@/components/ElectronTitlebar";
+import Rating from "@/components/Rating";
+import Stateful from "@/components/Stateful";
+import { FrameworkUserProvider } from "@/contexts/FrameworkUser";
+import SocketProvider from "@/contexts/SocketContextProvider";
+import { UserInformationWrapper } from "@/contexts/UserInformationDialog";
+import { store } from "@/reducers/store";
+import useAmoled from "@/stores/useAmoled";
+import useFastFlags, { fetchFlags } from "@/stores/useFastFlags";
+import useFeedback from "@/stores/useFeedback";
+import { Flow, Flows } from "@/stores/useFlow";
+import "@/styles/fonts.css";
+import "@/styles/framework.css";
+import "@/styles/tw.css";
+import { AMOLED_COLORS } from "@/util/constants";
 import {
   AlertStylesParams,
   Anchor,
@@ -17,8 +33,8 @@ import {
   PaginationStylesParams,
   PasswordInput,
   Text,
-  Textarea,
   TextInput,
+  Textarea,
   TooltipStylesParams,
 } from "@mantine/core";
 import { useLocalStorage } from "@mantine/hooks";
@@ -29,6 +45,7 @@ import {
 } from "@mantine/notifications";
 import { MDXProvider } from "@mdx-js/react";
 import { getCookie, setCookie } from "cookies-next";
+import "flags.config";
 import isElectron from "is-electron";
 import { GetServerSidePropsContext } from "next";
 import { DefaultSeo } from "next-seo";
@@ -37,45 +54,30 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import NextNProgress from "nextjs-progressbar";
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { HiArrowRight, HiCheckCircle, HiExclamation } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import { Provider } from "react-redux";
-import "../../flags.config";
-import Descriptive from "../components/Descriptive";
-import ElectronTitlebar from "../components/ElectronTitlebar";
-import Rating from "../components/Rating";
-import Stateful from "../components/Stateful";
-import { FrameworkUserProvider } from "../contexts/FrameworkUser";
-import SocketProvider from "../contexts/SocketContextProvider";
-import { UserInformationWrapper } from "../contexts/UserInformationDialog";
-import { store } from "../reducers/store";
-import useAmoled from "../stores/useAmoled";
-import useFastFlags, { fetchFlags } from "../stores/useFastFlags";
-import useFeedback from "../stores/useFeedback";
-import useFlow, { Flow, Flows } from "../stores/useFlow";
-import "../styles/fonts.css";
-import "../styles/framework.css";
-import "../styles/tw.css";
-import { AMOLED_COLORS } from "../util/constants";
 
-const Framework = (
-  props: AppProps & {
-    colorScheme: ColorScheme;
-    highContrast: boolean;
-    amoled: boolean;
-  }
-) => {
+type StyleProps = {
+  colorScheme: ColorScheme;
+  highContrast: boolean;
+  amoled: boolean;
+};
+type FrameworkProps = AppProps & StyleProps;
+
+const Framework: FC<FrameworkProps> & {
+  getInitialProps: ({ ctx }: { ctx: GetServerSidePropsContext }) => StyleProps;
+} = (props) => {
   const { Component, pageProps } = props;
   const [colorScheme, setColorScheme] = useState<ColorScheme>(
     props.colorScheme
   );
-  const [highContrast, setHighContrast] = useState<boolean>(props.highContrast);
-  const [amoled, setAmoled] = useState<boolean>(props.amoled);
+  const [highContrast] = useState<boolean>(props.highContrast);
+  const [amoled] = useState<boolean>(props.amoled);
   const [loading, setLoading] = useState(false);
   const { opened: ratingModal, setOpened: setRatingModal } = useFeedback();
-  const { activeFlow, toggleFlow } = useFlow();
-  const [seen, setSeen] = useState(false);
+  const [_seen, setSeen] = useState(false);
   const { setEnabled } = useAmoled();
 
   const submitRating = async (stars: number, feedback: string = "") => {
@@ -859,10 +861,11 @@ const Framework = (
   );
 };
 
-Framework.getInitialProps = ({ ctx }: { ctx: GetServerSidePropsContext }) => ({
-  colorScheme: getCookie("mantine-color-scheme", ctx) || "dark",
-  highContrast: getCookie("mantine-high-contrast", ctx),
-  amoled: getCookie("mantine-amoled", ctx),
-});
+Framework.getInitialProps = ({ ctx }) =>
+  ({
+    colorScheme: getCookie("mantine-color-scheme", ctx) || "dark",
+    highContrast: getCookie("mantine-high-contrast", ctx),
+    amoled: getCookie("mantine-amoled", ctx),
+  } as unknown as StyleProps);
 
 export default Framework;

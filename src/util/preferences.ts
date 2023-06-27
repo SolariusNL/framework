@@ -1,7 +1,7 @@
-import usePreferences from "../stores/usePreferences";
-import IResponseBase from "../types/api/IResponseBase";
-import fetchJson from "./fetch";
-import { UserPreferences } from "./types";
+import usePreferences from "@/stores/usePreferences";
+import IResponseBase from "@/types/api/IResponseBase";
+import fetchJson from "@/util/fetch";
+import { UserPreferences } from "@/util/types";
 
 namespace Preferences {
   export async function getPreferences() {

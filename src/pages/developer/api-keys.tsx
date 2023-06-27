@@ -1,3 +1,10 @@
+import ModernEmptyState from "@/components/ModernEmptyState";
+import apiKeyPermissions from "@/data/apiKeyPermissions";
+import Developer from "@/layouts/DeveloperLayout";
+import ServiceUnavailable from "@/pages/503";
+import authorizedRoute from "@/util/auth";
+import { Fw } from "@/util/fw";
+import { User } from "@/util/prisma-types";
 import {
   ActionIcon,
   Button,
@@ -20,13 +27,6 @@ import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext } from "next";
 import { useEffect, useState } from "react";
 import { HiCheckCircle, HiEye, HiTrash } from "react-icons/hi";
-import ModernEmptyState from "../../components/ModernEmptyState";
-import apiKeyPermissions from "../../data/apiKeyPermissions";
-import Developer from "../../layouts/DeveloperLayout";
-import authorizedRoute from "../../util/auth";
-import { Fw } from "../../util/fw";
-import { User } from "../../util/prisma-types";
-import ServiceUnavailable from "../503";
 
 interface DeveloperProps {
   user: User;

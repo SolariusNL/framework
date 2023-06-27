@@ -1,3 +1,15 @@
+import Descriptive from "@/components/Descriptive";
+import EditGameTab from "@/components/EditGame/EditGameTab";
+import { Section } from "@/components/Home/FriendsWidget";
+import Markdown, { ToolbarItem } from "@/components/Markdown";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import RenderMarkdown from "@/components/RenderMarkdown";
+import ShadedCard from "@/components/ShadedCard";
+import Stateful from "@/components/Stateful";
+import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
+import IResponseBase from "@/types/api/IResponseBase";
+import fetchJson from "@/util/fetch";
+import { Game } from "@/util/prisma-types";
 import {
   Badge,
   Button,
@@ -23,18 +35,6 @@ import {
   HiTrash,
   HiXCircle,
 } from "react-icons/hi";
-import { BLACK } from "../../pages/teams/t/[slug]/issue/create";
-import IResponseBase from "../../types/api/IResponseBase";
-import fetchJson from "../../util/fetch";
-import { Game } from "../../util/prisma-types";
-import Descriptive from "../Descriptive";
-import { Section } from "../Home/FriendsWidget";
-import Markdown, { ToolbarItem } from "../Markdown";
-import ModernEmptyState from "../ModernEmptyState";
-import RenderMarkdown from "../RenderMarkdown";
-import ShadedCard from "../ShadedCard";
-import Stateful from "../Stateful";
-import EditGameTab from "./EditGameTab";
 
 type FundingProps = {
   game: Game;

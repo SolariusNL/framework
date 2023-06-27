@@ -1,10 +1,10 @@
+import Verified from "@/components/Verified";
+import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
+import getMediaUrl from "@/util/get-media";
+import { NonUser } from "@/util/prisma-types";
 import { ActionIcon, Avatar, Text } from "@mantine/core";
 import { FC } from "react";
 import { HiPlus } from "react-icons/hi";
-import useAuthorizedUserStore from "../stores/useAuthorizedUser";
-import getMediaUrl from "../util/get-media";
-import { NonUser } from "../util/prisma-types";
-import Verified from "./Verified";
 
 type StoryAvatar = {
   user: NonUser;

@@ -1,8 +1,8 @@
+import IconTooltip from "@/components/IconTooltip";
+import clsx from "@/util/clsx";
 import { Text, Title } from "@mantine/core";
 import { FC } from "react";
 import { HiBadgeCheck } from "react-icons/hi";
-import clsx from "../util/clsx";
-import IconTooltip from "./IconTooltip";
 
 type VerifiedProps = React.HTMLAttributes<HTMLDivElement>;
 

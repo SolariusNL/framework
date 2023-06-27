@@ -3,11 +3,11 @@ import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { useState } from "react";
 import { HiCheck, HiLockClosed } from "react-icons/hi";
-import CheckboxCard from "../../components/CheckboxCard";
-import Framework from "../../components/Framework";
-import authorizedRoute from "../../util/auth";
-import getStripe from "../../util/get-stripe";
-import { User } from "../../util/prisma-types";
+import CheckboxCard from "@/components/CheckboxCard";
+import Framework from "@/components/Framework";
+import authorizedRoute from "@/util/auth";
+import getStripe from "@/util/get-stripe";
+import { User } from "@/util/prisma-types";
 
 interface BuyTicketsProps {
   user: User;

@@ -1,3 +1,11 @@
+import LabelledCheckbox from "@/components/LabelledCheckbox";
+import { updateAccount } from "@/components/Settings/AccountTab";
+import SettingsTab from "@/components/Settings/SettingsTab";
+import SideBySide from "@/components/Settings/SideBySide";
+import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
+import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
+import { getCookie } from "@/util/cookies";
+import { User } from "@/util/prisma-types";
 import {
   Alert,
   Button,
@@ -24,14 +32,6 @@ import {
   HiPencil,
   HiXCircle,
 } from "react-icons/hi";
-import { BLACK } from "../../pages/teams/t/[slug]/issue/create";
-import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
-import { getCookie } from "../../util/cookies";
-import { User } from "../../util/prisma-types";
-import LabelledCheckbox from "../LabelledCheckbox";
-import { updateAccount } from "./AccountTab";
-import SettingsTab from "./SettingsTab";
-import SideBySide from "./SideBySide";
 
 interface SecurityTabProps {
   user: User;

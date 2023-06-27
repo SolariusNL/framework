@@ -1,3 +1,17 @@
+import Descriptive from "@/components/Descriptive";
+import { Section } from "@/components/Home/FriendsWidget";
+import Markdown, { ToolbarItem } from "@/components/Markdown";
+import ShadedCard from "@/components/ShadedCard";
+import Developer from "@/layouts/DeveloperLayout";
+import SidebarTabNavigation from "@/layouts/SidebarTabNavigation";
+import ServiceUnavailable from "@/pages/503";
+import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
+import IResponseBase from "@/types/api/IResponseBase";
+import authorizedRoute from "@/util/auth";
+import fetchJson from "@/util/fetch";
+import { Fw } from "@/util/fw";
+import prisma from "@/util/prisma";
+import { NonUser, User, nonCurrentUserSelect } from "@/util/prisma-types";
 import {
   Button,
   Checkbox,
@@ -25,20 +39,6 @@ import {
   HiUserGroup,
   HiXCircle,
 } from "react-icons/hi";
-import Descriptive from "../../components/Descriptive";
-import { Section } from "../../components/Home/FriendsWidget";
-import Markdown, { ToolbarItem } from "../../components/Markdown";
-import ShadedCard from "../../components/ShadedCard";
-import Developer from "../../layouts/DeveloperLayout";
-import SidebarTabNavigation from "../../layouts/SidebarTabNavigation";
-import IResponseBase from "../../types/api/IResponseBase";
-import authorizedRoute from "../../util/auth";
-import fetchJson from "../../util/fetch";
-import { Fw } from "../../util/fw";
-import prisma from "../../util/prisma";
-import { NonUser, User, nonCurrentUserSelect } from "../../util/prisma-types";
-import ServiceUnavailable from "../503";
-import { BLACK } from "../teams/t/[slug]/issue/create";
 
 type DeveloperProfileEx = DeveloperProfile & {
   user: NonUser;

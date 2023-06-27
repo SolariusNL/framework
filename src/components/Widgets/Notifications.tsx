@@ -17,13 +17,13 @@ import {
   HiGift,
   HiInformationCircle,
 } from "react-icons/hi";
-import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
+import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
 import useExperimentsStore, {
   ExperimentId,
-} from "../../stores/useExperimentsStore";
-import { Flow } from "../../stores/useFlow";
-import { Fw } from "../../util/fw";
-import { getRelativeTime } from "../../util/relative-time";
+} from "@/stores/useExperimentsStore";
+import { Flow } from "@/stores/useFlow";
+import { Fw } from "@/util/fw";
+import { getRelativeTime } from "@/util/relative-time";
 
 const Notifications: React.FC = () => {
   const [activePage, setActivePage] = useState(1);

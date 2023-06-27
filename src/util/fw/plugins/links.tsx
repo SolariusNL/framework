@@ -1,7 +1,7 @@
+import { Fw } from "@/util/fw";
+import { Plugin } from "@/util/fw/string-parser";
 import { Anchor } from "@mantine/core";
 import { randomId } from "@mantine/hooks";
-import { Fw } from "../../fw";
-import { Plugin } from "../string-parser";
 
 const linkPlugin: Plugin = {
   regex:

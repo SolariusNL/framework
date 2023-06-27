@@ -1,3 +1,5 @@
+import RenderMarkdown from "@/components/RenderMarkdown";
+import clsx from "@/util/clsx";
 import {
   Button,
   Modal,
@@ -6,8 +8,6 @@ import {
   useMantineColorScheme,
 } from "@mantine/core";
 import { HiCheckCircle, HiStop } from "react-icons/hi";
-import clsx from "../util/clsx";
-import RenderMarkdown from "./RenderMarkdown";
 
 interface PurchaseConfirmationProps {
   productTitle: string;

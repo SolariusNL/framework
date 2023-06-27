@@ -1,3 +1,7 @@
+import Descriptive from "@/components/Descriptive";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import RichText from "@/components/RichText";
+import UserSelect from "@/components/UserSelect";
 import {
   Button,
   Modal,
@@ -12,11 +16,6 @@ import { EmployeeTask } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
 import { HiCheckCircle, HiPencil } from "react-icons/hi";
-import { number } from "zod";
-import Descriptive from "../../Descriptive";
-import ModernEmptyState from "../../ModernEmptyState";
-import RichText from "../../RichText";
-import UserSelect from "../../UserSelect";
 import TaskCard from "./TaskCard";
 
 const Tasks: React.FC = () => {

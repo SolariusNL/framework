@@ -1,12 +1,12 @@
+import BioMesh from "@/components/Mesh/BioMesh";
+import CatalogMesh from "@/components/Mesh/CatalogMesh";
+import CreateGameMesh from "@/components/Mesh/CreateGameMesh";
+import FollowMesh from "@/components/Mesh/FollowMesh";
+import LikeGameMesh from "@/components/Mesh/LikeGameMesh";
+import ReferMesh from "@/components/Mesh/ReferMesh";
+import TealSkyMesh from "@/components/Mesh/TealSkyMesh";
+import { Game } from "@/util/prisma-types";
 import React from "react";
-import { Game } from "../util/prisma-types";
-import BioMesh from "./Mesh/BioMesh";
-import CatalogMesh from "./Mesh/CatalogMesh";
-import CreateGameMesh from "./Mesh/CreateGameMesh";
-import FollowMesh from "./Mesh/FollowMesh";
-import LikeGameMesh from "./Mesh/LikeGameMesh";
-import ReferMesh from "./Mesh/ReferMesh";
-import TealSkyMesh from "./Mesh/TealSkyMesh";
 
 interface PlaceholderGameResourceProps {
   height?: number;

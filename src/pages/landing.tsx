@@ -28,17 +28,17 @@ import {
   HiWifi,
 } from "react-icons/hi";
 import Typewriter from "typewriter-effect";
-import Background from "../components/Background";
-import Footer from "../components/Footer";
-import Faq from "../components/Landing/Faq";
-import Features from "../components/Landing/Features";
-import Power from "../components/Landing/Power";
-import Pros from "../components/Landing/Pros";
-import LandingHeader from "../components/LandingHeader";
-import Bit from "../icons/Bit";
-import Rocket from "../icons/Rocket";
-import clsx from "../util/clsx";
-import useMediaQuery from "../util/media-query";
+import Background from "@/components/Background";
+import Footer from "@/components/Footer";
+import Faq from "@/components/Landing/Faq";
+import Features from "@/components/Landing/Features";
+import Power from "@/components/Landing/Power";
+import Pros from "@/components/Landing/Pros";
+import LandingHeader from "@/components/LandingHeader";
+import Bit from "@/icons/Bit";
+import Rocket from "@/icons/Rocket";
+import clsx from "@/util/clsx";
+import useMediaQuery from "@/util/media-query";
 
 const useStyles = createStyles((theme) => ({
   wrapper: {

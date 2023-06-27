@@ -1,9 +1,9 @@
+import { exclude } from "@/util/exclude";
+import prisma from "@/util/prisma";
+import { User, userSelect } from "@/util/prisma-types";
 import { OAuthApplication, Session } from "@prisma/client";
 import { GetServerSidePropsContext } from "next";
 import { getClientIp } from "request-ip";
-import { exclude } from "./exclude";
-import prisma from "./prisma";
-import { User, userSelect } from "./prisma-types";
 
 const authorizedRoute = async (
   context: GetServerSidePropsContext,

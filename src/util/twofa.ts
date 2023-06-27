@@ -1,5 +1,5 @@
+import prisma from "@/util/prisma";
 import speakeasy from "speakeasy";
-import prisma from "./prisma";
 
 const generateOTP = async (uid: number) => {
   const { ascii, hex, base32, otpauth_url } = speakeasy.generateSecret({

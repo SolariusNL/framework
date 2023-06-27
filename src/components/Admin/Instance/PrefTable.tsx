@@ -3,7 +3,7 @@ import { openConfirmModal } from "@mantine/modals";
 import { AdminPermission } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { HiExclamationCircle } from "react-icons/hi";
-import { useFrameworkUser } from "../../../contexts/FrameworkUser";
+import { useFrameworkUser } from "@/contexts/FrameworkUser";
 
 interface PrefTableProps {
   data: Map<string, string>;

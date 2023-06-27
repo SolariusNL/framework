@@ -1,9 +1,9 @@
+import ShadedButton from "@/components/ShadedButton";
+import Verified from "@/components/Verified";
+import getMediaUrl from "@/util/get-media";
+import { NonUser } from "@/util/prisma-types";
 import { Avatar, Button, Group, Indicator, Text } from "@mantine/core";
 import Link from "next/link";
-import getMediaUrl from "../util/get-media";
-import { NonUser } from "../util/prisma-types";
-import ShadedButton from "./ShadedButton";
-import Verified from "./Verified";
 
 interface UserCardProps {
   user: NonUser;

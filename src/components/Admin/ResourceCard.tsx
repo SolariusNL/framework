@@ -1,6 +1,6 @@
-import { createStyles, Paper, Text, ThemeIcon } from "@mantine/core";
+import ShadedCard from "@/components/ShadedCard";
+import { createStyles, Text, ThemeIcon } from "@mantine/core";
 import Link from "next/link";
-import ShadedCard from "../ShadedCard";
 
 const useStyles = createStyles((theme) => ({
   card: {
@@ -36,11 +36,7 @@ const ResourceCard = ({
     <Link href={link}>
       <ShadedCard withBorder className={classes.card}>
         <div>
-          <ThemeIcon
-            size="xl"
-            radius="md"
-            variant="light"
-          >
+          <ThemeIcon size="xl" radius="md" variant="light">
             {icon}
           </ThemeIcon>
           <Text size="xl" weight={500} mt="md">

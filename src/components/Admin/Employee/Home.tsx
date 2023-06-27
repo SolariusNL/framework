@@ -1,3 +1,8 @@
+import ModernEmptyState from "@/components/ModernEmptyState";
+import ShadedButton from "@/components/ShadedButton";
+import ShadedCard from "@/components/ShadedCard";
+import getMediaUrl from "@/util/get-media";
+import { NonUser } from "@/util/prisma-types";
 import {
   Avatar,
   Badge,
@@ -11,11 +16,6 @@ import { EmployeeRole, EmployeeTask } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import getMediaUrl from "../../../util/get-media";
-import { NonUser } from "../../../util/prisma-types";
-import ModernEmptyState from "../../ModernEmptyState";
-import ShadedButton from "../../ShadedButton";
-import ShadedCard from "../../ShadedCard";
 import TaskCard from "./TaskCard";
 
 const EmployeeHome: React.FC = () => {

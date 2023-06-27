@@ -22,17 +22,17 @@ import {
   HiTicket,
   HiViewList,
 } from "react-icons/hi";
-import FilterIndicator from "../../components/FilterIndicator";
-import Framework from "../../components/Framework";
-import { Section } from "../../components/Home/FriendsWidget";
-import ModernEmptyState from "../../components/ModernEmptyState";
-import ShadedButton from "../../components/ShadedButton";
-import TransactionsWidget from "../../components/Widgets/Transactions";
-import SidebarTabNavigation from "../../layouts/SidebarTabNavigation";
-import authorizedRoute from "../../util/auth";
-import getMediaUrl from "../../util/get-media";
-import { formatNumberWithCommas } from "../../util/num";
-import { User } from "../../util/prisma-types";
+import FilterIndicator from "@/components/FilterIndicator";
+import Framework from "@/components/Framework";
+import { Section } from "@/components/Home/FriendsWidget";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import ShadedButton from "@/components/ShadedButton";
+import TransactionsWidget from "@/components/Widgets/Transactions";
+import SidebarTabNavigation from "@/layouts/SidebarTabNavigation";
+import authorizedRoute from "@/util/auth";
+import getMediaUrl from "@/util/get-media";
+import { formatNumberWithCommas } from "@/util/num";
+import { User } from "@/util/prisma-types";
 
 type TicketsProps = {
   user: User;

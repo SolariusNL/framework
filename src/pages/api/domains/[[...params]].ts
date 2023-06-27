@@ -10,9 +10,9 @@ import {
 import { randomUUID } from "crypto";
 import { promises } from "node:dns";
 import { z } from "zod";
-import Authorized, { Account } from "../../../util/api/authorized";
-import prisma from "../../../util/prisma";
-import type { User } from "../../../util/prisma-types";
+import Authorized, { Account } from "@/util/api/authorized";
+import prisma from "@/util/prisma";
+import type { User } from "@/util/prisma-types";
 
 const domainSchema = z.object({
   domain: z

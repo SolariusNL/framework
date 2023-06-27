@@ -1,7 +1,6 @@
-import { Loader, Text, Title } from "@mantine/core";
-import { User } from "../../util/prisma-types";
-import ConnectionsWidget from "../Widgets/Connections";
-import InventTab from "./InventTab";
+import InventTab from "@/components/Invent/InventTab";
+import { User } from "@/util/prisma-types";
+import { Loader, Text } from "@mantine/core";
 
 interface ConnectionsProps {
   user: User;

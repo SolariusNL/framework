@@ -1,3 +1,6 @@
+import InventTab from "@/components/Invent/InventTab";
+import { getCookie } from "@/util/cookies";
+import { User } from "@/util/prisma-types";
 import {
   ActionIcon,
   Alert,
@@ -11,9 +14,6 @@ import { showNotification } from "@mantine/notifications";
 import { NucleusKey } from "@prisma/client";
 import React from "react";
 import { HiCheckCircle, HiXCircle } from "react-icons/hi";
-import { getCookie } from "../../util/cookies";
-import { User } from "../../util/prisma-types";
-import InventTab from "./InventTab";
 
 interface NucleusProps {
   user: User;

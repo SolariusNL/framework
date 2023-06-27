@@ -1,10 +1,10 @@
+import SocketContext from "@/contexts/Socket";
 import { showNotification } from "@mantine/notifications";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { HiBell, HiCheck, HiXCircle } from "react-icons/hi";
-import { io, Socket } from "socket.io-client";
-import SocketContext from "./Socket";
+import { HiBell, HiXCircle } from "react-icons/hi";
+import { Socket, io } from "socket.io-client";
 
 const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
   children,

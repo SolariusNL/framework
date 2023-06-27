@@ -1,3 +1,9 @@
+import { Friend } from "@/components/Home/FriendsWidget";
+import TeamsViewProvider from "@/components/Teams/TeamsView";
+import { TeamType } from "@/pages/teams";
+import authorizedRoute from "@/util/auth";
+import { NonUser, User } from "@/util/prisma-types";
+import { getTeam } from "@/util/teams";
 import {
   ActionIcon,
   Button,
@@ -19,12 +25,6 @@ import {
   HiUserRemove,
   HiXCircle,
 } from "react-icons/hi";
-import { TeamType } from "../..";
-import { Friend } from "../../../../components/Home/FriendsWidget";
-import TeamsViewProvider from "../../../../components/Teams/TeamsView";
-import authorizedRoute from "../../../../util/auth";
-import { NonUser, User } from "../../../../util/prisma-types";
-import { getTeam } from "../../../../util/teams";
 
 export type TeamViewMembersProps = {
   user: User;

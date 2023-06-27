@@ -1,3 +1,5 @@
+import ModernEmptyState from "@/components/ModernEmptyState";
+import shutdownNucleus from "@/util/fetch/shutdownNucleus";
 import {
   ActionIcon,
   Badge,
@@ -15,8 +17,6 @@ import { Connection } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import React, { useEffect } from "react";
 import { HiStop, HiTrash, HiWifi, HiXCircle } from "react-icons/hi";
-import shutdownNucleus from "../../util/fetch/shutdownNucleus";
-import ModernEmptyState from "../ModernEmptyState";
 
 interface ConnectionsWidgetProps {
   filterId?: number;

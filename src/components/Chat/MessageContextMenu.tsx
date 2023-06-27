@@ -1,3 +1,8 @@
+import ContextMenu from "@/components/ContextMenu";
+import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
+import IResponseBase from "@/types/api/IResponseBase";
+import clsx from "@/util/clsx";
+import fetchJson from "@/util/fetch";
 import { Menu, Text } from "@mantine/core";
 import { useClipboard } from "@mantine/hooks";
 import { openConfirmModal } from "@mantine/modals";
@@ -5,11 +10,6 @@ import { showNotification } from "@mantine/notifications";
 import { ChatMessage } from "@prisma/client";
 import { FC } from "react";
 import { HiCheckCircle, HiClipboard, HiTrash } from "react-icons/hi";
-import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
-import IResponseBase from "../../types/api/IResponseBase";
-import clsx from "../../util/clsx";
-import fetchJson from "../../util/fetch";
-import ContextMenu from "../ContextMenu";
 
 type MessageContextMenuProps = {
   children: React.ReactNode;

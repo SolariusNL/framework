@@ -10,8 +10,8 @@ import {
 import { useForm } from "@mantine/form";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/router";
-import Rocket from "../../icons/Rocket";
-import { BLACK } from "../../pages/teams/t/[slug]/issue/create";
+import Rocket from "@/icons/Rocket";
+import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
 
 interface CreateChecklistProps {
   opened: boolean;

@@ -1,3 +1,9 @@
+import Descriptive from "@/components/Descriptive";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import RichText from "@/components/RichText";
+import ShadedCard from "@/components/ShadedCard";
+import UpdateCard from "@/components/UpdateCard";
+import { Game } from "@/util/prisma-types";
 import {
   Button,
   Modal,
@@ -13,12 +19,6 @@ import { GameUpdateLog, GameUpdateLogType } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
 import { HiCheckCircle, HiPlus, HiX } from "react-icons/hi";
-import { Game } from "../../util/prisma-types";
-import Descriptive from "../Descriptive";
-import ModernEmptyState from "../ModernEmptyState";
-import RichText from "../RichText";
-import ShadedCard from "../ShadedCard";
-import UpdateCard from "../UpdateCard";
 
 interface UpdatesProps {
   game: Game;

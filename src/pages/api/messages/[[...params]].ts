@@ -5,10 +5,10 @@ import {
   Param,
   Post,
 } from "@storyofams/next-api-decorators";
-import Authorized, { Account } from "../../../util/api/authorized";
-import prisma from "../../../util/prisma";
-import { messageSelect } from "../../../util/prisma-types";
-import type { User } from "../../../util/prisma-types";
+import Authorized, { Account } from "@/util/api/authorized";
+import prisma from "@/util/prisma";
+import { messageSelect } from "@/util/prisma-types";
+import type { User } from "@/util/prisma-types";
 
 class MessageRouter {
   @Post("/new/:recipientId")

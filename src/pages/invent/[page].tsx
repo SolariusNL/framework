@@ -19,22 +19,22 @@ import {
   HiViewGrid,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
-import StudioPromptBackground from "../../assets/subtlebackground.png";
-import Framework from "../../components/Framework";
-import Advertisements from "../../components/Invent/Advertisements";
-import GamePasses from "../../components/Invent/GamePasses";
-import GameUpdates from "../../components/Invent/GameUpdates";
-import Games from "../../components/Invent/Games";
-import Nucleus from "../../components/Invent/Nucleus";
-import Secrets from "../../components/Invent/Secrets";
-import Shirts from "../../components/Invent/Shirts";
-import Snippets from "../../components/Invent/Snippets";
-import Sounds from "../../components/Invent/Sounds";
-import TabNav from "../../components/TabNav";
-import authorizedRoute from "../../util/auth";
-import useMediaQuery from "../../util/media-query";
-import prisma from "../../util/prisma";
-import { User, gameSelect } from "../../util/prisma-types";
+import StudioPromptBackground from "@/assets/subtlebackground.png";
+import Framework from "@/components/Framework";
+import Advertisements from "@/components/Invent/Advertisements";
+import GamePasses from "@/components/Invent/GamePasses";
+import GameUpdates from "@/components/Invent/GameUpdates";
+import Games from "@/components/Invent/Games";
+import Nucleus from "@/components/Invent/Nucleus";
+import Secrets from "@/components/Invent/Secrets";
+import Shirts from "@/components/Invent/Shirts";
+import Snippets from "@/components/Invent/Snippets";
+import Sounds from "@/components/Invent/Sounds";
+import TabNav from "@/components/TabNav";
+import authorizedRoute from "@/util/auth";
+import useMediaQuery from "@/util/media-query";
+import prisma from "@/util/prisma";
+import { User, gameSelect } from "@/util/prisma-types";
 
 interface InventProps {
   user: User;

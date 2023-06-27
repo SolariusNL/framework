@@ -1,3 +1,10 @@
+import Copy from "@/components/Copy";
+import InventTab from "@/components/Invent/InventTab";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import abbreviateNumber from "@/util/abbreviate";
+import shutdownNucleus from "@/util/fetch/shutdownNucleus";
+import getMediaUrl from "@/util/get-media";
+import { User } from "@/util/prisma-types";
 import {
   ActionIcon,
   Badge,
@@ -35,13 +42,6 @@ import {
   HiUsers,
   HiXCircle,
 } from "react-icons/hi";
-import abbreviateNumber from "../../util/abbreviate";
-import shutdownNucleus from "../../util/fetch/shutdownNucleus";
-import getMediaUrl from "../../util/get-media";
-import { User } from "../../util/prisma-types";
-import Copy from "../Copy";
-import ModernEmptyState from "../ModernEmptyState";
-import InventTab from "./InventTab";
 
 interface GamesProps {
   user: User;

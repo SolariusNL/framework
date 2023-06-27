@@ -6,13 +6,13 @@ import React from "react";
 import { HiSearch, HiSortAscending } from "react-icons/hi";
 import InfiniteScroll from "react-infinite-scroller";
 import { TeamType } from ".";
-import ModernEmptyState from "../../components/ModernEmptyState";
-import ShadedCard from "../../components/ShadedCard";
-import TeamCard from "../../components/Teams/Team";
-import TeamsProvider from "../../components/Teams/Teams";
-import authorizedRoute from "../../util/auth";
-import clsx from "../../util/clsx";
-import { User } from "../../util/prisma-types";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import ShadedCard from "@/components/ShadedCard";
+import TeamCard from "@/components/Teams/Team";
+import TeamsProvider from "@/components/Teams/Teams";
+import authorizedRoute from "@/util/auth";
+import clsx from "@/util/clsx";
+import { User } from "@/util/prisma-types";
 
 type TeamsDiscoverProps = {
   user: User;

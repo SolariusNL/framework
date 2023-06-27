@@ -1,3 +1,9 @@
+import SettingsTab from "@/components/Settings/SettingsTab";
+import SideBySide from "@/components/Settings/SideBySide";
+import ShadedCard from "@/components/ShadedCard";
+import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
+import { User } from "@/util/prisma-types";
+import { getSubscriptionTypeString } from "@/util/universe/subscription";
 import {
   Badge,
   Button,
@@ -18,12 +24,6 @@ import {
   HiInformationCircle,
   HiStop,
 } from "react-icons/hi";
-import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
-import { User } from "../../util/prisma-types";
-import { getSubscriptionTypeString } from "../../util/universe/subscription";
-import ShadedCard from "../ShadedCard";
-import SettingsTab from "./SettingsTab";
-import SideBySide from "./SideBySide";
 
 interface SubscriptionTabProps {
   user: User;

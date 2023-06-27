@@ -1,3 +1,6 @@
+import Framework from "@/components/Framework";
+import IntegratedTabs from "@/components/Framework/IntegratedTabs";
+import { User } from "@/util/prisma-types";
 import Link from "next/link";
 import {
   HiExclamation,
@@ -5,13 +8,9 @@ import {
   HiPaperClip,
   HiPlus,
   HiTicket,
-  HiViewGrid,
   HiViewList,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
-import { User } from "../../util/prisma-types";
-import Framework from "../Framework";
-import IntegratedTabs from "../Framework/IntegratedTabs";
 
 type TeamsProps = {
   user: User;

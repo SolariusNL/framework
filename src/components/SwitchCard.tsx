@@ -1,7 +1,7 @@
 import { Card, createStyles, Group, Switch, Text } from "@mantine/core";
-import useAmoled from "../stores/useAmoled";
-import clsx from "../util/clsx";
-import { AMOLED_COLORS } from "../util/constants";
+import useAmoled from "@/stores/useAmoled";
+import clsx from "@/util/clsx";
+import { AMOLED_COLORS } from "@/util/constants";
 
 const useStyles = createStyles((theme) => ({
   card: {

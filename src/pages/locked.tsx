@@ -2,10 +2,10 @@ import { Button, Text } from "@mantine/core";
 import { GetServerSideProps } from "next";
 import { FC } from "react";
 import { HiLogout, HiMail, HiXCircle } from "react-icons/hi";
-import OuterUI from "../layouts/OuterUI";
-import logout from "../util/api/logout";
-import authorizedRoute from "../util/auth";
-import { User } from "../util/prisma-types";
+import OuterUI from "@/layouts/OuterUI";
+import logout from "@/util/api/logout";
+import authorizedRoute from "@/util/auth";
+import { User } from "@/util/prisma-types";
 
 type AccountLockedProps = {
   user: User;

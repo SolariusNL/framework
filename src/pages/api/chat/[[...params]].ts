@@ -8,16 +8,16 @@ import {
   Post,
 } from "@storyofams/next-api-decorators";
 import { z } from "zod";
-import Authorized, { Account } from "../../../util/api/authorized";
-import registerAutomodHandler from "../../../util/automod";
-import { Fw } from "../../../util/fw";
-import prisma from "../../../util/prisma";
-import type { User } from "../../../util/prisma-types";
+import Authorized, { Account } from "@/util/api/authorized";
+import registerAutomodHandler from "@/util/automod";
+import { Fw } from "@/util/fw";
+import prisma from "@/util/prisma";
+import type { User } from "@/util/prisma-types";
 import {
   chatMessageSelect,
   nonCurrentUserSelect,
-} from "../../../util/prisma-types";
-import { RateLimitMiddleware } from "../../../util/rate-limit";
+} from "@/util/prisma-types";
+import { RateLimitMiddleware } from "@/util/rate-limit";
 
 const lastEmailSent = new Map<number, Date>();
 const chatAutomod = registerAutomodHandler("Chat message");

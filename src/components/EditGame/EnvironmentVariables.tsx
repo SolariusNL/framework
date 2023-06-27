@@ -1,3 +1,11 @@
+import EditGameTab from "@/components/EditGame/EditGameTab";
+import LabelledRadio from "@/components/LabelledRadio";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import ShadedCard from "@/components/ShadedCard";
+import Stateful from "@/components/Stateful";
+import { GameWithDatastore } from "@/pages/game/[id]/edit/[edit]";
+import clsx from "@/util/clsx";
+import { getRelativeTime } from "@/util/relative-time";
 import {
   ActionIcon,
   Anchor,
@@ -27,14 +35,6 @@ import {
   HiTrash,
   HiXCircle,
 } from "react-icons/hi";
-import { GameWithDatastore } from "../../pages/game/[id]/edit/[edit]";
-import clsx from "../../util/clsx";
-import { getRelativeTime } from "../../util/relative-time";
-import LabelledRadio from "../LabelledRadio";
-import ModernEmptyState from "../ModernEmptyState";
-import ShadedCard from "../ShadedCard";
-import Stateful from "../Stateful";
-import EditGameTab from "./EditGameTab";
 
 interface EnvironmentVariablesProps {
   game: GameWithDatastore;

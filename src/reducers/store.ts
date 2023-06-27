@@ -1,6 +1,6 @@
+import searchReducer from "@/reducers/search";
+import stdoutReducer from "@/reducers/stdout";
 import { configureStore } from "@reduxjs/toolkit";
-import searchReducer from "./search";
-import stdoutReducer from "./stdout";
 
 export const store = configureStore({
   reducer: {

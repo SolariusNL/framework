@@ -12,10 +12,10 @@ import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import Framework from "../components/Framework";
-import logout from "../util/api/logout";
-import authorizedRoute from "../util/auth";
-import { User } from "../util/prisma-types";
+import Framework from "@/components/Framework";
+import logout from "@/util/api/logout";
+import authorizedRoute from "@/util/auth";
+import { User } from "@/util/prisma-types";
 import ReactNoSSR from "react-no-ssr";
 import { HiLockOpen, HiLogout } from "react-icons/hi";
 

@@ -1,3 +1,5 @@
+import FrameworkLogo from "@/components/FrameworkLogo";
+import clsx from "@/util/clsx";
 import {
   Box,
   Burger,
@@ -24,8 +26,6 @@ import {
   HiUserGroup,
   HiUsers,
 } from "react-icons/hi";
-import clsx from "../util/clsx";
-import FrameworkLogo from "./FrameworkLogo";
 
 const useStyles = createStyles((theme) => ({
   link: {

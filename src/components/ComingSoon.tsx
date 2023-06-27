@@ -1,7 +1,7 @@
 import { Button, Container, Text, Title, createStyles } from "@mantine/core";
 import Link from "next/link";
 import { FC } from "react";
-import useMediaQuery from "../util/media-query";
+import useMediaQuery from "@/util/media-query";
 
 const useStyles = createStyles((theme) => ({
   title: {

@@ -1,3 +1,9 @@
+import Framework from "@/components/Framework";
+import ShadedButton from "@/components/ShadedButton";
+import SidebarTabNavigation from "@/layouts/SidebarTabNavigation";
+import { TeamType } from "@/pages/teams";
+import getMediaUrl from "@/util/get-media";
+import { User } from "@/util/prisma-types";
 import { Avatar, Badge, NavLink, Text } from "@mantine/core";
 import Link from "next/link";
 import { useState } from "react";
@@ -13,12 +19,6 @@ import {
   HiViewGrid,
   HiViewList,
 } from "react-icons/hi";
-import SidebarTabNavigation from "../../layouts/SidebarTabNavigation";
-import { TeamType } from "../../pages/teams";
-import getMediaUrl from "../../util/get-media";
-import { User } from "../../util/prisma-types";
-import Framework from "../Framework";
-import ShadedButton from "../ShadedButton";
 
 type TeamsViewProps = {
   user: User;

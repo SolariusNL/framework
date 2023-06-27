@@ -1,6 +1,6 @@
 import { Col, createStyles, Grid, Text, Title } from "@mantine/core";
 import { HiCheckCircle } from "react-icons/hi";
-import clsx from "../../util/clsx";
+import clsx from "@/util/clsx";
 
 const useStyles = createStyles((theme) => ({
   wrapper: {

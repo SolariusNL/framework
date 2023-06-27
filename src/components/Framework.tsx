@@ -1,3 +1,30 @@
+import Chat from "@/components/Chat";
+import ContextMenu from "@/components/ContextMenu";
+import EmailReminder from "@/components/EmailReminder";
+import Footer from "@/components/Footer";
+import Banner from "@/components/Framework/Banner";
+import CurrencyMenu from "@/components/Framework/CurrencyMenu";
+import MobileSearchMenu from "@/components/Framework/MobileSearchMenu";
+import NotificationFlyout from "@/components/Framework/NotificationFlyout";
+import Search from "@/components/Framework/Search";
+import UpdateDrawer from "@/components/Framework/UpdateDrawer";
+import UserMenu from "@/components/Framework/UserMenu";
+import FrameworkLogo from "@/components/FrameworkLogo";
+import TabNav from "@/components/TabNav";
+import SocketContext from "@/contexts/Socket";
+import { setSearch, toggleSearch } from "@/reducers/search";
+import { RootState } from "@/reducers/store";
+import useAmoled from "@/stores/useAmoled";
+import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
+import useFeedback from "@/stores/useFeedback";
+import { Flow } from "@/stores/useFlow";
+import usePreferences from "@/stores/usePreferences";
+import useSidebar from "@/stores/useSidebar";
+import logout from "@/util/api/logout";
+import { getIpcRenderer } from "@/util/electron";
+import { Fw } from "@/util/fw";
+import useMediaQuery from "@/util/media-query";
+import { User } from "@/util/prisma-types";
 import {
   ActionIcon,
   Affix,
@@ -61,33 +88,6 @@ import {
   HiXCircle,
 } from "react-icons/hi";
 import { useDispatch, useSelector } from "react-redux";
-import SocketContext from "../contexts/Socket";
-import { setSearch, toggleSearch } from "../reducers/search";
-import { RootState } from "../reducers/store";
-import useAmoled from "../stores/useAmoled";
-import useAuthorizedUserStore from "../stores/useAuthorizedUser";
-import useFeedback from "../stores/useFeedback";
-import { Flow } from "../stores/useFlow";
-import usePreferences from "../stores/usePreferences";
-import useSidebar from "../stores/useSidebar";
-import logout from "../util/api/logout";
-import { getIpcRenderer } from "../util/electron";
-import { Fw } from "../util/fw";
-import useMediaQuery from "../util/media-query";
-import { User } from "../util/prisma-types";
-import Chat from "./Chat";
-import ContextMenu from "./ContextMenu";
-import EmailReminder from "./EmailReminder";
-import Footer from "./Footer";
-import Banner from "./Framework/Banner";
-import CurrencyMenu from "./Framework/CurrencyMenu";
-import MobileSearchMenu from "./Framework/MobileSearchMenu";
-import NotificationFlyout from "./Framework/NotificationFlyout";
-import Search from "./Framework/Search";
-import UpdateDrawer from "./Framework/UpdateDrawer";
-import UserMenu from "./Framework/UserMenu";
-import FrameworkLogo from "./FrameworkLogo";
-import TabNav from "./TabNav";
 
 interface FrameworkProps {
   user: User;

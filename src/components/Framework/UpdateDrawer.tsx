@@ -1,7 +1,7 @@
+import ShadedButton from "@/components/ShadedButton";
+import useUpdateDrawer from "@/stores/useUpdateDrawer";
 import { Badge, Divider, Drawer, ScrollArea, Text, Title } from "@mantine/core";
 import Link from "next/link";
-import useUpdateDrawer from "../../stores/useUpdateDrawer";
-import ShadedButton from "../ShadedButton";
 
 enum BadgeType {
   NEW = "NEW",

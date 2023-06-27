@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import clsx from "../util/clsx";
+import clsx from "@/util/clsx";
 
 type PinInputProps = {
   length: number;

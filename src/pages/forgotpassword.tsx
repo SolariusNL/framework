@@ -15,10 +15,10 @@ import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { HiArrowLeft, HiCheckCircle, HiXCircle } from "react-icons/hi";
-import OuterUI from "../layouts/OuterUI";
-import authorizedRoute from "../util/auth";
-import prisma from "../util/prisma";
-import { nonCurrentUserSelect, NonUser } from "../util/prisma-types";
+import OuterUI from "@/layouts/OuterUI";
+import authorizedRoute from "@/util/auth";
+import prisma from "@/util/prisma";
+import { nonCurrentUserSelect, NonUser } from "@/util/prisma-types";
 
 const useStyles = createStyles((theme) => ({
   title: {

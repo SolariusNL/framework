@@ -1,8 +1,8 @@
+import EditGameTab from "@/components/EditGame/EditGameTab";
+import { Game } from "@/util/prisma-types";
 import { Loader } from "@mantine/core";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import { Game } from "../../util/prisma-types";
-import EditGameTab from "./EditGameTab";
 
 interface ServersProps {
   game: Game;

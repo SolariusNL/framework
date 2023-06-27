@@ -7,14 +7,14 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import { HiArrowRight, HiCake, HiCheckCircle, HiUsers } from "react-icons/hi";
-import Framework from "../../../../components/Framework";
-import ModernEmptyState from "../../../../components/ModernEmptyState";
-import ShadedCard from "../../../../components/ShadedCard";
-import authorizedRoute from "../../../../util/auth";
-import clsx from "../../../../util/clsx";
-import getMediaUrl from "../../../../util/get-media";
-import prisma from "../../../../util/prisma";
-import { Game, User, gameSelect } from "../../../../util/prisma-types";
+import Framework from "@/components/Framework";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import ShadedCard from "@/components/ShadedCard";
+import authorizedRoute from "@/util/auth";
+import clsx from "@/util/clsx";
+import getMediaUrl from "@/util/get-media";
+import prisma from "@/util/prisma";
+import { Game, User, gameSelect } from "@/util/prisma-types";
 
 interface TransferGameToTeamProps {
   user: User;

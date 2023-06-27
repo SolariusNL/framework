@@ -1,13 +1,13 @@
+import OuterUI from "@/layouts/OuterUI";
+import authorizedRoute from "@/util/auth";
+import { sendMail } from "@/util/mail";
+import prisma from "@/util/prisma";
 import { Alert, Anchor, Box, Center } from "@mantine/core";
 import { render } from "@react-email/render";
+import VerificationConfirmation from "email/emails/verification-confirmation";
 import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
 import { HiArrowLeft, HiCheckCircle } from "react-icons/hi";
-import VerificationConfirmation from "../../../email/emails/verification-confirmation";
-import OuterUI from "../../layouts/OuterUI";
-import authorizedRoute from "../../util/auth";
-import { sendMail } from "../../util/mail";
-import prisma from "../../util/prisma";
 
 const VerifyEmail = () => {
   return (

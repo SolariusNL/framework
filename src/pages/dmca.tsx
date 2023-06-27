@@ -21,11 +21,11 @@ import {
   HiLink,
   HiXCircle,
 } from "react-icons/hi";
-import Framework from "../components/Framework";
-import { Section } from "../components/Home/FriendsWidget";
-import ShadedCard from "../components/ShadedCard";
-import authorizedRoute from "../util/auth";
-import { User } from "../util/prisma-types";
+import Framework from "@/components/Framework";
+import { Section } from "@/components/Home/FriendsWidget";
+import ShadedCard from "@/components/ShadedCard";
+import authorizedRoute from "@/util/auth";
+import { User } from "@/util/prisma-types";
 import { BLACK } from "./teams/t/[slug]/issue/create";
 
 type DMCAProps = { user: User };

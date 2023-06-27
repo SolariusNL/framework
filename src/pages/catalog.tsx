@@ -3,11 +3,11 @@ import { CatalogItemType } from "@prisma/client";
 import { GetServerSidePropsContext, NextPage } from "next";
 import React from "react";
 import { HiX } from "react-icons/hi";
-import Framework from "../components/Framework";
-import ModernEmptyState from "../components/ModernEmptyState";
-import ShadedCard from "../components/ShadedCard";
-import authorizedRoute from "../util/auth";
-import { User } from "../util/prisma-types";
+import Framework from "@/components/Framework";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import ShadedCard from "@/components/ShadedCard";
+import authorizedRoute from "@/util/auth";
+import { User } from "@/util/prisma-types";
 
 interface CatalogProps {
   user: User;

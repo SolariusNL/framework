@@ -16,8 +16,8 @@ import { Invite } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
 import { HiCheck, HiPlus, HiTrash, HiX } from "react-icons/hi";
-import getMediaUrl from "../../../util/get-media";
-import { NonUser } from "../../../util/prisma-types";
+import getMediaUrl from "@/util/get-media";
+import { NonUser } from "@/util/prisma-types";
 
 const EMAIL_REGEX =
   /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;

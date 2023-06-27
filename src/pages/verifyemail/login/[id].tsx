@@ -13,11 +13,11 @@ import { GetServerSidePropsContext, NextPage } from "next";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { HiCheckCircle, HiXCircle } from "react-icons/hi";
-import ShadedCard from "../../../components/ShadedCard";
-import Stateful from "../../../components/Stateful";
-import getMediaUrl from "../../../util/get-media";
-import prisma from "../../../util/prisma";
-import { nonCurrentUserSelect, NonUser } from "../../../util/prisma-types";
+import ShadedCard from "@/components/ShadedCard";
+import Stateful from "@/components/Stateful";
+import getMediaUrl from "@/util/get-media";
+import prisma from "@/util/prisma";
+import { nonCurrentUserSelect, NonUser } from "@/util/prisma-types";
 
 interface EmailLoginProps {
   emailId: string;

@@ -13,8 +13,8 @@ import { showNotification } from "@mantine/notifications";
 import Link from "next/link";
 import React from "react";
 import { HiCheckCircle, HiXCircle } from "react-icons/hi";
-import { getCookie } from "../util/cookies";
-import { NonUser } from "../util/prisma-types";
+import { getCookie } from "@/util/cookies";
+import { NonUser } from "@/util/prisma-types";
 
 interface ReportUserProps {
   user: NonUser;

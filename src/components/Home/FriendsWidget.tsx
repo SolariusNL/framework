@@ -1,3 +1,14 @@
+import ContextMenu from "@/components/ContextMenu";
+import LoadingIndicator from "@/components/LoadingIndicator";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import ReportUser from "@/components/ReportUser";
+import ShadedButton from "@/components/ShadedButton";
+import ShadedCard from "@/components/ShadedCard";
+import Verified from "@/components/Verified";
+import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
+import { Fw } from "@/util/fw";
+import getMediaUrl from "@/util/get-media";
+import { NonUser } from "@/util/prisma-types";
 import {
   Avatar,
   Divider,
@@ -13,17 +24,6 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { HiClipboard, HiFlag, HiPlus, HiUser } from "react-icons/hi";
-import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
-import { Fw } from "../../util/fw";
-import getMediaUrl from "../../util/get-media";
-import { NonUser } from "../../util/prisma-types";
-import ContextMenu from "../ContextMenu";
-import LoadingIndicator from "../LoadingIndicator";
-import ModernEmptyState from "../ModernEmptyState";
-import ReportUser from "../ReportUser";
-import ShadedButton from "../ShadedButton";
-import ShadedCard from "../ShadedCard";
-import Verified from "../Verified";
 
 export const Section: React.FC<{
   title: string;

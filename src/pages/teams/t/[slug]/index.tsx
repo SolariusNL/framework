@@ -1,3 +1,16 @@
+import DataGrid from "@/components/DataGrid";
+import Markdown, { ToolbarItem } from "@/components/Markdown";
+import Owner from "@/components/Owner";
+import RenderMarkdown, { parse } from "@/components/RenderMarkdown";
+import ShadedCard from "@/components/ShadedCard";
+import Stateful from "@/components/Stateful";
+import TeamsViewProvider from "@/components/Teams/TeamsView";
+import { TeamType } from "@/pages/teams";
+import authorizedRoute from "@/util/auth";
+import { Fw } from "@/util/fw";
+import getMediaUrl from "@/util/get-media";
+import { NonUser, User } from "@/util/prisma-types";
+import { getTeam } from "@/util/teams";
 import {
   ActionIcon,
   Anchor,
@@ -33,19 +46,6 @@ import {
   HiUsers,
   HiViewGrid,
 } from "react-icons/hi";
-import { TeamType } from "../..";
-import DataGrid from "../../../../components/DataGrid";
-import Markdown, { ToolbarItem } from "../../../../components/Markdown";
-import Owner from "../../../../components/Owner";
-import RenderMarkdown, { parse } from "../../../../components/RenderMarkdown";
-import ShadedCard from "../../../../components/ShadedCard";
-import Stateful from "../../../../components/Stateful";
-import TeamsViewProvider from "../../../../components/Teams/TeamsView";
-import authorizedRoute from "../../../../util/auth";
-import getMediaUrl from "../../../../util/get-media";
-import { NonUser, User } from "../../../../util/prisma-types";
-import { getTeam } from "../../../../util/teams";
-import { Fw } from "../../../../util/fw";
 
 export type TeamViewProps = {
   user: User;

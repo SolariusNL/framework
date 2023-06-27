@@ -1,3 +1,6 @@
+import SoodamLogo from "@/components/SoodamLogo";
+import clsx from "@/util/clsx";
+import useConfig from "@/util/config";
 import {
   ActionIcon,
   Badge,
@@ -15,9 +18,6 @@ import {
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import ReactNoSSR from "react-no-ssr";
-import clsx from "../util/clsx";
-import useConfig from "../util/config";
-import SoodamLogo from "./SoodamLogo";
 
 const useStyles = createStyles((theme) => ({
   footer: {

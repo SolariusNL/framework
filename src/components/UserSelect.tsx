@@ -1,9 +1,9 @@
 import { Avatar, Badge, Group, Select, SelectProps, Text } from "@mantine/core";
 import { getCookie } from "cookies-next";
 import { forwardRef, useMemo, useState } from "react";
-import { exclude } from "../util/exclude";
-import getMediaUrl from "../util/get-media";
-import { NonUser } from "../util/prisma-types";
+import { exclude } from "@/util/exclude";
+import getMediaUrl from "@/util/get-media";
+import { NonUser } from "@/util/prisma-types";
 
 interface UserSelectProps {
   onUserSelect: (user: NonUser) => void;

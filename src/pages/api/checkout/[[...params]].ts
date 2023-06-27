@@ -8,8 +8,8 @@ import {
 } from "@storyofams/next-api-decorators";
 import type { NextApiResponse } from "next";
 import Stripe from "stripe";
-import Authorized, { Account } from "../../../util/api/authorized";
-import type { User } from "../../../util/prisma-types";
+import Authorized, { Account } from "@/util/api/authorized";
+import type { User } from "@/util/prisma-types";
 
 const stripe = new Stripe(String(process.env.STRIPE_SECRET_KEY), {
   apiVersion: "2022-11-15",

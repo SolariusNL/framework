@@ -1,11 +1,11 @@
+import { updateAccount } from "@/components/Settings/AccountTab";
+import SettingsTab from "@/components/Settings/SettingsTab";
+import SwitchCard from "@/components/SwitchCard";
+import { User } from "@/util/prisma-types";
 import { Alert, Stack, Text, Title } from "@mantine/core";
 import { PrivacyPreferences } from "@prisma/client";
 import { useState } from "react";
 import { HiArrowsExpand, HiCheckCircle, HiEye, HiShare } from "react-icons/hi";
-import { User } from "../../util/prisma-types";
-import SwitchCard from "../SwitchCard";
-import { updateAccount } from "./AccountTab";
-import SettingsTab from "./SettingsTab";
 
 interface PrivacyTabProps {
   user: User;

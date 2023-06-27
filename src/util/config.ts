@@ -1,6 +1,6 @@
+import Configuration from "@/types/Configuration";
 // @ts-ignore
-import data from "../../framework.yml";
-import Configuration from "../types/Configuration";
+import data from "framework.yml";
 
 export default function useConfig(): Configuration {
   if (!data) {

@@ -1,5 +1,5 @@
 import { FC } from "react";
-import clsx from "../util/clsx";
+import clsx from "@/util/clsx";
 
 type LoadingIndicatorProps = {
   className?: string;

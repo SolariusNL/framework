@@ -1,3 +1,8 @@
+import InlineError from "@/components/InlineError";
+import SettingsTab from "@/components/Settings/SettingsTab";
+import SideBySide from "@/components/Settings/SideBySide";
+import ShadedCard from "@/components/ShadedCard";
+import { User } from "@/util/prisma-types";
 import {
   Anchor,
   Button,
@@ -19,11 +24,6 @@ import {
   HiTrash,
   HiXCircle,
 } from "react-icons/hi";
-import { User } from "../../util/prisma-types";
-import InlineError from "../InlineError";
-import ShadedCard from "../ShadedCard";
-import SettingsTab from "./SettingsTab";
-import SideBySide from "./SideBySide";
 
 interface DeleteAccountTabProps {
   user: User;

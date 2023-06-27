@@ -1,3 +1,14 @@
+import ClickToReveal from "@/components/ClickToReveal";
+import { frameworkStyles } from "@/components/Framework";
+import ThemeSwitch from "@/icons/ThemeSwitch";
+import useAmoled from "@/stores/useAmoled";
+import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
+import useFeedback from "@/stores/useFeedback";
+import useSidebar from "@/stores/useSidebar";
+import useUpdateDrawer from "@/stores/useUpdateDrawer";
+import logout from "@/util/api/logout";
+import getMediaUrl from "@/util/get-media";
+import useMediaQuery from "@/util/media-query";
 import {
   Avatar,
   Badge,
@@ -28,17 +39,6 @@ import {
   HiUser,
   HiUsers,
 } from "react-icons/hi";
-import ThemeSwitch from "../../icons/ThemeSwitch";
-import useAmoled from "../../stores/useAmoled";
-import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
-import useFeedback from "../../stores/useFeedback";
-import useSidebar from "../../stores/useSidebar";
-import useUpdateDrawer from "../../stores/useUpdateDrawer";
-import logout from "../../util/api/logout";
-import getMediaUrl from "../../util/get-media";
-import useMediaQuery from "../../util/media-query";
-import ClickToReveal from "../ClickToReveal";
-import { frameworkStyles } from "../Framework";
 
 const UserMenu = ({
   userMenuOpened,

@@ -1,9 +1,9 @@
+import Action from "@/components/Admin/UserActions/Action";
+import performAdminAction, { AdminAction } from "@/util/admin-action";
+import { User } from "@/util/prisma-types";
 import { Text } from "@mantine/core";
 import { openConfirmModal } from "@mantine/modals";
-import { HiCheckCircle, HiX } from "react-icons/hi";
-import performAdminAction, { AdminAction } from "../../../util/admin-action";
-import { User } from "../../../util/prisma-types";
-import Action from "./Action";
+import { HiCheckCircle } from "react-icons/hi";
 
 interface VerifyProps {
   user: User;

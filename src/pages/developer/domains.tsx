@@ -1,3 +1,21 @@
+import Copy from "@/components/Copy";
+import DataGrid from "@/components/DataGrid";
+import Dot from "@/components/Dot";
+import { Section } from "@/components/Home/FriendsWidget";
+import InlineError from "@/components/InlineError";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import ShadedButton from "@/components/ShadedButton";
+import ShadedCard from "@/components/ShadedCard";
+import Developer from "@/layouts/DeveloperLayout";
+import SidebarTabNavigation from "@/layouts/SidebarTabNavigation";
+import ServiceUnavailable from "@/pages/503";
+import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
+import IResponseBase from "@/types/api/IResponseBase";
+import authorizedRoute from "@/util/auth";
+import clsx from "@/util/clsx";
+import fetchJson from "@/util/fetch";
+import { Fw } from "@/util/fw";
+import { User } from "@/util/prisma-types";
 import {
   ActionIcon,
   Anchor,
@@ -31,24 +49,6 @@ import {
   HiTrash,
   HiXCircle,
 } from "react-icons/hi";
-import Copy from "../../components/Copy";
-import DataGrid from "../../components/DataGrid";
-import Dot from "../../components/Dot";
-import { Section } from "../../components/Home/FriendsWidget";
-import InlineError from "../../components/InlineError";
-import ModernEmptyState from "../../components/ModernEmptyState";
-import ShadedButton from "../../components/ShadedButton";
-import ShadedCard from "../../components/ShadedCard";
-import Developer from "../../layouts/DeveloperLayout";
-import SidebarTabNavigation from "../../layouts/SidebarTabNavigation";
-import IResponseBase from "../../types/api/IResponseBase";
-import authorizedRoute from "../../util/auth";
-import clsx from "../../util/clsx";
-import fetchJson from "../../util/fetch";
-import { Fw } from "../../util/fw";
-import { User } from "../../util/prisma-types";
-import ServiceUnavailable from "../503";
-import { BLACK } from "../teams/t/[slug]/issue/create";
 
 type DomainsProps = {
   user: User;

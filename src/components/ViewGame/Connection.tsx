@@ -1,9 +1,9 @@
+import ViewGameTab from "@/components/ViewGame/ViewGameTab";
+import { useFrameworkUser } from "@/contexts/FrameworkUser";
+import { Game } from "@/util/prisma-types";
 import { Badge, Button, Group, Table } from "@mantine/core";
 import { useRouter } from "next/router";
 import { HiPlus, HiViewList } from "react-icons/hi";
-import { useFrameworkUser } from "../../contexts/FrameworkUser";
-import { Game } from "../../util/prisma-types";
-import ViewGameTab from "./ViewGameTab";
 
 interface ConnectionTabProps {
   game: Game;

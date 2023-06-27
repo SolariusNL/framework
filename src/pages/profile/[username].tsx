@@ -1,3 +1,28 @@
+import AdminBadge from "@/components/Badges/Admin";
+import AlphaBadge from "@/components/Badges/Alpha";
+import EmailBadge from "@/components/Badges/Email";
+import PremiumBadge from "@/components/Badges/Premium";
+import TOTPBadge from "@/components/Badges/TOTP";
+import Framework from "@/components/Framework";
+import IconTooltip from "@/components/IconTooltip";
+import ThumbnailCarousel from "@/components/ImageCarousel";
+import PlaceholderGameResource from "@/components/PlaceholderGameResource";
+import Donate from "@/components/Profile/Donate";
+import Links from "@/components/Profile/Links";
+import ReportUser from "@/components/ReportUser";
+import ShadedCard from "@/components/ShadedCard";
+import Verified from "@/components/Verified";
+import { useUserInformationDialog } from "@/contexts/UserInformationDialog";
+import countries from "@/data/countries";
+import getTimezones from "@/data/timezones";
+import Rocket from "@/icons/Rocket";
+import Soodam from "@/icons/Soodam";
+import authorizedRoute from "@/util/auth";
+import { exclude } from "@/util/exclude";
+import getMediaUrl from "@/util/get-media";
+import useMediaQuery from "@/util/media-query";
+import prisma from "@/util/prisma";
+import { Game, User } from "@/util/prisma-types";
 import {
   Anchor,
   Avatar,
@@ -29,31 +54,6 @@ import {
   HiXCircle,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
-import AdminBadge from "../../components/Badges/Admin";
-import AlphaBadge from "../../components/Badges/Alpha";
-import EmailBadge from "../../components/Badges/Email";
-import PremiumBadge from "../../components/Badges/Premium";
-import TOTPBadge from "../../components/Badges/TOTP";
-import Framework from "../../components/Framework";
-import IconTooltip from "../../components/IconTooltip";
-import ThumbnailCarousel from "../../components/ImageCarousel";
-import PlaceholderGameResource from "../../components/PlaceholderGameResource";
-import Donate from "../../components/Profile/Donate";
-import Links from "../../components/Profile/Links";
-import ReportUser from "../../components/ReportUser";
-import ShadedCard from "../../components/ShadedCard";
-import Verified from "../../components/Verified";
-import { useUserInformationDialog } from "../../contexts/UserInformationDialog";
-import countries from "../../data/countries";
-import getTimezones from "../../data/timezones";
-import Rocket from "../../icons/Rocket";
-import Soodam from "../../icons/Soodam";
-import authorizedRoute from "../../util/auth";
-import { exclude } from "../../util/exclude";
-import getMediaUrl from "../../util/get-media";
-import useMediaQuery from "../../util/media-query";
-import prisma from "../../util/prisma";
-import { Game, User } from "../../util/prisma-types";
 
 interface ProfileProps {
   user: User;

@@ -1,12 +1,12 @@
+import SettingsTab from "@/components/Settings/SettingsTab";
+import SideBySide from "@/components/Settings/SideBySide";
+import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
+import useMicIdStore from "@/stores/useMicIdStore";
+import { User } from "@/util/prisma-types";
 import { Alert, Anchor, Button, Progress, Select, Stack } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { useEffect, useState } from "react";
 import { HiBeaker, HiMicrophone, HiXCircle } from "react-icons/hi";
-import { BLACK } from "../../pages/teams/t/[slug]/issue/create";
-import useMicIdStore from "../../stores/useMicIdStore";
-import { User } from "../../util/prisma-types";
-import SettingsTab from "./SettingsTab";
-import SideBySide from "./SideBySide";
 
 interface VoiceTabProps {
   user: User;

@@ -1,17 +1,17 @@
+import ModernEmptyState from "@/components/ModernEmptyState";
+import Stateful from "@/components/Stateful";
 import {
   Button,
   Modal,
   Skeleton,
   Table,
   Textarea,
-  TextInput
+  TextInput,
 } from "@mantine/core";
 import { BannedIP } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
 import { HiStop, HiTrash, HiUpload } from "react-icons/hi";
-import ModernEmptyState from "../../ModernEmptyState";
-import Stateful from "../../Stateful";
 
 const BannedIPs = () => {
   const [banned, setBanned] = useState<BannedIP[]>();
@@ -135,7 +135,10 @@ const BannedIPs = () => {
           ) : banned.length === 0 ? (
             <tr>
               <td colSpan={3}>
-                <ModernEmptyState title="No banned IPs" body="There are no banned IPs." />
+                <ModernEmptyState
+                  title="No banned IPs"
+                  body="There are no banned IPs."
+                />
               </td>
             </tr>
           ) : (

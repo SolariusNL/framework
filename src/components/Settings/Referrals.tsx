@@ -1,13 +1,13 @@
+import SettingsTab from "@/components/Settings/SettingsTab";
+import SideBySide from "@/components/Settings/SideBySide";
+import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
+import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
+import { User } from "@/util/prisma-types";
 import { Button, NumberInput, Stack, Text, Title } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { getCookie } from "cookies-next";
 import { HiCheckCircle, HiGift, HiTicket, HiUsers } from "react-icons/hi";
-import { BLACK } from "../../pages/teams/t/[slug]/issue/create";
-import useAuthorizedUserStore from "../../stores/useAuthorizedUser";
-import { User } from "../../util/prisma-types";
-import SettingsTab from "./SettingsTab";
-import SideBySide from "./SideBySide";
 
 interface ReferralsTabProps {
   user: User;

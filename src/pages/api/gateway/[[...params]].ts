@@ -4,10 +4,10 @@ import http from "http";
 import { NextApiResponse } from "next";
 import { Server } from "socket.io";
 import { EventEmitter } from "stream";
-import Authorized from "../../../util/api/authorized";
-import { getAccountFromSession } from "../../../util/auth";
-import logger from "../../../util/logger";
-import prisma from "../../../util/prisma";
+import Authorized from "@/util/api/authorized";
+import { getAccountFromSession } from "@/util/auth";
+import logger from "@/util/logger";
+import prisma from "@/util/prisma";
 
 type NextApiResponseWithIO = NextApiResponse & {
   socket: {

@@ -1,9 +1,9 @@
+import Framework from "@/components/Framework";
+import { proseStyles } from "@/components/RenderMarkdown";
+import clsx from "@/util/clsx";
+import { User } from "@/util/prisma-types";
 import { NextSeo } from "next-seo";
 import React from "react";
-import clsx from "../util/clsx";
-import { User } from "../util/prisma-types";
-import Framework from "./Framework";
-import { proseStyles } from "./RenderMarkdown";
 
 interface DocWrapperProps {
   children: {

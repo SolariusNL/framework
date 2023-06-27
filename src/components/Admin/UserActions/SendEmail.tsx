@@ -1,16 +1,16 @@
+import Action from "@/components/Admin/UserActions/Action";
+import Descriptive from "@/components/Descriptive";
+import RichText from "@/components/RichText";
+import Stateful from "@/components/Stateful";
+import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
+import performAdminAction, { AdminAction } from "@/util/admin-action";
+import { User } from "@/util/prisma-types";
 import { Button, Modal, Stack, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { openModal } from "@mantine/modals";
+import StaffEmail from "email/emails/staff-email";
 import React from "react";
 import { HiEye, HiMail, HiPaperAirplane, HiX } from "react-icons/hi";
-import StaffEmail from "../../../../email/emails/staff-email";
-import useAuthorizedUserStore from "../../../stores/useAuthorizedUser";
-import performAdminAction, { AdminAction } from "../../../util/admin-action";
-import { User } from "../../../util/prisma-types";
-import Descriptive from "../../Descriptive";
-import RichText from "../../RichText";
-import Stateful from "../../Stateful";
-import Action from "./Action";
 
 interface SendEmailProps {
   user: User;

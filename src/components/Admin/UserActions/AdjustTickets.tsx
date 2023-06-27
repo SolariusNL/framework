@@ -1,11 +1,11 @@
+import Action from "@/components/Admin/UserActions/Action";
+import LabelledRadio from "@/components/LabelledRadio";
+import Stateful from "@/components/Stateful";
+import performAdminAction, { AdminAction } from "@/util/admin-action";
+import { User } from "@/util/prisma-types";
 import { Button, Modal, NumberInput, Stack, Text } from "@mantine/core";
 import React from "react";
 import { HiTicket } from "react-icons/hi";
-import performAdminAction, { AdminAction } from "../../../util/admin-action";
-import { User } from "../../../util/prisma-types";
-import LabelledRadio from "../../LabelledRadio";
-import Stateful from "../../Stateful";
-import Action from "./Action";
 
 interface AdjustTicketsProps {
   user: User;

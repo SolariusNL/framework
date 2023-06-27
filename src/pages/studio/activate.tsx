@@ -1,3 +1,15 @@
+import Framework from "@/components/Framework";
+import { Section } from "@/components/Home/FriendsWidget";
+import ShadedCard from "@/components/ShadedCard";
+import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
+import {
+  IRedlockVerifyLicenseResponse,
+  StudioKeyType,
+} from "@/types/api/IRedlockVerifyLicenseResponse";
+import authorizedRoute from "@/util/auth";
+import { REDLOCK } from "@/util/constants";
+import fetchJson from "@/util/fetch";
+import { User } from "@/util/prisma-types";
 import {
   Button,
   FileInput,
@@ -18,18 +30,6 @@ import {
   HiUser,
   HiXCircle,
 } from "react-icons/hi";
-import Framework from "../../components/Framework";
-import { Section } from "../../components/Home/FriendsWidget";
-import ShadedCard from "../../components/ShadedCard";
-import {
-  IRedlockVerifyLicenseResponse,
-  StudioKeyType,
-} from "../../types/api/IRedlockVerifyLicenseResponse";
-import authorizedRoute from "../../util/auth";
-import { REDLOCK } from "../../util/constants";
-import fetchJson from "../../util/fetch";
-import { User } from "../../util/prisma-types";
-import { BLACK } from "../teams/t/[slug]/issue/create";
 
 type ActivateStudioProps = {
   user: User;

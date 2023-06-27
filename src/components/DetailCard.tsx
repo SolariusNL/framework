@@ -1,6 +1,6 @@
+import ShadedCard from "@/components/ShadedCard";
+import clsx from "@/util/clsx";
 import { CardProps, Text, Title } from "@mantine/core";
-import clsx from "../util/clsx";
-import ShadedCard from "./ShadedCard";
 
 type DetailCardProps = {
   title: string;

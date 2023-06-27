@@ -5,9 +5,9 @@ import {
   Post,
   createHandler,
 } from "@storyofams/next-api-decorators";
-import IResponseBase from "../../../types/api/IResponseBase";
-import { AdminAuthorized } from "../../../util/api/authorized";
-import prisma from "../../../util/prisma";
+import IResponseBase from "@/types/api/IResponseBase";
+import { AdminAuthorized } from "@/util/api/authorized";
+import prisma from "@/util/prisma";
 
 export type GenericFastFlag = Pick<FastFlag, "name" | "value" | "valueType">;
 

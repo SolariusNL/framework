@@ -1,11 +1,11 @@
+import { AdminViewUser } from "@/components/Admin/Pages/Users";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import Owner from "@/components/Owner";
+import clsx from "@/util/clsx";
 import { ActionIcon, Divider, ScrollArea, Text } from "@mantine/core";
 import { PunishmentType } from "@prisma/client";
 import { FC, useRef, useState } from "react";
 import { HiArrowSmDown } from "react-icons/hi";
-import clsx from "../../util/clsx";
-import ModernEmptyState from "../ModernEmptyState";
-import Owner from "../Owner";
-import { AdminViewUser } from "./Pages/Users";
 
 type PunishmentHistoryProps = {
   user: AdminViewUser;

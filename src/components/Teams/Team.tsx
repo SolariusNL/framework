@@ -1,11 +1,11 @@
+import Copy from "@/components/Copy";
+import ShadedButton from "@/components/ShadedButton";
+import UserContext from "@/components/UserContext";
+import { TeamType } from "@/pages/teams";
+import getMediaUrl from "@/util/get-media";
 import { Avatar, Text, Tooltip, useMantineTheme } from "@mantine/core";
 import Link from "next/link";
 import { HiMap, HiUsers, HiViewGrid } from "react-icons/hi";
-import { TeamType } from "../../pages/teams";
-import getMediaUrl from "../../util/get-media";
-import Copy from "../Copy";
-import ShadedButton from "../ShadedButton";
-import UserContext from "../UserContext";
 
 type TeamProps = {
   team: TeamType;

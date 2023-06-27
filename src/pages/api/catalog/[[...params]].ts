@@ -6,10 +6,10 @@ import {
   createHandler,
 } from "@storyofams/next-api-decorators";
 import { z } from "zod";
-import IResponseBase from "../../../types/api/IResponseBase";
-import Authorized, { Account } from "../../../util/api/authorized";
-import prisma from "../../../util/prisma";
-import type { User } from "../../../util/prisma-types";
+import IResponseBase from "@/types/api/IResponseBase";
+import Authorized, { Account } from "@/util/api/authorized";
+import prisma from "@/util/prisma";
+import type { User } from "@/util/prisma-types";
 
 type GetLimitedRecentAveragePriceResponse = IResponseBase<{
   rap: number;

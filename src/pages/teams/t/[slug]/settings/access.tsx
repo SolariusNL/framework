@@ -1,3 +1,12 @@
+import DetailCard from "@/components/DetailCard";
+import LabelledRadio from "@/components/LabelledRadio";
+import TeamsViewProvider from "@/components/Teams/TeamsView";
+import UserSelect from "@/components/UserSelect";
+import { TeamType } from "@/pages/teams";
+import authorizedRoute from "@/util/auth";
+import getMediaUrl from "@/util/get-media";
+import { NonUser, User } from "@/util/prisma-types";
+import { getTeam } from "@/util/teams";
 import {
   Avatar,
   Button,
@@ -13,15 +22,6 @@ import { getCookie } from "cookies-next";
 import { GetServerSideProps } from "next";
 import { useEffect, useState } from "react";
 import { HiCheck, HiCheckCircle, HiPlus, HiXCircle } from "react-icons/hi";
-import { TeamType } from "../../..";
-import DetailCard from "../../../../../components/DetailCard";
-import LabelledRadio from "../../../../../components/LabelledRadio";
-import TeamsViewProvider from "../../../../../components/Teams/TeamsView";
-import UserSelect from "../../../../../components/UserSelect";
-import authorizedRoute from "../../../../../util/auth";
-import getMediaUrl from "../../../../../util/get-media";
-import { NonUser, User } from "../../../../../util/prisma-types";
-import { getTeam } from "../../../../../util/teams";
 
 const headers = {
   "Content-Type": "application/json",

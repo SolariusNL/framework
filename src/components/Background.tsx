@@ -1,5 +1,5 @@
-import BackgroundImg from "../assets/subtlebackground.png";
-import clsx from "../util/clsx";
+import BackgroundImg from "@/assets/subtlebackground.png";
+import clsx from "@/util/clsx";
 
 const Background: React.FC<{ className?: string }> = ({ className }) => (
   <>

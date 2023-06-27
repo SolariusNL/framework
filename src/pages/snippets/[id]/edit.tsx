@@ -1,3 +1,14 @@
+import Framework from "@/components/Framework";
+import { Section } from "@/components/Home/FriendsWidget";
+import SideBySide from "@/components/Settings/SideBySide";
+import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
+import useAmoled from "@/stores/useAmoled";
+import authorizedRoute from "@/util/auth";
+import clsx from "@/util/clsx";
+import { getCookie } from "@/util/cookies";
+import useMediaQuery from "@/util/media-query";
+import prisma from "@/util/prisma";
+import { User } from "@/util/prisma-types";
 import {
   AppShell,
   Badge,
@@ -27,17 +38,6 @@ import { GetServerSidePropsContext, NextPage } from "next";
 import Head from "next/head";
 import React, { useEffect } from "react";
 import { HiCode, HiCog, HiSave, HiTag } from "react-icons/hi";
-import Framework from "../../../components/Framework";
-import { Section } from "../../../components/Home/FriendsWidget";
-import SideBySide from "../../../components/Settings/SideBySide";
-import useAmoled from "../../../stores/useAmoled";
-import authorizedRoute from "../../../util/auth";
-import clsx from "../../../util/clsx";
-import { getCookie } from "../../../util/cookies";
-import useMediaQuery from "../../../util/media-query";
-import prisma from "../../../util/prisma";
-import { User } from "../../../util/prisma-types";
-import { BLACK } from "../../teams/t/[slug]/issue/create";
 
 type EditSnippetProps = {
   user: User;

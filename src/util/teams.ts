@@ -1,6 +1,6 @@
+import prisma from "@/util/prisma";
+import { nonCurrentUserSelect } from "@/util/prisma-types";
 import { TeamIssueStatus } from "@prisma/client";
-import prisma from "./prisma";
-import { nonCurrentUserSelect } from "./prisma-types";
 
 const getTeam = async (slug: string, include?: Record<string, any>) => {
   const team = await prisma.team.findFirst({

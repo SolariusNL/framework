@@ -1,8 +1,8 @@
 import { GetServerSidePropsContext, NextPage } from "next";
-import ComingSoon from "../components/ComingSoon";
-import Framework from "../components/Framework";
-import authorizedRoute from "../util/auth";
-import { User } from "../util/prisma-types";
+import ComingSoon from "@/components/ComingSoon";
+import Framework from "@/components/Framework";
+import authorizedRoute from "@/util/auth";
+import { User } from "@/util/prisma-types";
 
 interface AvatarProps {
   user: User;

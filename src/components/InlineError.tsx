@@ -1,7 +1,7 @@
 import { Text } from "@mantine/core";
 import { FC } from "react";
 import { HiExclamation } from "react-icons/hi";
-import clsx from "../util/clsx";
+import clsx from "@/util/clsx";
 
 type InlineErrorVariant = "error" | "warning" | "info" | "success";
 type InlineErrorProps = {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import clsx from "../util/clsx";
+import clsx from "@/util/clsx";
 
 const GRID_SIZE = 20;
 const BOARD_WIDTH = 20;

@@ -1,14 +1,9 @@
-import { Alert, Button, Group } from "@mantine/core";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import useMediaQuery from "@/util/media-query";
+import { Alert, Button } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import React from "react";
-import {
-  HiCheckCircle,
-  HiOutlineSaveAs,
-  HiSave,
-  HiXCircle,
-} from "react-icons/hi";
-import useMediaQuery from "../../util/media-query";
-import ModernEmptyState from "../ModernEmptyState";
+import { HiCheckCircle, HiOutlineSaveAs, HiXCircle } from "react-icons/hi";
 
 interface SettingsTabProps {
   tabValue: string;

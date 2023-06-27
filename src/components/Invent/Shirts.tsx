@@ -1,5 +1,5 @@
-import { User } from "../../util/prisma-types";
-import InventTab from "./InventTab";
+import InventTab from "@/components/Invent/InventTab";
+import { User } from "@/util/prisma-types";
 
 interface ShirtsProps {
   user: User;

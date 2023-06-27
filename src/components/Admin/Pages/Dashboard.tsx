@@ -1,3 +1,12 @@
+import ResourceCard from "@/components/Admin/ResourceCard";
+import StatsGrid from "@/components/Admin/StatsGrid";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import ReportCard from "@/components/ReportCard";
+import ShadedButton from "@/components/ShadedButton";
+import ShadedCard from "@/components/ShadedCard";
+import getMediaUrl from "@/util/get-media";
+import useMediaQuery from "@/util/media-query";
+import { NonUser, Report } from "@/util/prisma-types";
 import { Avatar, Grid, Stack, Text, Title } from "@mantine/core";
 import { getCookie } from "cookies-next";
 import Link from "next/link";
@@ -10,15 +19,6 @@ import {
   HiViewGrid,
   HiXCircle,
 } from "react-icons/hi";
-import getMediaUrl from "../../../util/get-media";
-import useMediaQuery from "../../../util/media-query";
-import { NonUser, Report } from "../../../util/prisma-types";
-import ModernEmptyState from "../../ModernEmptyState";
-import ReportCard from "../../ReportCard";
-import ShadedButton from "../../ShadedButton";
-import ShadedCard from "../../ShadedCard";
-import ResourceCard from "../ResourceCard";
-import StatsGrid from "../StatsGrid";
 
 interface AdminStats {
   user: {

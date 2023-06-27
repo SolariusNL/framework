@@ -1,5 +1,5 @@
+import logger from "@/util/logger";
 import { createTransport } from "nodemailer";
-import logger from "./logger";
 
 const transport = createTransport({
   host: process.env.SMTP_HOST,
@@ -10,11 +10,7 @@ const transport = createTransport({
   },
 });
 
-export const sendMail = async (
-  to: string,
-  subject: string,
-  html: string
-) => {
+export const sendMail = async (to: string, subject: string, html: string) => {
   const mailOptions = {
     from: process.env.SMTP_USERNAME,
     to,
@@ -22,8 +18,8 @@ export const sendMail = async (
     html,
   };
 
-  await 
-    transport.sendMail(mailOptions)
+  await transport
+    .sendMail(mailOptions)
     .then(() => {
       logger().info(`Mail sent to ${to}`);
     })

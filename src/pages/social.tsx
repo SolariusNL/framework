@@ -1,9 +1,9 @@
 import { GetServerSidePropsContext } from "next";
 import { FC } from "react";
-import ComingSoon from "../components/ComingSoon";
-import Framework from "../components/Framework";
-import authorizedRoute from "../util/auth";
-import { User } from "../util/prisma-types";
+import ComingSoon from "@/components/ComingSoon";
+import Framework from "@/components/Framework";
+import authorizedRoute from "@/util/auth";
+import { User } from "@/util/prisma-types";
 
 type SocialProps = {
   user: User;

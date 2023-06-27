@@ -1,3 +1,5 @@
+import ShadedCard from "@/components/ShadedCard";
+import { useFrameworkUser } from "@/contexts/FrameworkUser";
 import { Text, ThemeIcon, Title } from "@mantine/core";
 import Link from "next/link";
 import {
@@ -7,8 +9,6 @@ import {
   HiGift,
   HiUserGroup,
 } from "react-icons/hi";
-import { useFrameworkUser } from "../../contexts/FrameworkUser";
-import ShadedCard from "../ShadedCard";
 
 const QuickLinksWidget: React.FC = () => {
   const user = useFrameworkUser()!;
@@ -50,10 +50,15 @@ const QuickLinksWidget: React.FC = () => {
           <Link href={link} key={title}>
             <div className="flex flex-col gap-4 cursor-pointer p-2">
               <div className="flex justify-between items-center">
-                <ThemeIcon variant="light" color={color} size={38} sx={{
-                  border: "1px solid",
-                  borderColor: color[9]
-                }}>
+                <ThemeIcon
+                  variant="light"
+                  color={color}
+                  size={38}
+                  sx={{
+                    border: "1px solid",
+                    borderColor: color[9],
+                  }}
+                >
                   {icon}
                 </ThemeIcon>
                 <HiArrowRight />
