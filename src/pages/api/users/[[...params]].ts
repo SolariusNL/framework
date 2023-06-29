@@ -2,6 +2,7 @@ import { parse } from "@/components/RenderMarkdown";
 import { category } from "@/components/ReportUser";
 import countries from "@/data/countries";
 import getTimezones from "@/data/timezones";
+import IResponseBase from "@/types/api/IResponseBase";
 import Authorized, { Account } from "@/util/api/authorized";
 import registerAutomodHandler from "@/util/automod";
 import { exclude } from "@/util/exclude";
@@ -380,6 +381,7 @@ class UserRouter {
 
   @Post("/@me/status")
   @Authorized()
+  @RateLimitMiddleware(10)()
   public async updateStatus(
     @Account() user: User,
     @Body()
@@ -442,6 +444,93 @@ class UserRouter {
     return {
       success: true,
       status: s,
+    };
+  }
+
+  @Post("/@me/status/:id/comment")
+  @Authorized()
+  @RateLimitMiddleware(10)()
+  public async commentOnStatus(
+    @Account() user: User,
+    @Body()
+    data: {
+      content: string;
+    },
+    @Param("id") id: string
+  ) {
+    const { content } = data;
+
+    if (!content) {
+      return {
+        status: 400,
+        message: "Missing content",
+      };
+    }
+
+    if (content.length === 0 || content.length > 128) {
+      return {
+        status: 400,
+        message: "Content must be between 1 and 128 characters",
+      };
+    }
+
+    const status = await prisma.statusPosts.findFirst({
+      where: { id },
+    });
+
+    if (!status) {
+      return <IResponseBase>{
+        success: false,
+        message: "Status not found",
+      };
+    }
+
+    const comment = await prisma.statusPostComment.create({
+      data: {
+        content: sanitize(parse(content), {
+          allowedTags: [
+            "b",
+            "i",
+            "u",
+            "s",
+            "a",
+            "p",
+            "br",
+            "ul",
+            "ol",
+            "li",
+            "h3",
+            "h4",
+            "strong",
+          ],
+          allowedAttributes: {
+            a: ["href"],
+          },
+        }),
+        createdAt: new Date(),
+        user: {
+          connect: {
+            id: user.id,
+          },
+        },
+        post: {
+          connect: {
+            id: status.id,
+          },
+        },
+      },
+      include: {
+        user: exclude(nonCurrentUserSelect, ["statusComments"]),
+      },
+    });
+
+    statusAutomod(user.id, comment.content);
+
+    return <IResponseBase>{
+      success: true,
+      data: {
+        comment,
+      },
     };
   }
 
@@ -1119,6 +1208,23 @@ class UserRouter {
       },
       include: {
         user: nonCurrentUserSelect,
+        comments: {
+          select: {
+            user: {
+              select: {
+                username: true,
+                alias: true,
+                avatarUri: true,
+                role: true,
+                id: true,
+                verified: true,
+              },
+            },
+            content: true,
+            createdAt: true,
+            id: true,
+          },
+        },
       },
       take: 5,
       skip: 5 * (Number(page) - 1),

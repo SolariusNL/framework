@@ -109,6 +109,7 @@ model User {
   emailLoginRequests         EmailLoginRequest[]         @relation("emailLoginRequests")
   lastUsernameChange         DateTime?
   statusPosts                StatusPosts[]               @relation("statusPosts")
+  statusPostComments         StatusPostComment[]         @relation("statusPostCommentAuthor")
   profileLinks               ProfileLink[]               @relation("profileLinks")
   notes                      UserAdminNotes[]            @relation("adminNotes")
   authoredNotes              UserAdminNotes[]            @relation("adminNotesAuthor")
@@ -672,10 +673,21 @@ model EmailLoginRequest {
 }
 
 model StatusPosts {
-  id        String   @id @default(uuid())
-  user      User     @relation("statusPosts", fields: [userId], references: [id])
+  id        String              @id @default(uuid())
+  user      User                @relation("statusPosts", fields: [userId], references: [id])
   userId    Int
-  createdAt DateTime @default(now())
+  createdAt DateTime            @default(now())
+  content   String
+  comments  StatusPostComment[] @relation("statusPostComments")
+}
+
+model StatusPostComment {
+  id        String      @id @default(uuid())
+  post      StatusPosts @relation("statusPostComments", fields: [postId], references: [id])
+  postId    String
+  user      User        @relation("statusPostCommentAuthor", fields: [userId], references: [id])
+  userId    Int
+  createdAt DateTime    @default(now())
   content   String
 }
 

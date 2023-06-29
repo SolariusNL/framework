@@ -6,36 +6,61 @@ import sanitizeInappropriateContent from "@/components/ReconsiderationPrompt";
 import RenderMarkdown from "@/components/RenderMarkdown";
 import ReportUser from "@/components/ReportUser";
 import ShadedCard from "@/components/ShadedCard";
-import UserContext from "@/components/UserContext";
 import { useFrameworkUser } from "@/contexts/FrameworkUser";
-import getMediaUrl from "@/util/get-media";
+import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
+import IResponseBase from "@/types/api/IResponseBase";
+import fetchJson from "@/util/fetch";
+import { Fw } from "@/util/fw";
 import { NonUser } from "@/util/prisma-types";
-import { getRelativeTime } from "@/util/relative-time";
 import {
   ActionIcon,
-  Avatar,
   Button,
+  Divider,
   Menu,
   Modal,
   Pagination,
   Stack,
   Text,
+  TextInput,
   useMantineColorScheme,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { StatusPosts } from "@prisma/client";
+import { StatusPostComment, StatusPosts } from "@prisma/client";
 import { getCookie } from "cookies-next";
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import {
   HiClipboardCopy,
   HiDotsVertical,
   HiFlag,
+  HiOutlineChat,
+  HiOutlineChatAlt2,
+  HiOutlineClock,
+  HiPaperAirplane,
   HiPlus,
 } from "react-icons/hi";
+import DataGrid from "../DataGrid";
+import Owner from "../Owner";
+import Stateful from "../Stateful";
 
 type StatusPost = StatusPosts & {
   user: NonUser;
+  comments: StatusPostComment[];
 };
+type StatusPostWithComment = StatusPostComment & {
+  user: NonUser;
+};
+
+const Comment: FC<{ comment: StatusPostWithComment }> = ({ comment }) => (
+  <div key={comment.id} className="flex flex-col">
+    <Owner user={comment.user} />
+    <div className="flex-grow mt-4">
+      <RenderMarkdown>{comment.content}</RenderMarkdown>
+      <Text size="sm" color="dimmed" mt="md">
+        {new Date(comment.createdAt).toLocaleString()}
+      </Text>
+    </div>
+  </div>
+);
 
 const FeedWidget: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -95,6 +120,11 @@ const FeedWidget: React.FC = () => {
       })
       .finally(() => setLoading(false));
   };
+
+  const dateSort = (
+    a: Pick<StatusPost, "createdAt">,
+    b: Pick<StatusPost, "createdAt">
+  ) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
 
   useEffect(() => {
     getStatusPosts();
@@ -186,62 +216,211 @@ const FeedWidget: React.FC = () => {
                 {statusPosts.map((status) => (
                   <ShadedCard key={status.id}>
                     <div>
-                      <div className="flex justify-between">
-                        <div className="flex">
-                          <div>
-                            <UserContext user={status.user}>
-                              <Avatar
-                                size={42}
-                                src={getMediaUrl(status.user.avatarUri)}
-                                mr={12}
-                                className="rounded-full"
-                              />
-                            </UserContext>
-                          </div>
-                          <div className="flex-grow">
-                            <div>
-                              <Text mb={2} size="sm">
-                                @{status.user.username}
-                              </Text>
-                              <Text color="dimmed" size="xs" mb="md">
-                                {getRelativeTime(
-                                  new Date(status.createdAt as Date)
-                                )}
-                              </Text>
-                            </div>
-                            <RenderMarkdown>{status.content}</RenderMarkdown>
-                          </div>
-                        </div>
-                        <div>
-                          <Menu width={180}>
-                            <Menu.Target>
-                              <ActionIcon>
-                                <HiDotsVertical />
-                              </ActionIcon>
-                            </Menu.Target>
-                            <Menu.Dropdown>
-                              <Menu.Item
-                                color="red"
-                                icon={<HiFlag />}
-                                onClick={() => {
-                                  setReportUser(status.user);
-                                  setReportOpened(true);
-                                }}
-                              >
-                                Report
-                              </Menu.Item>
-                              <Menu.Item
-                                icon={<HiClipboardCopy />}
-                                onClick={() => {
-                                  navigator.clipboard.writeText(status.content);
-                                }}
-                              >
-                                Copy content
-                              </Menu.Item>
-                            </Menu.Dropdown>
-                          </Menu>
-                        </div>
+                      <div className="flex items-center justify-between">
+                        <Owner user={status.user} />
+                        <Menu width={180}>
+                          <Menu.Target>
+                            <ActionIcon>
+                              <HiDotsVertical />
+                            </ActionIcon>
+                          </Menu.Target>
+                          <Menu.Dropdown>
+                            <Menu.Item
+                              color="red"
+                              icon={<HiFlag />}
+                              onClick={() => {
+                                setReportUser(status.user);
+                                setReportOpened(true);
+                              }}
+                            >
+                              Report
+                            </Menu.Item>
+                            <Menu.Item
+                              icon={<HiClipboardCopy />}
+                              onClick={() => {
+                                navigator.clipboard.writeText(status.content);
+                              }}
+                            >
+                              Copy content
+                            </Menu.Item>
+                          </Menu.Dropdown>
+                        </Menu>
                       </div>
+                      <div className="flex-grow mt-4">
+                        <RenderMarkdown>{status.content}</RenderMarkdown>
+                        <DataGrid
+                          defaultCols={2}
+                          mdCols={2}
+                          smCols={2}
+                          items={[
+                            {
+                              tooltip: "Created at",
+                              icon: <HiOutlineClock />,
+                              value: new Date(
+                                status.createdAt
+                              ).toLocaleString(),
+                            },
+                            {
+                              tooltip: "Comments",
+                              icon: <HiOutlineChat />,
+                              value: `${
+                                status.comments.length
+                              } ${Fw.Strings.pluralize(
+                                status.comments.length,
+                                "comment"
+                              )}`,
+                            },
+                          ]}
+                        />
+                      </div>
+                      <Divider
+                        my="md"
+                        label="Comments"
+                        labelProps={{
+                          color: "dimmed",
+                          weight: 500,
+                        }}
+                        labelPosition="center"
+                      />
+                      <ShadedCard black withBorder>
+                        <Stateful initialState={false}>
+                          {(reveal, setReveal) => (
+                            <>
+                              {status.comments.length === 0 ? (
+                                <ModernEmptyState
+                                  title="No comments"
+                                  body="There are no comments on this post yet."
+                                />
+                              ) : (
+                                <>
+                                  {reveal ? (
+                                    <>
+                                      <div className="flex flex-col gap-6">
+                                        {status.comments
+                                          .sort(dateSort)
+                                          .map((c) => (
+                                            <Comment
+                                              comment={
+                                                c as StatusPostWithComment
+                                              }
+                                              key={c.id}
+                                            />
+                                          ))}
+                                      </div>
+                                      <div className="w-full flex justify-center mt-4">
+                                        <Button
+                                          variant="subtle"
+                                          onClick={() => setReveal(false)}
+                                        >
+                                          Hide comments
+                                        </Button>
+                                      </div>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Comment
+                                        comment={
+                                          status.comments
+                                            .sort(dateSort)
+                                            .slice(
+                                              0,
+                                              1
+                                            )[0] as StatusPostWithComment
+                                        }
+                                      />
+                                      {status.comments.length > 1 && (
+                                        <div className="w-full flex justify-center mt-4">
+                                          <Button
+                                            variant="subtle"
+                                            onClick={() => setReveal(true)}
+                                          >
+                                            See {status.comments.length - 1}{" "}
+                                            more{" "}
+                                            {Fw.Strings.pluralize(
+                                              status.comments.length - 1,
+                                              "comment"
+                                            )}
+                                          </Button>
+                                        </div>
+                                      )}
+                                    </>
+                                  )}
+                                </>
+                              )}
+                            </>
+                          )}
+                        </Stateful>
+                      </ShadedCard>
+                      <Stateful>
+                        {(comment, setComment) => (
+                          <TextInput
+                            mt="md"
+                            classNames={BLACK}
+                            placeholder="Write your thoughts..."
+                            max={128}
+                            min={1}
+                            icon={<HiOutlineChatAlt2 />}
+                            rightSection={
+                              <ActionIcon
+                                variant="filled"
+                                color="blue"
+                                type="submit"
+                                disabled={
+                                  !comment ||
+                                  comment.length === 0 ||
+                                  comment.length > 128
+                                }
+                                onClick={() => {
+                                  sanitizeInappropriateContent(
+                                    comment,
+                                    async () => {
+                                      await fetchJson<
+                                        IResponseBase<{
+                                          comment: StatusPostWithComment;
+                                        }>
+                                      >(
+                                        `/api/users/@me/status/${status.id}/comment`,
+                                        {
+                                          auth: true,
+                                          method: "POST",
+                                          body: {
+                                            content: comment,
+                                          },
+                                        }
+                                      ).then((res) => {
+                                        if (res.success) {
+                                          setComment("");
+                                          setStatusPosts(
+                                            statusPosts.map((s) => {
+                                              if (s.id === status.id) {
+                                                return {
+                                                  ...s,
+                                                  comments: [
+                                                    ...s.comments,
+                                                    res.data?.comment!,
+                                                  ],
+                                                };
+                                              }
+                                              return s;
+                                            })
+                                          );
+                                        }
+                                      });
+                                    },
+                                    () => {}
+                                  );
+                                }}
+                              >
+                                <HiPaperAirplane />
+                              </ActionIcon>
+                            }
+                            onChange={(event) => {
+                              setComment(event.currentTarget.value);
+                            }}
+                            value={comment}
+                          />
+                        )}
+                      </Stateful>
                     </div>
                   </ShadedCard>
                 ))}

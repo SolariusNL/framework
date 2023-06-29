@@ -1,6 +1,6 @@
-import { Card, CardProps, Text } from "@mantine/core";
 import useAmoled from "@/stores/useAmoled";
 import { AMOLED_COLORS } from "@/util/constants";
+import { Card, CardProps, Text } from "@mantine/core";
 
 const ShadedCard = (
   props: CardProps & {
@@ -10,6 +10,7 @@ const ShadedCard = (
     onClick?: () => void;
     // @deprecated
     solid?: boolean;
+    black?: boolean;
   }
 ) => {
   const { enabled: amoled } = useAmoled();
@@ -19,9 +20,13 @@ const ShadedCard = (
       sx={(theme) => ({
         backgroundColor:
           theme.colorScheme === "dark"
-            ? amoled
+            ? props.black
+              ? "#000000"
+              : amoled
               ? AMOLED_COLORS.paper
               : theme.colors.dark[9]
+            : props.black
+            ? "#FFF"
             : theme.colors.gray[0] + "80",
         overflow: "visible",
       })}
