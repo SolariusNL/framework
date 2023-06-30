@@ -1,4 +1,14 @@
+import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
+import useExperimentsStore, {
+  ExperimentId,
+} from "@/stores/useExperimentsStore";
+import { Flow } from "@/stores/useFlow";
+import { Fw } from "@/util/fw";
+import boldPlugin from "@/util/fw/plugins/bold";
+import linkPlugin from "@/util/fw/plugins/links";
+import { getRelativeTime } from "@/util/relative-time";
 import {
+  ActionIcon,
   Anchor,
   Pagination,
   Spoiler,
@@ -6,8 +16,10 @@ import {
   Timeline,
   Tooltip,
 } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import { Notification, NotificationType } from "@prisma/client";
 import { getCookie } from "cookies-next";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import {
@@ -16,14 +28,9 @@ import {
   HiExclamationCircle,
   HiGift,
   HiInformationCircle,
+  HiOutlineBell,
+  HiOutlineTrash,
 } from "react-icons/hi";
-import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
-import useExperimentsStore, {
-  ExperimentId,
-} from "@/stores/useExperimentsStore";
-import { Flow } from "@/stores/useFlow";
-import { Fw } from "@/util/fw";
-import { getRelativeTime } from "@/util/relative-time";
 
 const Notifications: React.FC = () => {
   const [activePage, setActivePage] = useState(1);
@@ -64,14 +71,56 @@ const Notifications: React.FC = () => {
       },
     }).catch(() => alert("Error marking notification as read"));
   };
+  const handleReadAllNotifications = () => {
+    setUser({
+      ...user!,
+      notifications: [],
+    });
+
+    fetch("/api/notifications/mark-all-read", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: String(getCookie(".frameworksession")),
+      },
+    })
+      .then(() => {
+        showNotification({
+          title: "Notifications cleared",
+          message: "You have no unread notifications. Live long and prosper.",
+          icon: <HiCheckCircle />,
+        });
+      })
+      .catch(() => alert("Error marking notifications as read"));
+  };
 
   return (
     <>
-      <div className="w-full flex justify-center mb-4">
+      <div className="w-full flex justify-between mb-4">
+        <div className="flex gap-2">
+          <Tooltip label="See notification history">
+            <div>
+              <Link href="/notifications">
+                <ActionIcon size="lg" radius="xl" color="gray">
+                  <HiOutlineBell />
+                </ActionIcon>
+              </Link>
+            </div>
+          </Tooltip>
+          <Tooltip label="Clear all notifications">
+            <ActionIcon
+              size="lg"
+              radius="xl"
+              color="red"
+              onClick={() => handleReadAllNotifications()}
+            >
+              <HiOutlineTrash />
+            </ActionIcon>
+          </Tooltip>
+        </div>
         <Pagination
           size="sm"
           radius="xl"
-          withEdges
           total={Math.ceil(user?.notifications?.length! / 3)}
           page={activePage}
           onChange={setActivePage}
@@ -106,24 +155,9 @@ const Notifications: React.FC = () => {
                 }}
               >
                 <Text color="dimmed" size="sm" className="break-words">
-                  {notification.message.split(" ").map((word) => {
-                    if (word.startsWith("http")) {
-                      return (
-                        <>
-                          <Anchor
-                            key={word}
-                            href={word}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {word}
-                          </Anchor>{" "}
-                        </>
-                      );
-                    } else {
-                      return word + " ";
-                    }
-                  })}
+                  {Fw.StringParser.t(notification.message)
+                    .addPlugins(boldPlugin, linkPlugin)
+                    .parse()}
                   {experiments.includes(ExperimentId.LoginManager) &&
                     notification.type === NotificationType.LOGIN && (
                       <>

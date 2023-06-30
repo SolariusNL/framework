@@ -2,14 +2,16 @@ import ModernEmptyState from "@/components/ModernEmptyState";
 import Notifications from "@/components/Widgets/Notifications";
 import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
 import {
+  Button,
   createStyles,
   Group,
   Indicator,
   Popover,
   UnstyledButton,
 } from "@mantine/core";
+import Link from "next/link";
 import { useState } from "react";
-import { HiBell } from "react-icons/hi";
+import { HiBell, HiOutlineBell } from "react-icons/hi";
 
 const useStyles = createStyles((theme) => ({
   flyout: {
@@ -31,9 +33,9 @@ const useStyles = createStyles((theme) => ({
 }));
 
 const NotificationFlyout: React.FC = () => {
-  const [opened, setOpened] = useState(false);
+  const [opened] = useState(false);
   const { classes, cx } = useStyles();
-  const { user, setUser } = useAuthorizedUserStore()!;
+  const { user } = useAuthorizedUserStore()!;
 
   return (
     <Popover transition="pop-top-right" width={360}>
@@ -64,10 +66,23 @@ const NotificationFlyout: React.FC = () => {
 
       <Popover.Dropdown>
         {user?.notifications.length == 0 ? (
-          <ModernEmptyState
-            title="No notifications"
-            body="You have no notifications"
-          />
+          <>
+            <ModernEmptyState
+              title="No notifications"
+              body="You have no notifications"
+            />
+            <div className="mt-4 flex justify-center">
+              <Link href="/notifications">
+                <Button
+                  leftIcon={<HiOutlineBell />}
+                  variant="light"
+                  color="gray"
+                >
+                  Notification history
+                </Button>
+              </Link>
+            </div>
+          </>
         ) : (
           <>
             <Notifications />

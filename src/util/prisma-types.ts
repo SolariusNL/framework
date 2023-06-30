@@ -189,7 +189,11 @@ export const userSelect: Prisma.UserSelect = {
   banReason: true,
   banExpires: true,
   emailVerified: true,
-  notifications: true,
+  notifications: {
+    where: {
+      seen: false,
+    },
+  },
   notificationPreferences: true,
   lastRandomPrize: true,
   warning: true,

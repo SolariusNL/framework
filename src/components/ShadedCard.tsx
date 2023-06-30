@@ -27,7 +27,7 @@ const ShadedCard = (
               : theme.colors.dark[9]
             : props.black
             ? "#FFF"
-            : theme.colors.gray[0] + "80",
+            : theme.colors.gray[0] + "95",
         overflow: "visible",
       })}
       radius="md"

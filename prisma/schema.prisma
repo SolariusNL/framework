@@ -583,13 +583,29 @@ enum NotificationType {
 }
 
 model Notification {
-  id        String           @id @default(uuid())
-  user      User             @relation("userNotifications", fields: [userId], references: [id])
+  id        String               @id @default(uuid())
+  user      User                 @relation("userNotifications", fields: [userId], references: [id])
   userId    Int
   message   String
-  type      NotificationType @default(INFO)
-  title     String           @default("")
-  createdAt DateTime         @default(now())
+  type      NotificationType     @default(INFO)
+  title     String               @default("")
+  createdAt DateTime             @default(now())
+  seen      Boolean              @default(false)
+  actions   NotificationAction[] @relation("notificationActions")
+}
+
+model NotificationAction {
+  id             String                    @id @default(uuid())
+  notification   Notification              @relation("notificationActions", fields: [notificationId], references: [id])
+  notificationId String
+  name           String
+  url            String
+  variant        NotificationActionVariant @default(PRIMARY)
+}
+
+enum NotificationActionVariant {
+  PRIMARY
+  SECONDARY
 }
 
 model Checklist {
