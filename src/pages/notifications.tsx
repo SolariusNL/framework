@@ -34,7 +34,7 @@ import { showNotification } from "@mantine/notifications";
 import { Notification, NotificationType } from "@prisma/client";
 import { AnimatePresence, motion } from "framer-motion";
 import { GetServerSideProps } from "next";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   HiCheckCircle,
   HiOutlineCalendar,
@@ -369,7 +369,9 @@ const NotificationsPage: React.FC<NotificationsPage> = ({ user }) => {
                                 <ActionIcon
                                   size="lg"
                                   radius="xl"
-                                  onClick={(e) => e.stopPropagation()}
+                                  onClick={(e: React.MouseEvent) =>
+                                    e.stopPropagation()
+                                  }
                                 >
                                   <HiOutlineCog />
                                 </ActionIcon>
@@ -382,7 +384,7 @@ const NotificationsPage: React.FC<NotificationsPage> = ({ user }) => {
                                 </Menu.Label>
                                 <Menu.Item
                                   icon={<HiOutlineEye />}
-                                  onClick={(e) => {
+                                  onClick={(e: React.MouseEvent) => {
                                     e.stopPropagation();
                                     handleReadNotification(notification);
                                   }}
@@ -393,7 +395,7 @@ const NotificationsPage: React.FC<NotificationsPage> = ({ user }) => {
                                 <Menu.Item
                                   icon={<HiTrash />}
                                   color="red"
-                                  onClick={(e) => {
+                                  onClick={(e: React.MouseEvent) => {
                                     e.stopPropagation();
                                     openConfirmModal({
                                       title: "Delete notification",
