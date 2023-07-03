@@ -348,7 +348,6 @@ const Servers: FC<ServersProps> = ({ user }) => {
         </Text>
         <TextInput
           label="Arguments"
-          description="Arguments to pass to the command."
           placeholder="e.g. --help"
           value={args}
           onChange={(e) => setArgs(e.target.value)}

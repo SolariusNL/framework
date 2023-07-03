@@ -1,34 +1,85 @@
-import { Button, Checkbox, Divider, Grid, Stack, Switch } from "@mantine/core";
+import Framework from "@/components/Framework";
+import ModernEmptyState from "@/components/ModernEmptyState";
+import Hat from "@/icons/Hat";
+import Pants from "@/icons/Pants";
+import authorizedRoute from "@/util/auth";
+import { User } from "@/util/prisma-types";
+import { Grid, Switch, Tabs } from "@mantine/core";
 import { CatalogItemType } from "@prisma/client";
 import { GetServerSidePropsContext, NextPage } from "next";
 import React from "react";
-import { HiX } from "react-icons/hi";
-import Framework from "@/components/Framework";
-import ModernEmptyState from "@/components/ModernEmptyState";
-import ShadedCard from "@/components/ShadedCard";
-import authorizedRoute from "@/util/auth";
-import { User } from "@/util/prisma-types";
+import {
+  HiCube,
+  HiOutlineCog,
+  HiOutlineCube,
+  HiOutlineFire,
+} from "react-icons/hi";
 
-interface CatalogProps {
+type CatalogProps = {
   user: User;
-}
-
-interface Filter {
+};
+type Category =
+  | Lowercase<CatalogItemType>
+  | "models"
+  | "snippets"
+  | "3d-objects"
+  | "sounds"
+  | "textures"
+  | "featured";
+type Filter = {
   unavailableItems: boolean;
   limitedItems: boolean;
   lowStock: boolean;
-  category: CatalogItemType | "all";
-}
+  category: Category;
+};
 
-const defaultFilter: Filter = {
+const DEFAULT_FILTER: Filter = {
   unavailableItems: false,
   limitedItems: true,
   lowStock: true,
-  category: "all",
+  category: "featured",
 };
+const TABS: Array<{
+  value: Category;
+  label: string;
+  icon: React.ReactNode;
+}> = [
+  {
+    value: "featured",
+    label: "Featured",
+    icon: <HiOutlineFire />,
+  },
+  {
+    value: "3d-objects",
+    label: "3D Objects",
+    icon: <HiOutlineCube />,
+  },
+  {
+    value: "gear",
+    label: "Gear",
+    icon: <HiOutlineCog />,
+  },
+  {
+    value: "hat",
+    label: "Hats",
+    icon: <Hat />,
+  },
+  {
+    value: "models",
+    label: "Models",
+    icon: <HiCube />,
+  },
+  {
+    value: "pants",
+    label: "Pants",
+    icon: <Pants />,
+  },
+];
 
 const Catalog: NextPage<CatalogProps> = ({ user }) => {
-  const [filter, setFilter] = React.useState<Filter | undefined>(defaultFilter);
+  const [filter, setFilter] = React.useState<Filter | undefined>(
+    DEFAULT_FILTER
+  );
 
   const changeFilterValue = (key: keyof Filter, value: any) => {
     setFilter({ ...(filter as Filter), [key as keyof Filter]: value });
@@ -43,58 +94,37 @@ const Catalog: NextPage<CatalogProps> = ({ user }) => {
     >
       <Grid columns={24}>
         <Grid.Col span={8}>
-          <ShadedCard title="Filters">
-            <Stack spacing={10}>
-              <Switch
-                label="Show unavailable items"
-                checked={filter?.unavailableItems}
-                onChange={(e) =>
-                  changeFilterValue("unavailableItems", e.target.checked)
-                }
-              />
-              <Switch
-                label="Show limited items"
-                checked={filter?.limitedItems}
-                onChange={(e) =>
-                  changeFilterValue("limitedItems", e.target.checked)
-                }
-              />
-              <Divider my="md" />
-              <Stack spacing="xs">
-                {[
-                  { label: "Hats", value: CatalogItemType.HAT },
-                  { label: "Gear", value: CatalogItemType.GEAR },
-                  { label: "Shirts", value: CatalogItemType.SHIRT },
-                  { label: "T-Shirts", value: CatalogItemType.TSHIRT },
-                  { label: "Pants", value: CatalogItemType.PANTS },
-                ].map((item) => (
-                  <Checkbox
-                    label={item.label}
-                    radius="xl"
-                    value={item.value}
-                    key={item.value}
-                    checked={filter?.category === item.value}
-                    onChange={(e) =>
-                      changeFilterValue("category", e.target.value)
-                    }
-                  />
-                ))}
-              </Stack>
-            </Stack>
-            {filter !== defaultFilter && (
-              <Button
-                mt="md"
-                fullWidth
-                leftIcon={<HiX />}
-                variant="light"
-                onClick={() => {
-                  setFilter(defaultFilter);
-                }}
-              >
-                Clear filters
-              </Button>
-            )}
-          </ShadedCard>
+          <Tabs
+            orientation="vertical"
+            variant="pills"
+            defaultValue={filter?.category}
+            value={filter?.category}
+            onChange={(value) => changeFilterValue("category", value)}
+            mb="xl"
+          >
+            <Tabs.List className="w-full">
+              {TABS.map((tab) => (
+                <Tabs.Tab key={tab.value} value={tab.value} icon={tab.icon}>
+                  {tab.label}
+                </Tabs.Tab>
+              ))}
+            </Tabs.List>
+          </Tabs>
+          <Switch
+            label="Show unavailable items"
+            checked={filter?.unavailableItems}
+            onChange={(e) =>
+              changeFilterValue("unavailableItems", e.target.checked)
+            }
+            mb="sm"
+          />
+          <Switch
+            label="Show limited items"
+            checked={filter?.limitedItems}
+            onChange={(e) =>
+              changeFilterValue("limitedItems", e.target.checked)
+            }
+          />
         </Grid.Col>
         <Grid.Col span={16}>
           <ModernEmptyState
