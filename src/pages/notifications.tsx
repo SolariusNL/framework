@@ -425,7 +425,7 @@ const NotificationsPage: React.FC<NotificationsPage> = ({ user }) => {
                               </Menu.Dropdown>
                             </Menu>
                           </div>
-                          <Text size="sm" color="dimmed" mt="xs">
+                          <Text size="sm" color="dimmed" mt="xs" lineClamp={2}>
                             {Fw.StringParser.t(notification.message)
                               .addPlugins(boldPlugin, linkPlugin)
                               .parse()}

@@ -1,6 +1,7 @@
 import ModernEmptyState from "@/components/ModernEmptyState";
 import Notifications from "@/components/Widgets/Notifications";
 import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
+import usePreferences from "@/stores/usePreferences";
 import {
   Button,
   createStyles,
@@ -36,6 +37,7 @@ const NotificationFlyout: React.FC = () => {
   const [opened] = useState(false);
   const { classes, cx } = useStyles();
   const { user } = useAuthorizedUserStore()!;
+  const { preferences } = usePreferences();
 
   return (
     <Popover transition="pop-top-right" width={360}>
@@ -71,17 +73,19 @@ const NotificationFlyout: React.FC = () => {
               title="No notifications"
               body="You have no notifications"
             />
-            <div className="mt-4 flex justify-center">
-              <Link href="/notifications">
-                <Button
-                  leftIcon={<HiOutlineBell />}
-                  variant="light"
-                  color="gray"
-                >
-                  Notification history
-                </Button>
-              </Link>
-            </div>
+            {preferences["@app/notification-manager"] && (
+              <div className="mt-4 flex justify-center">
+                <Link href="/notifications">
+                  <Button
+                    leftIcon={<HiOutlineBell />}
+                    variant="light"
+                    color="gray"
+                  >
+                    Notification history
+                  </Button>
+                </Link>
+              </div>
+            )}
           </>
         ) : (
           <>

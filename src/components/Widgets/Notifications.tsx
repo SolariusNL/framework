@@ -3,6 +3,7 @@ import useExperimentsStore, {
   ExperimentId,
 } from "@/stores/useExperimentsStore";
 import { Flow } from "@/stores/useFlow";
+import usePreferences from "@/stores/usePreferences";
 import { Fw } from "@/util/fw";
 import boldPlugin from "@/util/fw/plugins/bold";
 import linkPlugin from "@/util/fw/plugins/links";
@@ -37,6 +38,7 @@ const Notifications: React.FC = () => {
   const { user, setUser } = useAuthorizedUserStore()!;
   const router = useRouter();
   const { experiments } = useExperimentsStore();
+  const { preferences } = usePreferences();
 
   const typeIcon = (type: NotificationType) => {
     switch (type) {
@@ -98,15 +100,17 @@ const Notifications: React.FC = () => {
     <>
       <div className="w-full flex justify-between mb-4">
         <div className="flex gap-2">
-          <Tooltip label="See notification history">
-            <div>
-              <Link href="/notifications">
-                <ActionIcon size="lg" radius="xl" color="gray">
-                  <HiOutlineBell />
-                </ActionIcon>
-              </Link>
-            </div>
-          </Tooltip>
+          {preferences["@app/notification-manager"] && (
+            <Tooltip label="See notification history">
+              <div>
+                <Link href="/notifications">
+                  <ActionIcon size="lg" radius="xl" color="gray">
+                    <HiOutlineBell />
+                  </ActionIcon>
+                </Link>
+              </div>
+            </Tooltip>
+          )}
           <Tooltip label="Clear all notifications">
             <ActionIcon
               size="lg"

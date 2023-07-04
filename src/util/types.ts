@@ -30,13 +30,15 @@ export type UserPreferences =
   | "@chat/enabled"
   | "@chat/my-color"
   | "@dismissible/chat/conversation-tooltip"
-  | "@app/secret-gift";
+  | "@app/secret-gift"
+  | "@app/notification-manager";
 export const userPreferences: UserPreferences[] = [
   "@chat/bell",
   "@chat/enabled",
   "@chat/my-color",
   "@dismissible/chat/conversation-tooltip",
   "@app/secret-gift",
+  "@app/notification-manager",
 ];
 export const defaultUserPreferences: Record<
   UserPreferences,
@@ -47,6 +49,7 @@ export const defaultUserPreferences: Record<
   "@chat/my-color": "blue",
   "@dismissible/chat/conversation-tooltip": false,
   "@app/secret-gift": false,
+  "@app/notification-manager": true,
 };
 export const userPreferenceValidators: Partial<
   Record<UserPreferences, (value: string | boolean | number) => boolean>

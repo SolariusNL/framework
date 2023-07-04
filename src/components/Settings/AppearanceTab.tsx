@@ -31,6 +31,7 @@ import {
   HiColorSwatch,
   HiDesktopComputer,
   HiMoon,
+  HiOutlineBell,
   HiSun,
 } from "react-icons/hi";
 
@@ -251,6 +252,33 @@ const AppearanceTab = ({ user }: AppearanceTabProps) => {
                 noActions
               />
             </div>
+          }
+          shaded
+          noUpperBorder
+        />
+      </Stack>
+      <Divider mt="xl" mb="xl" />
+      <Section
+        title="Features"
+        description="Customize the features you use on Framework."
+      />
+      <Stack spacing="sm">
+        <SideBySide
+          title="Notification manager"
+          description="Enable the notification manager to see past notifications with filtering and searching capabilities."
+          icon={<HiOutlineBell />}
+          right={
+            <Switch
+              label="Enable notification manager"
+              checked={Boolean(preferences["@app/notification-manager"])}
+              onChange={() =>
+                Preferences.setPreferences({
+                  "@app/notification-manager":
+                    !preferences["@app/notification-manager"],
+                })
+              }
+              classNames={BLACK}
+            />
           }
           shaded
           noUpperBorder
