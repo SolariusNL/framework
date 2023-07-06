@@ -1,3 +1,7 @@
+import PinInput from "@/components/PinInput";
+import OuterUI from "@/layouts/OuterUI";
+import authorizedRoute from "@/util/auth";
+import { setCookie } from "@/util/cookies";
 import {
   Anchor,
   Button,
@@ -11,15 +15,12 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
+import { AnimatePresence, motion } from "framer-motion";
 import type { GetServerSidePropsContext, NextPage } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { HiExclamation, HiXCircle } from "react-icons/hi";
-import PinInput from "@/components/PinInput";
-import OuterUI from "@/layouts/OuterUI";
-import authorizedRoute from "@/util/auth";
-import { setCookie } from "@/util/cookies";
 
 interface FormValues {
   username: string;
@@ -134,9 +135,7 @@ const Login: NextPage = () => {
         className={useMantineColorScheme().colorScheme}
       >
         <Text mb={16} color="dimmed" size="sm" align="center">
-          Please enter the code from your authenticator app below. If you are
-          having trouble, make sure your clock is set correctly and that you are
-          using the correct code for the right account.
+          Please enter the code from your authenticator app below.
         </Text>
         <PinInput
           onChange={(e) => {
@@ -147,14 +146,37 @@ const Login: NextPage = () => {
           type="number"
           autoFocus
         />
-        {twofaFailed && (
-          <div className="flex mt-2 justify-center items-center">
-            <HiXCircle className="text-red-500 mr-2" />
-            <Text color="red" size="sm">
-              Invalid code entered
-            </Text>
-          </div>
-        )}
+        <AnimatePresence initial={false}>
+          {twofaFailed && (
+            <motion.div
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -20, opacity: 0 }}
+              transition={{
+                type: "spring",
+                stiffness: 500,
+                damping: 30,
+              }}
+            >
+              <div className="flex mt-4 justify-center items-center">
+                <HiXCircle className="text-red-500 mr-2" />
+                <Text color="red" size="sm">
+                  Invalid code entered
+                </Text>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <div className="w-full flex justify-center mt-4">
+          <Anchor
+            align="center"
+            size="sm"
+            href="https://wiki.solarius.me/docs/support/totp-issues"
+            target="_blank"
+          >
+            Experiencing issues?
+          </Anchor>
+        </div>
       </Modal>
       <OuterUI
         description={
