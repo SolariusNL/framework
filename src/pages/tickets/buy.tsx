@@ -20,19 +20,19 @@ interface BuyTicketsProps {
 export const products = [
   {
     name: "1,000T$",
-    priceId: "price_1M5GjkKrKkWmvq0Ri9nmHUuO",
+    priceId: "price_1M5BNfKrKkWmvq0RofjjWGf0",
     price: "€9.99",
     grant: 1000,
   },
   {
     name: "2,400T$",
-    priceId: "price_1M5HinKrKkWmvq0RolhK59CB",
+    priceId: "price_1M5BOqKrKkWmvq0RaskrxAIz",
     price: "€19.99",
     grant: 2400,
   },
   {
     name: "5,000T$",
-    priceId: "price_1M5HjFKrKkWmvq0RhmJdEZga",
+    priceId: "price_1M5IK0KrKkWmvq0RBe4RgCQa",
     price: "€39.99",
     grant: 5000,
     goodDeal: true,
@@ -42,7 +42,7 @@ export const products = [
   },
   {
     name: "10,000T$",
-    priceId: "price_1M5HjjKrKkWmvq0RUHMYV0Zn",
+    priceId: "price_1M6neqKrKkWmvq0RjvITQpeY",
     price: "€79.99",
     grant: 10000,
     goodDeal: true,
