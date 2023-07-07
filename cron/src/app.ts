@@ -3,7 +3,6 @@ import axios from "axios";
 import { schedule } from "node-cron";
 import prisma from "./prisma";
 import setServerStatus from "./util/servers";
-import startSubscriptionService from "./util/subscriptions";
 
 type ConnectionWithGameAndAuthor = Connection & {
   game: {
@@ -45,8 +44,6 @@ async function checkServerStatus(server: ConnectionWithGameAndAuthor) {
 async function cron() {
   try {
     console.log("cron ~ ✅ Connected to Prisma");
-    console.log("cron ~ 🔃 Starting subscription service");
-    startSubscriptionService();
 
     schedule("0 * * * *", async () => {
       const servers = await prisma.connection.findMany({

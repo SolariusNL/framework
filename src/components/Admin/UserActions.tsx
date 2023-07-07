@@ -1,5 +1,4 @@
 import AdjustEmployee from "@/components/Admin/UserActions/AdjustEmployee";
-import AdjustSubscription from "@/components/Admin/UserActions/AdjustSubscription";
 import AdjustTickets from "@/components/Admin/UserActions/AdjustTickets";
 import LogoutSessions from "@/components/Admin/UserActions/LogoutSessions";
 import ResetBio from "@/components/Admin/UserActions/ResetBio";
@@ -27,7 +26,6 @@ const actions = [
   ResetPassword,
   ResetBio,
   AdjustEmployee,
-  AdjustSubscription,
   Unban,
   Unwarn,
   SendEmail,

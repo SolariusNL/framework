@@ -470,12 +470,6 @@ const UserView = ({ user: u, loading }: UserViewProps) => {
                                   user.premiumSubscription.createdAt
                                 ).toLocaleString(),
                               ],
-                              [
-                                "Expires",
-                                new Date(
-                                  user.premiumSubscription.expiresAt
-                                ).toLocaleString(),
-                              ],
                               ["Type", user.premiumSubscription.type],
                               [
                                 "Last Prize",
