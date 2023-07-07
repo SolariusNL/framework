@@ -1121,13 +1121,9 @@ class AdminRouter {
                     type:
                       subscription.type! ||
                       PremiumSubscriptionType.PREMIUM_ONE_MONTH,
-                    expiresAt:
-                      subscription.renew! ||
-                      new Date(new Date().setMonth(new Date().getMonth() + 1)),
                   },
                   update: {
                     type: subscription.type!,
-                    expiresAt: subscription.renew!,
                   },
                 },
               },

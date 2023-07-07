@@ -1,15 +1,16 @@
+import Authorized, { Account } from "@/util/api/authorized";
+import prisma from "@/util/prisma";
+import type { User } from "@/util/prisma-types";
 import {
   Body,
-  createHandler,
   Get,
   Post,
   Query,
   Res,
+  createHandler,
 } from "@storyofams/next-api-decorators";
 import type { NextApiResponse } from "next";
 import Stripe from "stripe";
-import Authorized, { Account } from "@/util/api/authorized";
-import type { User } from "@/util/prisma-types";
 
 const stripe = new Stripe(String(process.env.STRIPE_SECRET_KEY), {
   apiVersion: "2022-11-15",
@@ -22,13 +23,42 @@ class CheckoutRouter {
     @Body()
     body: {
       priceId: string;
+      type: "tickets" | "premium";
     },
     @Account() user: User
   ) {
-    const { priceId } = body;
+    const { priceId, type = "tickets" } = body;
+    const customer = await prisma.customer.findFirst({
+      where: {
+        userId: user.id,
+      },
+    });
+    let stripeCustomer;
+
+    if (!customer) {
+      const cust = await stripe.customers.create({
+        email: user.email,
+        metadata: {
+          userId: user.id,
+        },
+        name: user.username,
+      });
+      await prisma.customer.create({
+        data: {
+          userId: user.id,
+          stripeCustomerId: cust.id,
+          email: user.email,
+        },
+      });
+
+      stripeCustomer = cust;
+    } else {
+      await stripe.customers.retrieve(customer.stripeCustomerId).then((c) => {
+        stripeCustomer = c;
+      });
+    }
 
     const params: Stripe.Checkout.SessionCreateParams = {
-      submit_type: "pay",
       payment_method_types: ["card"],
       line_items: [
         {
@@ -36,21 +66,28 @@ class CheckoutRouter {
           quantity: 1,
         },
       ],
-      mode: "payment",
+      mode: type === "tickets" ? "payment" : "subscription",
       metadata: {
         userId: user.id,
         priceId,
       },
+      customer: stripeCustomer?.id,
       success_url: `${
         process.env.NODE_ENV === "development"
-          ? "http://localhost:3000"
+          ? "http://127.0.0.1:3000"
           : "https://framework.solarius.me"
       }/api/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${
         process.env.NODE_ENV === "development"
-          ? "http://localhost:3000"
+          ? "http://127.0.0.1:3000"
           : "https://framework.solarius.me"
       }/api/checkout/cancel`,
+      allow_promotion_codes: true,
+      ...(type === "tickets"
+        ? {
+            submit_type: "pay",
+          }
+        : {}),
     };
 
     const session: Stripe.Checkout.Session =
@@ -69,11 +106,51 @@ class CheckoutRouter {
     const session = await stripe.checkout.sessions.retrieve(sessionId);
 
     if (session.payment_status === "paid") {
-      return response.redirect(302, "/tickets/success");
+      if (session.mode === "payment")
+        return response.redirect(302, "/tickets/success");
+      else
+        return response.redirect(
+          302,
+          "/settings/subscriptions?success=subscription"
+        );
     }
 
     return {
       session,
+    };
+  }
+
+  @Post("/createportal")
+  @Authorized()
+  public async createPortal(@Account() user: User) {
+    const customer = await prisma.customer.findFirst({
+      where: {
+        userId: user.id,
+      },
+    });
+
+    if (!customer) {
+      return {
+        message: "You don't have a Stripe account yet.",
+        success: false,
+      };
+    }
+
+    const session = await stripe.billingPortal.sessions.create({
+      customer: customer.stripeCustomerId,
+      return_url: `${
+        process.env.NODE_ENV === "development"
+          ? "http://127.0.0.1:3000"
+          : "https://framework.solarius.me"
+      }/settings/subscriptions`,
+    });
+    console.log(session);
+
+    return {
+      data: {
+        url: session.url,
+      },
+      success: true,
     };
   }
 

@@ -294,13 +294,13 @@ model GiftCode {
 }
 
 model PremiumSubscription {
-  id         String                  @id @default(uuid())
-  user       User                    @relation("userPremiumSubscription", references: [id], fields: [userId])
-  userId     Int                     @unique
-  createdAt  DateTime                @default(now())
-  expiresAt  DateTime                @default(now())
-  type       PremiumSubscriptionType @default(PREMIUM_ONE_MONTH)
-  lastReward DateTime                @default(now())
+  id                   String                  @id @default(uuid())
+  user                 User                    @relation("userPremiumSubscription", references: [id], fields: [userId])
+  userId               Int                     @unique
+  createdAt            DateTime                @default(now())
+  type                 PremiumSubscriptionType @default(PREMIUM_ONE_MONTH)
+  lastReward           DateTime                @default(now())
+  stripeSubscriptionId String?
 }
 
 model EmailVerification {
@@ -839,6 +839,13 @@ model ChatMessage {
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @default(now())
   seenBy         User[]           @relation("readMessages")
+}
+
+model Customer {
+  id               String @id @default(uuid())
+  userId           Int
+  email            String
+  stripeCustomerId String
 }
 
 model ChatConversation {

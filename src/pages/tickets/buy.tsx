@@ -1,13 +1,13 @@
-import { Accordion, Badge, Button, Stack, Text, Title } from "@mantine/core";
-import { getCookie } from "cookies-next";
-import { GetServerSidePropsContext, NextPage } from "next";
-import { useState } from "react";
-import { HiCheck, HiLockClosed } from "react-icons/hi";
 import CheckboxCard from "@/components/CheckboxCard";
 import Framework from "@/components/Framework";
 import authorizedRoute from "@/util/auth";
 import getStripe from "@/util/get-stripe";
 import { User } from "@/util/prisma-types";
+import { Accordion, Badge, Button, Stack, Text, Title } from "@mantine/core";
+import { getCookie } from "cookies-next";
+import { GetServerSidePropsContext, NextPage } from "next";
+import { useState } from "react";
+import { HiCheck, HiLockClosed } from "react-icons/hi";
 
 interface BuyTicketsProps {
   user: User;
@@ -67,6 +67,7 @@ const BuyTickets: NextPage<BuyTicketsProps> = ({ user }) => {
       },
       body: JSON.stringify({
         priceId: String(products[selected].priceId),
+        type: "tickets",
       }),
     })
       .then((res) => res.json())
@@ -209,7 +210,6 @@ const BuyTickets: NextPage<BuyTicketsProps> = ({ user }) => {
             loading={loading}
             mt={24}
             leftIcon={<HiCheck />}
-            disabled
             size="lg"
           >
             Purchase

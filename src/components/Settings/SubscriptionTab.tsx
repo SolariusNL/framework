@@ -2,6 +2,8 @@ import SettingsTab from "@/components/Settings/SettingsTab";
 import SideBySide from "@/components/Settings/SideBySide";
 import ShadedCard from "@/components/ShadedCard";
 import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
+import IResponseBase from "@/types/api/IResponseBase";
+import fetchJson from "@/util/fetch";
 import { User } from "@/util/prisma-types";
 import { getSubscriptionTypeString } from "@/util/universe/subscription";
 import {
@@ -12,18 +14,11 @@ import {
   Title,
   useMantineTheme,
 } from "@mantine/core";
-import { openConfirmModal } from "@mantine/modals";
-import { showNotification } from "@mantine/notifications";
 import { PremiumSubscriptionType } from "@prisma/client";
-import { getCookie } from "cookies-next";
 import Link from "next/link";
-import {
-  HiArrowUp,
-  HiCheck,
-  HiCheckCircle,
-  HiInformationCircle,
-  HiStop,
-} from "react-icons/hi";
+import { useRouter } from "next/router";
+import { useState } from "react";
+import { HiCheck, HiCreditCard, HiInformationCircle } from "react-icons/hi";
 
 interface SubscriptionTabProps {
   user: User;
@@ -32,6 +27,24 @@ interface SubscriptionTabProps {
 const SubscriptionTab = ({ user: _user }: SubscriptionTabProps) => {
   const { colors } = useMantineTheme();
   const { user, setUser } = useAuthorizedUserStore()!;
+  const [manageSubscriptionLoading, setManageSubscriptionLoading] =
+    useState(false);
+  const router = useRouter();
+
+  const handleManageSubscription = async () => {
+    setManageSubscriptionLoading(true);
+    await fetchJson<IResponseBase<{ url: string }>>(
+      "/api/checkout/createportal",
+      {
+        method: "POST",
+        auth: true,
+      }
+    ).then((res) => {
+      if (res.success && res.data) {
+        router.push(res.data.url);
+      }
+    });
+  };
 
   return (
     <SettingsTab tabValue="subscriptions" tabTitle="Billing">
@@ -46,72 +59,21 @@ const SubscriptionTab = ({ user: _user }: SubscriptionTabProps) => {
               <>
                 {(user.premiumSubscription.type as PremiumSubscriptionType) !==
                   PremiumSubscriptionType.PREMIUM_ONE_YEAR && (
-                  <Link href="/premium" passHref>
-                    <Button
-                      leftIcon={<HiArrowUp />}
-                      variant="gradient"
-                      gradient={{
-                        from: colors.pink[8],
-                        to: colors.grape[8],
-                      }}
-                      fullWidth
-                      mb="xs"
-                    >
-                      Upgrade
-                    </Button>
-                  </Link>
+                  <Button
+                    leftIcon={<HiCreditCard />}
+                    variant="gradient"
+                    gradient={{
+                      from: colors.pink[8],
+                      to: colors.grape[8],
+                    }}
+                    fullWidth
+                    mb="xs"
+                    onClick={() => handleManageSubscription()}
+                    loading={manageSubscriptionLoading}
+                  >
+                    Manage subscription
+                  </Button>
                 )}
-                <Button
-                  leftIcon={<HiStop />}
-                  color="red"
-                  variant="subtle"
-                  fullWidth
-                  onClick={() =>
-                    openConfirmModal({
-                      title: "Are you sure?",
-                      children: (
-                        <Text>
-                          Are you sure you want to cancel your Premium
-                          subscription? You will immediately lose access to all
-                          premium features, and your subscription will go
-                          through one last billing cycle.
-                        </Text>
-                      ),
-                      labels: {
-                        confirm: "Yes, cancel",
-                        cancel: "Nevermind",
-                      },
-                      confirmProps: {
-                        color: "red",
-                      },
-                      onConfirm: async () => {
-                        setUser({
-                          ...user,
-                          premium: false,
-                          premiumSubscription: null,
-                        });
-                        showNotification({
-                          title: "Subscription ended",
-                          message:
-                            "We hate to see you go. We sincerely appreciate your support, and we hope you'll consider subscribing again in the future. Thank you!",
-                          icon: <HiCheckCircle />,
-                        });
-
-                        await fetch("/api/users/@me/subscription/cancel", {
-                          headers: {
-                            "Content-Type": "application/json",
-                            Authorization: String(
-                              getCookie(".frameworksession")
-                            ),
-                          },
-                          method: "POST",
-                        });
-                      },
-                    })
-                  }
-                >
-                  Cancel subscription
-                </Button>
                 <div className="flex items-start gap-2 mt-4">
                   <HiInformationCircle
                     size={20}
@@ -190,14 +152,7 @@ const SubscriptionTab = ({ user: _user }: SubscriptionTabProps) => {
                       getSubscriptionTypeString(user.premiumSubscription.type),
                     ],
                     [
-                      "Renews",
-                      new Date(
-                        user.premiumSubscription.expiresAt
-                      ).toLocaleDateString(),
-                    ],
-                    [
                       "Next gift",
-                      // 1 month from  user.premiumSubscription.lastReward
                       new Date(
                         new Date(
                           user.premiumSubscription.lastReward
