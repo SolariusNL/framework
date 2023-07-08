@@ -60,7 +60,6 @@ class CheckoutRouter {
 
     const params: Stripe.Checkout.SessionCreateParams = {
       payment_method_types: ["card"],
-      payment_method_collection: "if_required",
       line_items: [
         {
           price: priceId,
@@ -88,7 +87,9 @@ class CheckoutRouter {
         ? {
             submit_type: "pay",
           }
-        : {}),
+        : {
+            payment_method_collection: "if_required",
+          }),
     };
 
     const session: Stripe.Checkout.Session =
