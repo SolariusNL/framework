@@ -139,6 +139,7 @@ const customerSubscriptionDeleted = async (event: Stripe.Event) => {
 
 const invoicePaid = async (event: Stripe.Event) => {
   const invoice = event.data.object as Stripe.Invoice;
+  if (invoice.billing_reason === "subscription_create") return;
   const subscription = await stripe.subscriptions.retrieve(
     invoice.subscription as string
   );
