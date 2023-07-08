@@ -60,6 +60,7 @@ class CheckoutRouter {
 
     const params: Stripe.Checkout.SessionCreateParams = {
       payment_method_types: ["card"],
+      payment_method_collection: "if_required",
       line_items: [
         {
           price: priceId,
