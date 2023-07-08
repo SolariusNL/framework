@@ -14,7 +14,6 @@ import {
   Title,
   useMantineTheme,
 } from "@mantine/core";
-import { PremiumSubscriptionType } from "@prisma/client";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -57,23 +56,20 @@ const SubscriptionTab = ({ user: _user }: SubscriptionTabProps) => {
           <>
             {user?.premium && user.premiumSubscription ? (
               <>
-                {(user.premiumSubscription.type as PremiumSubscriptionType) !==
-                  PremiumSubscriptionType.PREMIUM_ONE_YEAR && (
-                  <Button
-                    leftIcon={<HiCreditCard />}
-                    variant="gradient"
-                    gradient={{
-                      from: colors.pink[8],
-                      to: colors.grape[8],
-                    }}
-                    fullWidth
-                    mb="xs"
-                    onClick={() => handleManageSubscription()}
-                    loading={manageSubscriptionLoading}
-                  >
-                    Manage subscription
-                  </Button>
-                )}
+                <Button
+                  leftIcon={<HiCreditCard />}
+                  variant="gradient"
+                  gradient={{
+                    from: colors.pink[8],
+                    to: colors.grape[8],
+                  }}
+                  fullWidth
+                  mb="xs"
+                  onClick={() => handleManageSubscription()}
+                  loading={manageSubscriptionLoading}
+                >
+                  Manage subscription
+                </Button>
                 <div className="flex items-start gap-2 mt-4">
                   <HiInformationCircle
                     size={20}
