@@ -12,6 +12,7 @@ import {
   HiCollection,
   HiExclamation,
   HiFolder,
+  HiGift,
   HiLockClosed,
   HiTicket,
   HiUserGroup,
@@ -29,9 +30,11 @@ type TeamsViewProps = {
     | "games"
     | "issues"
     | "tickets"
+    | "giveaways"
     | "settings-general"
     | "settings-audit"
-    | "settings-access";
+    | "settings-access"
+    | "settings-giveaways";
   team: TeamType & {
     staff: { username: string; id: number }[];
   };
@@ -62,6 +65,11 @@ export const tabs = [
     name: "Tickets",
     href: "/tickets",
     icon: <HiTicket />,
+  },
+  {
+    name: "Giveaways",
+    href: "/giveaways",
+    icon: <HiGift />,
   },
 ];
 
@@ -151,6 +159,14 @@ const TeamsViewProvider: React.FC<TeamsViewProps> = ({
                     label="Audit Log"
                     icon={<HiFolder />}
                     active={"settings-audit" === active}
+                  />
+                </Link>
+                <Link href={`/teams/t/${team.slug}/settings/giveaways`}>
+                  <NavLink
+                    className="rounded-md"
+                    label="Giveaways"
+                    icon={<HiGift />}
+                    active={"settings-giveaways" === active}
                   />
                 </Link>
               </NavLink>

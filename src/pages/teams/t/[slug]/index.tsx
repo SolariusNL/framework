@@ -1,4 +1,5 @@
 import DataGrid from "@/components/DataGrid";
+import InlineError from "@/components/InlineError";
 import Markdown, { ToolbarItem } from "@/components/Markdown";
 import Owner from "@/components/Owner";
 import RenderMarkdown, { parse } from "@/components/RenderMarkdown";
@@ -6,7 +7,10 @@ import ShadedCard from "@/components/ShadedCard";
 import Stateful from "@/components/Stateful";
 import TeamsViewProvider from "@/components/Teams/TeamsView";
 import { TeamType } from "@/pages/teams";
+import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
+import IResponseBase from "@/types/api/IResponseBase";
 import authorizedRoute from "@/util/auth";
+import fetchJson from "@/util/fetch";
 import { Fw } from "@/util/fw";
 import getMediaUrl from "@/util/get-media";
 import { NonUser, User } from "@/util/prisma-types";
@@ -18,11 +22,14 @@ import {
   Button,
   Menu,
   Modal,
+  NumberInput,
   Text,
   Title,
-  useMantineTheme,
+  Tooltip,
+  useMantineColorScheme,
 } from "@mantine/core";
 import { useClipboard } from "@mantine/hooks";
+import { openModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import { Rating, TeamAccess } from "@prisma/client";
 import { getCookie } from "cookies-next";
@@ -30,6 +37,7 @@ import { GetServerSideProps } from "next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
+  HiArrowRight,
   HiCake,
   HiChat,
   HiCheckCircle,
@@ -43,9 +51,12 @@ import {
   HiLockClosed,
   HiMail,
   HiOfficeBuilding,
+  HiOutlineTicket,
+  HiTicket,
   HiUsers,
   HiViewGrid,
 } from "react-icons/hi";
+import { BLACK } from "./issue/create";
 
 export type TeamViewProps = {
   user: User;
@@ -70,11 +81,12 @@ export type TeamViewProps = {
 };
 
 const TeamView: React.FC<TeamViewProps> = ({ user, team: teamInitial }) => {
-  const { colorScheme, colors } = useMantineTheme();
   const [member, setMember] = useState<boolean | null>(null);
   const [invited, setInvited] = useState<boolean>(false);
   const { copy } = useClipboard();
+  const { setProperty } = useAuthorizedUserStore();
   const [shoutEditOpened, setShoutEditOpened] = useState(false);
+  const [addFundsOpened, setAddFundsOpened] = useState(false);
   const [team, setTeam] = useState(teamInitial);
 
   const headers = {
@@ -213,17 +225,153 @@ const TeamView: React.FC<TeamViewProps> = ({ user, team: teamInitial }) => {
           )}
         </Stateful>
       </Modal>
+      <Modal
+        title="Add funds"
+        opened={addFundsOpened}
+        onClose={() => setAddFundsOpened(false)}
+        className={useMantineColorScheme().colorScheme}
+      >
+        <Text size="sm" color="dimmed">
+          This will add funds to your team&apos;s balance.
+        </Text>
+        <Stateful>
+          {(tickets, setTickets) => (
+            <>
+              <NumberInput
+                icon={<HiTicket />}
+                classNames={BLACK}
+                label="Ticket amount"
+                description="How many tickets do you want to add to your team's balance?"
+                my="xl"
+                required
+                placeholder="450T$"
+                value={tickets}
+                onChange={(value) => setTickets(value)}
+              />
+              <div className="flex justify-end mt-4">
+                <Stateful initialState={0}>
+                  {(confirm, setConfirm) => (
+                    <Button
+                      leftIcon={<HiArrowRight />}
+                      onClick={async () => {
+                        setConfirm(confirm + 1);
+                        if (confirm === 1) {
+                          if (tickets > 1_000_000) {
+                            showNotification({
+                              title: "Error",
+                              message:
+                                "You cannot add more than 1,000,000 tickets at once.",
+                              icon: <HiExclamationCircle />,
+                            });
+                            return;
+                          }
+                          if (user.tickets < tickets) {
+                            showNotification({
+                              title: "Error",
+                              message:
+                                "You do not have enough tickets to add this amount.",
+                              icon: <HiExclamationCircle />,
+                            });
+                            return;
+                          }
+                          await fetchJson<IResponseBase>(
+                            `/api/teams/${team.id}/funds/add/${tickets}`,
+                            {
+                              method: "POST",
+                              auth: true,
+                            }
+                          ).then((res) => {
+                            if (res.success) {
+                              showNotification({
+                                title: "Funds added",
+                                message: `You have successfully added T$${tickets} to your team's balance.`,
+                                icon: <HiCheckCircle />,
+                              });
+                              setProperty("tickets", user.tickets - tickets);
+                              updateTeam("funds", team.funds + tickets);
+                            } else {
+                              showNotification({
+                                title: "Error",
+                                message:
+                                  res.message ||
+                                  "There was an error adding funds to your team's balance.",
+                                icon: <HiExclamationCircle />,
+                              });
+                            }
+                          });
+                          setAddFundsOpened(false);
+                          setTickets(0);
+                          setConfirm(0);
+                        }
+                      }}
+                    >
+                      {confirm === 0
+                        ? "Confirm transaction"
+                        : confirm === 1
+                        ? "Are you sure?"
+                        : "Confirm transaction"}
+                    </Button>
+                  )}
+                </Stateful>
+              </div>
+            </>
+          )}
+        </Stateful>
+        <InlineError variant="warning" title="Non-refundable" className="mt-8">
+          Any funds contributed to your team&apos;s balance are non-refundable
+          and can only be transferred to regular members. They cannot be
+          transferred to the owner or staff members.
+        </InlineError>
+      </Modal>
       <div className="flex items-start flex-col md:flex-row gap-y-4 md:gap-y-0 justify-between mb-8">
         <div className="flex items-start gap-7">
           <Avatar size={100} src={getMediaUrl(team.iconUri)} />
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 w-full">
             <div className="flex items-center gap-4">
               {team.access === TeamAccess.PRIVATE && (
                 <HiLockClosed className="dark:text-gray-300/50 text-gray-700/50" />
               )}
               <Title order={2}>{team.name}</Title>
             </div>
-            <Owner user={team.owner} size={34} className="mt-2" />
+            <div className="flex justify-between items-center gap-8 w-full">
+              <Owner user={team.owner} size={34} className="mt-2" />
+              {team.displayFunds && (
+                <Tooltip label={`Team funds: ${team.funds} Tickets`}>
+                  <div
+                    className="flex items-center gap-2 mt-2 text-teal-400 cursor-pointer"
+                    onClick={() =>
+                      openModal({
+                        title: "Team funds",
+                        children: (
+                          <>
+                            <Text size="sm" color="dimmed" align="center">
+                              Teams can have Ticket balances which can be used
+                              to distribute earnings to giveaway winners, fund
+                              development, or anything else you can think of.
+                            </Text>
+                            <Text
+                              size="sm"
+                              color="dimmed"
+                              mt="md"
+                              align="center"
+                            >
+                              You can add funds to your team by clicking the
+                              triple vertical dots in the top right corner of
+                              this page, and selecting &quot;Add funds&quot;.
+                            </Text>
+                          </>
+                        ),
+                      })
+                    }
+                  >
+                    <HiOutlineTicket />
+                    <Text size="sm" weight={500}>
+                      T${team.funds}
+                    </Text>
+                  </div>
+                </Tooltip>
+              )}
+            </div>
           </div>
         </div>
         <div className="flex items-center gap-4 ml-auto">
@@ -247,6 +395,12 @@ const TeamView: React.FC<TeamViewProps> = ({ user, team: teamInitial }) => {
               </Menu.Item>
               <Menu.Item icon={<HiClipboard />} onClick={() => copy(team.id)}>
                 Copy ID
+              </Menu.Item>
+              <Menu.Item
+                icon={<HiOutlineTicket />}
+                onClick={() => setAddFundsOpened(true)}
+              >
+                Add funds
               </Menu.Item>
               {(team.owner.id === user.id ||
                 (team.staff &&
@@ -386,6 +540,11 @@ const TeamView: React.FC<TeamViewProps> = ({ user, team: teamInitial }) => {
             tooltip: "Timezone",
             icon: <HiClock />,
             value: team.timezone || "Unprovided",
+          },
+          {
+            tooltip: "Funds",
+            icon: <HiOutlineTicket />,
+            value: `T$${team.funds}`,
           },
         ]}
       />

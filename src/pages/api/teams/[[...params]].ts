@@ -4,6 +4,7 @@ import type { FilterType, SortType } from "@/pages/teams/discover";
 import { tags } from "@/pages/teams/t/[slug]/issue/create";
 import type { IssueFilter, IssueSort } from "@/pages/teams/t/[slug]/issues";
 import type { AuditLogType } from "@/pages/teams/t/[slug]/settings/audit-log";
+import IResponseBase from "@/types/api/IResponseBase";
 import Authorized, { Account } from "@/util/api/authorized";
 import { Teams } from "@/util/audit-log";
 import createNotification from "@/util/notifications";
@@ -211,10 +212,18 @@ class TeamsRouter {
           .enum(["OPEN", "PRIVATE"])
           .refine((a) => a === "OPEN" || a === "PRIVATE")
       ),
+      displayFunds: z.optional(z.boolean()),
     });
 
-    const { description, location, timezone, website, email, access } =
-      schema.parse(body);
+    const {
+      description,
+      location,
+      timezone,
+      website,
+      email,
+      access,
+      displayFunds,
+    } = schema.parse(body);
 
     const exists = await prisma.team.findFirst({
       where: {
@@ -239,6 +248,7 @@ class TeamsRouter {
         website,
         email,
         access,
+        displayFunds,
       },
     });
 
@@ -252,6 +262,10 @@ class TeamsRouter {
         {
           key: "Access",
           value: team.access === TeamAccess.OPEN ? "Open" : "Private",
+        },
+        {
+          key: "Display Funds",
+          value: team.displayFunds ? "Yes" : "No",
         },
       ],
       "Team updated, new values:",
@@ -1480,6 +1494,317 @@ class TeamsRouter {
     return {
       issues,
       pages: Math.ceil(count / 10),
+    };
+  }
+
+  @Get("/:id/giveaways")
+  @Authorized()
+  public async getTeamGiveaways(@Param("id") id: string) {
+    const team = await prisma.team.findFirst({
+      where: {
+        id,
+      },
+      include: {
+        games: true,
+      },
+    });
+
+    if (!team) {
+      throw new BadRequestException("Team does not exist");
+    }
+
+    const giveaways = await prisma.teamGiveaway.findMany({
+      where: {
+        ended: false,
+      },
+      include: {
+        _count: {
+          select: {
+            participants: true,
+          },
+        },
+      },
+    });
+
+    return <IResponseBase>{
+      success: true,
+      data: {
+        giveaways,
+      },
+    };
+  }
+
+  @Post("/:id/giveaways/new")
+  @Authorized()
+  public async createTeamGiveaway(
+    @Param("id") id: string,
+    @Account() user: User,
+    @Body() body: unknown
+  ) {
+    const team = await prisma.team.findFirst({
+      where: {
+        id: String(id),
+        OR: [
+          {
+            ownerId: Number(user.id),
+          },
+          {
+            staff: {
+              some: {
+                id: Number(user.id),
+              },
+            },
+          },
+        ],
+      },
+    });
+
+    if (!team) throw new BadRequestException("Team not found");
+
+    const schema = z.object({
+      name: z.string().max(32),
+      description: z.string().max(500),
+      tickets: z.number().max(2500).min(25),
+      ends: z
+        .string()
+        .datetime()
+        .min(Number(new Date(new Date().getDay() + 1).toUTCString())),
+    });
+
+    const parsed = schema.safeParse(body);
+
+    if (parsed.success) {
+      if (team.funds < parsed.data.tickets)
+        throw new BadRequestException("Not enough funds");
+
+      const created = await prisma.teamGiveaway.create({
+        data: {
+          name: parsed.data.name,
+          description: parsed.data.description,
+          endsAt: parsed.data.ends,
+          tickets: parsed.data.tickets,
+          team: {
+            connect: {
+              id: team.id,
+            },
+          },
+        },
+      });
+      await prisma.team.update({
+        where: {
+          id: team.id,
+        },
+        data: {
+          funds: {
+            decrement: parsed.data.tickets,
+          },
+        },
+      });
+
+      await Teams.createAuditLog(
+        TeamAuditLogType.GIVEAWAY_CREATED,
+        [
+          { key: "Name", value: parsed.data.name },
+          { key: "Description", value: parsed.data.description },
+          { key: "Tickets", value: `T$${parsed.data.tickets}` },
+          {
+            key: "Ends at",
+            value: new Date(parsed.data.ends).toLocaleString(),
+          },
+        ],
+        "A new giveaway was created",
+        user.id,
+        team.id
+      );
+
+      return <IResponseBase>{
+        success: true,
+        data: {
+          giveaway: created,
+        },
+      };
+    } else {
+      throw new BadRequestException("Invalid data: " + parsed.error);
+    }
+  }
+
+  @Get("/:id/giveaways/:gid/participating")
+  @Authorized()
+  public async getGiveawayParticipationStatus(
+    @Account() account: User,
+    @Param("id") id: string,
+    @Param("gid") giveawayId: string
+  ) {
+    const team = await prisma.team.findFirst({
+      where: {
+        id,
+      },
+      include: {
+        games: true,
+      },
+    });
+
+    if (!team) {
+      throw new BadRequestException("Team does not exist");
+    }
+
+    const giveaway = await prisma.teamGiveaway.findFirst({
+      where: {
+        id: giveawayId,
+        ended: false,
+      },
+    });
+
+    if (!giveaway) {
+      throw new BadRequestException("Giveaway doesn't exist");
+    }
+
+    const participating = await prisma.user.findFirst({
+      where: {
+        joinedGiveaways: {
+          some: {
+            ended: false,
+            id: giveaway.id,
+          },
+        },
+      },
+    });
+
+    return <IResponseBase>{
+      success: true,
+      data: {
+        participating: participating,
+      },
+    };
+  }
+
+  @Patch("/:id/giveaways/:gid/join")
+  @Authorized()
+  public async toggleGiveawayParticipationStatus(
+    @Param("id") id: string,
+    @Account() user: User,
+    @Param("gid") giveawayId: string
+  ) {
+    const team = await prisma.team.findFirst({
+      where: {
+        id,
+      },
+      include: {
+        games: true,
+      },
+    });
+
+    if (!team) {
+      throw new BadRequestException("Team does not exist");
+    }
+
+    const giveaway = await prisma.teamGiveaway.findFirst({
+      where: {
+        id: giveawayId,
+        ended: false,
+      },
+    });
+
+    if (!giveaway) {
+      throw new BadRequestException("Giveaway doesn't exist");
+    }
+
+    const participating = await prisma.user.findFirst({
+      where: {
+        id: user.id,
+        joinedGiveaways: {
+          some: {
+            id: giveaway.id,
+          },
+        },
+      },
+    });
+
+    await prisma.teamGiveaway.update({
+      where: {
+        id: giveawayId,
+      },
+      data: {
+        participants: {
+          ...(participating
+            ? {
+                disconnect: {
+                  id: user.id,
+                },
+              }
+            : {
+                connect: {
+                  id: user.id,
+                },
+              }),
+        },
+      },
+    });
+
+    return <IResponseBase>{
+      success: true,
+    };
+  }
+
+  @Post("/:id/funds/add/:amount")
+  @Authorized()
+  public async addFunds(
+    @Param("id") id: string,
+    @Param("amount") amount: string,
+    @Account() user: User
+  ) {
+    const team = await prisma.team.findFirst({
+      where: {
+        id,
+        ownerId: user.id,
+      },
+    });
+
+    if (!team) {
+      throw new BadRequestException("Team does not exist");
+    }
+
+    const parsed = Number(amount);
+
+    if (isNaN(parsed)) {
+      throw new BadRequestException("Invalid amount");
+    }
+
+    if (user.tickets < parsed) {
+      throw new BadRequestException("You don't have enough funds");
+    }
+
+    await prisma.team.update({
+      where: {
+        id,
+      },
+      data: {
+        funds: {
+          increment: parsed,
+        },
+      },
+    });
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        tickets: {
+          decrement: parsed,
+        },
+      },
+    });
+
+    await Teams.createAuditLog(
+      TeamAuditLogType.FUNDS_ADDED,
+      [{ key: "Amount", value: `T$${parsed}` }],
+      "Funds were added to the team",
+      user.id,
+      team.id
+    );
+
+    return <IResponseBase>{
+      success: true,
     };
   }
 }

@@ -1,6 +1,8 @@
 import { TeamAuditLogType } from "@prisma/client";
 import {
   HiEye,
+  HiOutlineGift,
+  HiOutlineTicket,
   HiPencil,
   HiSpeakerphone,
   HiUserAdd,
@@ -31,6 +33,14 @@ const auditLogMeta = new Map<
   [
     TeamAuditLogType.UPDATE_TEAM_DETAILS,
     { icon: HiPencil, label: "Updated team details", type: "change" },
+  ],
+  [
+    TeamAuditLogType.GIVEAWAY_CREATED,
+    { icon: HiOutlineGift, label: "Created a new giveaway", type: "add" },
+  ],
+  [
+    TeamAuditLogType.FUNDS_ADDED,
+    { icon: HiOutlineTicket, label: "Added funds", type: "add" },
   ],
 ]);
 

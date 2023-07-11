@@ -12,9 +12,10 @@ import { getTeam } from "@/util/teams";
 import {
   Avatar,
   Button,
+  Checkbox,
   Select,
+  Text,
   TextInput,
-  useMantineTheme,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
@@ -62,13 +63,7 @@ type Updatable = {
   website: string;
   email: string;
   access: TeamAccess;
-};
-
-type InvitedListProps = {
-  loading: boolean;
-  setLoading: (loading: boolean) => void;
-  tid: string;
-  canEdit: boolean;
+  displayFunds: boolean;
 };
 
 const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
@@ -80,6 +75,7 @@ const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
     email?: string;
     access?: TeamAccess;
     staffPermissions?: TeamStaffPermission[];
+    displayFunds?: boolean;
   }>({
     initialValues: {
       description: team.descriptionMarkdown || "",
@@ -89,6 +85,7 @@ const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
       email: team.email || "",
       access: team.access || TeamAccess.OPEN,
       staffPermissions: team.staffPermissions || [],
+      displayFunds: team.displayFunds || false,
     },
     validate: {
       description: (value) => {
@@ -130,8 +127,6 @@ const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
   });
   const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
   const iconRef = useRef<HTMLImageElement>(null);
-  const theme = useMantineTheme();
-  const [loadingInvited, setLoadingInvited] = useState<boolean>(false);
 
   const updateTeam = async (values: Updatable) => {
     await fetch(`/api/teams/${team.id}`, {
@@ -314,6 +309,28 @@ const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
               disabled={team.ownerId !== user.id}
               {...form.getInputProps("timezone")}
             />
+          </DetailCard>
+          <DetailCard
+            title="Privacy"
+            description="Privacy settings for your team, such as whether your funds are public."
+          >
+            <div className="flex flex-col gap-2">
+              <Checkbox
+                label="Public funds"
+                classNames={{
+                  input: blackInput,
+                  icon: "dark:text-white",
+                }}
+                disabled={team.ownerId !== user.id}
+                {...form.getInputProps("displayFunds", {
+                  type: "checkbox",
+                })}
+              />
+              <Text size="sm" color="dimmed">
+                Whether your team&apos;s funds are publicly visible on the index
+                page.
+              </Text>
+            </div>
           </DetailCard>
         </DetailCard.Group>
         <div className="mt-8 flex justify-end">

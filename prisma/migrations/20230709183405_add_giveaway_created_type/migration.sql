@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "TeamAuditLogType" ADD VALUE 'GIVEAWAY_CREATED';

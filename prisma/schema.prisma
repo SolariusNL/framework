@@ -190,6 +190,7 @@ model User {
   activeResells              LimitedCatalogItemResell[]  @relation("limitedCatalogItemResellSeller")
   inventory                  Inventory?                  @relation("inventory")
   newLogins                  NewLogin[]                  @relation("newLogins")
+  joinedGiveaways            TeamGiveaway[]              @relation("teamGiveawayParticipants")
 }
 
 model Story {
@@ -1069,6 +1070,9 @@ model Team {
   staffPermissions    TeamStaffPermission[]
   auditLogs           TeamAuditLog[]        @relation("teamAuditLogs")
   banned              User[]                @relation("teamBans")
+  giveaways           TeamGiveaway[]        @relation("teamGiveaway")
+  funds               Int                   @default(15)
+  displayFunds        Boolean               @default(true)
 }
 
 enum TeamAccess {
@@ -1215,6 +1219,8 @@ enum TeamAuditLogType {
   UPDATE_INVITED_USERS
   UPDATE_SHOUT
   REMOVE_USER
+  GIVEAWAY_CREATED
+  FUNDS_ADDED
 }
 
 model AutomodTrigger {
@@ -1344,4 +1350,17 @@ model LimitedInventoryItem {
   item        LimitedCatalogItem @relation("limitedInventoryItems", fields: [itemId], references: [id])
   itemId      String
   count       Int
+}
+
+model TeamGiveaway {
+  id           String   @id @default(uuid())
+  createdAt    DateTime @default(now())
+  endsAt       DateTime
+  name         String
+  description  String
+  team         Team     @relation("teamGiveaway", fields: [teamId], references: [id])
+  teamId       String
+  tickets      Int
+  participants User[]   @relation("teamGiveawayParticipants")
+  ended        Boolean  @default(false)
 }

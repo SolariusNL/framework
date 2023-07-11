@@ -1,9 +1,9 @@
-import { FastFlagUnionType, Prisma } from "@prisma/client";
-import create from "zustand";
 import { GenericFastFlag } from "@/pages/api/flags/[[...params]]";
 import IResponseBase from "@/types/api/IResponseBase";
-import fetchJson from "@/util/fetch";
 import { FastFlagNames } from "@/util/types";
+import { FastFlagUnionType, Prisma } from "@prisma/client";
+import create from "zustand";
+import fetchJson from "../util/fetch";
 
 export type ReturnedFastFlag = Record<
   FastFlagNames,
