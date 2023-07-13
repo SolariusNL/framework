@@ -1568,7 +1568,9 @@ class TeamsRouter {
       ends: z
         .string()
         .datetime()
-        .min(Number(new Date(new Date().getDay() + 1).toUTCString())),
+        .refine((d) => {
+          return new Date(d) > new Date();
+        }, "End date must be in the future"),
     });
 
     const parsed = schema.safeParse(body);

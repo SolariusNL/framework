@@ -1,3 +1,4 @@
+import DataGrid from "@/components/DataGrid";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import ModernEmptyState from "@/components/ModernEmptyState";
 import RenderMarkdown from "@/components/RenderMarkdown";
@@ -8,19 +9,22 @@ import IResponseBase from "@/types/api/IResponseBase";
 import authorizedRoute from "@/util/auth";
 import clsx from "@/util/clsx";
 import fetchJson from "@/util/fetch";
+import { Fw } from "@/util/fw";
 import { User } from "@/util/prisma-types";
 import { getTeam } from "@/util/teams";
 import {
   ActionIcon,
   Badge,
   Button,
+  Divider,
   Select,
+  Skeleton,
   Text,
   TextInput,
   Title,
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
-import { TeamGiveaway } from "@prisma/client";
+import { TeamGiveaway as TeamGiveawayBase } from "@prisma/client";
 import { AnimatePresence, motion } from "framer-motion";
 import { GetServerSideProps } from "next";
 import { FC, useEffect, useState } from "react";
@@ -28,7 +32,11 @@ import {
   HiArrowLeft,
   HiCheckCircle,
   HiOutlineGift,
+  HiOutlineLogin,
+  HiOutlineLogout,
   HiOutlineSearch,
+  HiOutlineTicket,
+  HiOutlineUserGroup,
   HiSortAscending,
   HiXCircle,
 } from "react-icons/hi";
@@ -37,6 +45,11 @@ import { TeamType } from "../..";
 export type TeamViewGiveawaysProps = {
   user: User;
   team: TeamType;
+};
+type TeamGiveaway = TeamGiveawayBase & {
+  _count: {
+    participants: number;
+  };
 };
 type FetchGiveawaysResponse = IResponseBase<{
   giveaways: TeamGiveaway[];
@@ -52,6 +65,9 @@ const TeamViewGiveaways: FC<TeamViewGiveawaysProps> = ({ user, team }) => {
   const [selectedGiveaway, setSelectedGiveaway] = useState<
     TeamGiveaway | undefined
   >();
+  const [selectedGiveawayCountdown, setSelectedGiveawayCountdown] = useState<
+    number | undefined
+  >(undefined);
   const [participating, setParticipating] = useState<boolean | undefined>(
     undefined
   );
@@ -140,7 +156,17 @@ const TeamViewGiveaways: FC<TeamViewGiveawaysProps> = ({ user, team }) => {
   }, []);
 
   useEffect(() => {
-    if (selectedGiveaway !== undefined) fetchParticipating();
+    if (selectedGiveaway !== undefined) {
+      fetchParticipating();
+      const countdown = setInterval(() => {
+        setSelectedGiveawayCountdown(
+          Math.floor(
+            (new Date(selectedGiveaway?.endsAt).getTime() - Date.now()) / 1000
+          )
+        );
+      }, 1000);
+      return () => clearInterval(countdown);
+    }
   }, [selectedGiveaway]);
 
   return (
@@ -159,39 +185,109 @@ const TeamViewGiveaways: FC<TeamViewGiveawaysProps> = ({ user, team }) => {
             }}
           >
             {selectedGiveaway && (
-              <div className="flex items-center justify-between">
-                <div className="flex items-start gap-5">
-                  <div className="flex items-center md:gap-6 gap-2">
-                    <ActionIcon
-                      onClick={() => {
-                        setSelectedGiveaway(undefined);
-                      }}
-                      size="xl"
-                      className="rounded-full hover:border-zinc-500/50 transition-all"
-                      sx={{
-                        borderWidth: 1,
-                      }}
+              <>
+                {" "}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-start gap-5">
+                    <div className="flex items-center md:gap-6 gap-2">
+                      <ActionIcon
+                        onClick={() => {
+                          setSelectedGiveaway(undefined);
+                          setSelectedGiveawayCountdown(undefined);
+                        }}
+                        size="xl"
+                        className="rounded-full hover:border-zinc-500/50 transition-all"
+                        sx={{
+                          borderWidth: 1,
+                        }}
+                      >
+                        <HiArrowLeft />
+                      </ActionIcon>
+                      <HiOutlineGift size={32} />
+                    </div>
+                    <div>
+                      <Title order={3}>{selectedGiveaway.name}</Title>
+                      <Text color="dimmed" size="sm">
+                        Ends on{" "}
+                        <span className="font-semibold">
+                          {new Date(
+                            selectedGiveaway.endsAt
+                          ).toLocaleDateString()}
+                        </span>
+                      </Text>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <Button
+                      onClick={toggleParticipationStatus}
+                      leftIcon={
+                        participating ? <HiOutlineLogout /> : <HiOutlineLogin />
+                      }
                     >
-                      <HiArrowLeft />
-                    </ActionIcon>
-                    <HiOutlineGift size={32} />
+                      {participating ? "Leave" : "Join"}
+                    </Button>
                   </div>
-                  <div>
-                    <Title order={3}>{selectedGiveaway.name}</Title>
-                    <Text color="dimmed" size="sm">
-                      Ends{" "}
-                      <span className="font-semibold">
-                        {new Date(selectedGiveaway.endsAt).toLocaleDateString()}
-                      </span>
+                </div>
+                <Divider className="my-8" />
+                <div className="min-h-full flex gap-4 md:flex-row flex-col">
+                  <div className="flex-1">
+                    <Text color="dimmed" weight={500}>
+                      Description
                     </Text>
+                    <ShadedCard className="mt-2">
+                      <RenderMarkdown proseAddons="prose-sm">
+                        {selectedGiveaway.description}
+                      </RenderMarkdown>
+                    </ShadedCard>
+                  </div>
+                  <div className="flex-1">
+                    <DataGrid
+                      mdCols={2}
+                      smCols={1}
+                      defaultCols={2}
+                      items={[
+                        {
+                          tooltip: "Tickets",
+                          icon: <HiOutlineTicket />,
+                          value: `T$${selectedGiveaway.tickets}`,
+                        },
+                        {
+                          tooltip: "Participants",
+                          icon: <HiOutlineUserGroup />,
+                          value: `${
+                            selectedGiveaway._count.participants
+                          } ${Fw.Strings.pluralize(
+                            selectedGiveaway._count.participants,
+                            "participant"
+                          )}`,
+                        },
+                      ]}
+                      className="mt-0"
+                    />
+                    <div className="flex justify-center mt-4">
+                      {selectedGiveawayCountdown ? (
+                        <Title order={2}>
+                          {selectedGiveawayCountdown > 0
+                            ? `${Math.floor(
+                                selectedGiveawayCountdown / 86400
+                              )}d ${Math.floor(
+                                (selectedGiveawayCountdown % 86400) / 3600
+                              )}h ${Math.floor(
+                                ((selectedGiveawayCountdown % 86400) % 3600) /
+                                  60
+                              )}m ${Math.floor(
+                                ((selectedGiveawayCountdown % 86400) % 3600) %
+                                  60
+                              )}s`
+                            : "Ended"}
+                        </Title>
+                      ) : (
+                        <Skeleton width={200} height={36} />
+                      )}
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <Button onClick={toggleParticipationStatus}>
-                    {participating ? "Leave" : "Join"}
-                  </Button>
-                </div>
-              </div>
+              </>
             )}
           </motion.div>
         ) : (
@@ -270,7 +366,7 @@ const TeamViewGiveaways: FC<TeamViewGiveawaysProps> = ({ user, team }) => {
                               <Text size="sm" color="dimmed">
                                 Ends{" "}
                                 <span className="font-semibold">
-                                  {new Date(g.createdAt).toLocaleDateString()}
+                                  {new Date(g.endsAt).toLocaleDateString()}
                                 </span>
                               </Text>
                             </div>

@@ -170,6 +170,7 @@ const TeamViewSettingsGiveaways: React.FC<TeamViewGiveawaysProps> = ({
             required
             classNames={BLACK}
             icon={<HiOutlineCalendar />}
+            minDate={new Date()}
             {...form.getInputProps("ends")}
           />
           <Divider />
@@ -178,6 +179,7 @@ const TeamViewSettingsGiveaways: React.FC<TeamViewGiveawaysProps> = ({
             size="lg"
             leftIcon={<HiOutlineGift />}
             type="submit"
+            loading={loading}
           >
             Create giveaway
           </Button>
