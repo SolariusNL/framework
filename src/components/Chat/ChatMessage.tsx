@@ -12,6 +12,7 @@ import { ChatMessage } from "@/util/prisma-types";
 import {
   ActionIcon,
   Avatar,
+  Badge,
   MantineColor,
   Menu,
   Paper,
@@ -26,12 +27,14 @@ type ChatMessageProps = {
   message: ChatMessage;
   noActions?: boolean;
   precedingMessage?: ChatMessage;
+  aiConversation?: boolean;
 };
 
 const ChatMessage: FC<ChatMessageProps> = ({
   message,
   noActions,
   precedingMessage,
+  aiConversation,
 }) => {
   const { user } = useAuthorizedUserStore();
   const { preferences } = usePreferences();
@@ -100,13 +103,24 @@ const ChatMessage: FC<ChatMessageProps> = ({
         {!noActions && actionMenu}
         <Paper
           sx={(theme) => ({
-            backgroundColor: theme.colorScheme === "dark" ? color[8] : color[3],
+            backgroundColor: aiConversation
+              ? theme.colorScheme === "dark"
+                ? theme.colors.dark[7]
+                : theme.colors.gray[3]
+              : theme.colorScheme === "dark"
+              ? color[8]
+              : color[3],
             textAlign: "right",
             alignSelf: "flex-end",
             maxWidth: "90%",
             "&:hover": {
-              backgroundColor:
-                theme.colorScheme === "dark" ? color[9] : color[4],
+              backgroundColor: aiConversation
+                ? theme.colorScheme === "dark"
+                  ? theme.colors.dark[8]
+                  : theme.colors.gray[4]
+                : theme.colorScheme === "dark"
+                ? color[9]
+                : color[4],
             },
           })}
           className="transition-all w-fit max-w-full"
@@ -146,14 +160,33 @@ const ChatMessage: FC<ChatMessageProps> = ({
                     : message.author.username}
                 </Text>
               </Link>
+              {aiConversation && (
+                <Badge
+                  variant="gradient"
+                  gradient={{
+                    from: "pink",
+                    to: "purple",
+                  }}
+                  size="sm"
+                  radius="sm"
+                >
+                  AI
+                </Badge>
+              )}
             </div>
           )}
           <Paper
             sx={(theme) => ({
-              backgroundColor:
-                theme.colorScheme === "dark"
-                  ? theme.colors.dark[7]
-                  : theme.colors.gray[3],
+              ...(aiConversation
+                ? {
+                    backgroundImage: `linear-gradient(90deg, ${theme.colors.pink[7]}, ${theme.colors.grape[6]});`,
+                  }
+                : {
+                    backgroundColor:
+                      theme.colorScheme === "dark"
+                        ? theme.colors.dark[7]
+                        : theme.colors.gray[3],
+                  }),
               textAlign: "left",
               width: "fit-content",
               alignSelf: "flex-start",
@@ -171,13 +204,21 @@ const ChatMessage: FC<ChatMessageProps> = ({
             <Text
               size="sm"
               style={{ wordBreak: "break-word" }}
-              className="pointer-events-none dark:text-gray-300 text-black"
+              className={clsx(
+                "pointer-events-none dark:text-gray-300 text-black",
+                aiConversation && "!text-white"
+              )}
             >
               {Fw.StringParser.t(message.content)
                 .addPlugins(boldPlugin, emojiPlugin)
                 .parse()}
             </Text>
           </Paper>
+          {aiConversation && (
+            <Text size="xs" color="dimmed">
+              Some generated messages may be inaccurate - be advised.
+            </Text>
+          )}
         </div>
         {!noActions && actionMenu}
       </div>

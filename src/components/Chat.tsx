@@ -466,6 +466,13 @@ const Chat: React.FC = () => {
                 setCreateConvoOpened(false);
                 fetchConversations();
                 createConvoForm.reset();
+              } else {
+                showNotification({
+                  title: "Error",
+                  message: res.message ?? "An unknown error occurred.",
+                  icon: <HiXCircle />,
+                  color: "red",
+                });
               }
             })
         )}
@@ -1121,7 +1128,7 @@ const Chat: React.FC = () => {
                       </span>
                     )
                   : convo.name}
-                {convo.participants.length === 2 && (
+                {convo.participants.length === 2 && !convo.ai && (
                   <span className="text-dimmed truncate">
                     {" "}
                     &middot; @
@@ -1142,7 +1149,9 @@ const Chat: React.FC = () => {
                 .join(", ")}
             >
               <Text size="sm" color="dimmed">
-                {convo.direct ? (
+                {convo.ai ? (
+                  "AI conversation"
+                ) : convo.direct ? (
                   "Direct message"
                 ) : (
                   <>
@@ -1293,11 +1302,16 @@ const Chat: React.FC = () => {
                                 <Text
                                   color="dimmed"
                                   size="sm"
-                                  className="truncate transition-colors duration-100 cursor-pointer hover:text-sky-600 dark:hover:text-sky-400"
+                                  className={clsx(
+                                    "truncate transition-colors duration-100 cursor-pointer",
+                                    conversation?.ai
+                                      ? "bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent font-semibold"
+                                      : "hover:text-sky-600 dark:hover:text-sky-400"
+                                  )}
                                 >
                                   {conversation?.participants.length === 2 &&
                                   conversation?.direct
-                                    ? `@${
+                                    ? `${conversation.ai ? "" : "@"}${
                                         conversation?.participants.find(
                                           (participant) =>
                                             participant.id !== user?.id
@@ -1521,6 +1535,7 @@ const Chat: React.FC = () => {
                                             precedingMessage={
                                               conversationData[messageIndex - 1]
                                             }
+                                            aiConversation={conversation?.ai}
                                           />
                                         </>
                                       );

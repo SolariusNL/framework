@@ -17,10 +17,12 @@ import countries from "@/data/countries";
 import getTimezones from "@/data/timezones";
 import Rocket from "@/icons/Rocket";
 import Soodam from "@/icons/Soodam";
+import useChatStore from "@/stores/useChatStore";
+import IResponseBase from "@/types/api/IResponseBase";
 import authorizedRoute from "@/util/auth";
 import { exclude } from "@/util/exclude";
+import fetchJson from "@/util/fetch";
 import getMediaUrl from "@/util/get-media";
-import useMediaQuery from "@/util/media-query";
 import prisma from "@/util/prisma";
 import { Game, User } from "@/util/prisma-types";
 import {
@@ -37,12 +39,12 @@ import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { NextSeo } from "next-seo";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import React from "react";
 import ReactCountryFlag from "react-country-flag";
 import {
   HiArrowSmLeft,
   HiCake,
+  HiChatAlt2,
   HiCheck,
   HiChevronDoubleUp,
   HiClock,
@@ -62,13 +64,12 @@ interface ProfileProps {
 }
 
 const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
-  const mobile = useMediaQuery("768");
   const [reportOpened, setReportOpened] = React.useState(false);
-  const router = useRouter();
   const { setOpen, setUser, setDefaultTab } = useUserInformationDialog();
   const [viewing, setViewing] = React.useState(profile);
   const [viewingTime, setViewingTime] = React.useState<string>();
   const [isFollowing, setIsFollowing] = React.useState(following);
+  const { setOpened } = useChatStore();
 
   const FollowButton = (
     <Button
@@ -117,6 +118,31 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
       onClick={() => setReportOpened(true)}
     >
       Report
+    </Button>
+  );
+
+  const AiButton = (
+    <Button
+      leftIcon={<HiChatAlt2 />}
+      variant="gradient"
+      gradient={{
+        from: "pink",
+        to: "grape",
+      }}
+      onClick={async () => {
+        await fetchJson<IResponseBase>("/api/chat/conversation", {
+          method: "POST",
+          auth: true,
+          body: {
+            name: "",
+            participants: [viewing.id],
+          },
+        }).then((res) => {
+          setOpened(true);
+        });
+      }}
+    >
+      Chat with Framework AI
     </Button>
   );
 
@@ -345,18 +371,30 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
                     <>
                       <div className="mt-4">
                         <div className="hidden md:flex items-center gap-2">
-                          <Button.Group>
-                            {FollowButton}
-                            {DonationButton}
-                          </Button.Group>
-                          {ReportButton}
+                          {viewing.ai ? (
+                            AiButton
+                          ) : (
+                            <>
+                              <Button.Group>
+                                {FollowButton}
+                                {DonationButton}
+                              </Button.Group>
+                              {ReportButton}
+                            </>
+                          )}
                         </div>
                         <div className="md:hidden block w-full">
                           <div className="flex flex-col gap-1">
                             <div className="flex items-center gap-2 md:justify-start justify-center">
-                              {FollowButton}
-                              {DonationButton}
-                              {ReportButton}
+                              {viewing.ai ? (
+                                AiButton
+                              ) : (
+                                <>
+                                  {FollowButton}
+                                  {DonationButton}
+                                  {ReportButton}
+                                </>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -599,6 +637,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       profileLinks: true,
       verified: true,
       emailVerified: true,
+      ai: true,
       _count: {
         select: {
           followers: true,

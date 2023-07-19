@@ -191,6 +191,7 @@ model User {
   inventory                  Inventory?                  @relation("inventory")
   newLogins                  NewLogin[]                  @relation("newLogins")
   joinedGiveaways            TeamGiveaway[]              @relation("teamGiveawayParticipants")
+  ai                         Boolean                     @default(false)
 }
 
 model Story {
@@ -861,6 +862,7 @@ model ChatConversation {
   xid          String        @default("ready")
   direct       Boolean       @default(false)
   iconUri      String        @default("")
+  ai           Boolean       @default(false)
 }
 
 model Employee {

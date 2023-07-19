@@ -26,6 +26,7 @@ export const nonCurrentUserSelect = {
         name: true,
       },
     },
+    ai: true,
     _count: {
       select: {
         followers: true,
@@ -129,6 +130,7 @@ const nonuser = Prisma.validator<Prisma.UserArgs>()({
     alias: true,
     previousUsernames: true,
     statusPosts: true,
+    ai: true,
     playing: {
       select: {
         id: true,
@@ -377,6 +379,7 @@ export const chatMessageSelect: Prisma.ChatMessageSelect = {
       id: true,
       username: true,
       avatarUri: true,
+      ai: true,
     },
   },
   conversation: {
@@ -409,6 +412,7 @@ const chatMessage = Prisma.validator<Prisma.ChatMessageArgs>()({
         username: true,
         avatarUri: true,
         alias: true,
+        ai: true,
       },
     },
     conversation: {

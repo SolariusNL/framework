@@ -1,23 +1,20 @@
-import {
-  Body,
-  createHandler,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-} from "@storyofams/next-api-decorators";
-import { z } from "zod";
 import Authorized, { Account } from "@/util/api/authorized";
 import registerAutomodHandler from "@/util/automod";
 import { Fw } from "@/util/fw";
 import prisma from "@/util/prisma";
 import type { User } from "@/util/prisma-types";
-import {
-  chatMessageSelect,
-  nonCurrentUserSelect,
-} from "@/util/prisma-types";
+import { chatMessageSelect, nonCurrentUserSelect } from "@/util/prisma-types";
 import { RateLimitMiddleware } from "@/util/rate-limit";
+import {
+  Body,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  createHandler,
+} from "@storyofams/next-api-decorators";
+import { z } from "zod";
 
 const lastEmailSent = new Map<number, Date>();
 const chatAutomod = registerAutomodHandler("Chat message");
@@ -107,6 +104,32 @@ class ChatRouter {
     });
 
     chatAutomod(user.id, content);
+
+    if (to.ai) {
+      const ai = await prisma.user.findFirst({
+        where: {
+          ai: true,
+        },
+      });
+
+      await prisma.chatMessage.create({
+        data: {
+          author: {
+            connect: {
+              id: ai?.id,
+            },
+          },
+          conversation: {
+            connect: {
+              id: String(id),
+            },
+          },
+          content:
+            "Hey! I am FrameworkAI. I am not yet available to the public, but I will be soon! Hope to see you then!",
+        },
+        select: chatMessageSelect,
+      });
+    }
 
     return message;
   }
@@ -313,11 +336,42 @@ class ChatRouter {
       },
     });
 
+    let ai = false;
+
     if (users.length !== participants.length) {
       return {
         success: false,
         message: "One or more users not found",
       };
+    }
+
+    if (participants.length > 1 && users.find((u) => u.ai === true)) {
+      return {
+        success: false,
+        message: "You cannot add FrameworkAI to a group conversation",
+      };
+    }
+
+    if (participants.length === 1 && users[0].ai === true) {
+      const aiConversation = await prisma.chatConversation.findFirst({
+        where: {
+          ownerId: user.id,
+          participants: {
+            some: {
+              ai: true,
+            },
+          },
+        },
+      });
+
+      if (aiConversation) {
+        return {
+          success: false,
+          message: "You already have a conversation with FrameworkAI",
+        };
+      }
+
+      ai = true;
     }
 
     await prisma.chatConversation.create({
@@ -341,6 +395,7 @@ class ChatRouter {
           ],
         },
         direct: participants.length < 2,
+        ai,
       },
       select: {
         id: true,
