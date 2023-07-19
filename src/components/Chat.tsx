@@ -14,6 +14,7 @@ import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
 import useAmoled from "@/stores/useAmoled";
 import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
 import useChatStore from "@/stores/useChatStore";
+import useExperimentsStore from "@/stores/useExperimentsStore";
 import useFastFlags from "@/stores/useFastFlags";
 import usePreferences from "@/stores/usePreferences";
 import IResponseBase from "@/types/api/IResponseBase";
@@ -55,7 +56,7 @@ import { getCookie } from "cookies-next";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { FC, useContext, useEffect, useRef, useState } from "react";
 import {
   HiArrowRight,
   HiArrowSmDown,
@@ -106,6 +107,7 @@ const Chat: React.FC = () => {
   const { enabled: amoled } = useAmoled();
   const { preferences } = usePreferences();
   const { flags } = useFastFlags();
+  const { experiments } = useExperimentsStore();
   const messageForm = useForm<{
     message: string;
   }>({
@@ -345,7 +347,7 @@ const Chat: React.FC = () => {
     }
   }, [conversation]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (socket) {
       socket?.on("@user/chat", (data) => {
         if (!document.hasFocus() && preferences["@chat/bell"] && audio) {
@@ -1043,6 +1045,122 @@ const Chat: React.FC = () => {
       </ScrollArea>
     </Modal>
   );
+  const ConversationButton: FC<{
+    convo: ChatConversationWithParticipants;
+  }> = ({ convo }) => {
+    return (
+      <ShadedButton
+        key={convo.id}
+        onClick={() => {
+          setConversation(convo);
+          setConversationOpen(true);
+          setCurrentConversation(convo.id);
+        }}
+        className="rounded-none px-4 dark:hover:bg-zinc-900/50 group flex justify-between"
+      >
+        <div className="flex items-start gap-2 w-[90%]">
+          <div className="flex-shrink-0">
+            {unreadMessages[convo.id] > 0 ? (
+              <Badge
+                variant="filled"
+                color="red"
+                sx={{
+                  width: 24,
+                  height: 24,
+                  padding: 0,
+                }}
+                className="mr-2"
+              >
+                {String(unreadMessages[convo.id])}
+              </Badge>
+            ) : convo.participants.length === 2 && convo.direct ? (
+              <Avatar
+                src={getMediaUrl(
+                  convo.participants.find(
+                    (participant) => participant.id !== user?.id
+                  )!.avatarUri
+                )}
+                size={24}
+                className="mr-2 rounded-full"
+              />
+            ) : (
+              <Avatar
+                placeholder="..."
+                src={getMediaUrl(convo?.iconUri!)}
+                size={24}
+                className="rounded-full mr-2"
+                color={Fw.Strings.color(convo.name)}
+              >
+                {Fw.Strings.initials(convo.name)}
+              </Avatar>
+            )}
+          </div>
+
+          <div className="flex flex-col w-full">
+            <div className="flex items-center gap-2 w-full">
+              <Text
+                size="sm"
+                mr={6}
+                weight={500}
+                className="truncate"
+                sx={{
+                  maxWidth: "75%",
+                }}
+              >
+                {convo.participants.length === 2 && convo.direct
+                  ? convo.participants.find(
+                      (participant) => participant.id !== user?.id
+                    ) && (
+                      <span>
+                        {convo.participants.find(
+                          (participant) => participant.id !== user?.id
+                        )!.alias ||
+                          convo.participants.find(
+                            (participant) => participant.id !== user?.id
+                          )!.username}
+                      </span>
+                    )
+                  : convo.name}
+                {convo.participants.length === 2 && (
+                  <span className="text-dimmed truncate">
+                    {" "}
+                    &middot; @
+                    {
+                      convo.participants.find(
+                        (participant) => participant.id !== user?.id
+                      )!.username
+                    }
+                  </span>
+                )}
+              </Text>
+            </div>
+
+            <Tooltip
+              openDelay={250}
+              label={convo.participants
+                .map((participant) => participant.username)
+                .join(", ")}
+            >
+              <Text size="sm" color="dimmed">
+                {convo.direct ? (
+                  "Direct message"
+                ) : (
+                  <>
+                    {convo.participants.length}{" "}
+                    {Fw.Strings.pluralize(
+                      convo.participants.length,
+                      "participant"
+                    )}
+                  </>
+                )}
+              </Text>
+            </Tooltip>
+          </div>
+        </div>
+        <HiArrowRight className="text-dimmed group-hover:opacity-100 transition-all opacity-0" />
+      </ShadedButton>
+    );
+  };
 
   if (router.pathname === "/chat") return null;
   return (
@@ -1452,130 +1570,10 @@ const Chat: React.FC = () => {
                                     new Date(a.updatedAt).getTime()
                                 )
                                 .map((convo) => (
-                                  <ShadedButton
+                                  <ConversationButton
+                                    convo={convo}
                                     key={convo.id}
-                                    onClick={() => {
-                                      setConversation(convo);
-                                      setConversationOpen(true);
-                                      setCurrentConversation(convo.id);
-                                    }}
-                                    className="rounded-none px-4 dark:hover:bg-zinc-900/50 group flex justify-between"
-                                  >
-                                    <div className="flex items-start gap-2 w-[90%]">
-                                      <div className="flex-shrink-0">
-                                        {unreadMessages[convo.id] > 0 ? (
-                                          <Badge
-                                            variant="filled"
-                                            color="red"
-                                            sx={{
-                                              width: 24,
-                                              height: 24,
-                                              padding: 0,
-                                            }}
-                                            className="mr-2"
-                                          >
-                                            {String(unreadMessages[convo.id])}
-                                          </Badge>
-                                        ) : convo.participants.length === 2 &&
-                                          convo.direct ? (
-                                          <Avatar
-                                            src={getMediaUrl(
-                                              convo.participants.find(
-                                                (participant) =>
-                                                  participant.id !== user?.id
-                                              )!.avatarUri
-                                            )}
-                                            size={24}
-                                            className="mr-2 rounded-full"
-                                          />
-                                        ) : (
-                                          <Avatar
-                                            placeholder="..."
-                                            src={getMediaUrl(convo?.iconUri!)}
-                                            size={24}
-                                            className="rounded-full mr-2"
-                                            color={Fw.Strings.color(convo.name)}
-                                          >
-                                            {Fw.Strings.initials(convo.name)}
-                                          </Avatar>
-                                        )}
-                                      </div>
-
-                                      <div className="flex flex-col w-full">
-                                        <div className="flex items-center gap-2 w-full">
-                                          <Text
-                                            size="sm"
-                                            mr={6}
-                                            weight={500}
-                                            className="truncate"
-                                            sx={{
-                                              maxWidth: "75%",
-                                            }}
-                                          >
-                                            {convo.participants.length === 2 &&
-                                            convo.direct
-                                              ? convo.participants.find(
-                                                  (participant) =>
-                                                    participant.id !== user?.id
-                                                ) && (
-                                                  <span>
-                                                    {convo.participants.find(
-                                                      (participant) =>
-                                                        participant.id !==
-                                                        user?.id
-                                                    )!.alias ||
-                                                      convo.participants.find(
-                                                        (participant) =>
-                                                          participant.id !==
-                                                          user?.id
-                                                      )!.username}
-                                                  </span>
-                                                )
-                                              : convo.name}
-                                            {convo.participants.length ===
-                                              2 && (
-                                              <span className="text-dimmed truncate">
-                                                {" "}
-                                                &middot; @
-                                                {
-                                                  convo.participants.find(
-                                                    (participant) =>
-                                                      participant.id !==
-                                                      user?.id
-                                                  )!.username
-                                                }
-                                              </span>
-                                            )}
-                                          </Text>
-                                        </div>
-
-                                        <Tooltip
-                                          openDelay={250}
-                                          label={convo.participants
-                                            .map(
-                                              (participant) =>
-                                                participant.username
-                                            )
-                                            .join(", ")}
-                                        >
-                                          <Text size="sm" color="dimmed">
-                                            {convo.direct ? (
-                                              "Direct message"
-                                            ) : (
-                                              <>
-                                                {convo.participants.length}{" "}
-                                                {Fw.Strings.pluralize(
-                                                  convo.participants.length,
-                                                  "participant"
-                                                )}
-                                              </>
-                                            )}
-                                          </Text>
-                                        </Tooltip>
-                                      </div>
-                                    </div>
-                                    <HiArrowRight className="text-dimmed group-hover:opacity-100 transition-all opacity-0" />
-                                  </ShadedButton>
+                                  />
                                 ))}
                               {conversations.length === 0 ? (
                                 <>
