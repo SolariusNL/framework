@@ -63,71 +63,74 @@ async function cron() {
 
       console.log("cron ~ 🔄 Server status synchronization complete");
     });
-    schedule("0 0 * * *", async () => {
-      const giveaways = await prisma.teamGiveaway.findMany({
-        where: {
-          AND: [{ ended: false }, { endsAt: { lte: new Date() } }],
-        },
-        include: {
-          participants: {
-            select: {
-              id: true,
-            },
-          },
-        },
-      });
-      console.log(
-        `cron ~ 🎉 ${giveaways.length} giveaway${
-          giveaways.length === 1 ? "" : "s"
-        } ended`
-      );
-
-      for (const giveaway of giveaways) {
-        const participants = await prisma.user.findMany({
-          where: {
-            id: {
-              in: giveaway.participants.map((p) => p.id),
-            },
-          },
-        });
-
-        const winner =
-          participants[Math.floor(Math.random() * participants.length)];
-
-        await prisma.teamGiveaway.update({
-          where: {
-            id: giveaway.id,
-          },
-          data: {
-            ended: true,
-          },
-        });
-        await prisma.user.update({
-          where: {
-            id: winner.id,
-          },
-          data: {
-            tickets: {
-              increment: giveaway.tickets,
-            },
-          },
-        });
-        await prisma.notification.create({
-          data: {
-            type: NotificationType.GIFT,
-            title: "You won a giveaway!",
-            message: `You won ${giveaway.name} and received T$${giveaway.tickets}!`,
-            user: {
-              connect: {
-                id: winner.id,
-              },
-            },
-          },
-        });
-      }
-    });
+    schedule("0 0 * * *", async () => await processGiveaways());
+    await processGiveaways();
   } catch (error) {
     console.log(`Failed to connect to Framework database: ${error}`);
+  }
+}
+
+async function processGiveaways() {
+  const giveaways = await prisma.teamGiveaway.findMany({
+    where: {
+      AND: [{ ended: false }, { endsAt: { lte: new Date() } }],
+    },
+    include: {
+      participants: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  });
+  console.log(
+    `cron ~ 🎉 ${giveaways.length} giveaway${
+      giveaways.length === 1 ? "" : "s"
+    } ended`
+  );
+
+  for (const giveaway of giveaways) {
+    const participants = await prisma.user.findMany({
+      where: {
+        id: {
+          in: giveaway.participants.map((p) => p.id),
+        },
+      },
+    });
+
+    const winner =
+      participants[Math.floor(Math.random() * participants.length)];
+
+    await prisma.teamGiveaway.update({
+      where: {
+        id: giveaway.id,
+      },
+      data: {
+        ended: true,
+      },
+    });
+    await prisma.user.update({
+      where: {
+        id: winner.id,
+      },
+      data: {
+        tickets: {
+          increment: giveaway.tickets,
+        },
+      },
+    });
+    await prisma.notification.create({
+      data: {
+        type: NotificationType.GIFT,
+        title: "You won a giveaway!",
+        message: `You won ${giveaway.name} and received T$${giveaway.tickets}!`,
+        user: {
+          connect: {
+            id: winner.id,
+          },
+        },
+      },
+    });
   }
 }
 
