@@ -5,7 +5,12 @@ import { User } from "@/util/prisma-types";
 import { Alert, Stack, Text, Title } from "@mantine/core";
 import { PrivacyPreferences } from "@prisma/client";
 import { useState } from "react";
-import { HiArrowsExpand, HiCheckCircle, HiEye, HiShare } from "react-icons/hi";
+import {
+  HiCheckCircle,
+  HiOutlineArrowsExpand,
+  HiOutlineEye,
+  HiOutlineShare,
+} from "react-icons/hi";
 
 interface PrivacyTabProps {
   user: User;
@@ -14,17 +19,17 @@ interface PrivacyTabProps {
 const PrivacyTab = ({ user }: PrivacyTabProps) => {
   const privacyFundamentals = [
     {
-      icon: HiShare,
+      icon: HiOutlineShare,
       title: "Control",
       subtitle: "over user data access",
     },
     {
-      icon: HiEye,
+      icon: HiOutlineEye,
       title: "Knowledge",
       subtitle: "of how the data is stored",
     },
     {
-      icon: HiArrowsExpand,
+      icon: HiOutlineArrowsExpand,
       title: "Freedom",
       subtitle: "to choose a platform",
     },
@@ -63,6 +68,12 @@ const PrivacyTab = ({ user }: PrivacyTabProps) => {
         description:
           "Users can find you through mutual friends with user discovery enabled",
         label: "Appear in user discovery",
+      },
+      CHAT_REQUESTS: {
+        title: "Chat requests",
+        description:
+          "Users can send you chat requests to start a conversation even if you're not friends",
+        label: "Allow chat requests",
       },
     },
   };

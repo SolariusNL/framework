@@ -29,6 +29,7 @@ enum PrivacyPreferences {
   USAGE_ANALYTICS
   RECEIVE_NEWSLETTER
   USER_DISCOVERY
+  CHAT_REQUESTS
 }
 
 enum PremiumSubscriptionType {

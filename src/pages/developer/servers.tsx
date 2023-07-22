@@ -426,7 +426,7 @@ const Servers: FC<ServersProps> = ({ user }) => {
               />
               <Text size="sm" color="dimmed" mb="lg">
                 You will need a public IP address to provision a new server. If
-                you don&apos; have one or cannot port-forward, you can use
+                you don&apos;t have one or cannot port-forward, you can use
                 services like{" "}
                 <Anchor
                   href="https://www.noip.com/"

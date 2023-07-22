@@ -1,7 +1,7 @@
-import { Card, createStyles, Group, Switch, Text } from "@mantine/core";
 import useAmoled from "@/stores/useAmoled";
 import clsx from "@/util/clsx";
 import { AMOLED_COLORS } from "@/util/constants";
+import { Card, createStyles, Group, Switch, Text } from "@mantine/core";
 
 const useStyles = createStyles((theme) => ({
   card: {
@@ -10,9 +10,6 @@ const useStyles = createStyles((theme) => ({
   },
 
   item: {
-    "& + &": {
-      marginTop: theme.spacing.md,
-    },
     backgroundColor:
       theme.colorScheme === "dark"
         ? theme.colors.dark[8]
@@ -89,7 +86,7 @@ const SwitchCard: React.FC<SwitchesCardProps> = ({
           backgroundColor: amoled
             ? AMOLED_COLORS.paper
             : theme.colorScheme === "dark"
-            ? theme.colors.dark[8]
+            ? theme.colors.dark[9]
             : theme.colors.gray[0],
         }),
       })}
@@ -104,8 +101,7 @@ const SwitchCard: React.FC<SwitchesCardProps> = ({
         sx={(theme) => ({
           ...(dark && {
             ...(dark && {
-              backgroundColor:
-                theme.colorScheme === "dark" ? theme.colors.dark[9] : "#FFF",
+              backgroundColor: theme.colorScheme === "dark" ? "#000" : "#FFF",
             }),
           }),
         })}

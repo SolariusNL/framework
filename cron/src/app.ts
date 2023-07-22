@@ -98,6 +98,48 @@ async function processGiveaways() {
       },
     });
 
+    if (participants.length === 0) {
+      await prisma.teamGiveaway.update({
+        where: {
+          id: giveaway.id,
+        },
+        data: {
+          ended: true,
+          tickets: {
+            increment: giveaway.tickets,
+          },
+        },
+      });
+
+      const staff = await prisma.user.findMany({
+        where: {
+          staffOf: {
+            some: {
+              id: giveaway.teamId,
+            },
+          },
+          ownedTeams: {
+            some: {
+              id: giveaway.teamId,
+            },
+          },
+        },
+      });
+
+      for (const user of staff) {
+        await prisma.notification.create({
+          data: {
+            type: NotificationType.ALERT,
+            title: "Giveaway ended",
+            message: `Giveaway ${giveaway.name} ended without any participants. Tickets were refunded to the team.`,
+            userId: user.id,
+          },
+        });
+      }
+
+      continue;
+    }
+
     const winner =
       participants[Math.floor(Math.random() * participants.length)];
 

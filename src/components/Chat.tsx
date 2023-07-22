@@ -795,7 +795,7 @@ const Chat: React.FC = () => {
               <Text>
                 {Fw.Dates.format(
                   new Date(conversation?.createdAt!),
-                  "MMMM dd, yyyy hh:mm"
+                  "MMMM dd, yyyy"
                 )}
               </Text>
             </div>
