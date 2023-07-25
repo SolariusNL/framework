@@ -241,6 +241,13 @@ const Framework: FC<FrameworkProps> & {
         titleTemplate="%s | Framework"
         description="Framework is a free and open-source game platform similar to Roblox. Join the waitlist today and enter a new world."
         canonical="https://framework.solarius.me/"
+        additionalMetaTags={[
+          {
+            name: "keywords",
+            content:
+              "framework, solarius, roblox, game, platform, decentralized, roblox alternative, free, open source, fediverse, new roblox",
+          },
+        ]}
       />
 
       <ColorSchemeProvider
@@ -608,11 +615,12 @@ const Framework: FC<FrameworkProps> & {
   );
 };
 
-Framework.getInitialProps = ({ ctx }) =>
-  ({
+Framework.getInitialProps = ({ ctx }) => {
+  return {
     colorScheme: getCookie("mantine-color-scheme", ctx) || "dark",
     highContrast: getCookie("mantine-high-contrast", ctx),
     amoled: getCookie("mantine-amoled", ctx),
-  } as unknown as StyleProps);
+  } as unknown as StyleProps;
+};
 
 export default Framework;
