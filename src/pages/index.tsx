@@ -1,3 +1,21 @@
+import Framework from "@/components/Framework";
+import FeedWidget from "@/components/Home/FeedWidget";
+import FriendsWidget, { Section } from "@/components/Home/FriendsWidget";
+import NotificationsWidget from "@/components/Home/NotificationsWidget";
+import SubscriptionWidget from "@/components/Home/SubscriptionWidget";
+import UpdatesWidget from "@/components/Home/UpdatesWidget";
+import BioMesh from "@/components/Mesh/BioMesh";
+import CatalogMesh from "@/components/Mesh/CatalogMesh";
+import CreateGameMesh from "@/components/Mesh/CreateGameMesh";
+import FollowMesh from "@/components/Mesh/FollowMesh";
+import LikeGameMesh from "@/components/Mesh/LikeGameMesh";
+import ReferMesh from "@/components/Mesh/ReferMesh";
+import SidebarTabNavigation from "@/layouts/SidebarTabNavigation";
+import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
+import IResponseBase from "@/types/api/IResponseBase";
+import authorizedRoute from "@/util/auth";
+import fetchJson from "@/util/fetch";
+import { User } from "@/util/prisma-types";
 import { ActionIcon, Badge, Divider, NavLink, Text } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { openSpotlight } from "@mantine/spotlight";
@@ -21,24 +39,7 @@ import {
   HiX,
   HiXCircle,
 } from "react-icons/hi";
-import Framework from "@/components/Framework";
-import FeedWidget from "@/components/Home/FeedWidget";
-import FriendsWidget, { Section } from "@/components/Home/FriendsWidget";
-import NotificationsWidget from "@/components/Home/NotificationsWidget";
-import SubscriptionWidget from "@/components/Home/SubscriptionWidget";
-import UpdatesWidget from "@/components/Home/UpdatesWidget";
-import BioMesh from "@/components/Mesh/BioMesh";
-import CatalogMesh from "@/components/Mesh/CatalogMesh";
-import CreateGameMesh from "@/components/Mesh/CreateGameMesh";
-import FollowMesh from "@/components/Mesh/FollowMesh";
-import LikeGameMesh from "@/components/Mesh/LikeGameMesh";
-import ReferMesh from "@/components/Mesh/ReferMesh";
-import SidebarTabNavigation from "@/layouts/SidebarTabNavigation";
-import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
-import IResponseBase from "@/types/api/IResponseBase";
-import authorizedRoute from "@/util/auth";
-import fetchJson from "@/util/fetch";
-import { User } from "@/util/prisma-types";
+import Landing from "./landing";
 
 interface HomeProps {
   user: User;
@@ -97,7 +98,7 @@ const Home: NextPage<HomeProps> = ({ user: u }) => {
       component: <NotificationsWidget />,
       side: "right",
       icon:
-        u.notifications.length! > 0 ? (
+        u && u.notifications.length! > 0 ? (
           <Badge
             size="xs"
             variant="filled"
@@ -126,7 +127,7 @@ const Home: NextPage<HomeProps> = ({ user: u }) => {
 
   const [activeIndex, setActiveIndex] = useState(0);
 
-  return (
+  return user ? (
     <Framework
       user={u}
       activeTab="home"
@@ -285,11 +286,13 @@ const Home: NextPage<HomeProps> = ({ user: u }) => {
         </SidebarTabNavigation.Content>
       </SidebarTabNavigation>
     </Framework>
+  ) : (
+    <Landing />
   );
 };
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
-  const auth = await authorizedRoute(ctx, true, false);
+  const auth = await authorizedRoute(ctx, false, false);
 
   if (auth.redirect && !auth.redirect.banRedirect)
     return {
@@ -302,7 +305,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 
   return {
     props: {
-      user: auth.props?.user,
+      user: auth.props?.user || null,
     },
   };
 }
