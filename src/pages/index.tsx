@@ -127,7 +127,7 @@ const Home: NextPage<HomeProps> = ({ user: u }) => {
 
   const [activeIndex, setActiveIndex] = useState(0);
 
-  return user ? (
+  return u ? (
     <Framework
       user={u}
       activeTab="home"
