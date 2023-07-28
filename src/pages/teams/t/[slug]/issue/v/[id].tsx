@@ -1,7 +1,8 @@
-import Owner from "@/components/Owner";
 import DataGrid from "@/components/data-grid";
 import Markdown from "@/components/markdown";
 import ModernEmptyState from "@/components/modern-empty-state";
+import Owner from "@/components/owner";
+import RenderMarkdown from "@/components/render-markdown";
 import ShadedCard from "@/components/shaded-card";
 import TeamsViewProvider from "@/components/teams/teams-view";
 import { TeamType } from "@/pages/teams";
@@ -41,7 +42,6 @@ import {
   HiOutlineUser,
   HiX,
 } from "react-icons/hi";
-import RenderMarkdo@/components/ownernts/RenderMarkdown";
 
 export type TeamIssueViewProps = {
   user: User;
