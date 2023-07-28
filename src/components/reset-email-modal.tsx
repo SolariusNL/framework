@@ -26,6 +26,7 @@ const ResetEmailModal: FC = () => {
   };
 
   return (
+    user &&
     <Modal
       title="Reset email"
       opened={user?.emailResetRequired ?? false}

@@ -24,6 +24,7 @@ const ResetPasswordModal: FC = () => {
   };
 
   return (
+    user &&
     <Modal
       title="Reset password"
       opened={user?.passwordResetRequired ?? false}

@@ -19,6 +19,7 @@ const WarningModal: FC = () => {
   };
 
   return (
+    user &&
     <Modal
       withCloseButton={false}
       opened={user?.warning !== ""}
