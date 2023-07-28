@@ -1,7 +1,7 @@
-import { GetServerSideProps } from "next";
-import TeamsProvider from "@/components/Teams/Teams";
+import TeamsProvider from "@/components/teams/teams";
 import authorizedRoute from "@/util/auth";
 import { User } from "@/util/prisma-types";
+import { GetServerSideProps } from "next";
 
 type TeamsIssuesProps = {
   user: User;

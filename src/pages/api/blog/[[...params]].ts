@@ -1,4 +1,4 @@
-import { parse } from "@/components/RenderMarkdown";
+import { parse } from "@/components/render-markdown";
 import Authorized, { Account } from "@/util/api/authorized";
 import prisma from "@/util/prisma";
 import type { User } from "@/util/prisma-types";

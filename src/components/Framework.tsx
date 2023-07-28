@@ -1,16 +1,16 @@
-import Chat from "@/components/Chat";
-import ContextMenu from "@/components/ContextMenu";
-import EmailReminder from "@/components/EmailReminder";
-import Footer from "@/components/Footer";
-import Banner from "@/components/Framework/Banner";
-import CurrencyMenu from "@/components/Framework/CurrencyMenu";
-import MobileSearchMenu from "@/components/Framework/MobileSearchMenu";
-import NotificationFlyout from "@/components/Framework/NotificationFlyout";
-import Search from "@/components/Framework/Search";
-import UpdateDrawer from "@/components/Framework/UpdateDrawer";
-import UserMenu from "@/components/Framework/UserMenu";
-import FrameworkLogo from "@/components/FrameworkLogo";
-import TabNav from "@/components/TabNav";
+import Chat from "@/components/chat";
+import ContextMenu from "@/components/context-menu";
+import EmailReminder from "@/components/email-reminder";
+import Footer from "@/components/foot";
+import FrameworkLogo from "@/components/framework-logo";
+import Banner from "@/components/framework/banner";
+import CurrencyMenu from "@/components/framework/currency-menu";
+import MobileSearchMenu from "@/components/framework/mobile-search";
+import NotificationFlyout from "@/components/framework/notification-flyout";
+import Search from "@/components/framework/search";
+import UpdateDrawer from "@/components/framework/update-drawer";
+import UserMenu from "@/components/framework/user-menu";
+import TabNav from "@/components/tab-nav";
 import SocketContext from "@/contexts/Socket";
 import { setSearch, toggleSearch } from "@/reducers/search";
 import { RootState } from "@/reducers/store";
@@ -34,7 +34,6 @@ import {
   Burger,
   Button,
   Container,
-  createStyles,
   Drawer,
   Group,
   Menu,
@@ -43,6 +42,7 @@ import {
   Stack,
   Text,
   Title,
+  createStyles,
   useMantineColorScheme,
 } from "@mantine/core";
 import { useLocalStorage } from "@mantine/hooks";

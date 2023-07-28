@@ -1,7 +1,7 @@
-import ModernEmptyState from "@/components/ModernEmptyState";
-import Owner from "@/components/Owner";
-import ShadedCard from "@/components/ShadedCard";
-import Stateful from "@/components/Stateful";
+import ModernEmptyState from "@/components/modern-empty-state";
+import Owner from "@/components/owner";
+import ShadedCard from "@/components/shaded-card";
+import Stateful from "@/components/stateful";
 import { AutomodTriggerWithUser } from "@/pages/api/admin/[[...params]]";
 import IResponseBase from "@/types/api/IResponseBase";
 import clsx from "@/util/clsx";

@@ -1,8 +1,8 @@
-import Descriptive from "@/components/Descriptive";
-import DetailCard from "@/components/DetailCard";
-import ImageUploader from "@/components/ImageUploader";
-import Markdown, { ToolbarItem } from "@/components/Markdown";
-import TeamsViewProvider from "@/components/Teams/TeamsView";
+import Descriptive from "@/components/descriptive";
+import DetailCard from "@/components/detail-card";
+import ImageUploader from "@/components/image-uploader";
+import Markdown, { ToolbarItem } from "@/components/markdown";
+import TeamsViewProvider from "@/components/teams/teams-view";
 import getTimezones from "@/data/timezones";
 import { TeamType } from "@/pages/teams";
 import authorizedRoute from "@/util/auth";

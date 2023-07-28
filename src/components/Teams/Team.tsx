@@ -1,6 +1,6 @@
-import Copy from "@/components/Copy";
-import ShadedButton from "@/components/ShadedButton";
-import UserContext from "@/components/UserContext";
+import Copy from "@/components/copy";
+import ShadedButton from "@/components/shaded-button";
+import UserContext from "@/components/user-context";
 import { TeamType } from "@/pages/teams";
 import getMediaUrl from "@/util/get-media";
 import { Avatar, Text, Tooltip, useMantineTheme } from "@mantine/core";

@@ -1,11 +1,11 @@
+import Framework from "@/components/framework";
+import authorizedRoute from "@/util/auth";
+import { User } from "@/util/prisma-types";
 import { Text, Title } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
 import Celebration from "react-confetti";
 import { HiCheckCircle } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
-import Framework from "@/components/Framework";
-import authorizedRoute from "@/util/auth";
-import { User } from "@/util/prisma-types";
 
 interface PurchaseSuccessProps {
   user: User;

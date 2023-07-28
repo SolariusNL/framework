@@ -1,6 +1,6 @@
-import { PrefCategory } from "@/components/Admin/Pages/Instance";
-import { AdminViewUser } from "@/components/Admin/Pages/Users";
-import type { ReportCategory } from "@/components/ReportUser";
+import { PrefCategory } from "@/components/admin/pages/instance";
+import { AdminViewUser } from "@/components/admin/pages/users";
+import type { ReportCategory } from "@/components/report-user";
 import IResponseBase from "@/types/api/IResponseBase";
 import { AdminAction } from "@/util/admin-action";
 import Authorized, { Account, AdminAuthorized } from "@/util/api/authorized";

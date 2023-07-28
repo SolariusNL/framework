@@ -1,3 +1,7 @@
+import Framework from "@/components/framework";
+import logout from "@/util/api/logout";
+import authorizedRoute from "@/util/auth";
+import { User } from "@/util/prisma-types";
 import {
   Anchor,
   Badge,
@@ -12,12 +16,8 @@ import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import Framework from "@/components/Framework";
-import logout from "@/util/api/logout";
-import authorizedRoute from "@/util/auth";
-import { User } from "@/util/prisma-types";
-import ReactNoSSR from "react-no-ssr";
 import { HiLockOpen, HiLogout } from "react-icons/hi";
+import ReactNoSSR from "react-no-ssr";
 
 const PRIMARY_COL_HEIGHT = 300;
 
@@ -65,47 +65,51 @@ const Punished: React.FC<{
             Ban expires
           </Text>
           <Tooltip label={new Date(user.banExpires as Date).toUTCString()}>
-          <Text mb="xl" className="flex items-center gap-2 w-fit">
-            {new Date(user.banExpires as Date).toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
-            {new Date(user.banExpires as Date).getFullYear() === 9999 && (
-              <Badge radius="md" color="red">
-                Permanent Ban
-              </Badge>
-            )}
-          </Text>
+            <Text mb="xl" className="flex items-center gap-2 w-fit">
+              {new Date(user.banExpires as Date).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+              {new Date(user.banExpires as Date).getFullYear() === 9999 && (
+                <Badge radius="md" color="red">
+                  Permanent Ban
+                </Badge>
+              )}
+            </Text>
           </Tooltip>
           <div className="flex justify-end">
-          <Button
-            onClick={async () => {
-              if (
+            <Button
+              onClick={async () => {
+                if (
+                  new Date(user.banExpires as Date).getTime() <=
+                  new Date().getTime()
+                ) {
+                  await fetch("/api/users/@me/unlock", {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: String(getCookie(".frameworksession")),
+                    },
+                  }).then(() => router.reload());
+                } else {
+                  await logout().then(() => router.reload());
+                }
+              }}
+              leftIcon={
                 new Date(user.banExpires as Date).getTime() <=
-                new Date().getTime()
-              ) {
-                await fetch("/api/users/@me/unlock", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: String(getCookie(".frameworksession")),
-                  },
-                }).then(() => router.reload());
-              } else {
-                await logout().then(() => router.reload());
+                new Date().getTime() ? (
+                  <HiLockOpen />
+                ) : (
+                  <HiLogout />
+                )
               }
-            }}
-            leftIcon={
-              new Date(user.banExpires as Date).getTime() <= new Date().getTime()
-                ? <HiLockOpen />
-                : <HiLogout />
-            }
-          >
-            {new Date(user.banExpires as Date).getTime() <= new Date().getTime()
-              ? "Unlock my account"
-              : "Logout of your account"}
-          </Button>
+            >
+              {new Date(user.banExpires as Date).getTime() <=
+              new Date().getTime()
+                ? "Unlock my account"
+                : "Logout of your account"}
+            </Button>
           </div>
         </div>
       </ReactNoSSR>

@@ -1,16 +1,16 @@
+import ModernEmptyState from "@/components/modern-empty-state";
+import ShadedCard from "@/components/shaded-card";
+import TeamCard from "@/components/teams/team";
+import TeamsProvider from "@/components/teams/teams";
+import authorizedRoute from "@/util/auth";
+import clsx from "@/util/clsx";
+import { NonUser, User } from "@/util/prisma-types";
 import { Select, Skeleton, TextInput, useMantineTheme } from "@mantine/core";
 import { Team } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { GetServerSideProps } from "next";
 import React from "react";
 import { HiSearch, HiSortAscending } from "react-icons/hi";
-import ModernEmptyState from "@/components/ModernEmptyState";
-import ShadedCard from "@/components/ShadedCard";
-import TeamCard from "@/components/Teams/Team";
-import TeamsProvider from "@/components/Teams/Teams";
-import authorizedRoute from "@/util/auth";
-import clsx from "@/util/clsx";
-import { NonUser, User } from "@/util/prisma-types";
 
 type TeamsProps = {
   user: User;

@@ -1,3 +1,14 @@
+import Background from "@/components/background";
+import Footer from "@/components/foot";
+import LandingHeader from "@/components/landing-header";
+import Faq from "@/components/landing/faq";
+import Features from "@/components/landing/features";
+import Power from "@/components/landing/power";
+import Pros from "@/components/landing/pros";
+import Bit from "@/icons/Bit";
+import Rocket from "@/icons/Rocket";
+import clsx from "@/util/clsx";
+import useMediaQuery from "@/util/media-query";
 import { Container, createStyles, Text, Title } from "@mantine/core";
 import { openModal } from "@mantine/modals";
 import { motion } from "framer-motion";
@@ -28,17 +39,6 @@ import {
   HiWifi,
 } from "react-icons/hi";
 import Typewriter from "typewriter-effect";
-import Background from "@/components/Background";
-import Footer from "@/components/Footer";
-import Faq from "@/components/Landing/Faq";
-import Features from "@/components/Landing/Features";
-import Power from "@/components/Landing/Power";
-import Pros from "@/components/Landing/Pros";
-import LandingHeader from "@/components/LandingHeader";
-import Bit from "@/icons/Bit";
-import Rocket from "@/icons/Rocket";
-import clsx from "@/util/clsx";
-import useMediaQuery from "@/util/media-query";
 
 const useStyles = createStyles((theme) => ({
   wrapper: {

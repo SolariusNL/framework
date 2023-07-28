@@ -1,3 +1,33 @@
+import Tasks from "@/components/admin/employee/tasks";
+import Activity from "@/components/admin/pages/activity";
+import Articles from "@/components/admin/pages/articles";
+import Automod from "@/components/admin/pages/automod";
+import BannedIPs from "@/components/admin/pages/banned-ips";
+import Cosmic from "@/components/admin/pages/cosmic";
+import Dashboard from "@/components/admin/pages/dashboard";
+import Directory from "@/components/admin/pages/directory";
+import Experiments from "@/components/admin/pages/experiments";
+import Flags from "@/components/admin/pages/flags";
+import Gifts from "@/components/admin/pages/gifts";
+import Instance from "@/components/admin/pages/instance";
+import Invites from "@/components/admin/pages/invites";
+import Licenses from "@/components/admin/pages/licenses";
+import Punish from "@/components/admin/pages/punish";
+import Reports from "@/components/admin/pages/reports";
+import Tickets from "@/components/admin/pages/tickets";
+import Users from "@/components/admin/pages/users";
+import Settings from "@/components/admin/settings";
+import Footer from "@/components/foot";
+import FrameworkLogo from "@/components/framework-logo";
+import ShadedCard from "@/components/shaded-card";
+import useAmoled from "@/stores/useAmoled";
+import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
+import authorizedRoute from "@/util/auth";
+import clsx from "@/util/clsx";
+import getMediaUrl from "@/util/get-media";
+import useMediaQuery from "@/util/media-query";
+import prisma from "@/util/prisma";
+import { User } from "@/util/prisma-types";
 import {
   AppShell,
   Avatar,
@@ -43,36 +73,6 @@ import {
   HiWifi,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
-import Tasks from "@/components/Admin/Employee/Tasks";
-import Activity from "@/components/Admin/Pages/Activity";
-import Articles from "@/components/Admin/Pages/Articles";
-import Automod from "@/components/Admin/Pages/Automod";
-import BannedIPs from "@/components/Admin/Pages/BannedIPs";
-import Cosmic from "@/components/Admin/Pages/Cosmic";
-import Dashboard from "@/components/Admin/Pages/Dashboard";
-import Directory from "@/components/Admin/Pages/Directory";
-import Experiments from "@/components/Admin/Pages/Experiments";
-import Flags from "@/components/Admin/Pages/Flags";
-import Gifts from "@/components/Admin/Pages/Gifts";
-import Instance from "@/components/Admin/Pages/Instance";
-import Invites from "@/components/Admin/Pages/Invites";
-import Licenses from "@/components/Admin/Pages/Licenses";
-import Punish from "@/components/Admin/Pages/Punish";
-import Reports from "@/components/Admin/Pages/Reports";
-import Tickets from "@/components/Admin/Pages/Tickets";
-import Users from "@/components/Admin/Pages/Users";
-import Settings from "@/components/Admin/Settings";
-import Footer from "@/components/Footer";
-import FrameworkLogo from "@/components/FrameworkLogo";
-import ShadedCard from "@/components/ShadedCard";
-import useAmoled from "@/stores/useAmoled";
-import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
-import authorizedRoute from "@/util/auth";
-import clsx from "@/util/clsx";
-import getMediaUrl from "@/util/get-media";
-import useMediaQuery from "@/util/media-query";
-import prisma from "@/util/prisma";
-import { User } from "@/util/prisma-types";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon");

@@ -1,6 +1,6 @@
-import Descriptive from "@/components/Descriptive";
-import Markdown, { ToolbarItem } from "@/components/Markdown";
-import TeamsViewProvider from "@/components/Teams/TeamsView";
+import Descriptive from "@/components/descriptive";
+import Markdown, { ToolbarItem } from "@/components/markdown";
+import TeamsViewProvider from "@/components/teams/teams-view";
 import { TeamType } from "@/pages/teams";
 import { BLACK, FormSection } from "@/pages/teams/t/[slug]/issue/create";
 import IResponseBase from "@/types/api/IResponseBase";

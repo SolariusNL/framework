@@ -1,5 +1,5 @@
-import Framework from "@/components/Framework";
-import ModernEmptyState from "@/components/ModernEmptyState";
+import Framework from "@/components/framework";
+import ModernEmptyState from "@/components/modern-empty-state";
 import Hat from "@/icons/Hat";
 import Pants from "@/icons/Pants";
 import authorizedRoute from "@/util/auth";

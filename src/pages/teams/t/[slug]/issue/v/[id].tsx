@@ -1,10 +1,9 @@
-import DataGrid from "@/components/DataGrid";
-import Markdown from "@/components/Markdown";
-import ModernEmptyState from "@/components/ModernEmptyState";
 import Owner from "@/components/Owner";
-import RenderMarkdown from "@/components/RenderMarkdown";
-import ShadedCard from "@/components/ShadedCard";
-import TeamsViewProvider from "@/components/Teams/TeamsView";
+import DataGrid from "@/components/data-grid";
+import Markdown from "@/components/markdown";
+import ModernEmptyState from "@/components/modern-empty-state";
+import ShadedCard from "@/components/shaded-card";
+import TeamsViewProvider from "@/components/teams/teams-view";
 import { TeamType } from "@/pages/teams";
 import authorizedRoute from "@/util/auth";
 import clsx from "@/util/clsx";
@@ -42,6 +41,7 @@ import {
   HiOutlineUser,
   HiX,
 } from "react-icons/hi";
+import RenderMarkdo@/components/ownernts/RenderMarkdown";
 
 export type TeamIssueViewProps = {
   user: User;

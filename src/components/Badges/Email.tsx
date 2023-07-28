@@ -1,7 +1,7 @@
-import { useMantineTheme } from "@mantine/core";
-import { HiCheck, HiOutlineSparkles } from "react-icons/hi";
 import { User } from "@/util/prisma-types";
-import Badge from "./Badge";
+import { useMantineTheme } from "@mantine/core";
+import { HiCheck } from "react-icons/hi";
+import Badge from "./badge";
 
 const EmailBadge = ({ user }: { user: User }) => {
   const theme = useMantineTheme();

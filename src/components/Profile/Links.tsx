@@ -1,6 +1,6 @@
-import IconTooltip from "@/components/IconTooltip";
-import ModernEmptyState from "@/components/ModernEmptyState";
-import ShadedCard from "@/components/ShadedCard";
+import IconTooltip from "@/components/icon-tooltip";
+import ModernEmptyState from "@/components/modern-empty-state";
+import ShadedCard from "@/components/shaded-card";
 import IResponseBase from "@/types/api/IResponseBase";
 import fetchJson from "@/util/fetch";
 import { Fw } from "@/util/fw";

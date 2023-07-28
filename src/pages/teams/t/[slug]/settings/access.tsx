@@ -1,7 +1,7 @@
-import DetailCard from "@/components/DetailCard";
-import LabelledRadio from "@/components/LabelledRadio";
-import TeamsViewProvider from "@/components/Teams/TeamsView";
-import UserSelect from "@/components/UserSelect";
+import DetailCard from "@/components/detail-card";
+import LabelledRadio from "@/components/labelled-radio";
+import TeamsViewProvider from "@/components/teams/teams-view";
+import UserSelect from "@/components/user-select";
 import { TeamType } from "@/pages/teams";
 import authorizedRoute from "@/util/auth";
 import getMediaUrl from "@/util/get-media";

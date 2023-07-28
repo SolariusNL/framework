@@ -1,8 +1,7 @@
-import { GetServerSidePropsContext, NextPage } from "next";
-import Framework from "@/components/Framework";
-import GameCard from "@/components/GameCard";
-import ModernEmptyState from "@/components/ModernEmptyState";
-import UserCard from "@/components/UserCard";
+import Framework from "@/components/framework";
+import GameCard from "@/components/game-card";
+import ModernEmptyState from "@/components/modern-empty-state";
+import UserCard from "@/components/user-card";
 import authorizedRoute from "@/util/auth";
 import prisma from "@/util/prisma";
 import {
@@ -12,6 +11,7 @@ import {
   gameSelect,
   nonCurrentUserSelect,
 } from "@/util/prisma-types";
+import { GetServerSidePropsContext, NextPage } from "next";
 
 interface SearchProps {
   user: User;

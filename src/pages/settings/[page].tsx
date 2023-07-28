@@ -1,3 +1,22 @@
+import Framework from "@/components/framework";
+import AboutTab from "@/components/settings/about";
+import AccountTab from "@/components/settings/account";
+import AppearanceTab from "@/components/settings/appearance";
+import BetaTab from "@/components/settings/beta";
+import DeleteAccountTab from "@/components/settings/delete";
+import NotificationsTab from "@/components/settings/notifications";
+import PrivacyTab from "@/components/settings/privacy";
+import ReferralsTab from "@/components/settings/referrals";
+import SecurityTab from "@/components/settings/security";
+import SessionsTab from "@/components/settings/sessions";
+import SubscriptionTab from "@/components/settings/subscription";
+import VoiceTab from "@/components/settings/voice";
+import ShadedCard from "@/components/shaded-card";
+import SidebarTabNavigation from "@/layouts/SidebarTabNavigation";
+import useFastFlags from "@/stores/useFastFlags";
+import authorizedRoute from "@/util/auth";
+import useMediaQuery from "@/util/media-query";
+import { User } from "@/util/prisma-types";
 import { Loader, NativeSelect, NavLink } from "@mantine/core";
 import { LayoutGroup, motion } from "framer-motion";
 import { GetServerSidePropsContext, NextPage } from "next";
@@ -19,25 +38,6 @@ import {
   HiUser,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
-import Framework from "@/components/Framework";
-import AboutTab from "@/components/Settings/AboutTab";
-import AccountTab from "@/components/Settings/AccountTab";
-import AppearanceTab from "@/components/Settings/AppearanceTab";
-import BetaTab from "@/components/Settings/BetaTab";
-import DeleteAccountTab from "@/components/Settings/DeleteAccountTab";
-import NotificationsTab from "@/components/Settings/NotificationsTab";
-import PrivacyTab from "@/components/Settings/PrivacyTab";
-import ReferralsTab from "@/components/Settings/Referrals";
-import SecurityTab from "@/components/Settings/SecurityTab";
-import SessionsTab from "@/components/Settings/SessionsTab";
-import SubscriptionTab from "@/components/Settings/SubscriptionTab";
-import VoiceTab from "@/components/Settings/Voice";
-import ShadedCard from "@/components/ShadedCard";
-import SidebarTabNavigation from "@/layouts/SidebarTabNavigation";
-import useFastFlags from "@/stores/useFastFlags";
-import authorizedRoute from "@/util/auth";
-import useMediaQuery from "@/util/media-query";
-import { User } from "@/util/prisma-types";
 
 interface SettingsProps {
   user: User;

@@ -1,6 +1,6 @@
-import ModernEmptyState from "@/components/ModernEmptyState";
-import ShadedButton from "@/components/ShadedButton";
-import ShadedCard from "@/components/ShadedCard";
+import ModernEmptyState from "@/components/modern-empty-state";
+import ShadedButton from "@/components/shaded-button";
+import ShadedCard from "@/components/shaded-card";
 import getMediaUrl from "@/util/get-media";
 import { NonUser } from "@/util/prisma-types";
 import {
@@ -16,7 +16,7 @@ import { EmployeeRole, EmployeeTask } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import TaskCard from "./TaskCard";
+import TaskCard from "./task-card";
 
 const EmployeeHome: React.FC = () => {
   const [tasks, setTasks] = useState<EmployeeTask[]>([]);

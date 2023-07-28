@@ -1,7 +1,7 @@
-import Descriptive from "@/components/Descriptive";
-import ModernEmptyState from "@/components/ModernEmptyState";
-import RichText from "@/components/RichText";
-import UserSelect from "@/components/UserSelect";
+import Descriptive from "@/components/descriptive";
+import ModernEmptyState from "@/components/modern-empty-state";
+import RichText from "@/components/rich-text";
+import UserSelect from "@/components/user-select";
 import {
   Button,
   Modal,
@@ -16,7 +16,7 @@ import { EmployeeTask } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
 import { HiCheckCircle, HiPencil } from "react-icons/hi";
-import TaskCard from "./TaskCard";
+import TaskCard from "./task-card";
 
 const Tasks: React.FC = () => {
   const [tasks, setTasks] = useState<EmployeeTask[]>([]);

@@ -1,5 +1,5 @@
-import { Friend } from "@/components/Home/FriendsWidget";
-import TeamsViewProvider from "@/components/Teams/TeamsView";
+import { Friend } from "@/components/home/friends";
+import TeamsViewProvider from "@/components/teams/teams-view";
 import { TeamType } from "@/pages/teams";
 import authorizedRoute from "@/util/auth";
 import { NonUser, User } from "@/util/prisma-types";

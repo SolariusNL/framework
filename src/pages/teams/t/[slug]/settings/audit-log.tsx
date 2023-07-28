@@ -1,8 +1,8 @@
-import ModernEmptyState from "@/components/ModernEmptyState";
-import Owner from "@/components/Owner";
-import ShadedCard from "@/components/ShadedCard";
-import Stateful from "@/components/Stateful";
-import TeamsViewProvider from "@/components/Teams/TeamsView";
+import ModernEmptyState from "@/components/modern-empty-state";
+import Owner from "@/components/owner";
+import ShadedCard from "@/components/shaded-card";
+import Stateful from "@/components/stateful";
+import TeamsViewProvider from "@/components/teams/teams-view";
 import auditLogMeta from "@/data/auditLog";
 import { TeamType } from "@/pages/teams";
 import authorizedRoute from "@/util/auth";

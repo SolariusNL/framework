@@ -1,5 +1,5 @@
-import SettingsTab from "@/components/Settings/SettingsTab";
-import SideBySide from "@/components/Settings/SideBySide";
+import SettingsTab from "@/components/settings/settings-tab";
+import SideBySide from "@/components/settings/side-by-side";
 import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
 import useMicIdStore from "@/stores/useMicIdStore";
 import { User } from "@/util/prisma-types";

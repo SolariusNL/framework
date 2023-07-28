@@ -2,10 +2,10 @@ import dynamic from "next/dynamic";
 import React from "react";
 import create from "zustand";
 
-const LoginFlow = dynamic(() => import("@/components/Flows/Logins"), {
+const LoginFlow = dynamic(() => import("@/components/flows/logins"), {
   ssr: false,
 });
-const SecretGift = dynamic(() => import("@/components/Flows/Gift"), {
+const SecretGift = dynamic(() => import("@/components/flows/gift"), {
   ssr: false,
 });
 

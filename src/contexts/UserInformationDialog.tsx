@@ -1,3 +1,12 @@
+import ModernEmptyState from "@/components/modern-empty-state";
+import getMediaUrl from "@/util/get-media";
+import { NonUser, User } from "@/util/prisma-types";
+import {
+  getFollowers,
+  getFollowersPages,
+  getFollowing,
+  getFollowingPages,
+} from "@/util/universe/friends";
 import {
   Avatar,
   Group,
@@ -10,22 +19,13 @@ import {
 } from "@mantine/core";
 import Link from "next/link";
 import {
-  createContext,
   Dispatch,
   SetStateAction,
+  createContext,
   useContext,
   useEffect,
   useState,
 } from "react";
-import ModernEmptyState from "@/components/ModernEmptyState";
-import getMediaUrl from "@/util/get-media";
-import { NonUser, User } from "@/util/prisma-types";
-import {
-  getFollowers,
-  getFollowersPages,
-  getFollowing,
-  getFollowingPages,
-} from "@/util/universe/friends";
 
 const UserInformationDialogContext =
   createContext<UserInformationDialogContextType>({

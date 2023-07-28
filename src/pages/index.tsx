@@ -1,20 +1,21 @@
-import Framework from "@/components/Framework";
-import FeedWidget from "@/components/Home/FeedWidget";
-import FriendsWidget, { Section } from "@/components/Home/FriendsWidget";
-import NotificationsWidget from "@/components/Home/NotificationsWidget";
-import SubscriptionWidget from "@/components/Home/SubscriptionWidget";
-import UpdatesWidget from "@/components/Home/UpdatesWidget";
-import BioMesh from "@/components/Mesh/BioMesh";
-import CatalogMesh from "@/components/Mesh/CatalogMesh";
-import CreateGameMesh from "@/components/Mesh/CreateGameMesh";
-import FollowMesh from "@/components/Mesh/FollowMesh";
-import LikeGameMesh from "@/components/Mesh/LikeGameMesh";
-import ReferMesh from "@/components/Mesh/ReferMesh";
+import Framework from "@/components/framework";
+import FeedWidget from "@/components/home/feed";
+import FriendsWidget, { Section } from "@/components/home/friends";
+import NotificationsWidget from "@/components/home/notifications";
+import SubscriptionWidget from "@/components/home/subscription";
+import UpdatesWidget from "@/components/home/updates";
+import BioMesh from "@/components/mesh/bio";
+import CatalogMesh from "@/components/mesh/catalog";
+import CreateGameMesh from "@/components/mesh/create-game";
+import FollowMesh from "@/components/mesh/follow";
+import LikeGameMesh from "@/components/mesh/like-game";
+import ReferMesh from "@/components/mesh/refer";
 import SidebarTabNavigation from "@/layouts/SidebarTabNavigation";
 import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
 import IResponseBase from "@/types/api/IResponseBase";
 import authorizedRoute from "@/util/auth";
 import fetchJson from "@/util/fetch";
+import prisma from "@/util/prisma";
 import { User } from "@/util/prisma-types";
 import { ActionIcon, Badge, Divider, NavLink, Text } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
@@ -292,6 +293,21 @@ const Home: NextPage<HomeProps> = ({ user: u }) => {
 };
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
+  const setup = await prisma.appConfig.findUnique({
+    where: {
+      id: "did-setup",
+    },
+  });
+
+  if (setup && setup.value === "false") {
+    return {
+      redirect: {
+        destination: "/setup",
+        permanent: false,
+      },
+    };
+  }
+
   const auth = await authorizedRoute(ctx, false, false);
 
   if (auth.redirect && !auth.redirect.banRedirect)

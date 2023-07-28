@@ -1,3 +1,17 @@
+import Access from "@/components/edit-game/access";
+import AgeRating from "@/components/edit-game/age-rating";
+import Datastores from "@/components/edit-game/datastores";
+import Details from "@/components/edit-game/details";
+import EnvironmentVariables from "@/components/edit-game/environment-variables";
+import Funding from "@/components/edit-game/funding";
+import Servers from "@/components/edit-game/servers";
+import Store from "@/components/edit-game/store";
+import Updates from "@/components/edit-game/updates";
+import Framework from "@/components/framework";
+import SidebarTabNavigation from "@/layouts/SidebarTabNavigation";
+import authorizedRoute from "@/util/auth";
+import prisma from "@/util/prisma";
+import { Game, User, gameSelect } from "@/util/prisma-types";
 import { NavLink } from "@mantine/core";
 import { GameEnvironmentVariable, Team } from "@prisma/client";
 import { GetServerSidePropsContext, NextPage } from "next";
@@ -15,20 +29,6 @@ import {
   HiViewList,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
-import Access from "@/components/EditGame/Access";
-import AgeRating from "@/components/EditGame/AgeRating";
-import Datastores from "@/components/EditGame/Datastores";
-import Details from "@/components/EditGame/Details";
-import EnvironmentVariables from "@/components/EditGame/EnvironmentVariables";
-import Funding from "@/components/EditGame/Funding";
-import Servers from "@/components/EditGame/Servers";
-import Store from "@/components/EditGame/Store";
-import Updates from "@/components/EditGame/Updates";
-import Framework from "@/components/Framework";
-import SidebarTabNavigation from "@/layouts/SidebarTabNavigation";
-import authorizedRoute from "@/util/auth";
-import prisma from "@/util/prisma";
-import { Game, User, gameSelect } from "@/util/prisma-types";
 
 export type GameWithDatastore = Game & {
   datastores: {

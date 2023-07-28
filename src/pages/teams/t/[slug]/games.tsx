@@ -1,6 +1,6 @@
-import GameCard from "@/components/GameCard";
-import ModernEmptyState from "@/components/ModernEmptyState";
-import TeamsViewProvider from "@/components/Teams/TeamsView";
+import GameCard from "@/components/game-card";
+import ModernEmptyState from "@/components/modern-empty-state";
+import TeamsViewProvider from "@/components/teams/teams-view";
 import { TeamType } from "@/pages/teams";
 import authorizedRoute from "@/util/auth";
 import prisma from "@/util/prisma";

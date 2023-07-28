@@ -1,4 +1,4 @@
-import Stateful from "@/components/Stateful";
+import Stateful from "@/components/stateful";
 import banPresets from "@/data/banPresets";
 import clsx from "@/util/clsx";
 import getMediaUrl from "@/util/get-media";

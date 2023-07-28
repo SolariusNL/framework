@@ -1,9 +1,9 @@
-import ModernEmptyState from "@/components/ModernEmptyState";
-import RenderMarkdown from "@/components/RenderMarkdown";
-import ShadedButton from "@/components/ShadedButton";
-import ShadedCard from "@/components/ShadedCard";
-import Stateful from "@/components/Stateful";
-import UserContext from "@/components/UserContext";
+import ModernEmptyState from "@/components/modern-empty-state";
+import RenderMarkdown from "@/components/render-markdown";
+import ShadedButton from "@/components/shaded-button";
+import ShadedCard from "@/components/shaded-card";
+import Stateful from "@/components/stateful";
+import UserContext from "@/components/user-context";
 import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
 import getMediaUrl from "@/util/get-media";
 import { NonUser } from "@/util/prisma-types";

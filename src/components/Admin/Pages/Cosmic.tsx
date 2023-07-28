@@ -1,4 +1,4 @@
-import ConnectionsWidget from "@/components/Widgets/Connections";
+import ConnectionsWidget from "@/components/widgets/connections";
 import { Pagination, Select } from "@mantine/core";
 import { Connection } from "@prisma/client";
 import { getCookie } from "cookies-next";

@@ -1,4 +1,4 @@
-import { parse } from "@/components/RenderMarkdown";
+import { parse } from "@/components/render-markdown";
 import getTimezones from "@/data/timezones";
 import type { FilterType, SortType } from "@/pages/teams/discover";
 import { tags } from "@/pages/teams/t/[slug]/issue/create";

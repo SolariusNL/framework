@@ -1,6 +1,6 @@
-import ModernEmptyState from "@/components/ModernEmptyState";
-import ReportCard from "@/components/ReportCard";
-import { ReportCategory, category } from "@/components/ReportUser";
+import ModernEmptyState from "@/components/modern-empty-state";
+import ReportCard from "@/components/report-card";
+import { ReportCategory, category } from "@/components/report-user";
 import { Report } from "@/util/prisma-types";
 import { Pagination, Select } from "@mantine/core";
 import { getCookie } from "cookies-next";

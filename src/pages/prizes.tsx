@@ -1,3 +1,8 @@
+import Framework from "@/components/framework";
+import Bit from "@/icons/Bit";
+import authorizedRoute from "@/util/auth";
+import clsx from "@/util/clsx";
+import { User } from "@/util/prisma-types";
 import {
   Alert,
   Button,
@@ -11,11 +16,6 @@ import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
 import React from "react";
 import Celebration from "react-confetti";
-import Framework from "@/components/Framework";
-import Bit from "@/icons/Bit";
-import authorizedRoute from "@/util/auth";
-import clsx from "@/util/clsx";
-import { User } from "@/util/prisma-types";
 
 export const useStyles = createStyles((theme) => ({
   controls: {

@@ -1367,3 +1367,19 @@ model TeamGiveaway {
   participants User[]   @relation("teamGiveawayParticipants")
   ended        Boolean  @default(false)
 }
+
+model AppConfig {
+  id        String             @id @default(uuid())
+  createdAt DateTime           @default(now())
+  key       String
+  type      AppConfigUnionType
+  value     String
+}
+
+enum AppConfigUnionType {
+  STRING
+  NUMBER
+  BOOLEAN
+  ARRAY
+  OBJECT
+}

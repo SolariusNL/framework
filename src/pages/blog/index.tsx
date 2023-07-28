@@ -1,8 +1,8 @@
-import Background from "@/components/Background";
-import Descriptive from "@/components/Descriptive";
-import Framework from "@/components/Framework";
-import Markdown, { ToolbarItem } from "@/components/Markdown";
-import RenderMarkdown from "@/components/RenderMarkdown";
+import Background from "@/components/background";
+import Descriptive from "@/components/descriptive";
+import Framework from "@/components/framework";
+import Markdown, { ToolbarItem } from "@/components/markdown";
+import RenderMarkdown from "@/components/render-markdown";
 import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
 import authorizedRoute from "@/util/auth";
 import clsx from "@/util/clsx";

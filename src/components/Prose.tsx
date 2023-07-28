@@ -1,4 +1,4 @@
-import { proseStyles } from "./RenderMarkdown";
+import { proseStyles } from "./render-markdown";
 
 type ProseProps = {
   as?: React.ElementType;

@@ -1,10 +1,10 @@
-import ContextMenu from "@/components/ContextMenu";
-import Copy from "@/components/Copy";
-import DataGrid from "@/components/DataGrid";
-import IconTooltip from "@/components/IconTooltip";
-import ModernEmptyState from "@/components/ModernEmptyState";
-import ShadedButton from "@/components/ShadedButton";
-import ShadedCard from "@/components/ShadedCard";
+import ContextMenu from "@/components/context-menu";
+import Copy from "@/components/copy";
+import DataGrid from "@/components/data-grid";
+import IconTooltip from "@/components/icon-tooltip";
+import ModernEmptyState from "@/components/modern-empty-state";
+import ShadedButton from "@/components/shaded-button";
+import ShadedCard from "@/components/shaded-card";
 import { ownerDescriptions } from "@/data/scopes";
 import Developer from "@/layouts/DeveloperLayout";
 import ServiceUnavailable from "@/pages/503";

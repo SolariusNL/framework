@@ -1,5 +1,5 @@
-import Framework from "@/components/Framework";
-import IntegratedTabs from "@/components/Framework/IntegratedTabs";
+import Framework from "@/components/framework";
+import IntegratedTabs from "@/components/framework/integrated-tabs";
 import { User } from "@/util/prisma-types";
 import Link from "next/link";
 import {

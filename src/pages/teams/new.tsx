@@ -1,3 +1,10 @@
+import Descriptive from "@/components/descriptive";
+import ImageUploader from "@/components/image-uploader";
+import Markdown, { ToolbarItem } from "@/components/markdown";
+import TeamsProvider from "@/components/teams/teams";
+import getTimezones from "@/data/timezones";
+import authorizedRoute from "@/util/auth";
+import { User } from "@/util/prisma-types";
 import {
   Button,
   Image,
@@ -12,13 +19,6 @@ import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import React from "react";
 import { HiCheckCircle, HiPlusCircle, HiXCircle } from "react-icons/hi";
-import Descriptive from "@/components/Descriptive";
-import ImageUploader from "@/components/ImageUploader";
-import Markdown, { ToolbarItem } from "@/components/Markdown";
-import TeamsProvider from "@/components/Teams/Teams";
-import getTimezones from "@/data/timezones";
-import authorizedRoute from "@/util/auth";
-import { User } from "@/util/prisma-types";
 
 type NewTeamProps = {
   user: User;

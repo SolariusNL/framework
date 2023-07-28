@@ -1,3 +1,11 @@
+import Framework from "@/components/framework";
+import ModernEmptyState from "@/components/modern-empty-state";
+import ShadedCard from "@/components/shaded-card";
+import authorizedRoute from "@/util/auth";
+import clsx from "@/util/clsx";
+import getMediaUrl from "@/util/get-media";
+import prisma from "@/util/prisma";
+import { Game, User, gameSelect } from "@/util/prisma-types";
 import { Avatar, Badge, Button, Text, Title } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { Team, TeamAccess } from "@prisma/client";
@@ -7,14 +15,6 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import { HiArrowRight, HiCake, HiCheckCircle, HiUsers } from "react-icons/hi";
-import Framework from "@/components/Framework";
-import ModernEmptyState from "@/components/ModernEmptyState";
-import ShadedCard from "@/components/ShadedCard";
-import authorizedRoute from "@/util/auth";
-import clsx from "@/util/clsx";
-import getMediaUrl from "@/util/get-media";
-import prisma from "@/util/prisma";
-import { Game, User, gameSelect } from "@/util/prisma-types";
 
 interface TransferGameToTeamProps {
   user: User;

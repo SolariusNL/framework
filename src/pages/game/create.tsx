@@ -1,8 +1,8 @@
-import Descriptive from "@/components/Descriptive";
-import Framework from "@/components/Framework";
-import LabelledRadio from "@/components/LabelledRadio";
-import sanitizeInappropriateContent from "@/components/ReconsiderationPrompt";
-import RichText from "@/components/RichText";
+import Descriptive from "@/components/descriptive";
+import Framework from "@/components/framework";
+import LabelledRadio from "@/components/labelled-radio";
+import sanitizeInappropriateContent from "@/components/reconsideration-prompt";
+import RichText from "@/components/rich-text";
 import { BLACK, FormSection } from "@/pages/teams/t/[slug]/issue/create";
 import authorizedRoute from "@/util/auth";
 import { getCookie } from "@/util/cookies";

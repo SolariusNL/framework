@@ -1,6 +1,6 @@
-import Descriptive from "@/components/Descriptive";
-import Grouped from "@/components/Settings/Grouped";
-import SideBySide from "@/components/Settings/SideBySide";
+import Descriptive from "@/components/descriptive";
+import Grouped from "@/components/settings/grouped";
+import SideBySide from "@/components/settings/side-by-side";
 import { useFrameworkUser } from "@/contexts/FrameworkUser";
 import { Button, MultiSelect, Stack, Switch, Textarea } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";

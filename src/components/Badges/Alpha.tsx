@@ -1,6 +1,6 @@
-import { HiOutlineClock } from "react-icons/hi";
 import { User } from "@/util/prisma-types";
-import Badge from "./Badge";
+import { HiOutlineClock } from "react-icons/hi";
+import Badge from "./badge";
 
 const AlphaBadge = ({ user }: { user: User }) => {
   return (

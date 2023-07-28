@@ -1,5 +1,5 @@
-import { scoreDescriptions } from "@/components/EditGame/AgeRating";
-import { parse } from "@/components/RenderMarkdown";
+import { scoreDescriptions } from "@/components/edit-game/age-rating";
+import { parse } from "@/components/render-markdown";
 import IResponseBase from "@/types/api/IResponseBase";
 import Authorized, { Account } from "@/util/api/authorized";
 import registerAutomodHandler from "@/util/automod";
@@ -24,13 +24,13 @@ import {
 } from "@prisma/client";
 import {
   Body,
+  createHandler,
   Delete,
   Get,
   Param,
   Post,
   Query,
   ValidationPipe,
-  createHandler,
 } from "@storyofams/next-api-decorators";
 import * as Validate from "class-validator";
 import fetch from "node-fetch";

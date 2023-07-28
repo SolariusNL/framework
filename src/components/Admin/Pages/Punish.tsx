@@ -1,9 +1,9 @@
-import PunishmentHistory from "@/components/Admin/PunishmentHistory";
-import { Section } from "@/components/Home/FriendsWidget";
-import LabelledCheckbox from "@/components/LabelledCheckbox";
-import LoadingIndicator from "@/components/LoadingIndicator";
-import ShadedCard from "@/components/ShadedCard";
-import Stateful from "@/components/Stateful";
+import PunishmentHistory from "@/components/admin/punishment-history";
+import { Section } from "@/components/home/friends";
+import LabelledCheckbox from "@/components/labelled-checkbox";
+import LoadingIndicator from "@/components/loading-indicator";
+import ShadedCard from "@/components/shaded-card";
+import Stateful from "@/components/stateful";
 import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
 import IResponseBase from "@/types/api/IResponseBase";
 import fetchJson from "@/util/fetch";
@@ -26,7 +26,7 @@ import Link from "next/link";
 import React, { FC } from "react";
 import { HiArrowLeft, HiCheck, HiCheckCircle, HiXCircle } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
-import { AdminViewUser } from "./Users";
+import { AdminViewUser } from "./users";
 
 type PunishmentForm = {
   type: "warning" | "ban" | "hwid";

@@ -1,6 +1,6 @@
-import Framework from "@/components/Framework";
-import { Section } from "@/components/Home/FriendsWidget";
-import ShadedCard from "@/components/ShadedCard";
+import Framework from "@/components/framework";
+import { Section } from "@/components/home/friends";
+import ShadedCard from "@/components/shaded-card";
 import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
 import {
   IRedlockVerifyLicenseResponse,
@@ -14,8 +14,8 @@ import {
   Button,
   FileInput,
   Text,
-  Textarea,
   TextInput,
+  Textarea,
   Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";

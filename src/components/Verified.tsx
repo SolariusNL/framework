@@ -1,4 +1,4 @@
-import IconTooltip from "@/components/IconTooltip";
+import IconTooltip from "@/components/icon-tooltip";
 import clsx from "@/util/clsx";
 import { Text, Title } from "@mantine/core";
 import { FC } from "react";

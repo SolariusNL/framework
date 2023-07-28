@@ -1,7 +1,7 @@
-import Descriptive from "@/components/Descriptive";
-import { Section } from "@/components/Home/FriendsWidget";
-import Markdown, { ToolbarItem } from "@/components/Markdown";
-import ShadedCard from "@/components/ShadedCard";
+import Descriptive from "@/components/descriptive";
+import { Section } from "@/components/home/friends";
+import Markdown, { ToolbarItem } from "@/components/markdown";
+import ShadedCard from "@/components/shaded-card";
 import Developer from "@/layouts/DeveloperLayout";
 import SidebarTabNavigation from "@/layouts/SidebarTabNavigation";
 import ServiceUnavailable from "@/pages/503";

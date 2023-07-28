@@ -1,12 +1,18 @@
-import Verified from "@/components/Verified";
+import Verified from "@/components/verified";
 import clsx from "@/util/clsx";
 import getMediaUrl from "@/util/get-media";
-import { User } from "@/util/prisma-types";
+import { NonUser, User } from "@/util/prisma-types";
 import { Avatar } from "@mantine/core";
 import Link from "next/link";
+import UserContext from "./user-context";
 
 type OwnerProps = {
-  user: Pick<User, "username" | "alias" | "avatarUri" | "verified">;
+  user: Pick<User, "username" | "alias" | "avatarUri" | "verified"> & {
+    _count?: {
+      followers: number;
+      following: number;
+    };
+  };
   size?: number;
   overrideHref?: string;
 } & React.HTMLAttributes<HTMLLIElement>;
@@ -17,7 +23,7 @@ const Owner: React.FC<OwnerProps> = ({
   overrideHref,
   ...props
 }) => {
-  return (
+  const item = (
     <li
       key={user.username}
       className={clsx(
@@ -50,6 +56,14 @@ const Owner: React.FC<OwnerProps> = ({
         </div>
       </div>
     </li>
+  );
+
+  return user._count ? (
+    <UserContext user={user as NonUser}>
+      <>{item}</>
+    </UserContext>
+  ) : (
+    <>{item}</>
   );
 };
 

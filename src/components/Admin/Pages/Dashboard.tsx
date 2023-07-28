@@ -1,9 +1,9 @@
-import ResourceCard from "@/components/Admin/ResourceCard";
-import StatsGrid from "@/components/Admin/StatsGrid";
-import ModernEmptyState from "@/components/ModernEmptyState";
-import ReportCard from "@/components/ReportCard";
-import ShadedButton from "@/components/ShadedButton";
-import ShadedCard from "@/components/ShadedCard";
+import ResourceCard from "@/components/admin/resource-card";
+import StatsGrid from "@/components/admin/stats-grid";
+import ModernEmptyState from "@/components/modern-empty-state";
+import ReportCard from "@/components/report-card";
+import ShadedButton from "@/components/shaded-button";
+import ShadedCard from "@/components/shaded-card";
 import getMediaUrl from "@/util/get-media";
 import useMediaQuery from "@/util/media-query";
 import { NonUser, Report } from "@/util/prisma-types";

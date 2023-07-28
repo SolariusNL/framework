@@ -1,3 +1,15 @@
+import Copy from "@/components/copy";
+import Framework from "@/components/framework";
+import ShadedCard from "@/components/shaded-card";
+import logout from "@/util/api/logout";
+import authorizedRoute from "@/util/auth";
+import { User } from "@/util/prisma-types";
+import {
+  Device,
+  getOperatingSystemDevice,
+  getOperatingSystemEnumFromString,
+  getOperatingSystemString,
+} from "@/util/ua";
 import {
   Badge,
   Button,
@@ -13,18 +25,6 @@ import { GetServerSidePropsContext, NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { HiDesktopComputer, HiDeviceMobile, HiLogout } from "react-icons/hi";
-import Copy from "@/components/Copy";
-import Framework from "@/components/Framework";
-import ShadedCard from "@/components/ShadedCard";
-import logout from "@/util/api/logout";
-import authorizedRoute from "@/util/auth";
-import { User } from "@/util/prisma-types";
-import {
-  Device,
-  getOperatingSystemDevice,
-  getOperatingSystemEnumFromString,
-  getOperatingSystemString,
-} from "@/util/ua";
 
 interface SessionsProps {
   user: User;

@@ -1,4 +1,4 @@
-import ModernEmptyState from "@/components/ModernEmptyState";
+import ModernEmptyState from "@/components/modern-empty-state";
 import apiKeyPermissions from "@/data/apiKeyPermissions";
 import Developer from "@/layouts/DeveloperLayout";
 import ServiceUnavailable from "@/pages/503";

@@ -1,6 +1,6 @@
-import Framework from "@/components/Framework";
-import { Section } from "@/components/Home/FriendsWidget";
-import SideBySide from "@/components/Settings/SideBySide";
+import Framework from "@/components/framework";
+import { Section } from "@/components/home/friends";
+import SideBySide from "@/components/settings/side-by-side";
 import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
 import useAmoled from "@/stores/useAmoled";
 import authorizedRoute from "@/util/auth";

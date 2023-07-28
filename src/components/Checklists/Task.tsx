@@ -1,6 +1,6 @@
-import Descriptive from "@/components/Descriptive";
-import ShadedButton from "@/components/ShadedButton";
-import Stateful from "@/components/Stateful";
+import Descriptive from "@/components/descriptive";
+import ShadedButton from "@/components/shaded-button";
+import Stateful from "@/components/stateful";
 import { ChecklistTaskUpdateBody } from "@/pages/api/checklists/[[...params]]";
 import clsx from "@/util/clsx";
 import {

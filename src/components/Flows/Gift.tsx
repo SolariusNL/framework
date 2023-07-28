@@ -1,4 +1,4 @@
-import LoadingIndicator from "@/components/LoadingIndicator";
+import LoadingIndicator from "@/components/loading-indicator";
 import { Preferences } from "@/util/preferences";
 import { Text, Title } from "@mantine/core";
 import React from "react";

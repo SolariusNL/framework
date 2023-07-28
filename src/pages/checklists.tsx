@@ -1,3 +1,15 @@
+import CreateChecklist from "@/components/checklists/create-checklist";
+import CreateTask from "@/components/checklists/create-task";
+import ChecklistTask from "@/components/checklists/task";
+import DataGrid from "@/components/data-grid";
+import Descriptive from "@/components/descriptive";
+import Framework from "@/components/framework";
+import ModernEmptyState from "@/components/modern-empty-state";
+import ShadedCard from "@/components/shaded-card";
+import SidebarTabNavigation from "@/layouts/SidebarTabNavigation";
+import authorizedRoute from "@/util/auth";
+import prisma from "@/util/prisma";
+import { User } from "@/util/prisma-types";
 import {
   ActionIcon,
   Button,
@@ -11,6 +23,7 @@ import {
   Text,
   Title,
 } from "@mantine/core";
+import { openConfirmModal } from "@mantine/modals";
 import { ChecklistItem, Prisma } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
@@ -18,7 +31,6 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import {
   HiCheck,
-  HiClipboard,
   HiDotsVertical,
   HiFilter,
   HiOutlineCheckCircle,
@@ -32,19 +44,6 @@ import {
   HiViewGrid,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
-import CreateChecklist from "@/components/Checklists/CreateChecklist";
-import CreateTask from "@/components/Checklists/CreateTask";
-import ChecklistTask from "@/components/Checklists/Task";
-import DataGrid from "@/components/DataGrid";
-import Descriptive from "@/components/Descriptive";
-import Framework from "@/components/Framework";
-import ModernEmptyState from "@/components/ModernEmptyState";
-import ShadedCard from "@/components/ShadedCard";
-import SidebarTabNavigation from "@/layouts/SidebarTabNavigation";
-import authorizedRoute from "@/util/auth";
-import prisma from "@/util/prisma";
-import { User } from "@/util/prisma-types";
-import { openConfirmModal } from "@mantine/modals";
 
 interface ChecklistsProps {
   user: User;

@@ -1,8 +1,8 @@
-import Descriptive from "@/components/Descriptive";
-import Markdown, { ToolbarItem } from "@/components/Markdown";
-import ShadedCard from "@/components/ShadedCard";
-import TeamsViewProvider from "@/components/Teams/TeamsView";
-import UserSelect from "@/components/UserSelect";
+import Descriptive from "@/components/descriptive";
+import Markdown, { ToolbarItem } from "@/components/markdown";
+import ShadedCard from "@/components/shaded-card";
+import TeamsViewProvider from "@/components/teams/teams-view";
+import UserSelect from "@/components/user-select";
 import { TeamType } from "@/pages/teams";
 import authorizedRoute from "@/util/auth";
 import { User } from "@/util/prisma-types";

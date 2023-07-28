@@ -1,10 +1,10 @@
-import FilterIndicator from "@/components/FilterIndicator";
-import LabelledCheckbox from "@/components/LabelledCheckbox";
-import ModernEmptyState from "@/components/ModernEmptyState";
-import RenderMarkdown from "@/components/RenderMarkdown";
-import ShadedButton from "@/components/ShadedButton";
-import ShadedCard from "@/components/ShadedCard";
-import TeamsViewProvider from "@/components/Teams/TeamsView";
+import FilterIndicator from "@/components/filter-indicator";
+import LabelledCheckbox from "@/components/labelled-checkbox";
+import ModernEmptyState from "@/components/modern-empty-state";
+import RenderMarkdown from "@/components/render-markdown";
+import ShadedButton from "@/components/shaded-button";
+import ShadedCard from "@/components/shaded-card";
+import TeamsViewProvider from "@/components/teams/teams-view";
 import { TeamType } from "@/pages/teams";
 import authorizedRoute from "@/util/auth";
 import clsx from "@/util/clsx";

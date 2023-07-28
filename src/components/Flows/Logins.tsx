@@ -1,4 +1,4 @@
-import LoadingIndicator from "@/components/LoadingIndicator";
+import LoadingIndicator from "@/components/loading-indicator";
 import IResponseBase from "@/types/api/IResponseBase";
 import fetchJson from "@/util/fetch";
 import {

@@ -1,13 +1,13 @@
-import ChatMsg from "@/components/Chat/ChatMessage";
-import ImageUploader from "@/components/ImageUploader";
-import InlineError from "@/components/InlineError";
-import InlineUserCard from "@/components/InlineUserCard";
-import LoadingIndicator from "@/components/LoadingIndicator";
-import ModernEmptyState from "@/components/ModernEmptyState";
-import Owner from "@/components/Owner";
-import sanitizeInappropriateContent from "@/components/ReconsiderationPrompt";
-import ShadedButton from "@/components/ShadedButton";
-import ShadedCard from "@/components/ShadedCard";
+import ChatMsg from "@/components/chat/chat-message";
+import ImageUploader from "@/components/image-uploader";
+import InlineError from "@/components/inline-error";
+import InlineUserCard from "@/components/inline-user-card";
+import LoadingIndicator from "@/components/loading-indicator";
+import ModernEmptyState from "@/components/modern-empty-state";
+import Owner from "@/components/owner";
+import sanitizeInappropriateContent from "@/components/reconsideration-prompt";
+import ShadedButton from "@/components/shaded-button";
+import ShadedCard from "@/components/shaded-card";
 import SocketContext from "@/contexts/Socket";
 import Rocket from "@/icons/Rocket";
 import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
@@ -74,7 +74,7 @@ import {
   HiSparkles,
   HiXCircle,
 } from "react-icons/hi";
-import { UserItemComponent } from "./Admin/Pages/Activity";
+import { UserItemComponent } from "./admin/pages/activity";
 
 type ChatConversationWithParticipants = ChatConversation & {
   participants: NonUser[];

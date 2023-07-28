@@ -1,6 +1,6 @@
-import Copy from "@/components/Copy";
-import { Section } from "@/components/Home/FriendsWidget";
-import ShadedCard from "@/components/ShadedCard";
+import Copy from "@/components/copy";
+import { Section } from "@/components/home/friends";
+import ShadedCard from "@/components/shaded-card";
 import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
 import { REDLOCK } from "@/util/constants";
 import fetchJson from "@/util/fetch";

@@ -1,4 +1,4 @@
-import InventTab from "@/components/Invent/InventTab";
+import InventTab from "@/components/invent/invent";
 import { getCookie } from "@/util/cookies";
 import { User } from "@/util/prisma-types";
 import {

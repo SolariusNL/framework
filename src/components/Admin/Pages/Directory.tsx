@@ -1,5 +1,5 @@
-import ModernEmptyState from "@/components/ModernEmptyState";
-import ShadedButton from "@/components/ShadedButton";
+import ModernEmptyState from "@/components/modern-empty-state";
+import ShadedButton from "@/components/shaded-button";
 import employeeRoleMeta from "@/data/employeeRoles";
 import getMediaUrl from "@/util/get-media";
 import { NonUser } from "@/util/prisma-types";

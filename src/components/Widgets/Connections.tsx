@@ -1,4 +1,4 @@
-import ModernEmptyState from "@/components/ModernEmptyState";
+import ModernEmptyState from "@/components/modern-empty-state";
 import shutdownNucleus from "@/util/fetch/shutdownNucleus";
 import {
   ActionIcon,

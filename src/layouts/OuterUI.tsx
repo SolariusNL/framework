@@ -1,3 +1,5 @@
+import Background from "@/assets/subtlebackground.png";
+import MinimalFooter from "@/components/minimal-footer";
 import {
   Container,
   Paper,
@@ -6,12 +8,13 @@ import {
   useMantineColorScheme,
 } from "@mantine/core";
 import { FC, ReactNode } from "react";
-import MinimalFooter from "@/components/MinimalFooter";
-import Background from "@/assets/subtlebackground.png";
 
 type OuterUIProps = {
   description: ReactNode;
   children: ReactNode;
+  title?: string;
+  wide?: boolean;
+  container?: boolean;
 };
 
 const OuterUI: FC<OuterUIProps> = (props) => {
@@ -38,14 +41,20 @@ const OuterUI: FC<OuterUIProps> = (props) => {
         className="fixed inset-0"
       />
       <div className="relative">
-        <Container size={420} my={40}>
-          <Title align="center">Framework</Title>
+        <Container size={props.wide ? 800 : 420} my={40}>
+          <Title align="center">
+            {props.title ? props.title : "Framework"}
+          </Title>
           <Text color="dimmed" size="sm" align="center" mt={5}>
             {props.description}
           </Text>
 
           <Paper withBorder shadow="md" p={30} mt={30} radius="md" mb={30}>
-            {props.children}
+            {props.container ? (
+              <Container className="max-w-md">{props.children}</Container>
+            ) : (
+              props.children
+            )}
           </Paper>
 
           <MinimalFooter />

@@ -1,5 +1,5 @@
-import { parse } from "@/components/RenderMarkdown";
-import { category } from "@/components/ReportUser";
+import { parse } from "@/components/render-markdown";
+import { category } from "@/components/report-user";
 import countries from "@/data/countries";
 import getTimezones from "@/data/timezones";
 import IResponseBase from "@/types/api/IResponseBase";

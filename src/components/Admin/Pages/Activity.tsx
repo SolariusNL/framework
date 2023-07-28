@@ -1,4 +1,4 @@
-import ModernEmptyState from "@/components/ModernEmptyState";
+import ModernEmptyState from "@/components/modern-empty-state";
 import getAdmins from "@/util/fetch/getAdmins";
 import getMediaUrl from "@/util/get-media";
 import {

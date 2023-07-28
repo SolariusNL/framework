@@ -1,10 +1,10 @@
+import MinimalFooter from "@/components/minimal-footer";
+import useFastFlags from "@/stores/useFastFlags";
+import useMediaQuery from "@/util/media-query";
 import { Button, Container, createStyles, Text, Title } from "@mantine/core";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import MinimalFooter from "@/components/MinimalFooter";
-import useFastFlags from "@/stores/useFastFlags";
-import useMediaQuery from "@/util/media-query";
 
 const useStyles = createStyles((theme) => ({
   title: {

@@ -1,15 +1,15 @@
+import Framework from "@/components/framework";
+import authorizedRoute from "@/util/auth";
+import { getCookie } from "@/util/cookies";
+import useMediaQuery from "@/util/media-query";
+import prisma from "@/util/prisma";
+import { Game, User, gameSelect } from "@/util/prisma-types";
 import { Alert, Button, Grid, TextInput, useMantineTheme } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 import React from "react";
 import { HiXCircle } from "react-icons/hi";
-import Framework from "@/components/Framework";
-import authorizedRoute from "@/util/auth";
-import { getCookie } from "@/util/cookies";
-import useMediaQuery from "@/util/media-query";
-import prisma from "@/util/prisma";
-import { Game, gameSelect, User } from "@/util/prisma-types";
 
 interface AddGameConnectionProps {
   user: User;

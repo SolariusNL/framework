@@ -1,5 +1,5 @@
-import InventTab from "@/components/Invent/InventTab";
-import ModernEmptyState from "@/components/ModernEmptyState";
+import InventTab from "@/components/invent/invent";
+import ModernEmptyState from "@/components/modern-empty-state";
 import { User } from "@/util/prisma-types";
 import {
   ActionIcon,

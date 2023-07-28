@@ -1,5 +1,5 @@
-import Copy from "@/components/Copy";
-import ModernEmptyState from "@/components/ModernEmptyState";
+import Copy from "@/components/copy";
+import ModernEmptyState from "@/components/modern-empty-state";
 import giftGrants from "@/data/giftGrants";
 import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
 import getMediaUrl from "@/util/get-media";

@@ -1,3 +1,8 @@
+import Framework from "@/components/framework";
+import IntegratedTabs from "@/components/framework/integrated-tabs";
+import WrenchScrewdriver from "@/icons/WrenchScrewdriver";
+import { Fw } from "@/util/fw";
+import { User } from "@/util/prisma-types";
 import Link from "next/link";
 import {
   HiGlobe,
@@ -7,11 +12,6 @@ import {
   HiViewList,
 } from "react-icons/hi";
 import { IconType } from "react-icons/lib";
-import Framework from "@/components/Framework";
-import IntegratedTabs from "@/components/Framework/IntegratedTabs";
-import WrenchScrewdriver from "@/icons/WrenchScrewdriver";
-import { Fw } from "@/util/fw";
-import { User } from "@/util/prisma-types";
 
 type DeveloperLayoutProps = {
   user: User;

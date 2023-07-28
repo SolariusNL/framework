@@ -1,6 +1,6 @@
-import { HiOutlineShieldCheck } from "react-icons/hi";
 import { User } from "@/util/prisma-types";
-import Badge from "./Badge";
+import { HiOutlineShieldCheck } from "react-icons/hi";
+import Badge from "./badge";
 
 const AdminBadge = ({ user }: { user: User }) => {
   return (

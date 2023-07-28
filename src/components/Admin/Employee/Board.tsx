@@ -1,5 +1,5 @@
-import Descriptive from "@/components/Descriptive";
-import RichText from "@/components/RichText";
+import Descriptive from "@/components/descriptive";
+import RichText from "@/components/rich-text";
 import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
 import getMediaUrl from "@/util/get-media";
 import { nonCurrentUserSelect } from "@/util/prisma-types";

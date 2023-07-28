@@ -1,5 +1,5 @@
-import CheckboxCard from "@/components/CheckboxCard";
-import Framework from "@/components/Framework";
+import CheckboxCard from "@/components/checkbox-card";
+import Framework from "@/components/framework";
 import authorizedRoute from "@/util/auth";
 import getStripe from "@/util/get-stripe";
 import { User } from "@/util/prisma-types";

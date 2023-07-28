@@ -1,6 +1,6 @@
-import Descriptive from "@/components/Descriptive";
-import ModernEmptyState from "@/components/ModernEmptyState";
-import SideBySide from "@/components/Settings/SideBySide";
+import Descriptive from "@/components/descriptive";
+import ModernEmptyState from "@/components/modern-empty-state";
+import SideBySide from "@/components/settings/side-by-side";
 import { GenericFastFlag } from "@/pages/api/flags/[[...params]]";
 import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
 import useAuthorizedUserStore from "@/stores/useAuthorizedUser";

@@ -1,3 +1,19 @@
+import StudioPromptBackground from "@/assets/subtlebackground.png";
+import Framework from "@/components/framework";
+import Advertisements from "@/components/invent/advertisements";
+import GameUpdates from "@/components/invent/game-updates";
+import GamePasses from "@/components/invent/gamepasses";
+import Games from "@/components/invent/games";
+import Nucleus from "@/components/invent/nucleus";
+import Secrets from "@/components/invent/secrets";
+import Shirts from "@/components/invent/shirts";
+import Snippets from "@/components/invent/snippets";
+import Sounds from "@/components/invent/sounds";
+import TabNav from "@/components/tab-nav";
+import authorizedRoute from "@/util/auth";
+import useMediaQuery from "@/util/media-query";
+import prisma from "@/util/prisma";
+import { User, gameSelect } from "@/util/prisma-types";
 import { Skeleton } from "@mantine/core";
 import { useLocalStorage } from "@mantine/hooks";
 import { GetServerSidePropsContext, NextPage } from "next";
@@ -19,22 +35,6 @@ import {
   HiViewGrid,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
-import StudioPromptBackground from "@/assets/subtlebackground.png";
-import Framework from "@/components/Framework";
-import Advertisements from "@/components/Invent/Advertisements";
-import GamePasses from "@/components/Invent/GamePasses";
-import GameUpdates from "@/components/Invent/GameUpdates";
-import Games from "@/components/Invent/Games";
-import Nucleus from "@/components/Invent/Nucleus";
-import Secrets from "@/components/Invent/Secrets";
-import Shirts from "@/components/Invent/Shirts";
-import Snippets from "@/components/Invent/Snippets";
-import Sounds from "@/components/Invent/Sounds";
-import TabNav from "@/components/TabNav";
-import authorizedRoute from "@/util/auth";
-import useMediaQuery from "@/util/media-query";
-import prisma from "@/util/prisma";
-import { User, gameSelect } from "@/util/prisma-types";
 
 interface InventProps {
   user: User;

@@ -1,4 +1,4 @@
-import InventTab from "@/components/Invent/InventTab";
+import InventTab from "@/components/invent/invent";
 import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
 import { User } from "@/util/prisma-types";
 import {

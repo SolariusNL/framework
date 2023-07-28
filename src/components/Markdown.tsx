@@ -1,6 +1,6 @@
-import ModernEmptyState from "@/components/ModernEmptyState";
-import RenderMarkdown from "@/components/RenderMarkdown";
-import ShadedCard from "@/components/ShadedCard";
+import ModernEmptyState from "@/components/modern-empty-state";
+import RenderMarkdown from "@/components/render-markdown";
+import ShadedCard from "@/components/shaded-card";
 import { ActionIcon, Skeleton, Tabs, Textarea, Tooltip } from "@mantine/core";
 import dynamic from "next/dynamic";
 import { useEffect, useRef } from "react";

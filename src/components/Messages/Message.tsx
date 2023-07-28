@@ -1,7 +1,7 @@
-import ReportUser from "@/components/ReportUser";
-import ShadedCard from "@/components/ShadedCard";
-import Stateful from "@/components/Stateful";
-import UserContext from "@/components/UserContext";
+import ReportUser from "@/components/report-user";
+import ShadedCard from "@/components/shaded-card";
+import Stateful from "@/components/stateful";
+import UserContext from "@/components/user-context";
 import { useFrameworkUser } from "@/contexts/FrameworkUser";
 import getMediaUrl from "@/util/get-media";
 import { Message } from "@/util/prisma-types";

@@ -1,3 +1,8 @@
+import Framework from "@/components/framework";
+import { Section } from "@/components/home/friends";
+import ShadedCard from "@/components/shaded-card";
+import authorizedRoute from "@/util/auth";
+import { User } from "@/util/prisma-types";
 import {
   Alert,
   Anchor,
@@ -21,11 +26,6 @@ import {
   HiLink,
   HiXCircle,
 } from "react-icons/hi";
-import Framework from "@/components/Framework";
-import { Section } from "@/components/Home/FriendsWidget";
-import ShadedCard from "@/components/ShadedCard";
-import authorizedRoute from "@/util/auth";
-import { User } from "@/util/prisma-types";
 import { BLACK } from "./teams/t/[slug]/issue/create";
 
 type DMCAProps = { user: User };

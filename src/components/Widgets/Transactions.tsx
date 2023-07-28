@@ -1,5 +1,5 @@
-import ModernEmptyState from "@/components/ModernEmptyState";
-import ShadedCard from "@/components/ShadedCard";
+import ModernEmptyState from "@/components/modern-empty-state";
+import ShadedCard from "@/components/shaded-card";
 import { TransactionWithUser } from "@/pages/tickets";
 import getMediaUrl from "@/util/get-media";
 import { User } from "@/util/prisma-types";

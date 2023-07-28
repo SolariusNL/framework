@@ -1,35 +1,19 @@
-import Descriptive from "@/components/Descriptive";
-import ElectronTitlebar from "@/components/ElectronTitlebar";
-import Rating from "@/components/Rating";
-import Stateful from "@/components/Stateful";
+import GlobalStyles from "@/components/global-styles";
+import MdxComponents from "@/components/mdx-components";
 import { FrameworkUserProvider } from "@/contexts/FrameworkUser";
 import SocketProvider from "@/contexts/SocketContextProvider";
 import { UserInformationWrapper } from "@/contexts/UserInformationDialog";
 import { store } from "@/reducers/store";
 import useAmoled from "@/stores/useAmoled";
 import useFastFlags, { fetchFlags } from "@/stores/useFastFlags";
-import useFeedback from "@/stores/useFeedback";
-import { Flow, Flows } from "@/stores/useFlow";
 import "@/styles/fonts.css";
 import "@/styles/framework.css";
 import "@/styles/tw.css";
 import components from "@/util/components";
 import {
-  Anchor,
-  AnchorProps,
-  Button,
   ColorScheme,
   ColorSchemeProvider,
-  Dialog,
-  Divider,
-  Global,
-  Group,
   MantineProvider,
-  Modal,
-  PasswordInput,
-  Text,
-  TextInput,
-  Textarea,
 } from "@mantine/core";
 import { useLocalStorage } from "@mantine/hooks";
 import { ModalsProvider } from "@mantine/modals";
@@ -40,18 +24,44 @@ import {
 import { MDXProvider } from "@mdx-js/react";
 import { getCookie, setCookie } from "cookies-next";
 import "flags.config";
-import isElectron from "is-electron";
 import { GetServerSidePropsContext } from "next";
 import { DefaultSeo } from "next-seo";
 import type { AppProps } from "next/app";
+import dynamic from "next/dynamic";
 import Head from "next/head";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import NextNProgress from "nextjs-progressbar";
 import { FC, useEffect, useState } from "react";
-import { HiArrowRight, HiCheckCircle, HiExclamation } from "react-icons/hi";
-import ReactNoSSR from "react-no-ssr";
+import { HiExclamation } from "react-icons/hi";
 import { Provider } from "react-redux";
+
+const WarningModal = dynamic(() => import("@/components/warning-modal"), {
+  ssr: false,
+});
+const SurveyModal = dynamic(() => import("@/components/survey-modal"), {
+  ssr: false,
+});
+const CookieAcknowledgementDialog = dynamic(
+  () => import("@/components/cookie-acknowledgement"),
+  {
+    ssr: false,
+  }
+);
+const ResetEmailModal = dynamic(
+  () => import("@/components/reset-email-modal"),
+  {
+    ssr: false,
+  }
+);
+const ResetPasswordModal = dynamic(
+  () => import("@/components/reset-password-modal"),
+  {
+    ssr: false,
+  }
+);
+const ActiveFlow = dynamic(() => import("@/components/active-flow"), {
+  ssr: false,
+});
 
 type StyleProps = {
   colorScheme: ColorScheme;
@@ -64,46 +74,20 @@ const Framework: FC<FrameworkProps> & {
   getInitialProps: ({ ctx }: { ctx: GetServerSidePropsContext }) => StyleProps;
 } = (props) => {
   const { Component, pageProps } = props;
+  const { setEnabled } = useAmoled();
+  const { flags } = useFastFlags();
+
   const [colorScheme, setColorScheme] = useState<ColorScheme>(
     props.colorScheme
   );
   const [highContrast] = useState<boolean>(props.highContrast);
   const [amoled] = useState<boolean>(props.amoled);
-  const [loading, setLoading] = useState(false);
-  const { opened: ratingModal, setOpened: setRatingModal } = useFeedback();
-  const [_seen, setSeen] = useState(false);
-  const { setEnabled } = useAmoled();
+  const [seenUnknownHost, setSeenUnknownHost] = useLocalStorage<boolean>({
+    key: "@fw/seen-unknown-host",
+    defaultValue: false,
+  });
 
-  const submitRating = async (stars: number, feedback: string = "") => {
-    setLoading(true);
-    await fetch("/api/users/@me/survey/" + stars, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: String(getCookie(".frameworksession")),
-      },
-      body: JSON.stringify({ feedback }),
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.success) {
-          if (stars !== 0) {
-            showNotification({
-              title: "Thank you",
-              message:
-                "Thank you for your feedback, we sincerely value your opinion and will use it to improve our platform.",
-              icon: <HiCheckCircle />,
-            });
-          }
-          setSeen(true);
-        } else {
-          setSeen(false);
-        }
-
-        setRatingModal(false);
-        setLoading(false);
-      });
-  };
+  const router = useRouter();
 
   const toggleColorScheme = (value?: ColorScheme) => {
     const nextColorScheme =
@@ -113,32 +97,16 @@ const Framework: FC<FrameworkProps> & {
       maxAge: 60 * 60 * 24 * 30,
     });
   };
-
-  const [cookieConsent, setCookieConsent] = useLocalStorage<{
-    accepted: boolean;
-    rejected: boolean;
-  }>({
-    key: "soodam-cookie-consent",
-    defaultValue: { accepted: false, rejected: false },
-  });
-  const [seenUnknownHost, setSeenUnknownHost] = useLocalStorage<boolean>({
-    key: "@fw/seen-unknown-host",
-    defaultValue: false,
-  });
-
-  const router = useRouter();
-  const { flags } = useFastFlags();
+  async function initGateway() {
+    await fetch("/api/gateway/initialize", {
+      method: "GET",
+      headers: {
+        Authorization: String(getCookie(".frameworksession")),
+      },
+    });
+  }
 
   useEffect(() => {
-    if (router.query.status == "success") {
-      showNotification({
-        title: "Success",
-        message: "Your request was successful.",
-        icon: <HiCheckCircle size={18} />,
-        color: "green",
-      });
-    }
-
     router.events.on("routeChangeComplete", () => {
       fetchFlags();
     });
@@ -148,9 +116,7 @@ const Framework: FC<FrameworkProps> & {
       !seenUnknownHost &&
       window.location.host !== process.env.NEXT_PUBLIC_HOSTNAME
     ) {
-      if (process.env.NEXT_PUBLIC_ENABLE_HOSTNAME_CHECK !== "true") {
-        return;
-      }
+      if (process.env.NEXT_PUBLIC_ENABLE_HOSTNAME_CHECK !== "true") return;
 
       showNotification({
         title: "Warning",
@@ -165,13 +131,16 @@ const Framework: FC<FrameworkProps> & {
       setSeenUnknownHost(true);
     }
 
+    if (pageProps && pageProps.user && typeof window !== "undefined") {
+      initGateway();
+    }
+
     return () => {
       router.events.off("routeChangeComplete", () => {
         fetchFlags();
       });
     };
   }, []);
-
   useEffect(() => {
     if (flags.maintenance) {
       if (
@@ -182,22 +151,6 @@ const Framework: FC<FrameworkProps> & {
       }
     }
   }, [flags.maintenance]);
-
-  async function initGateway() {
-    await fetch("/api/gateway/initialize", {
-      method: "GET",
-      headers: {
-        Authorization: String(getCookie(".frameworksession")),
-      },
-    });
-  }
-
-  useEffect(() => {
-    if (pageProps && pageProps.user && typeof window !== "undefined") {
-      initGateway();
-    }
-  }, []);
-
   useEffect(() => {
     if (amoled) {
       setEnabled(true);
@@ -215,7 +168,6 @@ const Framework: FC<FrameworkProps> & {
           content="width=device-width, initial-scale=1, maximum-scale=1"
         />
       </Head>
-
       <DefaultSeo
         openGraph={{
           type: "website",
@@ -266,34 +218,12 @@ const Framework: FC<FrameworkProps> & {
               components: components(),
             }}
           >
-            <Global
-              styles={() => ({
-                ...(highContrast && {
-                  "*": {
-                    filter: "invert(1) !important",
-                  },
-                }),
-                ...(amoled && {
-                  "body, html": {
-                    backgroundColor: "#000",
-                  },
-                }),
-              })}
-            />
+            <GlobalStyles amoled={amoled} highContrast={highContrast} />
             <Provider store={store}>
               <ModalsProvider>
                 <UserInformationWrapper>
                   <SocketProvider>
-                    <MDXProvider
-                      components={{
-                        a: (props) => (
-                          <Link href={String(props.href)}>
-                            <Anchor {...(props as AnchorProps)} />
-                          </Link>
-                        ),
-                        hr: () => <Divider />,
-                      }}
-                    >
+                    <MDXProvider components={MdxComponents}>
                       <NotificationsProvider
                         position="top-center"
                         zIndex={999999}
@@ -302,305 +232,13 @@ const Framework: FC<FrameworkProps> & {
                           value={pageProps && pageProps.user && pageProps.user}
                         >
                           <NextNProgress />
-                          <ReactNoSSR>
-                            {isElectron() && <ElectronTitlebar />}
-                          </ReactNoSSR>
+                          <WarningModal />
+                          <SurveyModal />
+                          <CookieAcknowledgementDialog />
+                          <ResetEmailModal />
+                          <ResetPasswordModal />
                           <Component {...pageProps} key={router.asPath} />
-                          <ReactNoSSR>
-                            <Modal
-                              withCloseButton={false}
-                              opened={
-                                pageProps != undefined &&
-                                pageProps.user &&
-                                pageProps.user.warning &&
-                                !pageProps.user.warningViewed
-                              }
-                              onClose={() => null}
-                            >
-                              <Text mb={16}>
-                                You have received a warning from the staff team:{" "}
-                                <strong>
-                                  {(pageProps != undefined &&
-                                    pageProps.user &&
-                                    pageProps.user.warning) ||
-                                    "No warning reason provided"}
-                                </strong>
-                              </Text>
-
-                              <Text mb={24}>
-                                If you continue to violate our Community
-                                Guidelines, you may be permanently banned from
-                                Framework. Please, go through our policies again
-                                and make sure you understand them. We would hate
-                                to see you go!
-                              </Text>
-
-                              <Button
-                                fullWidth
-                                onClick={() => {
-                                  fetch("/api/users/@me/warning/acknowledge", {
-                                    method: "POST",
-                                    headers: {
-                                      "Content-Type": "application/json",
-                                      Authorization: String(
-                                        getCookie(".frameworksession")
-                                      ),
-                                    },
-                                  }).then(() => router.reload());
-                                }}
-                              >
-                                Acknowledge
-                              </Button>
-                            </Modal>
-                            <Modal
-                              title="Experience survey"
-                              opened={ratingModal}
-                              onClose={() => setRatingModal(false)}
-                            >
-                              <Text size="sm" color="dimmed" mb="md">
-                                We would love to hear your feedback about
-                                Framework. Please, take a minute to fill out
-                                this survey, and be brutally honest with your
-                                answers. Your feedback will help us improve
-                                Framework.
-                              </Text>
-                              <Stateful
-                                initialState={{
-                                  rating: 0,
-                                  feedback: "",
-                                }}
-                              >
-                                {(data, setState) => (
-                                  <>
-                                    <Descriptive
-                                      required
-                                      title="Star rating"
-                                      description="How would you rate your experience with Framework?"
-                                    >
-                                      <Rating
-                                        value={data.rating}
-                                        setValue={(rating) =>
-                                          setState({
-                                            ...data,
-                                            rating,
-                                          })
-                                        }
-                                      />
-                                    </Descriptive>
-                                    <Textarea
-                                      label="Feedback"
-                                      placeholder="What do you like about Framework? What could we improve?"
-                                      description="Your feedback is completely anonymous and will help us improve Framework."
-                                      mt="md"
-                                      minRows={4}
-                                      value={data.feedback}
-                                      onChange={(event) =>
-                                        setState({
-                                          ...data,
-                                          feedback: event.currentTarget.value,
-                                        })
-                                      }
-                                    />
-                                    <div className="flex justify-end mt-6">
-                                      <Button
-                                        leftIcon={<HiArrowRight />}
-                                        onClick={() => {
-                                          submitRating(
-                                            data.rating,
-                                            data.feedback
-                                          );
-                                          setRatingModal(false);
-                                        }}
-                                        loading={loading}
-                                        disabled={!data.rating}
-                                      >
-                                        Submit
-                                      </Button>
-                                    </div>
-                                  </>
-                                )}
-                              </Stateful>
-                            </Modal>
-
-                            <Dialog
-                              opened={
-                                !cookieConsent.accepted &&
-                                !cookieConsent.rejected
-                              }
-                            >
-                              <Text size="sm" mb={12}>
-                                Framework and other Solarius services use
-                                cookies to help us provide you the best
-                                experience. By continuing to use our services,
-                                you agree to our use of cookies. Read our{" "}
-                                <Link href="/privacy" passHref>
-                                  <Anchor>Privacy Policy</Anchor>
-                                </Link>{" "}
-                                for more information regarding your privacy and
-                                how we use cookies.
-                              </Text>
-
-                              <Group grow>
-                                <Button
-                                  onClick={() =>
-                                    setCookieConsent({
-                                      accepted: true,
-                                      rejected: false,
-                                    })
-                                  }
-                                >
-                                  I agree
-                                </Button>
-
-                                <Button
-                                  onClick={() =>
-                                    setCookieConsent({
-                                      accepted: false,
-                                      rejected: true,
-                                    })
-                                  }
-                                >
-                                  I do not agree
-                                </Button>
-                              </Group>
-                            </Dialog>
-
-                            <Modal
-                              title="Reset email"
-                              opened={
-                                pageProps != undefined &&
-                                pageProps.user &&
-                                pageProps.user.emailResetRequired
-                              }
-                              onClose={() => null}
-                              withCloseButton={false}
-                            >
-                              <Text mb={16}>
-                                You are required to reset your email address.
-                                Please enter a new email address below.
-                              </Text>
-                              <Stateful>
-                                {(email, setEmail) => (
-                                  <>
-                                    <TextInput
-                                      type="email"
-                                      label="Email"
-                                      description="Your new email address"
-                                      value={email}
-                                      onChange={(e) =>
-                                        setEmail(e.currentTarget.value)
-                                      }
-                                    />
-                                    <Button
-                                      mt={14}
-                                      leftIcon={<HiCheckCircle />}
-                                      disabled={
-                                        !email ||
-                                        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
-                                          email
-                                        ) ||
-                                        email === pageProps.user.email
-                                      }
-                                      onClick={async () => {
-                                        await fetch(
-                                          "/api/users/@me/changeemail",
-                                          {
-                                            method: "POST",
-                                            headers: {
-                                              "Content-Type":
-                                                "application/json",
-                                              Authorization: String(
-                                                getCookie(".frameworksession")
-                                              ),
-                                            },
-                                            body: JSON.stringify({
-                                              newEmail: email,
-                                            }),
-                                          }
-                                        ).finally(() => router.reload());
-                                      }}
-                                    >
-                                      Reset email
-                                    </Button>
-                                  </>
-                                )}
-                              </Stateful>
-                            </Modal>
-
-                            <Modal
-                              title="Reset password"
-                              opened={
-                                pageProps != undefined &&
-                                pageProps.user &&
-                                pageProps.user.passwordResetRequired
-                              }
-                              onClose={() => null}
-                              withCloseButton={false}
-                            >
-                              <Text mb={16}>
-                                You are required to reset your password. Please
-                                enter a new password below.
-                              </Text>
-                              <Stateful>
-                                {(password, setPassword) => (
-                                  <>
-                                    <PasswordInput
-                                      label="Password"
-                                      description="Your new password"
-                                      value={password}
-                                      onChange={(e) =>
-                                        setPassword(e.currentTarget.value)
-                                      }
-                                    />
-                                    <Button
-                                      mt={14}
-                                      leftIcon={<HiCheckCircle />}
-                                      disabled={
-                                        !password || password.length < 8
-                                      }
-                                      onClick={async () => {
-                                        await fetch(
-                                          "/api/users/@me/changepassword",
-                                          {
-                                            method: "POST",
-                                            headers: {
-                                              "Content-Type":
-                                                "application/json",
-                                              Authorization: String(
-                                                getCookie(".frameworksession")
-                                              ),
-                                            },
-                                            body: JSON.stringify({
-                                              newPassword: password,
-                                            }),
-                                          }
-                                        ).finally(() => router.reload());
-                                      }}
-                                    >
-                                      Reset password
-                                    </Button>
-                                  </>
-                                )}
-                              </Stateful>
-                            </Modal>
-                          </ReactNoSSR>
-                          {router.query.flow && (
-                            <Modal
-                              title={Flows[router.query.flow as Flow].title}
-                              opened={!!router.query.flow}
-                              onClose={() => {
-                                router.push(
-                                  router.pathname,
-                                  router.asPath.split("?")[0],
-                                  {
-                                    shallow: true,
-                                  }
-                                );
-                              }}
-                            >
-                              {Flows[router.query.flow as Flow].component}
-                            </Modal>
-                          )}
+                          {router.query.flow && <ActiveFlow />}
                         </FrameworkUserProvider>
                       </NotificationsProvider>
                     </MDXProvider>

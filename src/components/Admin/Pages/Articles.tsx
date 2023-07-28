@@ -1,6 +1,6 @@
-import RichText from "@/components/RichText";
-import ShadedButton from "@/components/ShadedButton";
-import Stateful from "@/components/Stateful";
+import RichText from "@/components/rich-text";
+import ShadedButton from "@/components/shaded-button";
+import Stateful from "@/components/stateful";
 import { useFrameworkUser } from "@/contexts/FrameworkUser";
 import { Article } from "@/util/prisma-types";
 import {

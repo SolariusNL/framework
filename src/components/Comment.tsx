@@ -1,6 +1,6 @@
-import ReportUser from "@/components/ReportUser";
-import ShadedCard from "@/components/ShadedCard";
-import UserContext from "@/components/UserContext";
+import ReportUser from "@/components/report-user";
+import ShadedCard from "@/components/shaded-card";
+import UserContext from "@/components/user-context";
 import { useFrameworkUser } from "@/contexts/FrameworkUser";
 import getMediaUrl from "@/util/get-media";
 import { NonUser } from "@/util/prisma-types";

@@ -1,8 +1,8 @@
-import { GetServerSidePropsContext } from "next";
-import Framework from "@/components/Framework";
-import TransactionsWidget from "@/components/Widgets/Transactions";
+import Framework from "@/components/framework";
+import TransactionsWidget from "@/components/widgets/transactions";
 import authorizedRoute from "@/util/auth";
 import { User } from "@/util/prisma-types";
+import { GetServerSidePropsContext } from "next";
 
 interface TransactionProps {
   user: User;

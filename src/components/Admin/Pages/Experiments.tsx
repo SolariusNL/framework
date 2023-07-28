@@ -1,6 +1,6 @@
-import Markdown from "@/components/Markdown";
-import SideBySide from "@/components/Settings/SideBySide";
-import ShadedCard from "@/components/ShadedCard";
+import Markdown from "@/components/markdown";
+import SideBySide from "@/components/settings/side-by-side";
+import ShadedCard from "@/components/shaded-card";
 import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
 import { Stack, TextInput, Title, TitleOrder } from "@mantine/core";
 import { useState } from "react";

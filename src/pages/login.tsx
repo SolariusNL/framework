@@ -1,4 +1,4 @@
-import PinInput from "@/components/PinInput";
+import PinInput from "@/components/pin-input";
 import OuterUI from "@/layouts/OuterUI";
 import authorizedRoute from "@/util/auth";
 import { setCookie } from "@/util/cookies";

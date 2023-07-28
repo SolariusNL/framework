@@ -1,7 +1,7 @@
-import InventTab from "@/components/Invent/InventTab";
-import ModernEmptyState from "@/components/ModernEmptyState";
-import ShadedButton from "@/components/ShadedButton";
-import ShadedCard from "@/components/ShadedCard";
+import InventTab from "@/components/invent/invent";
+import ModernEmptyState from "@/components/modern-empty-state";
+import ShadedButton from "@/components/shaded-button";
+import ShadedCard from "@/components/shaded-card";
 import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
 import { getCookie } from "@/util/cookies";
 import { User } from "@/util/prisma-types";
