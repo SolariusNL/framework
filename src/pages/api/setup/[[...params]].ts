@@ -1,6 +1,8 @@
 import IResponseBase from "@/types/api/IResponseBase";
+import { hashPass } from "@/util/hash/password";
 import prisma from "@/util/prisma";
-import { PrismaClient } from "@prisma/client";
+import { AdminPermission, PrismaClient } from "@prisma/client";
+import { setEnvVar } from "@soodam.re/env-utils";
 import {
   Body,
   Get,
@@ -9,6 +11,8 @@ import {
   UnauthorizedException,
   createHandler,
 } from "@storyofams/next-api-decorators";
+import { spawn } from "child_process";
+import { copyFileSync, existsSync } from "fs";
 import { z } from "zod";
 
 const checkState = async () => {
@@ -32,6 +36,11 @@ const schema = z.object({
   connectionUrl: z.string().optional(),
   driver: z.union([z.literal("mysql"), z.literal("postgresql")]).optional(),
 });
+const adminSchema = z.object({
+  username: z.string(),
+  password: z.string(),
+  email: z.string().email(),
+});
 
 const connectToDatabase = async (
   url: string,
@@ -48,20 +57,6 @@ const connectToDatabase = async (
   try {
     await client.$connect();
     await client.$disconnect();
-    // save last valid connection url
-    /**type: AppConfigUnionType.OBJECT,
-    key: "setupData",
-    value: JSON.stringify({
-      1: {
-        dbType: "", // manual | string
-        dbConnector: "", // postgres | mysql
-        dbHost: "",
-        dbPort: 5432,
-        dbUser: "",
-        dbPassword: "",
-        dbName: "",
-      },
-    }), */
     const prevData = await prisma.appConfig.findUnique({
       where: {
         id: "setup-data",
@@ -83,6 +78,7 @@ const connectToDatabase = async (
             dbUser: data.username,
             dbPassword: data.password,
             dbName: data.database,
+            connectionUrl: data.connectionUrl,
           },
         }),
       },
@@ -94,6 +90,125 @@ const connectToDatabase = async (
 };
 
 class SetupRouter {
+  private async incrementStage() {
+    const stage = await prisma.appConfig.findUnique({
+      where: {
+        id: "setup-state",
+      },
+    });
+
+    await prisma.appConfig.update({
+      where: {
+        id: "setup-state",
+      },
+      data: {
+        value: `${parseInt(stage?.value ?? "0") + 1}`,
+      },
+    });
+  }
+
+  private async decrementStage() {
+    const stage = await prisma.appConfig.findUnique({
+      where: {
+        id: "setup-state",
+      },
+    });
+
+    await prisma.appConfig.update({
+      where: {
+        id: "setup-state",
+      },
+      data: {
+        value: `${parseInt(stage?.value ?? "0") - 1}`,
+      },
+    });
+  }
+
+  private async setupDatabase() {
+    const prevData = await prisma.appConfig.findUnique({
+      where: {
+        id: "setup-data",
+      },
+    });
+    const parsedData = JSON.parse(prevData?.value ?? "{}")[1];
+    if (!parsedData) {
+      await this.decrementStage();
+    }
+    const path = process.cwd() + "/.env";
+    const examplePath = process.cwd() + "/.env.example";
+    if (!existsSync(path)) {
+      copyFileSync(examplePath, path);
+    }
+    setEnvVar(
+      process.cwd() + "/.env",
+      "DATABASE_URL",
+      `"${
+        parsedData.dbType === "string"
+          ? parsedData.connectionUrl
+          : `postgresql://"${parsedData.dbUser}:${parsedData.dbPassword}@${parsedData.dbHost}:${parsedData.dbPort}/${parsedData.dbName}"`
+      }"`
+    );
+    const proc = spawn("yarn", ["run", "migrate"], {
+      cwd: process.cwd(),
+      env: process.env,
+    });
+    proc.stdout.on("data", (data) => {
+      console.log(data.toString());
+    });
+    proc.stderr.on("data", (data) => {
+      console.error(data.toString());
+    });
+    proc.on("close", async (code) => {
+      if (code !== 0) {
+        await this.decrementStage();
+      }
+      await this.incrementStage();
+    });
+  }
+
+  private async setupAdmin() {
+    const prevData = await prisma.appConfig.findUnique({
+      where: {
+        id: "setup-data",
+      },
+    });
+    const parsedData = JSON.parse(prevData?.value ?? "{}")[2];
+    if (!parsedData) {
+      await this.decrementStage();
+    }
+    await prisma.user.create({
+      data: {
+        username: parsedData.username,
+        password: await hashPass(parsedData.password),
+        email: parsedData.email,
+        role: "ADMIN",
+        adminPermissions: [
+          AdminPermission.CHANGE_INSTANCE_SETTINGS,
+          AdminPermission.EDIT_FAST_FLAGS,
+          AdminPermission.EDIT_PERMISSIONS,
+          AdminPermission.GENERATE_GIFTS,
+          AdminPermission.IMPERSONATE_USERS,
+          AdminPermission.PUNISH_USERS,
+          AdminPermission.RUN_ACTIONS,
+          AdminPermission.WRITE_ARTICLE,
+        ],
+        avatarUri: "",
+      },
+    });
+    await this.incrementStage();
+  }
+
+  private async finishSetup() {
+    await prisma.appConfig.update({
+      where: {
+        id: "did-setup",
+      },
+      data: {
+        value: "true",
+      },
+    });
+  }
+
   @Get("/step")
   public async getStep() {
     await checkState();
@@ -103,6 +218,11 @@ class SetupRouter {
         id: "setup-state",
       },
     });
+
+    const step = parseInt(stage?.value ?? "0");
+    if (step === 2) await this.setupDatabase();
+    if (step === 4) await this.setupAdmin();
+    if (step >= 5) await this.finishSetup();
 
     return <IResponseBase>{
       success: true,
@@ -130,6 +250,11 @@ class SetupRouter {
         value: `${parseInt(stage?.value ?? "0") + 1}`,
       },
     });
+
+    const step = parseInt(stage?.value ?? "0");
+    if (step === 2) await this.setupDatabase();
+    if (step === 4) await this.setupAdmin();
+    if (step >= 5) await this.finishSetup();
 
     return <IResponseBase>{
       success: true,
@@ -162,6 +287,8 @@ class SetupRouter {
 
   @Post("/db")
   public async setupDb(@Body() body: unknown) {
+    await checkState();
+
     const data = schema.parse(body);
     let connectionUrl: string;
 
@@ -174,6 +301,38 @@ class SetupRouter {
     }
 
     return connectToDatabase(connectionUrl, data);
+  }
+
+  @Post("/admin")
+  public async setupAdminAccount(@Body() body: unknown) {
+    await checkState();
+    const data = adminSchema.parse(body);
+
+    const prevData = await prisma.appConfig.findUnique({
+      where: {
+        id: "setup-data",
+      },
+    });
+
+    await prisma.appConfig.update({
+      where: {
+        id: "setup-data",
+      },
+      data: {
+        value: JSON.stringify({
+          ...JSON.parse(prevData?.value ?? "{}"),
+          2: {
+            adminUsername: data.username,
+            adminPassword: data.password,
+            adminEmail: data.email,
+          },
+        }),
+      },
+    });
+
+    return <IResponseBase>{
+      success: true,
+    };
   }
 }
 
