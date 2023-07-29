@@ -51,7 +51,7 @@ const appConfig = [
   {
     type: AppConfigUnionType.BOOLEAN,
     key: "didSetup",
-    value: "false",
+    value: "true",
     id: "did-setup",
   },
   {
