@@ -1,5 +1,7 @@
 import InventTab from "@/components/invent/invent";
 import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
+import IResponseBase from "@/types/api/IResponseBase";
+import fetchJson from "@/util/fetch";
 import { User } from "@/util/prisma-types";
 import {
   Button,
@@ -12,6 +14,8 @@ import {
   useMantineColorScheme,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { showNotification } from "@mantine/notifications";
+import { getCookie } from "cookies-next";
 import { useEffect, useRef, useState } from "react";
 import {
   HiCheck,
@@ -20,6 +24,7 @@ import {
   HiStop,
   HiTag,
   HiUpload,
+  HiXCircle,
 } from "react-icons/hi";
 
 type SoundsProps = {
@@ -41,10 +46,18 @@ const Sounds = ({ user }: SoundsProps) => {
       audio: null,
     },
     validate: {
-      name: (value) => value.trim().length > 0 && value.trim().length < 50,
-      description: (value) =>
-        value.trim().length > 0 && value.trim().length < 500,
-      audio: (value: File) => value !== null,
+      name: (value) => {
+        if (!value) return "Name is required.";
+        if (value.length > 32) return "Name must be less than 32 characters.";
+      },
+      description: (value) => {
+        if (!value) return "Description is required.";
+        if (value.length > 256)
+          return "Description must be less than 256 characters.";
+      },
+      audio: (value: File) => {
+        if (!value) return "Audio file is required.";
+      },
     },
   });
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -71,8 +84,49 @@ const Sounds = ({ user }: SoundsProps) => {
         in your own games, or to distribute to other users.
       </Text>
       <form
-        onSubmit={form.onSubmit((values) => {
-          console.log(values);
+        onSubmit={form.onSubmit(async (values) => {
+          await fetchJson<
+            IResponseBase<{
+              sound: {
+                id: string;
+              };
+            }>
+          >("/api/sounds/create", {
+            method: "POST",
+            body: {
+              name: values.name,
+              description: values.description,
+            },
+            auth: true,
+          })
+            .then(async (res) => {
+              const formData = new FormData();
+              formData.append("sound", values.audio!);
+
+              await fetch(`/api/media/upload/sound/${res.data?.sound.id}`, {
+                method: "POST",
+                headers: {
+                  authorization: String(getCookie(".frameworksession")),
+                },
+                body: formData,
+              }).then(() => {
+                showNotification({
+                  title: "Sound created",
+                  message: "Your sound has been created successfully.",
+                  icon: <HiCheck />,
+                });
+                setOpened(false);
+                form.reset();
+              });
+            })
+            .catch((err) => {
+              showNotification({
+                title: "Failed to create sound",
+                message: err.message || "An unknown error occurred.",
+                color: "red",
+                icon: <HiXCircle />,
+              });
+            });
         })}
       >
         <Stack spacing="sm">
@@ -113,6 +167,7 @@ const Sounds = ({ user }: SoundsProps) => {
             required
             {...form.getInputProps("audio")}
           />
+          {JSON.stringify(form)}
           <div className="flex justify-end gap-2">
             <Button
               variant="default"
