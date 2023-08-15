@@ -1,3 +1,4 @@
+import { NonUser } from "@/util/prisma-types";
 import { MANTINE_COLORS } from "@mantine/core";
 
 export type Primitive = string | number | bigint | boolean | null | undefined;
@@ -57,4 +58,28 @@ export const userPreferenceValidators: Partial<
   "@chat/my-color": (value) =>
     typeof value === "string" && MANTINE_COLORS.includes(value),
   "@app/secret-gift": (value) => typeof value === "boolean" && value === true,
+};
+
+export type PascalToCamel<S extends string> =
+  S extends `${infer First}${infer Rest}`
+    ? `${Lowercase<First>}${Rest}`
+    : Lowercase<S>;
+
+export type AssetFrontend = {
+  name: string;
+  createdAt: string;
+  description: string;
+  price: number;
+  priceBits: number;
+  previewUri: string;
+  onSale: boolean;
+  limited: boolean;
+  rows: Array<{ key: string; value: string }>;
+  author: NonUser;
+  _count: {
+    stargazers: number;
+  };
+  id: string;
+  stock: number;
+  quantitySold: number;
 };

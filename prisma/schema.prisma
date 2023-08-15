@@ -193,6 +193,8 @@ model User {
   newLogins                  NewLogin[]                  @relation("newLogins")
   joinedGiveaways            TeamGiveaway[]              @relation("teamGiveawayParticipants")
   ai                         Boolean                     @default(false)
+  createdCatalogItems        CatalogItem[]               @relation("catalogItemAuthor")
+  createdLimitedCatalogItems LimitedCatalogItem[]        @relation("limitedCatalogItemAuthor")
 }
 
 model Story {
@@ -994,16 +996,29 @@ model GameUpdateLog {
 }
 
 model Sound {
-  id          String   @id @default(uuid())
-  author      User     @relation("userSounds", fields: [authorId], references: [id])
+  id          String              @id @default(uuid())
+  author      User                @relation("userSounds", fields: [authorId], references: [id])
   authorId    Int
   name        String
   audioUri    String
-  stars       User[]   @relation("userStarredSounds")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now())
-  duration    Int      @default(0)
-  description String   @default("")
+  stargazers  User[]              @relation("userStarredSounds")
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @default(now())
+  duration    Int                 @default(0)
+  description String              @default("")
+  rows        SoundKeyValuePair[]
+  price       Int                 @default(0)
+  priceBits   Int                 @default(0)
+  onSale      Boolean             @default(false)
+  limited     Boolean             @default(false)
+}
+
+model SoundKeyValuePair {
+  id     String @id @default(uuid())
+  item   Sound  @relation(references: [id], fields: [itemId])
+  itemId String
+  key    String
+  value  String
 }
 
 enum GameUpdateLogType {
@@ -1276,18 +1291,30 @@ model DeveloperProfileSkill {
 }
 
 model CatalogItem {
-  id          String          @id @default(uuid())
-  createdAt   DateTime        @default(now())
-  name        String
-  description String
-  price       Int
-  priceBits   Int
-  type        CatalogItemType
-  previewUri  String
-  stargazers  User[]          @relation("starredCatalogItems")
-  onSale      Boolean         @default(true)
-  limited     Boolean         @default(false)
-  apartOf     Inventory[]     @relation("standardCatalogItems")
+  id           String                    @id @default(uuid())
+  createdAt    DateTime                  @default(now())
+  name         String
+  description  String
+  price        Int
+  priceBits    Int
+  type         CatalogItemType
+  previewUri   String
+  stargazers   User[]                    @relation("starredCatalogItems")
+  onSale       Boolean                   @default(true)
+  limited      Boolean                   @default(false)
+  apartOf      Inventory[]               @relation("standardCatalogItems")
+  rows         CatalogItemKeyValuePair[]
+  author       User                      @relation("catalogItemAuthor", fields: [authorId], references: [id])
+  authorId     Int                       @default(1)
+  quantitySold Int                       @default(0)
+}
+
+model CatalogItemKeyValuePair {
+  id     String      @id @default(uuid())
+  item   CatalogItem @relation(references: [id], fields: [itemId])
+  itemId String
+  key    String
+  value  String
 }
 
 enum CatalogItemType {
@@ -1299,22 +1326,34 @@ enum CatalogItemType {
 }
 
 model LimitedCatalogItem {
-  id                 String                      @id @default(uuid())
-  createdAt          DateTime                    @default(now())
+  id                 String                           @id @default(uuid())
+  createdAt          DateTime                         @default(now())
   name               String
   description        String
   price              Int
   type               CatalogItemType
   previewUri         String
-  stargazers         User[]                      @relation("starredLimitedCatalogItems")
-  limited            Boolean                     @default(true)
-  onSale             Boolean                     @default(true)
+  stargazers         User[]                           @relation("starredLimitedCatalogItems")
+  limited            Boolean                          @default(true)
+  onSale             Boolean                          @default(true)
   stock              Int
-  receipts           LimitedCatalogItemReceipt[] @relation("limitedCatalogItemReceipts")
+  receipts           LimitedCatalogItemReceipt[]      @relation("limitedCatalogItemReceipts")
   recentAveragePrice Int
   rapLastUpdated     DateTime
-  resells            LimitedCatalogItemResell[]  @relation("limitedCatalogItemResell")
-  items              LimitedInventoryItem[]      @relation("limitedInventoryItems")
+  resells            LimitedCatalogItemResell[]       @relation("limitedCatalogItemResell")
+  items              LimitedInventoryItem[]           @relation("limitedInventoryItems")
+  author             User                             @relation("limitedCatalogItemAuthor", fields: [authorId], references: [id])
+  authorId           Int                              @default(1)
+  rows               LimitedCatalogItemKeyValuePair[]
+  quantitySold       Int                              @default(0)
+}
+
+model LimitedCatalogItemKeyValuePair {
+  id     String             @id @default(uuid())
+  item   LimitedCatalogItem @relation(references: [id], fields: [itemId])
+  itemId String
+  key    String
+  value  String
 }
 
 model LimitedCatalogItemReceipt {

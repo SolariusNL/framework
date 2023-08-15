@@ -1,8 +1,8 @@
+import clsx from "@/util/clsx";
+import { Fw } from "@/util/fw";
 import { Sx, TypographyStylesProvider } from "@mantine/core";
 import { marked } from "marked";
 import sanitize from "sanitize-html";
-import clsx from "@/util/clsx";
-import { Fw } from "@/util/fw";
 
 export const parse = (markdown: string) => {
   return marked(markdown || "", {
@@ -108,7 +108,6 @@ const RenderMarkdown: React.FC<
         a: {
           textDecoration: "none !important",
         },
-        // for li, dont space them apart
         "& li": {
           marginTop: ".25rem !important",
           marginBottom: ".25rem !important",
