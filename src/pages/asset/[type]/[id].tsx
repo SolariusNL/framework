@@ -146,6 +146,108 @@ const AssetView: React.FC<AssetViewProps> = ({ asset, user, type }) => {
       ),
     ]);
   };
+  const defaultRows = [
+    {
+      key: "Listed price",
+      value: (
+        <>
+          <div className="flex items-center">
+            <Text color="teal" weight={500} className="flex items-center gap-2">
+              <HiOutlineTicket />
+              <span>
+                {asset.limited
+                  ? limitedPrice ?? "..."
+                  : asset.price > 0
+                  ? asset.price
+                  : "Free"}
+              </span>
+            </Text>
+            {!asset.limited && (
+              <>
+                <VerticalDivider className="!h-4" />
+                <Text
+                  color={colors.violet[4]}
+                  weight={500}
+                  className="flex items-center gap-2"
+                >
+                  <Bit />
+                  <span>{asset.priceBits > 0 ? asset.priceBits : "Free"}</span>
+                </Text>
+              </>
+            )}
+          </div>
+          <Button
+            color="teal"
+            mt="sm"
+            mb="md"
+            disabled={
+              !asset.onSale ||
+              (!asset.limited && ownership?.owned) ||
+              (asset.limited && asset.stock <= 0)
+            }
+          >
+            {asset.limited && asset.stock <= 0
+              ? "See resellers"
+              : asset.onSale
+              ? "Purchase"
+              : "Not for sale"}
+          </Button>
+        </>
+      ),
+    },
+    ...(asset.limited
+      ? [
+          {
+            key: "Best price",
+            value: (
+              <Text
+                color="teal"
+                weight={500}
+                className="flex items-center gap-2"
+              >
+                <HiOutlineTicket />
+                <span>
+                  {asset.limited
+                    ? resellers
+                      ? resellers.length > 0
+                        ? resellers.reduce((a, b) =>
+                            a.price < b.price ? a : b
+                          ).price
+                        : asset.price
+                      : "..."
+                    : asset.price > 0
+                    ? asset.price
+                    : "Free"}
+                </span>
+              </Text>
+            ),
+          },
+        ]
+      : []),
+    {
+      key: "Created at",
+      value: new Date(asset.createdAt).toLocaleDateString(),
+    },
+    {
+      key: "Stargazers",
+      value: `${asset._count.stargazers} ${Fw.Strings.pluralize(
+        asset._count.stargazers,
+        "stargazer"
+      )}`,
+    },
+    {
+      key: "Limited",
+      value: asset.limited ? "Limited item" : "Regular item",
+    },
+    {
+      key: "On sale",
+      value: asset.onSale ? "Available for purchase" : "Not for sale",
+    },
+    {
+      key: "SKU",
+      value: asset.id,
+    },
+  ];
 
   useEffect(() => {
     if (type === "limited-catalog-item") fetchLimitedDetails();
@@ -238,93 +340,18 @@ const AssetView: React.FC<AssetViewProps> = ({ asset, user, type }) => {
                   <Owner user={asset.author} />
                 </div>
               </div>
+              <Text className="my-4 mb-6">
+                {asset.description ?? "No description provided"}
+              </Text>
               <div className="flex flex-col gap-1">
-                {[
-                  ...(asset.rows ?? []),
-                  {
-                    key: "Best price",
-                    value: (
-                      <>
-                        <div className="flex items-center">
-                          <Text
-                            color="teal"
-                            weight={500}
-                            className="flex items-center gap-2"
-                          >
-                            <HiOutlineTicket />
-                            <span>
-                              {asset.limited
-                                ? limitedPrice ?? "..."
-                                : asset.price > 0
-                                ? asset.price
-                                : "Free"}
-                            </span>
-                          </Text>
-                          {!asset.limited && (
-                            <>
-                              <VerticalDivider className="!h-4" />
-                              <Text
-                                color={colors.violet[4]}
-                                weight={500}
-                                className="flex items-center gap-2"
-                              >
-                                <Bit />
-                                <span>
-                                  {asset.priceBits > 0
-                                    ? asset.priceBits
-                                    : "Free"}
-                                </span>
-                              </Text>
-                            </>
-                          )}
-                        </div>
-                        <Button
-                          color="teal"
-                          mt="sm"
-                          mb="md"
-                          disabled={
-                            !asset.onSale ||
-                            (!asset.limited && ownership?.owned)
-                          }
-                        >
-                          {asset.onSale ? "Purchase" : "Not for sale"}
-                        </Button>
-                      </>
-                    ),
-                  },
-                  {
-                    key: "Created at",
-                    value: new Date(asset.createdAt).toLocaleDateString(),
-                  },
-                  {
-                    key: "Stargazers",
-                    value: `${asset._count.stargazers} ${Fw.Strings.pluralize(
-                      asset._count.stargazers,
-                      "stargazer"
-                    )}`,
-                  },
-                  {
-                    key: "Limited",
-                    value: asset.limited ? "Limited item" : "Regular item",
-                  },
-                  {
-                    key: "On sale",
-                    value: asset.onSale
-                      ? "Available for purchase"
-                      : "Not for sale",
-                  },
-                  {
-                    key: "SKU",
-                    value: asset.id,
-                  },
-                ]
+                {[...defaultRows, ...(asset.rows ?? [])]
                   .filter((row) => row.value)
                   .map((row, i) => (
                     <div className="flex gap-2" key={i}>
                       <Text
                         weight={500}
                         color="dimmed"
-                        style={{ width: "30%" }}
+                        style={{ width: "35%" }}
                       >
                         {row.key}
                       </Text>
@@ -361,6 +388,8 @@ const AssetView: React.FC<AssetViewProps> = ({ asset, user, type }) => {
                     tooltip: "Stock",
                     value: asset.stock,
                     icon: <HiShoppingBag />,
+                    hoverTip:
+                      "Once stock depletes, this items price will be determined by resellers. Until then, the price will remain at its original, fixed price.",
                   },
                   {
                     tooltip: "Quantity sold",
@@ -369,9 +398,9 @@ const AssetView: React.FC<AssetViewProps> = ({ asset, user, type }) => {
                   },
                 ]}
               />
-              <div className="md:flex grid mt-8 grid-cols-2 gap-2 md:flex-row overflow-x-auto">
-                {chartData &&
-                  chartData.map((item, i) => (
+              {chartData && chartData.length > 0 && (
+                <div className="md:flex grid mt-8 grid-cols-2 gap-2 md:flex-row overflow-x-auto">
+                  {chartData.map((item, i) => (
                     <ShadedButton
                       className="flex-1 text-center flex relative justify-center"
                       onClick={() => {
@@ -441,7 +470,8 @@ const AssetView: React.FC<AssetViewProps> = ({ asset, user, type }) => {
                       </div>
                     </ShadedButton>
                   ))}
-              </div>
+                </div>
+              )}
               {ownership?.copies && ownership.copies.length > 0 && (
                 <>
                   <Divider mt="xl" mb="xl" />
@@ -500,7 +530,7 @@ const AssetView: React.FC<AssetViewProps> = ({ asset, user, type }) => {
                   </div>
                 </>
               )}
-              {asset.stock === 0 && (
+              {asset.limited && (
                 <>
                   <Divider mt="xl" mb="xl" />
                   <Title order={3} mb="lg">
@@ -589,6 +619,7 @@ export async function getServerSideProps(
       author: {
         select: nonCurrentUserSelect.select,
       },
+      rows: true,
     },
   });
 

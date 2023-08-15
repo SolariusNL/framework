@@ -85,6 +85,13 @@ const Sounds = ({ user }: SoundsProps) => {
       </Text>
       <form
         onSubmit={form.onSubmit(async (values) => {
+          const duration = await new Promise<number>((resolve) => {
+            const audio = new Audio(URL.createObjectURL(values.audio as File));
+            audio.addEventListener("loadedmetadata", () => {
+              resolve(audio.duration);
+            });
+          });
+
           await fetchJson<
             IResponseBase<{
               sound: {
@@ -96,6 +103,7 @@ const Sounds = ({ user }: SoundsProps) => {
             body: {
               name: values.name,
               description: values.description,
+              duration: Math.round(duration),
             },
             auth: true,
           })
@@ -167,7 +175,6 @@ const Sounds = ({ user }: SoundsProps) => {
             required
             {...form.getInputProps("audio")}
           />
-          {JSON.stringify(form)}
           <div className="flex justify-end gap-2">
             <Button
               variant="default"

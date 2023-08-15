@@ -633,6 +633,13 @@ class CatalogRouter {
         };
       }
 
+      if (resell.sellerId === user.id) {
+        return <IResponseBase>{
+          success: false,
+          message: "You cannot buy from yourself - that's not how this works",
+        };
+      }
+
       if (resell.price !== price) {
         return <IResponseBase>{
           success: false,
