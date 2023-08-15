@@ -35,6 +35,13 @@ export type GetResellersResponse = IResponseBase<{
 export type LimitedCatalogItemResellWithSeller = LimitedCatalogItemResell & {
   seller: NonUser;
 };
+export type GetCatalogItemOwnershipStatusResponse = IResponseBase<{
+  owned: boolean;
+  copies?: Array<{
+    id: string;
+    count: number;
+  }>;
+}>;
 
 export interface AveragePriceByDay {
   timestamp: Date;
@@ -57,14 +64,13 @@ class CatalogRouter {
     const limited = await prisma.limitedCatalogItem.findFirst({
       where: {
         id,
-        onSale: true,
       },
     });
 
     if (!limited)
       return <GetLimitedRecentAveragePriceResponse>{
         success: false,
-        message: "No limited item found with this id that is on sale",
+        message: "No limited item found with this id",
       };
 
     if (
@@ -122,14 +128,13 @@ class CatalogRouter {
     const limited = await prisma.limitedCatalogItem.findFirst({
       where: {
         id,
-        onSale: true,
       },
     });
 
     if (!limited)
       return <GetLimitedPriceResponse>{
         success: false,
-        message: "No limited item found with this id that is on sale",
+        message: "No limited item found with this id",
       };
 
     const resells = await prisma.limitedCatalogItemResell.findMany({
@@ -143,7 +148,7 @@ class CatalogRouter {
     });
 
     if (resells.length === 0) {
-      if (limited.price === 0) {
+      if (limited.stock === 0) {
         await prisma.limitedCatalogItem.update({
           where: {
             id,
@@ -596,6 +601,20 @@ class CatalogRouter {
         },
       });
 
+      await prisma.limitedCatalogItem.update({
+        where: {
+          id,
+        },
+        data: {
+          quantitySold: {
+            increment: 1,
+          },
+          stock: {
+            decrement: 1,
+          },
+        },
+      });
+
       return <IResponseBase>{
         success: true,
       };
@@ -679,81 +698,234 @@ class CatalogRouter {
         });
       }
 
-      const resellerItem = await prisma.limitedInventoryItem.findFirst({
+      await prisma.user.update({
         where: {
+          id: resell.sellerId,
+        },
+        data: {
+          tickets: {
+            increment: price,
+          },
+        },
+      });
+      await prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          tickets: {
+            decrement: price,
+          },
+        },
+      });
+
+      await prisma.limitedCatalogItemResell.delete({
+        where: {
+          id: resell.id,
+        },
+      });
+      await prisma.limitedCatalogItemReceipt.create({
+        data: {
           itemId: id,
-          inventory: {
-            user: {
-              id: resell.sellerId,
+          salePrice: price,
+          buyerId: user.id,
+        },
+      });
+    } else {
+      return <IResponseBase>{
+        success: false,
+        message: "Reseller does not own this item... somehow",
+      };
+    }
+
+    return <IResponseBase>{
+      success: true,
+    };
+  }
+
+  @Get("/sku/:id/ownership-status")
+  @Authorized()
+  public async getCatalogItemOwnershipStatus(
+    @Param("id") id: string,
+    @Account() user: User,
+    @Query("type") type?: "limited" | "normal" | "sound"
+  ) {
+    if (type === "normal") {
+      const catalogItem = await prisma.catalogItem.findFirst({
+        where: {
+          id,
+        },
+      });
+
+      if (!catalogItem) {
+        return <GetCatalogItemOwnershipStatusResponse>{
+          success: false,
+          message: "No catalog item found with this id",
+        };
+      }
+
+      const owned = await prisma.inventory.findFirst({
+        where: {
+          userId: user.id,
+          items: {
+            some: {
+              id,
             },
           },
         },
       });
 
-      if (resellerItem) {
-        if (resellerItem.count === 1) {
-          await prisma.limitedInventoryItem.delete({
-            where: {
-              id: resellerItem.id,
-            },
-          });
-        } else {
-          await prisma.limitedInventoryItem.update({
-            where: {
-              id: resellerItem.id,
-            },
-            data: {
-              count: {
-                decrement: 1,
-              },
-            },
-          });
-        }
+      return <GetCatalogItemOwnershipStatusResponse>{
+        success: true,
+        data: {
+          owned: !!owned,
+        },
+      };
+    } else if (type === "limited") {
+      const limited = await prisma.limitedCatalogItem.findFirst({
+        where: {
+          id,
+        },
+      });
 
-        await prisma.user.update({
-          where: {
-            id: resell.sellerId,
-          },
-          data: {
-            tickets: {
-              increment: price,
-            },
-          },
-        });
-        await prisma.user.update({
-          where: {
-            id: user.id,
-          },
-          data: {
-            tickets: {
-              decrement: price,
-            },
-          },
-        });
-
-        await prisma.limitedCatalogItemResell.delete({
-          where: {
-            id: resell.id,
-          },
-        });
-        await prisma.limitedCatalogItemReceipt.create({
-          data: {
-            itemId: id,
-            salePrice: price,
-            buyerId: user.id,
-          },
-        });
-      } else {
-        return <IResponseBase>{
+      if (!limited) {
+        return <GetCatalogItemOwnershipStatusResponse>{
           success: false,
-          message: "Reseller does not own this item... somehow",
+          message: "No limited item found with this id",
         };
       }
 
-      return <IResponseBase>{
+      const owned = await prisma.limitedInventoryItem.findFirst({
+        where: {
+          inventory: {
+            userId: user.id,
+          },
+          itemId: id,
+        },
+      });
+
+      return <GetCatalogItemOwnershipStatusResponse>{
         success: true,
+        data: {
+          owned: !!owned,
+          copies: owned
+            ? await prisma.limitedInventoryItem.findMany({
+                where: {
+                  itemId: id,
+                  inventory: {
+                    userId: user.id,
+                  },
+                },
+              })
+            : undefined,
+        },
+      };
+    } else if (type === "sound") {
+      return <GetCatalogItemOwnershipStatusResponse>{
+        success: false,
+        data: {
+          owned: false,
+        },
+        message: "Unimplemented",
       };
     }
+  }
+
+  @Post("/sku/:id/sell")
+  @Authorized()
+  public async postLimitedSell(
+    @Param("id") id: string,
+    @Account() user: User,
+    @Query("price") price: number,
+    @Query("count") count: number,
+    @Query("serial") serial: string
+  ) {
+    if (!price) {
+      return <IResponseBase>{
+        success: false,
+        message: "No price provided",
+      };
+    }
+
+    if (!count) {
+      return <IResponseBase>{
+        success: false,
+        message: "No count provided",
+      };
+    }
+
+    if (!serial) {
+      return <IResponseBase>{
+        success: false,
+        message: "No serial provided",
+      };
+    }
+
+    price = Number(price);
+    count = Number(count);
+
+    const limited = await prisma.limitedInventoryItem.findFirst({
+      where: {
+        itemId: id,
+        id: serial,
+        inventory: {
+          userId: user.id,
+        },
+      },
+    });
+
+    if (!limited) {
+      return <IResponseBase>{
+        success: false,
+        message: "You do not own this item",
+      };
+    }
+
+    if (limited.count < count) {
+      return <IResponseBase>{
+        success: false,
+        message: "You do not own this many of this item",
+      };
+    }
+
+    if (limited.count === count) {
+      await prisma.limitedInventoryItem.delete({
+        where: {
+          id: serial,
+        },
+      });
+    } else {
+      await prisma.limitedInventoryItem.update({
+        where: {
+          id: serial,
+        },
+        data: {
+          count: {
+            decrement: count,
+          },
+        },
+      });
+    }
+
+    await prisma.limitedCatalogItemResell.create({
+      data: {
+        itemId: id,
+        price,
+        sellerId: user.id,
+      },
+    });
+    await prisma.limitedCatalogItem.update({
+      where: {
+        id,
+      },
+      data: {
+        onSale: true,
+      },
+    });
+
+    return <IResponseBase>{
+      success: true,
+    };
   }
 }
 

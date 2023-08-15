@@ -1,11 +1,13 @@
-import { Text } from "@mantine/core";
-import { FC } from "react";
 import clsx from "@/util/clsx";
+import { Text, Tooltip } from "@mantine/core";
+import { FC } from "react";
+import { HiInformationCircle } from "react-icons/hi";
 
 type DataGridItem = {
   tooltip: string;
   icon: JSX.Element;
   value: string | React.ReactNode;
+  hoverTip?: string;
 };
 
 type DataGridProps = {
@@ -27,13 +29,20 @@ const DataGrid: FC<DataGridProps> = ({
 
   return (
     <div className={clsx(`grid ${gridCols} gap-3 gap-y-6 mt-6`, className)}>
-      {items.map(({ tooltip, icon, value }) => (
+      {items.map(({ tooltip, icon, value, hoverTip }) => (
         <div className="flex flex-col gap-2 items-center" key={tooltip}>
           <div className="flex items-center gap-2">
             <div className="text-dimmed flex items-center">{icon}</div>
             <Text color="dimmed" className="text-sm">
               {tooltip}
             </Text>
+            {hoverTip && (
+              <Tooltip label={hoverTip}>
+                <div className="flex justify-center text-mantine-text/50 dark:text-mantine-text-dark/50">
+                  <HiInformationCircle />
+                </div>
+              </Tooltip>
+            )}
           </div>
           <span
             className={clsx("text-sm font-medium")}
