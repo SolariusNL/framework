@@ -1332,12 +1332,14 @@ model LimitedCatalogItem {
   name               String
   description        String
   price              Int
+  originalPrice      Int                              @default(0)
   type               CatalogItemType
   previewUri         String
   stargazers         User[]                           @relation("starredLimitedCatalogItems")
   limited            Boolean                          @default(true)
   onSale             Boolean                          @default(true)
   stock              Int
+  originalStock      Int                              @default(0)
   receipts           LimitedCatalogItemReceipt[]      @relation("limitedCatalogItemReceipts")
   recentAveragePrice Int
   rapLastUpdated     DateTime

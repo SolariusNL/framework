@@ -1,3 +1,4 @@
+import CatalogChart from "@/components/catalog-chart";
 import DataGrid from "@/components/data-grid";
 import Framework from "@/components/framework";
 import ModernEmptyState from "@/components/modern-empty-state";
@@ -36,18 +37,14 @@ import {
   Modal,
   NumberInput,
   Text,
-  ThemeIcon,
   Title,
   useMantineTheme,
 } from "@mantine/core";
-import { openModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import { Prisma } from "@prisma/client";
 import { GetServerSidePropsContext } from "next";
 import { useEffect, useState } from "react";
 import {
-  HiArrowDown,
-  HiArrowUp,
   HiCheck,
   HiCheckCircle,
   HiCubeTransparent,
@@ -57,9 +54,22 @@ import {
   HiOutlineTicket,
   HiShoppingBag,
   HiStar,
-  HiX,
   HiXCircle,
 } from "react-icons/hi";
+
+const initialData = [
+  { time: "2018-12-22", open: 100, high: 100, low: 100, close: 100 },
+  { time: "2018-12-23", open: 100, high: 101, low: 99, close: 100.5 },
+  { time: "2018-12-24", open: 100.5, high: 102, low: 99.5, close: 101 },
+  { time: "2018-12-25", open: 100.8, high: 102.5, low: 99.8, close: 102 },
+  { time: "2018-12-26", open: 101.5, high: 103, low: 100, close: 101.2 },
+  { time: "2018-12-27", open: 101, high: 102, low: 100.5, close: 101.8 },
+  { time: "2018-12-28", open: 101.7, high: 102.3, low: 100.5, close: 101 },
+  { time: "2018-12-29", open: 101, high: 102, low: 100.8, close: 101.5 },
+  { time: "2018-12-30", open: 101.3, high: 102.2, low: 100.5, close: 101.2 },
+  { time: "2018-12-31", open: 101, high: 102.5, low: 100.7, close: 102 },
+  { time: "2019-01-01", open: 102, high: 103, low: 101, close: 102.5 },
+];
 
 type AssetViewProps = {
   asset: AssetFrontend;
@@ -170,7 +180,17 @@ const AssetView: React.FC<AssetViewProps> = ({
       value: (
         <>
           <div className="flex items-center">
-            <Text color="teal" weight={500} className="flex items-center gap-2">
+            <Text
+              color={
+                asset.limited
+                  ? asset.originalStock! > asset.stock
+                    ? "dimmed"
+                    : "teal"
+                  : "teal"
+              }
+              weight={500}
+              className="flex items-center gap-2"
+            >
               <HiOutlineTicket />
               <span>
                 {asset.limited
@@ -198,6 +218,11 @@ const AssetView: React.FC<AssetViewProps> = ({
               </>
             )}
           </div>
+          {asset.limited && (
+            <Text color="dimmed" size="sm">
+              Quantity sold: {asset.quantitySold} / {asset.originalStock}
+            </Text>
+          )}
           <Button
             color="teal"
             mt="sm"
@@ -510,77 +535,13 @@ const AssetView: React.FC<AssetViewProps> = ({
                 ]}
               />
               {chartData && chartData.length > 0 && (
-                <div className="md:flex grid mt-8 grid-cols-2 gap-2 md:flex-row overflow-x-auto">
-                  {chartData.map((item, i) => (
-                    <ShadedButton
-                      className="flex-1 text-center flex relative justify-center"
-                      onClick={() => {
-                        const date = new Date(item.timestamp).toLocaleString(
-                          "default",
-                          {
-                            month: "long",
-                            year: "numeric",
-                          }
-                        );
-                        const title = `Statistics for ${date}`;
-                        const fluctuation =
-                          i > 0
-                            ? Math.round(item.price - chartData[i - 1].price)
-                            : undefined;
-                        const fluctuationText = fluctuation
-                          ? `${fluctuation > 0 ? "+" : ""}${fluctuation}T$`
-                          : "No data";
-                        const body = (
-                          <div className="flex text-center flex-col">
-                            <Text size="sm" color="dimmed">
-                              Fluctuation from previous month
-                            </Text>
-                            <Text size="sm" weight={500}>
-                              {fluctuationText}
-                            </Text>
-                          </div>
-                        );
-                        openModal({
-                          title,
-                          children: body,
-                        });
-                      }}
-                      key={i}
-                    >
-                      <div className="flex flex-col gap-2">
-                        <Text weight={500} color="dimmed">
-                          {new Date(item.timestamp).toLocaleString("default", {
-                            month: "long",
-                            year: "numeric",
-                          })}
-                        </Text>
-                        <Text weight={"bold"}>
-                          {item.price ? `${Math.round(item.price)}T$` : "..."}
-                        </Text>
-                        <ThemeIcon
-                          variant="light"
-                          color={
-                            i > 0
-                              ? item.price > chartData[i - 1].price
-                                ? "green"
-                                : "red"
-                              : "gray"
-                          }
-                          className="absolute top-2 right-2"
-                        >
-                          {i > 0 ? (
-                            item.price > chartData[i - 1].price ? (
-                              <HiArrowUp />
-                            ) : (
-                              <HiArrowDown />
-                            )
-                          ) : (
-                            <HiX />
-                          )}
-                        </ThemeIcon>
-                      </div>
-                    </ShadedButton>
-                  ))}
+                <div className="rounded-md mt-6">
+                  <CatalogChart
+                    data={chartData.map((data) => ({
+                      ...data,
+                      time: new Date(data.time).toISOString().split("T")[0],
+                    }))}
+                  />
                 </div>
               )}
               {ownership?.copies && ownership.copies.length > 0 && (

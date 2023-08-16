@@ -84,6 +84,8 @@ export type AssetFrontend = {
   id: string;
   stock: number;
   quantitySold: number;
+  originalStock?: number;
+  originalPrice?: number;
 };
 export type AssetType = "catalog-item" | "limited-catalog-item" | "sound";
 export const prismaAssetTypeMap: Record<

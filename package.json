@@ -80,6 +80,7 @@
     "fuzzyset.js": "^1.0.7",
     "is-electron": "^2.2.1",
     "js-yaml-loader": "^1.2.2",
+    "lightweight-charts": "^4.0.1",
     "micro": "^9.4.1",
     "monaco-editor": "^0.34.0",
     "multer": "^1.4.5-lts.1",

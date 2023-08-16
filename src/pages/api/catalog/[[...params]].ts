@@ -59,13 +59,53 @@ export interface AveragePriceByDay {
 }
 
 export interface ChartData {
-  timestamp: Date;
-  price: number;
+  time: Date;
+  low: number;
+  high: number;
+  open: number;
+}
+interface OHLCData {
+  time: Date;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
 }
 
 const postLimitedResellSchema = z.object({
   price: z.number().min(1),
 });
+
+function transformToOHLCData(
+  receipts: LimitedCatalogItemReceipt[]
+): OHLCData[] {
+  const ohlcData: OHLCData[] = [];
+
+  const dateToOHLCMap: { [date: string]: OHLCData } = {};
+
+  for (const receipt of receipts) {
+    const dateStr = receipt.createdAt.toISOString().substr(0, 10);
+
+    if (!dateToOHLCMap[dateStr]) {
+      dateToOHLCMap[dateStr] = {
+        time: new Date(dateStr),
+        open: receipt.salePrice,
+        high: receipt.salePrice,
+        low: receipt.salePrice,
+        close: receipt.salePrice,
+      };
+    } else {
+      const data = dateToOHLCMap[dateStr];
+      data.high = Math.max(data.high, receipt.salePrice);
+      data.low = Math.min(data.low, receipt.salePrice);
+      data.close = receipt.salePrice;
+    }
+  }
+
+  ohlcData.push(...Object.values(dateToOHLCMap));
+
+  return ohlcData;
+}
 
 class CatalogRouter {
   @Get("/sku/:id/rap")
@@ -309,14 +349,14 @@ class CatalogRouter {
   @Authorized()
   public async getChartData(@Param("id") id: string) {
     try {
-      const sixMonthsAgo = new Date();
-      sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+      const threeMonthsAgo = new Date();
+      threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
 
       const receipts = await prisma.limitedCatalogItemReceipt.findMany({
         where: {
           itemId: id,
           createdAt: {
-            gte: sixMonthsAgo,
+            gte: threeMonthsAgo,
           },
         },
         orderBy: {
@@ -324,48 +364,19 @@ class CatalogRouter {
         },
       });
 
-      const groupedData = groupByMonthAndCalculateAverage(receipts);
+      const chartData = transformToOHLCData(receipts);
 
       return <GetChartDataResponse>{
         success: true,
         data: {
-          data: groupedData,
+          data: chartData,
         },
       };
     } catch (error) {
-      return <GetChartDataResponse>{
+      return <IResponseBase>{
         success: false,
         message: "Internal server error",
       };
-    }
-    function groupByMonthAndCalculateAverage(
-      receipts: LimitedCatalogItemReceipt[]
-    ): ChartData[] {
-      const groupedData: { [month: string]: number[] } = {};
-
-      for (const receipt of receipts) {
-        const date = new Date(receipt.createdAt);
-        const yearMonth = `${date.getFullYear()}-${date.getMonth()}`;
-
-        if (!groupedData[yearMonth]) {
-          groupedData[yearMonth] = [];
-        }
-
-        groupedData[yearMonth].push(receipt.salePrice);
-      }
-
-      const chartData: ChartData[] = [];
-      for (const month in groupedData) {
-        const averagePrice =
-          groupedData[month].reduce((sum, price) => sum + price, 0) /
-          groupedData[month].length;
-        chartData.push({
-          timestamp: new Date(`${month}-01`),
-          price: averagePrice,
-        });
-      }
-
-      return chartData;
     }
   }
 
