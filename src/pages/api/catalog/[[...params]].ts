@@ -655,6 +655,9 @@ class CatalogRouter {
             id: resellId,
             itemId: id,
           },
+          include: {
+            item: true,
+          },
         });
 
         if (!resell) {
@@ -705,9 +708,6 @@ class CatalogRouter {
             },
             itemId: id,
           },
-          include: {
-            item: true,
-          },
         });
 
         if (owned) {
@@ -751,7 +751,7 @@ class CatalogRouter {
               create: {
                 type: NotificationType.SUCCESS,
                 title: "Your item has been sold",
-                message: `Your item, ${owned?.item.name} (serial: ${
+                message: `Your item, ${resell.item.name} (serial: ${
                   resell.id.split("-")[0]
                 }), has been sold for ${price}T$ to @${user.username}!`,
               },
