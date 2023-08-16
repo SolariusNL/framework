@@ -9,6 +9,7 @@ import {
   Inventory,
   LimitedCatalogItemReceipt,
   LimitedCatalogItemResell,
+  NotificationType,
   Prisma,
 } from "@prisma/client";
 import {
@@ -704,6 +705,9 @@ class CatalogRouter {
             },
             itemId: id,
           },
+          include: {
+            item: true,
+          },
         });
 
         if (owned) {
@@ -742,6 +746,15 @@ class CatalogRouter {
           data: {
             tickets: {
               increment: price,
+            },
+            notifications: {
+              create: {
+                type: NotificationType.SUCCESS,
+                title: "Your item has been sold",
+                message: `Your item, ${owned?.item.name} (serial: ${
+                  resell.id.split("-")[0]
+                }), has been sold for ${price}T$ to @${user.username}!`,
+              },
             },
           },
         });
