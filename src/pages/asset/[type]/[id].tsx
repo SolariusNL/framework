@@ -393,7 +393,9 @@ const AssetView: React.FC<AssetViewProps> = ({
             <div className="w-full">
               <Avatar
                 radius="md"
-                src={asset.previewUri ? getMediaUrl(asset.name) : undefined}
+                src={
+                  asset.previewUri ? getMediaUrl(asset.previewUri) : undefined
+                }
                 color={Fw.Strings.color(asset.name)}
                 alt={asset.name}
                 className="aspect-square w-full h-fit"

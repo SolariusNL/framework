@@ -42,6 +42,16 @@ class SoundRouter {
             value: `${formattedMinutes}:${formattedSeconds}`,
           },
         },
+        apartOf: {
+          connectOrCreate: {
+            where: {
+              userId: user.id,
+            },
+            create: {
+              userId: user.id,
+            },
+          },
+        },
       },
     });
 
