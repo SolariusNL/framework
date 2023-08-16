@@ -183,7 +183,7 @@ const AssetView: React.FC<AssetViewProps> = ({
             <Text
               color={
                 asset.limited
-                  ? asset.originalStock! > asset.stock
+                  ? asset.quantitySold! > asset.originalStock!
                     ? "dimmed"
                     : "teal"
                   : "teal"
