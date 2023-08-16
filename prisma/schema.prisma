@@ -1011,6 +1011,7 @@ model Sound {
   priceBits   Int                 @default(0)
   onSale      Boolean             @default(false)
   limited     Boolean             @default(false)
+  apartOf     Inventory[]         @relation("userSounds")
 }
 
 model SoundKeyValuePair {
@@ -1383,6 +1384,7 @@ model Inventory {
   userId    Int                    @unique
   items     CatalogItem[]          @relation("standardCatalogItems")
   limited   LimitedInventoryItem[] @relation("limitedInventoryItems")
+  sounds    Sound[]                @relation("userSounds")
 }
 
 model LimitedInventoryItem {

@@ -2,15 +2,21 @@ import IResponseBase from "@/types/api/IResponseBase";
 import Authorized, { Account } from "@/util/api/authorized";
 import prisma from "@/util/prisma";
 import { nonCurrentUserSelect, NonUser, type User } from "@/util/prisma-types";
+import type { AssetType } from "@/util/types";
+import { prismaAssetTypeMap, prismaInventoryMapping } from "@/util/types";
 import {
+  CatalogItem,
+  Inventory,
   LimitedCatalogItemReceipt,
   LimitedCatalogItemResell,
+  Prisma,
 } from "@prisma/client";
 import {
   Body,
   createHandler,
   Get,
   Param,
+  Patch,
   Post,
   Query,
 } from "@storyofams/next-api-decorators";
@@ -41,6 +47,9 @@ export type GetCatalogItemOwnershipStatusResponse = IResponseBase<{
     id: string;
     count: number;
   }>;
+}>;
+export type GetAssetStargazingStatusResponse = IResponseBase<{
+  stargazing: boolean;
 }>;
 
 export interface AveragePriceByDay {
@@ -435,283 +444,103 @@ class CatalogRouter {
     @Account() user: User,
     @Query("price") price: number,
     @Query("resellId") resellId?: string,
-    @Query("type") type?: "limited" | "limited-resell" | "normal"
+    @Query("type") type?: "limited" | "limited-resell" | "normal",
+    @Query("genericType") genericType?: AssetType
   ) {
     price = Number(price);
 
-    if (!price) {
+    if (!price && !genericType) {
       return <IResponseBase>{
         success: false,
         message: "No price provided",
       };
     }
 
-    if (type === "normal") {
-      const catalogItem = await prisma.catalogItem.findFirst({
-        where: {
-          id,
-          onSale: true,
-        },
-      });
-
-      if (!catalogItem) {
-        return <IResponseBase>{
-          success: false,
-          message: "No catalog item found with this id that is on sale",
-        };
-      }
-
-      if (catalogItem.price !== price) {
-        return <IResponseBase>{
-          success: false,
-          message: "Price does not match",
-        };
-      }
-      if (price > user.tickets) {
-        return <IResponseBase>{
-          success: false,
-          message: "You do not have enough tickets",
-        };
-      }
-
-      const inventory = await prisma.inventory.findFirst({
-        where: {
-          userId: user.id,
-        },
-      });
-
-      if (!inventory) {
-        await prisma.inventory.create({
-          data: {
-            userId: user.id,
-          },
-        });
-      }
-
-      const owned = await prisma.inventory.findFirst({
-        where: {
-          userId: user.id,
-          items: {
-            some: {
-              id,
-            },
-          },
-        },
-      });
-
-      if (owned) {
+    if (genericType) {
+      if (genericType === "limited-catalog-item") {
         return <IResponseBase>{
           success: false,
           message:
-            "You already own this item - normal items are not resellable",
+            "genericType does not handle limited items - only generic items that extend generic asset types",
         };
       }
+      if (!prismaAssetTypeMap[genericType]) {
+        return <IResponseBase>{
+          success: false,
+          message: "Invalid type provided",
+        };
+      }
+
+      const queryExecutor = prisma[
+        prismaAssetTypeMap[genericType]
+      ] as never as {
+        findFirst: (
+          args: Prisma.CatalogItemFindFirstArgs
+        ) => Promise<CatalogItem & { apartOf: Inventory[] }>;
+        update: (
+          args: Prisma.CatalogItemUpdateArgs
+        ) => Promise<CatalogItem & { apartOf: Inventory[] }>;
+      };
+
+      const item = await queryExecutor.findFirst({
+        where: {
+          id,
+        },
+        include: {
+          apartOf: {
+            where: {
+              userId: user.id,
+            },
+          },
+        },
+      });
+
+      if (!item) {
+        return <IResponseBase>{
+          success: false,
+          message: "No item found with this id",
+        };
+      }
+
+      if (item.apartOf.length > 0) {
+        return <IResponseBase>{
+          success: false,
+          message: "You already own this item",
+        };
+      }
+
+      if (item.price > user.tickets) {
+        return <IResponseBase>{
+          success: false,
+          message: "You do not have enough tickets",
+        };
+      }
+
+      const inventory = await prisma.inventory.findFirst({
+        where: {
+          userId: user.id,
+        },
+      });
+
+      if (!inventory) {
+        await prisma.inventory.create({
+          data: {
+            userId: user.id,
+          },
+        });
+      }
+
+      const inventoryConnector = prismaInventoryMapping[genericType];
 
       await prisma.inventory.update({
         where: {
           userId: user.id,
         },
         data: {
-          items: {
+          [inventoryConnector as keyof Inventory]: {
             connect: {
               id: id,
             },
-          },
-          user: {
-            update: {
-              tickets: {
-                decrement: price,
-              },
-            },
-          },
-        },
-      });
-
-      return <IResponseBase>{
-        success: true,
-      };
-    } else if (type === "limited") {
-      const limited = await prisma.limitedCatalogItem.findFirst({
-        where: {
-          id,
-          onSale: true,
-        },
-      });
-
-      if (!limited) {
-        return <IResponseBase>{
-          success: false,
-          message: "No limited item found with this id that is on sale",
-        };
-      }
-
-      if (limited.stock === 0) {
-        return <IResponseBase>{
-          success: false,
-          message: "This item is out of stock - you need to buy from resellers",
-        };
-      }
-
-      if (limited.price !== price) {
-        return <IResponseBase>{
-          success: false,
-          message: "Price does not match",
-        };
-      }
-
-      if (price > user.tickets) {
-        return <IResponseBase>{
-          success: false,
-          message: "You do not have enough tickets",
-        };
-      }
-
-      const inventory = await prisma.inventory.findFirst({
-        where: {
-          userId: user.id,
-        },
-      });
-
-      if (!inventory) {
-        await prisma.inventory.create({
-          data: {
-            userId: user.id,
-          },
-        });
-      }
-
-      await prisma.inventory.update({
-        where: {
-          userId: user.id,
-        },
-        data: {
-          limited: {
-            create: {
-              itemId: id,
-              count: 1,
-            },
-          },
-          user: {
-            update: {
-              tickets: {
-                decrement: price,
-              },
-            },
-          },
-        },
-      });
-
-      await prisma.limitedCatalogItem.update({
-        where: {
-          id,
-        },
-        data: {
-          quantitySold: {
-            increment: 1,
-          },
-          stock: {
-            decrement: 1,
-          },
-        },
-      });
-
-      return <IResponseBase>{
-        success: true,
-      };
-    } else if (type === "limited-resell") {
-      const resell = await prisma.limitedCatalogItemResell.findFirst({
-        where: {
-          id: resellId,
-          itemId: id,
-        },
-      });
-
-      if (!resell) {
-        return <IResponseBase>{
-          success: false,
-          message: "No resell found with this id, sellerId and price",
-        };
-      }
-
-      if (resell.sellerId === user.id) {
-        return <IResponseBase>{
-          success: false,
-          message: "You cannot buy from yourself - that's not how this works",
-        };
-      }
-
-      if (resell.price !== price) {
-        return <IResponseBase>{
-          success: false,
-          message: "Price does not match",
-        };
-      }
-      if (resell.price > user.tickets) {
-        return <IResponseBase>{
-          success: false,
-          message: "You do not have enough tickets",
-        };
-      }
-
-      const inventory = await prisma.inventory.findFirst({
-        where: {
-          userId: user.id,
-        },
-      });
-
-      if (!inventory) {
-        await prisma.inventory.create({
-          data: {
-            userId: user.id,
-          },
-        });
-      }
-
-      const owned = await prisma.limitedInventoryItem.findFirst({
-        where: {
-          inventory: {
-            userId: user.id,
-          },
-          itemId: id,
-        },
-      });
-
-      if (owned) {
-        await prisma.limitedInventoryItem.update({
-          where: {
-            id: owned.id,
-          },
-          data: {
-            count: {
-              increment: 1,
-            },
-          },
-        });
-      } else {
-        await prisma.limitedInventoryItem.create({
-          data: {
-            inventory: {
-              connect: {
-                userId: user.id,
-              },
-            },
-            item: {
-              connect: {
-                id,
-              },
-            },
-            count: 1,
-          },
-        });
-      }
-
-      await prisma.user.update({
-        where: {
-          id: resell.sellerId,
-        },
-        data: {
-          tickets: {
-            increment: price,
           },
         },
       });
@@ -721,28 +550,230 @@ class CatalogRouter {
         },
         data: {
           tickets: {
-            decrement: price,
+            decrement: item.price,
           },
         },
       });
 
-      await prisma.limitedCatalogItemResell.delete({
-        where: {
-          id: resell.id,
-        },
-      });
-      await prisma.limitedCatalogItemReceipt.create({
-        data: {
-          itemId: id,
-          salePrice: price,
-          buyerId: user.id,
-        },
-      });
-    } else {
       return <IResponseBase>{
-        success: false,
-        message: "Reseller does not own this item... somehow",
+        success: true,
       };
+    } else {
+      if (type === "limited") {
+        const limited = await prisma.limitedCatalogItem.findFirst({
+          where: {
+            id,
+            onSale: true,
+          },
+        });
+
+        if (!limited) {
+          return <IResponseBase>{
+            success: false,
+            message: "No limited item found with this id that is on sale",
+          };
+        }
+
+        if (limited.stock === 0) {
+          return <IResponseBase>{
+            success: false,
+            message:
+              "This item is out of stock - you need to buy from resellers",
+          };
+        }
+
+        if (limited.price !== price) {
+          return <IResponseBase>{
+            success: false,
+            message: "Price does not match",
+          };
+        }
+
+        if (price > user.tickets) {
+          return <IResponseBase>{
+            success: false,
+            message: "You do not have enough tickets",
+          };
+        }
+
+        const inventory = await prisma.inventory.findFirst({
+          where: {
+            userId: user.id,
+          },
+        });
+
+        if (!inventory) {
+          await prisma.inventory.create({
+            data: {
+              userId: user.id,
+            },
+          });
+        }
+
+        await prisma.inventory.update({
+          where: {
+            userId: user.id,
+          },
+          data: {
+            limited: {
+              create: {
+                itemId: id,
+                count: 1,
+              },
+            },
+            user: {
+              update: {
+                tickets: {
+                  decrement: price,
+                },
+              },
+            },
+          },
+        });
+
+        await prisma.limitedCatalogItem.update({
+          where: {
+            id,
+          },
+          data: {
+            quantitySold: {
+              increment: 1,
+            },
+            stock: {
+              decrement: 1,
+            },
+          },
+        });
+
+        return <IResponseBase>{
+          success: true,
+        };
+      } else if (type === "limited-resell") {
+        const resell = await prisma.limitedCatalogItemResell.findFirst({
+          where: {
+            id: resellId,
+            itemId: id,
+          },
+        });
+
+        if (!resell) {
+          return <IResponseBase>{
+            success: false,
+            message: "No resell found with this id, sellerId and price",
+          };
+        }
+
+        if (resell.sellerId === user.id) {
+          return <IResponseBase>{
+            success: false,
+            message: "You cannot buy from yourself - that's not how this works",
+          };
+        }
+
+        if (resell.price !== price) {
+          return <IResponseBase>{
+            success: false,
+            message: "Price does not match",
+          };
+        }
+        if (resell.price > user.tickets) {
+          return <IResponseBase>{
+            success: false,
+            message: "You do not have enough tickets",
+          };
+        }
+
+        const inventory = await prisma.inventory.findFirst({
+          where: {
+            userId: user.id,
+          },
+        });
+
+        if (!inventory) {
+          await prisma.inventory.create({
+            data: {
+              userId: user.id,
+            },
+          });
+        }
+
+        const owned = await prisma.limitedInventoryItem.findFirst({
+          where: {
+            inventory: {
+              userId: user.id,
+            },
+            itemId: id,
+          },
+        });
+
+        if (owned) {
+          await prisma.limitedInventoryItem.update({
+            where: {
+              id: owned.id,
+            },
+            data: {
+              count: {
+                increment: 1,
+              },
+            },
+          });
+        } else {
+          await prisma.limitedInventoryItem.create({
+            data: {
+              inventory: {
+                connect: {
+                  userId: user.id,
+                },
+              },
+              item: {
+                connect: {
+                  id,
+                },
+              },
+              count: 1,
+            },
+          });
+        }
+
+        await prisma.user.update({
+          where: {
+            id: resell.sellerId,
+          },
+          data: {
+            tickets: {
+              increment: price,
+            },
+          },
+        });
+        await prisma.user.update({
+          where: {
+            id: user.id,
+          },
+          data: {
+            tickets: {
+              decrement: price,
+            },
+          },
+        });
+
+        await prisma.limitedCatalogItemResell.delete({
+          where: {
+            id: resell.id,
+          },
+        });
+        await prisma.limitedCatalogItemReceipt.create({
+          data: {
+            itemId: id,
+            salePrice: price,
+            buyerId: user.id,
+          },
+        });
+      } else {
+        return <IResponseBase>{
+          success: false,
+          message: "Reseller does not own this item... somehow",
+        };
+      }
     }
 
     return <IResponseBase>{
@@ -755,40 +786,16 @@ class CatalogRouter {
   public async getCatalogItemOwnershipStatus(
     @Param("id") id: string,
     @Account() user: User,
-    @Query("type") type?: "limited" | "normal" | "sound"
+    @Query("type") type?: AssetType
   ) {
-    if (type === "normal") {
-      const catalogItem = await prisma.catalogItem.findFirst({
-        where: {
-          id,
-        },
-      });
-
-      if (!catalogItem) {
-        return <GetCatalogItemOwnershipStatusResponse>{
-          success: false,
-          message: "No catalog item found with this id",
-        };
-      }
-
-      const owned = await prisma.inventory.findFirst({
-        where: {
-          userId: user.id,
-          items: {
-            some: {
-              id,
-            },
-          },
-        },
-      });
-
-      return <GetCatalogItemOwnershipStatusResponse>{
-        success: true,
-        data: {
-          owned: !!owned,
-        },
+    if (!type || !prismaAssetTypeMap[type]) {
+      return <IResponseBase>{
+        success: false,
+        message: "No type provided - or provided type is invalid",
       };
-    } else if (type === "limited") {
+    }
+
+    if (type === "limited-catalog-item") {
       const limited = await prisma.limitedCatalogItem.findFirst({
         where: {
           id,
@@ -827,13 +834,36 @@ class CatalogRouter {
             : undefined,
         },
       };
-    } else if (type === "sound") {
-      return <GetCatalogItemOwnershipStatusResponse>{
-        success: false,
-        data: {
-          owned: false,
+    } else {
+      const queryExecutor = prisma[prismaAssetTypeMap[type]] as never as {
+        findFirst: (args: Prisma.CatalogItemFindFirstArgs) => Promise<any>;
+      };
+
+      const catalogItem = await queryExecutor.findFirst({
+        where: {
+          id,
         },
-        message: "Unimplemented",
+        include: {
+          apartOf: {
+            where: {
+              userId: user.id,
+            },
+          },
+        },
+      });
+
+      if (!catalogItem) {
+        return <GetCatalogItemOwnershipStatusResponse>{
+          success: false,
+          message: "No catalog item found with this id",
+        };
+      }
+
+      return <GetCatalogItemOwnershipStatusResponse>{
+        success: true,
+        data: {
+          owned: catalogItem.apartOf.length > 0,
+        },
       };
     }
   }
@@ -932,6 +962,109 @@ class CatalogRouter {
 
     return <IResponseBase>{
       success: true,
+    };
+  }
+
+  @Patch("/sku/:id/stargaze")
+  @Authorized()
+  public async patchLimitedStargaze(
+    @Param("id") id: string,
+    @Account() user: User,
+    @Query("type") type: AssetType
+  ) {
+    if (!type || !prismaAssetTypeMap[type]) {
+      return <IResponseBase>{
+        success: false,
+        message: "No type provided - or provided type is invalid",
+      };
+    }
+
+    const queryExecutor = prisma[prismaAssetTypeMap[type]] as never as {
+      findFirst: (args: Prisma.CatalogItemFindFirstArgs) => Promise<any>;
+      update: (args: Prisma.CatalogItemUpdateArgs) => Promise<any>;
+    };
+
+    const catalogItem = await queryExecutor.findFirst({
+      where: {
+        id,
+      },
+      include: {
+        stargazers: {
+          where: {
+            id: user.id,
+          },
+        },
+      },
+    });
+
+    if (!catalogItem) {
+      return <IResponseBase>{
+        success: false,
+        message: "No catalog item found with this id",
+      };
+    }
+
+    await queryExecutor.update({
+      where: {
+        id,
+      },
+      data: {
+        stargazers: {
+          [catalogItem.stargazers.length > 0 ? "disconnect" : "connect"]: {
+            id: user.id,
+          },
+        },
+      },
+    });
+
+    return <IResponseBase>{
+      success: true,
+    };
+  }
+
+  @Get("/sku/:id/stargaze-status")
+  @Authorized()
+  public async getAssetStargazingStatus(
+    @Param("id") id: string,
+    @Account() user: User,
+    @Query("type") type: AssetType
+  ) {
+    if (!type || !prismaAssetTypeMap[type]) {
+      return <GetAssetStargazingStatusResponse>{
+        success: false,
+        message: "No type provided - or provided type is invalid",
+      };
+    }
+
+    const queryExecutor = prisma[prismaAssetTypeMap[type]] as never as {
+      findFirst: (args: Prisma.CatalogItemFindFirstArgs) => Promise<any>;
+    };
+
+    const catalogItem = await queryExecutor.findFirst({
+      where: {
+        id,
+      },
+      include: {
+        stargazers: {
+          where: {
+            id: user.id,
+          },
+        },
+      },
+    });
+
+    if (!catalogItem) {
+      return <GetAssetStargazingStatusResponse>{
+        success: false,
+        message: "No catalog item found with this id",
+      };
+    }
+
+    return <GetAssetStargazingStatusResponse>{
+      success: true,
+      data: {
+        stargazing: catalogItem.stargazers.length > 0,
+      },
     };
   }
 }

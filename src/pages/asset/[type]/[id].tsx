@@ -2,6 +2,7 @@ import DataGrid from "@/components/data-grid";
 import Framework from "@/components/framework";
 import ModernEmptyState from "@/components/modern-empty-state";
 import Owner from "@/components/owner";
+import PurchaseConfirmation from "@/components/purchase-confirmation";
 import ShadedButton from "@/components/shaded-button";
 import ShadedCard from "@/components/shaded-card";
 import Stateful from "@/components/stateful";
@@ -10,6 +11,7 @@ import Bit from "@/icons/Bit";
 import Exchange from "@/icons/Exchange";
 import {
   ChartData,
+  GetAssetStargazingStatusResponse,
   GetCatalogItemOwnershipStatusResponse,
   GetChartDataResponse,
   GetLimitedPriceResponse,
@@ -24,8 +26,9 @@ import { Fw } from "@/util/fw";
 import getMediaUrl from "@/util/get-media";
 import prisma from "@/util/prisma";
 import { User, nonCurrentUserSelect } from "@/util/prisma-types";
-import { AssetFrontend, PascalToCamel } from "@/util/types";
+import { AssetFrontend, AssetType, prismaAssetTypeMap } from "@/util/types";
 import {
+  ActionIcon,
   Avatar,
   Badge,
   Button,
@@ -49,10 +52,13 @@ import {
   HiCheckCircle,
   HiCubeTransparent,
   HiMusicNote,
+  HiOutlineStar,
   HiOutlineTag,
   HiOutlineTicket,
   HiShoppingBag,
+  HiStar,
   HiX,
+  HiXCircle,
 } from "react-icons/hi";
 
 type AssetViewProps = {
@@ -60,13 +66,7 @@ type AssetViewProps = {
   user: User;
   type: AssetType;
 };
-type AssetType = "catalog-item" | "limited-catalog-item" | "sound";
 
-const prismaAssetTypeMap: Record<AssetType, PascalToCamel<Prisma.ModelName>> = {
-  "catalog-item": "catalogItem",
-  "limited-catalog-item": "limitedCatalogItem",
-  sound: "sound",
-};
 const iconPlaceholderMap: Record<AssetType, JSX.Element> = {
   "catalog-item": <HiCubeTransparent className="w-full h-full aspect-square" />,
   "limited-catalog-item": (
@@ -75,7 +75,12 @@ const iconPlaceholderMap: Record<AssetType, JSX.Element> = {
   sound: <HiMusicNote className="w-full h-full aspect-square" />,
 };
 
-const AssetView: React.FC<AssetViewProps> = ({ asset, user, type }) => {
+const AssetView: React.FC<AssetViewProps> = ({
+  asset: assetInitial,
+  user,
+  type,
+}) => {
+  const [asset, setAsset] = useState(assetInitial);
   const [limitedPrice, setLimitedPrice] = useState<number>();
   const [limitedRecentAveragePrice, setLimitedRecentAveragePrice] =
     useState<number>();
@@ -91,6 +96,15 @@ const AssetView: React.FC<AssetViewProps> = ({ asset, user, type }) => {
       count: number;
     },
   });
+  const [stargazing, setStargazing] = useState<boolean>();
+  const [confirmPurchaseOpened, setConfirmPurchaseOpened] = useState(false);
+  const [purchasePrice, setPurchasePrice] = useState<number>(
+    assetInitial.limited
+      ? limitedPrice ?? assetInitial.price
+      : assetInitial.price
+  );
+  const [resellTarget, setResellTarget] =
+    useState<LimitedCatalogItemResellWithSeller | null>(null);
 
   const { colors } = useMantineTheme();
 
@@ -134,15 +148,19 @@ const AssetView: React.FC<AssetViewProps> = ({ asset, user, type }) => {
         `/api/catalog/sku/${assetId}/resellers`,
         (data) => setResellers(data?.resellers!)
       ),
+    ]);
+  };
+  const fetchGenericDetails = async () => {
+    const assetId = asset.id;
+
+    await Promise.all([
       fetchAndSetData<GetCatalogItemOwnershipStatusResponse>(
-        `/api/catalog/sku/${assetId}/ownership-status?type=${
-          type === "catalog-item"
-            ? "normal"
-            : type === "limited-catalog-item"
-            ? "limited"
-            : "sound"
-        }`,
+        `/api/catalog/sku/${assetId}/ownership-status?type=${type}`,
         (data) => setOwnership(data)
+      ),
+      fetchAndSetData<GetAssetStargazingStatusResponse>(
+        `/api/catalog/sku/${assetId}/stargaze-status?type=${type}`,
+        (data) => setStargazing(data?.stargazing!)
       ),
     ]);
   };
@@ -156,9 +174,9 @@ const AssetView: React.FC<AssetViewProps> = ({ asset, user, type }) => {
               <HiOutlineTicket />
               <span>
                 {asset.limited
-                  ? limitedPrice ?? "..."
+                  ? Fw.Nums.beautify(limitedPrice || 0) ?? "..."
                   : asset.price > 0
-                  ? asset.price
+                  ? Fw.Nums.beautify(asset.price)
                   : "Free"}
               </span>
             </Text>
@@ -171,7 +189,11 @@ const AssetView: React.FC<AssetViewProps> = ({ asset, user, type }) => {
                   className="flex items-center gap-2"
                 >
                   <Bit />
-                  <span>{asset.priceBits > 0 ? asset.priceBits : "Free"}</span>
+                  <span>
+                    {asset.priceBits > 0
+                      ? Fw.Nums.beautify(asset.priceBits)
+                      : "Free"}
+                  </span>
                 </Text>
               </>
             )}
@@ -182,12 +204,21 @@ const AssetView: React.FC<AssetViewProps> = ({ asset, user, type }) => {
             mb="md"
             disabled={
               !asset.onSale ||
+              ownership === undefined ||
               (!asset.limited && ownership?.owned) ||
               (asset.limited && asset.stock <= 0)
             }
+            onClick={() => {
+              setResellTarget(null);
+              setConfirmPurchaseOpened(true);
+            }}
           >
             {asset.limited && asset.stock <= 0
               ? "See resellers"
+              : ownership?.owned
+              ? asset.limited
+                ? "Purchase"
+                : "Owned"
               : asset.onSale
               ? "Purchase"
               : "Not for sale"}
@@ -198,7 +229,7 @@ const AssetView: React.FC<AssetViewProps> = ({ asset, user, type }) => {
     ...(asset.limited
       ? [
           {
-            key: "Best price",
+            key: "Best resell",
             value: (
               <Text
                 color="teal"
@@ -210,10 +241,12 @@ const AssetView: React.FC<AssetViewProps> = ({ asset, user, type }) => {
                   {asset.limited
                     ? resellers
                       ? resellers.length > 0
-                        ? resellers.reduce((a, b) =>
-                            a.price < b.price ? a : b
-                          ).price
-                        : asset.price
+                        ? Fw.Nums.beautify(
+                            resellers.reduce((a, b) =>
+                              a.price < b.price ? a : b
+                            ).price
+                          )
+                        : Fw.Nums.beautify(asset.price)
                       : "..."
                     : asset.price > 0
                     ? asset.price
@@ -251,6 +284,7 @@ const AssetView: React.FC<AssetViewProps> = ({ asset, user, type }) => {
 
   useEffect(() => {
     if (type === "limited-catalog-item") fetchLimitedDetails();
+    fetchGenericDetails();
   }, []);
 
   return (
@@ -310,6 +344,49 @@ const AssetView: React.FC<AssetViewProps> = ({ asset, user, type }) => {
           </Stateful>
         )}
       </Modal>
+      <PurchaseConfirmation
+        productTitle={
+          resellTarget
+            ? `Resell ${resellTarget.id.split("-")[0]} - ${asset.name}`
+            : asset.name
+        }
+        productDescription={asset.description}
+        price={purchasePrice}
+        opened={confirmPurchaseOpened}
+        setOpened={setConfirmPurchaseOpened}
+        onPurchaseComplete={async () => {
+          await fetchJson<IResponseBase>(
+            `/api/catalog/sku/${asset.id}/buy?price=${purchasePrice}${
+              type === "limited-catalog-item"
+                ? `&type=${resellTarget ? "limited-resell" : "limited"}${
+                    resellTarget ? `&resellId=${resellTarget.id}` : ""
+                  }`
+                : `&genericType=${type}`
+            }`,
+            {
+              method: "POST",
+              auth: true,
+            }
+          ).then((res) => {
+            if (res.success) {
+              showNotification({
+                title: "Success",
+                message: "Purchased item successfully",
+                icon: <HiCheckCircle />,
+              });
+              if (asset.limited) fetchLimitedDetails();
+              else fetchGenericDetails();
+            } else {
+              showNotification({
+                title: "Error",
+                message: res.message,
+                color: "red",
+                icon: <HiXCircle />,
+              });
+            }
+          });
+        }}
+      />
       <div className="w-full flex justify-center mt-12">
         <div className="max-w-2xl w-full px-4">
           <div className="flex sm:flex-row flex-col gap-8">
@@ -326,7 +403,39 @@ const AssetView: React.FC<AssetViewProps> = ({ asset, user, type }) => {
               >
                 {iconPlaceholderMap[type]}
               </Avatar>
+              <div className="mt-2 flex justify-end gap-2 items-center">
+                <Text color="yellow" weight={500}>
+                  {Fw.Nums.beautify(asset._count.stargazers)}
+                </Text>
+                <ActionIcon
+                  size="lg"
+                  color="orange"
+                  onClick={async () => {
+                    setStargazing(!stargazing);
+                    setAsset({
+                      ...asset,
+                      _count: {
+                        ...asset._count,
+                        stargazers: stargazing
+                          ? asset._count.stargazers - 1
+                          : asset._count.stargazers + 1,
+                      },
+                    });
+                    await fetchJson<IResponseBase>(
+                      `/api/catalog/sku/${asset.id}/stargaze?type=${type}`,
+                      {
+                        method: "PATCH",
+                        auth: true,
+                      }
+                    );
+                  }}
+                  disabled={stargazing === undefined}
+                >
+                  {stargazing ? <HiStar /> : <HiOutlineStar />}
+                </ActionIcon>
+              </div>
             </div>
+
             <div className="w-full">
               <div className="flex flex-col gap-4 mb-8">
                 <div className="flex items-center gap-6">
@@ -378,7 +487,7 @@ const AssetView: React.FC<AssetViewProps> = ({ asset, user, type }) => {
                   {
                     tooltip: "Recent price",
                     value: limitedRecentAveragePrice
-                      ? `${limitedRecentAveragePrice}T$`
+                      ? `${Fw.Nums.beautify(limitedRecentAveragePrice)}T$`
                       : "...",
                     icon: <Bit />,
                     hoverTip:
@@ -542,6 +651,11 @@ const AssetView: React.FC<AssetViewProps> = ({ asset, user, type }) => {
                         <ShadedButton
                           className="flex-1 text-center flex justify-between items-center"
                           key={i}
+                          onClick={() => {
+                            setPurchasePrice(reseller.price);
+                            setConfirmPurchaseOpened(true);
+                            setResellTarget(reseller);
+                          }}
                         >
                           <Owner user={reseller.seller} />
                           <div className="flex flex-col gap-2">
@@ -560,8 +674,8 @@ const AssetView: React.FC<AssetViewProps> = ({ asset, user, type }) => {
                             className="items-center flex gap-2"
                             weight={500}
                           >
-                            <Bit />
-                            <span>{reseller.price}</span>
+                            <HiOutlineTicket />
+                            <span>{Fw.Nums.beautify(reseller.price)}</span>
                           </Text>
                         </ShadedButton>
                       ))}
