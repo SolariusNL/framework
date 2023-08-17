@@ -76,6 +76,9 @@ const Details = ({ game: g }: DetailsProps) => {
   const [metadataChangeMap, setMetadataChangeMap] = React.useState<
     Record<string, boolean>
   >({});
+  const [descriptionValue, setDescriptionValue] = React.useState(
+    updated.description
+  );
 
   const editable = [
     {
@@ -273,13 +276,15 @@ const Details = ({ game: g }: DetailsProps) => {
   }, [editingMetadata]);
 
   useEffect(() => {
-    const dirty = Object.keys(updated).some((key) => {
-      if (key === "description") return false;
+    const isDirty = Object.keys(updated).some((key) => {
+      if (key === "description") {
+        return descriptionValue !== game[key];
+      }
       return updated[key as keyof typeof updated] !== game[key as keyof Game];
     });
 
-    setDirty(dirty);
-  }, [updated]);
+    setDirty(isDirty);
+  }, [updated, descriptionValue]);
 
   return (
     <>
@@ -426,8 +431,9 @@ const Details = ({ game: g }: DetailsProps) => {
                     {type == EditableType.RichText && (
                       <Descriptive title={label} description={description}>
                         <RichText
-                          value={String(property)}
+                          value={descriptionValue}
                           onChange={(s) => {
+                            setDescriptionValue(s);
                             setUpdated({ ...updated, [value.pointer]: s });
                           }}
                           styles={{
