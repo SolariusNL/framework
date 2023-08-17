@@ -42,7 +42,7 @@ const UdmuxChallenge: FC = () => {
         setUdmuxGuard(true);
         router.push("/");
       }, 800);
-    }, 2000);
+    }, 2800);
 
     return () => clearTimeout(timeout);
   }, []);
@@ -84,7 +84,7 @@ const UdmuxChallenge: FC = () => {
             </svg>
           </div>
           <div className="flex justify-between items-center md:flex-row flex-col">
-            <Title order={2}>Udmux Security Challenge</Title>
+            <Title order={2}>Solarius Udmux Guard</Title>
             <Text size="sm" color="dimmed">
               Udmux - Solarius © 2021-2023
             </Text>
