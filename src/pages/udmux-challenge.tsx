@@ -18,12 +18,14 @@ const UdmuxChallenge: FC = () => {
     key: "@fw/udmux-guard-seen",
     defaultValue: false,
   });
+
   const os = useOs();
   const router = useRouter();
 
   useEffect(() => {
     if (udmuxGuard) {
       router.push("/");
+      return;
     }
 
     fetch("https://api.ipify.org?format=json")
@@ -37,15 +39,32 @@ const UdmuxChallenge: FC = () => {
     setRayId(uuid);
 
     const timeout = setTimeout(() => {
-      setProgress(100);
-      setTimeout(() => {
-        setUdmuxGuard(true);
-        router.push("/");
-      }, 800);
+      const animate = () => {
+        const maxIncrement = 20;
+        const minIncrement = 5;
+        const maxDelay = 100;
+        const minDelay = 20;
+
+        const increment =
+          Math.random() * (maxIncrement - minIncrement) + minIncrement;
+        const delay = Math.random() * (maxDelay - minDelay) + minDelay;
+
+        setProgress((prevProgress) => Math.min(prevProgress + increment, 100));
+        setTimeout(animate, delay);
+      };
+      animate();
     }, 2800);
 
     return () => clearTimeout(timeout);
-  }, []);
+  }, [udmuxGuard]);
+
+  useEffect(() => {
+    if (progress >= 100) {
+      setTimeout(() => {
+        setUdmuxGuard(true);
+      }, 1500);
+    }
+  }, [progress]);
 
   return (
     <NoSSR>
