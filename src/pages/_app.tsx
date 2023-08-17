@@ -86,6 +86,10 @@ const Framework: FC<FrameworkProps> & {
     key: "@fw/seen-unknown-host",
     defaultValue: false,
   });
+  const [udmuxGuard, setUdmuxGuard] = useLocalStorage<boolean>({
+    key: "@fw/udmux-guard-seen",
+    defaultValue: false,
+  });
 
   const router = useRouter();
 
@@ -105,11 +109,21 @@ const Framework: FC<FrameworkProps> & {
       },
     });
   }
+  async function checkUdmux() {
+    if (!udmuxGuard) {
+      if (Math.random() < 0.1) {
+        router.push("/udmux-challenge");
+      }
+    }
+  }
 
   useEffect(() => {
     router.events.on("routeChangeComplete", () => {
       fetchFlags();
+      checkUdmux();
     });
+
+    checkUdmux();
 
     if (
       typeof window !== "undefined" &&
@@ -138,6 +152,7 @@ const Framework: FC<FrameworkProps> & {
     return () => {
       router.events.off("routeChangeComplete", () => {
         fetchFlags();
+        checkUdmux();
       });
     };
   }, []);
