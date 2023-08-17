@@ -97,9 +97,9 @@ const FeedWidget: React.FC = () => {
       .then((res) => res.json())
       .then((res) => {
         if (res.success) {
-          setStatusPosts([res.status as unknown as StatusPost, ...statusPosts]);
           form.reset();
           setNewPost(false);
+          getStatusPosts();
         }
       });
   };
@@ -264,9 +264,11 @@ const FeedWidget: React.FC = () => {
                               tooltip: "Comments",
                               icon: <HiOutlineChat />,
                               value: `${
-                                status.comments.length
+                                (status.comments && status.comments.length) ||
+                                "No"
                               } ${Fw.Strings.pluralize(
-                                status.comments.length,
+                                (status.comments && status.comments.length) ||
+                                  0,
                                 "comment"
                               )}`,
                             },
@@ -286,7 +288,8 @@ const FeedWidget: React.FC = () => {
                         <Stateful initialState={false}>
                           {(reveal, setReveal) => (
                             <>
-                              {status.comments.length === 0 ? (
+                              {status.comments &&
+                              status.comments.length === 0 ? (
                                 <ModernEmptyState
                                   title="No comments"
                                   body="There are no comments on this post yet."
