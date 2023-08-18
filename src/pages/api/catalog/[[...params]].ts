@@ -815,6 +815,11 @@ class CatalogRouter {
                     id: user.id,
                   },
                 },
+                to: {
+                  connect: {
+                    id: resell.sellerId,
+                  },
+                },
                 tickets: price,
                 description: `Sold ${resell.item.name} to @${
                   user.username
