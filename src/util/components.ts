@@ -35,12 +35,12 @@ const components = () => {
             borderColor:
               theme.colors[params.color || theme.primaryColor][
                 theme.colorScheme == "dark" ? 2 : 9
-              ] + "85",
+              ] + "50",
             "&:hover": {
               borderColor:
                 theme.colors[params.color || theme.primaryColor][
                   theme.colorScheme == "dark" ? 2 : 9
-                ] + "85",
+                ] + "50",
             },
             boxShadow:
               theme.colorScheme === "light"
@@ -99,6 +99,9 @@ const components = () => {
           ...(amoled && {
             backgroundColor: "#000",
           }),
+        },
+        item: {
+          borderRadius: "0.30rem",
         },
       }),
     },
@@ -187,7 +190,7 @@ const components = () => {
     Select: {
       styles: (theme: MantineTheme) => ({
         item: {
-          borderRadius: theme.radius.md,
+          borderRadius: "0.30rem",
           "&[data-hovered]": {
             ...(amoled && {
               backgroundColor: AMOLED_COLORS.paper,

@@ -515,7 +515,7 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                       tooltip: "Updated at",
                     },
                   ]}
-                  className="mt-0"
+                  className="!mt-0"
                 />
               </ShadedCard>
               <ReactNoSSR

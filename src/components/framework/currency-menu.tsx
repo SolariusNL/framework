@@ -1,4 +1,3 @@
-import { frameworkStyles } from "@/components/framework";
 import Bit from "@/icons/Bit";
 import Exchange from "@/icons/Exchange";
 import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
@@ -31,6 +30,7 @@ import {
   HiTicket,
   HiViewList,
 } from "react-icons/hi";
+import { useFrameworkComponentStyles } from "../framework.styles";
 
 const CurrencyMenu = ({
   currencyMenuOpened,
@@ -42,7 +42,7 @@ const CurrencyMenu = ({
   bits?: boolean;
 }) => {
   const router = useRouter();
-  const { classes, theme, cx } = frameworkStyles();
+  const { classes, theme, cx } = useFrameworkComponentStyles();
   const { user, setProperty } = useAuthorizedUserStore();
   const [prizeReminder, setPrizeReminder] = useLocalStorage({
     key: "@fw/daily-prize-reminder",

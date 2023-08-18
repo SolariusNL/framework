@@ -270,85 +270,83 @@ const Games: NextPage<GamesProps> = ({ user }) => {
             </div>
           </div>
           <div className="flex-1">
-            <ShadedCard>
-              <TextInput
-                icon={<HiSearch />}
-                placeholder="Search for games"
-                onChange={(e) =>
-                  setFilter({ ...filter, search: e.currentTarget.value })
-                }
-                variant="unstyled"
-                mb="lg"
-              />
-              <InfiniteScroll
-                pageStart={1}
-                loadMore={(p) => {
-                  fetch(`/api/games/${p}?filter=${JSON.stringify(filter)}`, {
-                    headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `${getCookie(".frameworksession")}`,
-                    },
-                  })
-                    .then((res) => res.json())
-                    .then((res) => {
-                      if (res.length === 0) {
-                        setCanLoadMore(false);
-                      } else {
-                        setGames([...(games ?? []), ...res]);
-                      }
+            <TextInput
+              icon={<HiSearch />}
+              placeholder="Search for games"
+              onChange={(e) =>
+                setFilter({ ...filter, search: e.currentTarget.value })
+              }
+              variant="unstyled"
+              mb="lg"
+            />
+            <InfiniteScroll
+              pageStart={1}
+              loadMore={(p) => {
+                fetch(`/api/games/${p}?filter=${JSON.stringify(filter)}`, {
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `${getCookie(".frameworksession")}`,
+                  },
+                })
+                  .then((res) => res.json())
+                  .then((res) => {
+                    if (res.length === 0) {
+                      setCanLoadMore(false);
+                    } else {
+                      setGames([...(games ?? []), ...res]);
+                    }
 
-                      if (res === null) {
-                        setCanLoadMore(false);
+                    if (res === null) {
+                      setCanLoadMore(false);
+                    }
+                  });
+              }}
+              hasMore={canLoadMore}
+            >
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-8">
+                {games &&
+                  games.length > 0 &&
+                  games.map((game) => (
+                    <ContextMenu
+                      width={170}
+                      key={game.id}
+                      dropdown={
+                        <>
+                          <Menu.Item
+                            icon={<HiClipboard />}
+                            onClick={() => {
+                              window.navigator.clipboard.writeText(
+                                `${window.location.origin}/game/${game.id}`
+                              );
+                            }}
+                          >
+                            Copy game ID
+                          </Menu.Item>
+                        </>
                       }
-                    });
-                }}
-                hasMore={canLoadMore}
-              >
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-8">
-                  {games &&
-                    games.length > 0 &&
-                    games.map((game) => (
-                      <ContextMenu
-                        width={170}
-                        key={game.id}
-                        dropdown={
-                          <>
-                            <Menu.Item
-                              icon={<HiClipboard />}
-                              onClick={() => {
-                                window.navigator.clipboard.writeText(
-                                  `${window.location.origin}/game/${game.id}`
-                                );
-                              }}
-                            >
-                              Copy game ID
-                            </Menu.Item>
-                          </>
-                        }
-                      >
-                        <GameCard game={game} />
-                      </ContextMenu>
-                    ))}
-                  {games && games.length === 0 && (
-                    <div className="col-span-full">
-                      <ModernEmptyState
-                        title="No games found"
-                        body="Try switching up your filter."
-                        shaded
-                      />
+                    >
+                      <GameCard game={game} />
+                    </ContextMenu>
+                  ))}
+                {games && games.length === 0 && (
+                  <div className="col-span-full">
+                    <ModernEmptyState
+                      title="No games found"
+                      body="Try switching up your filter."
+                      shaded
+                    />
+                  </div>
+                )}
+                {!games &&
+                  Array.from(Array(25).keys()).map((i) => (
+                    <div className="flex flex-col gap-2" key={i}>
+                      <Skeleton height={150} />
+                      <Skeleton height={20} />
+                      <Skeleton height={45} />
                     </div>
-                  )}
-                  {!games &&
-                    Array.from(Array(25).keys()).map((i) => (
-                      <div className="flex flex-col gap-2" key={i}>
-                        <Skeleton height={150} />
-                        <Skeleton height={20} />
-                        <Skeleton height={45} />
-                      </div>
-                    ))}
-                </div>
-              </InfiniteScroll>
-            </ShadedCard>
+                  ))}
+              </div>
+            </InfiniteScroll>
           </div>
         </div>
       </Framework>

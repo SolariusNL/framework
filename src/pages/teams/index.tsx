@@ -1,5 +1,4 @@
 import ModernEmptyState from "@/components/modern-empty-state";
-import ShadedCard from "@/components/shaded-card";
 import TeamCard from "@/components/teams/team";
 import TeamsProvider from "@/components/teams/teams";
 import authorizedRoute from "@/util/auth";
@@ -111,51 +110,48 @@ const Teams: React.FC<TeamsProps> = ({ user }) => {
           placeholder="Sort by..."
         />
       </div>
-      <ShadedCard>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {loading ? (
-            Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton key={i} height={220} />
-            ))
-          ) : teams && teams.length === 0 ? (
-            <div className="w-full flex items-center justify-center col-span-full">
-              <ModernEmptyState
-                title="No teams"
-                body="You aren't apart of any teams yet. Why not make one to get started?"
-              />
-            </div>
-          ) : (
-            teams &&
-            teams
-              .filter((t) => {
-                if (filter === "all") return true;
-                return t.ownerId === user.id;
-              })
-              .sort((a, b) => {
-                if (sort === "name") {
-                  return a.name.localeCompare(b.name);
-                } else if (sort === "last_updated") {
-                  return (
-                    new Date(b.updatedAt).getTime() -
-                    new Date(a.updatedAt).getTime()
-                  );
-                } else if (sort === "created_at") {
-                  return (
-                    new Date(b.cakeDay).getTime() -
-                    new Date(a.cakeDay).getTime()
-                  );
-                } else if (sort === "members") {
-                  return b._count.members + 1 - (a._count.members + 1);
-                }
-                return 0;
-              })
-              .filter((t) => {
-                return t.name.toLowerCase().includes(search.toLowerCase());
-              })
-              .map((t) => <TeamCard team={t} key={t.id} />)
-          )}
-        </div>
-      </ShadedCard>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {loading ? (
+          Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton key={i} height={220} />
+          ))
+        ) : teams && teams.length === 0 ? (
+          <div className="w-full flex items-center justify-center col-span-full">
+            <ModernEmptyState
+              title="No teams"
+              body="You aren't apart of any teams yet. Why not make one to get started?"
+            />
+          </div>
+        ) : (
+          teams &&
+          teams
+            .filter((t) => {
+              if (filter === "all") return true;
+              return t.ownerId === user.id;
+            })
+            .sort((a, b) => {
+              if (sort === "name") {
+                return a.name.localeCompare(b.name);
+              } else if (sort === "last_updated") {
+                return (
+                  new Date(b.updatedAt).getTime() -
+                  new Date(a.updatedAt).getTime()
+                );
+              } else if (sort === "created_at") {
+                return (
+                  new Date(b.cakeDay).getTime() - new Date(a.cakeDay).getTime()
+                );
+              } else if (sort === "members") {
+                return b._count.members + 1 - (a._count.members + 1);
+              }
+              return 0;
+            })
+            .filter((t) => {
+              return t.name.toLowerCase().includes(search.toLowerCase());
+            })
+            .map((t) => <TeamCard team={t} key={t.id} />)
+        )}
+      </div>
     </TeamsProvider>
   );
 };

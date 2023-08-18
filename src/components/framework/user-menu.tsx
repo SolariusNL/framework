@@ -1,5 +1,4 @@
 import ClickToReveal from "@/components/click-to-reveal";
-import { frameworkStyles } from "@/components/framework";
 import ThemeSwitch from "@/icons/ThemeSwitch";
 import useAmoled from "@/stores/useAmoled";
 import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
@@ -39,6 +38,7 @@ import {
   HiUser,
   HiUsers,
 } from "react-icons/hi";
+import { useFrameworkComponentStyles } from "../framework.styles";
 
 const UserMenu = ({
   userMenuOpened,
@@ -50,7 +50,7 @@ const UserMenu = ({
   minimal?: boolean;
 }) => {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
-  const { classes, theme, cx } = frameworkStyles();
+  const { classes, theme, cx } = useFrameworkComponentStyles();
   const { user, setProperty } = useAuthorizedUserStore();
   const router = useRouter();
   const { setOpened: setUpdateDrawerOpened } = useUpdateDrawer();

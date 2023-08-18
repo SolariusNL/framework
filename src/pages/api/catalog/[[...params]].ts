@@ -11,6 +11,7 @@ import {
   LimitedCatalogItemResell,
   NotificationType,
   Prisma,
+  TransactionType,
 } from "@prisma/client";
 import {
   Body,
@@ -494,7 +495,7 @@ class CatalogRouter {
         ) => Promise<CatalogItem & { apartOf: Inventory[] }>;
       };
 
-      const item = await queryExecutor.findFirst({
+      const item = (await queryExecutor.findFirst({
         where: {
           id,
         },
@@ -504,8 +505,16 @@ class CatalogRouter {
               userId: user.id,
             },
           },
+          author: {
+            select: {
+              username: true,
+            },
+          },
         },
-      });
+      })) as CatalogItem & {
+        author: { username: string };
+        apartOf: Inventory[];
+      };
 
       if (!item) {
         return <IResponseBase>{
@@ -563,6 +572,18 @@ class CatalogRouter {
         data: {
           tickets: {
             decrement: item.price,
+          },
+          transactions: {
+            create: {
+              type: TransactionType.OUTBOUND,
+              to: {
+                connect: {
+                  id: item.authorId,
+                },
+              },
+              tickets: item.price,
+              description: `Bought ${item.name} from ${item.author.username}`,
+            },
           },
         },
       });

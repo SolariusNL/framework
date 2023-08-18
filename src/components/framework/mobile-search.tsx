@@ -1,6 +1,6 @@
-import { frameworkStyles } from "@/components/framework";
 import { Group, Menu, UnstyledButton } from "@mantine/core";
 import { HiSearch } from "react-icons/hi";
+import { useFrameworkComponentStyles } from "../framework.styles";
 import Search from "./search";
 
 const MobileSearchMenu = ({
@@ -10,7 +10,7 @@ const MobileSearchMenu = ({
   opened: boolean;
   minimal?: boolean;
 }) => {
-  const { classes, cx } = frameworkStyles();
+  const { classes, cx } = useFrameworkComponentStyles();
 
   return (
     <Menu transition="pop-top-right">

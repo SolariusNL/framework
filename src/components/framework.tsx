@@ -11,6 +11,8 @@ import Search from "@/components/framework/search";
 import UpdateDrawer from "@/components/framework/update-drawer";
 import UserMenu from "@/components/framework/user-menu";
 import TabNav from "@/components/tab-nav";
+import appConfig from "@/config/app";
+import { spotlight } from "@/config/spotlight";
 import SocketContext from "@/contexts/Socket";
 import { setSearch, toggleSearch } from "@/reducers/search";
 import { RootState } from "@/reducers/store";
@@ -20,7 +22,6 @@ import useFeedback from "@/stores/useFeedback";
 import { Flow } from "@/stores/useFlow";
 import usePreferences from "@/stores/usePreferences";
 import useSidebar from "@/stores/useSidebar";
-import logout from "@/util/api/logout";
 import { getIpcRenderer } from "@/util/electron";
 import { Fw } from "@/util/fw";
 import useMediaQuery from "@/util/media-query";
@@ -42,68 +43,49 @@ import {
   Stack,
   Text,
   Title,
-  createStyles,
-  useMantineColorScheme,
 } from "@mantine/core";
 import { useLocalStorage } from "@mantine/hooks";
 import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import { SpotlightProvider } from "@mantine/spotlight";
-import { deleteCookie, getCookie, setCookie } from "cookies-next";
+import { deleteCookie, getCookie } from "cookies-next";
 import isElectron from "is-electron";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useContext, useEffect, useState } from "react";
 import {
   HiArrowLeft,
-  HiCheckCircle,
   HiCode,
-  HiCog,
   HiDocumentText,
   HiExternalLink,
-  HiGift,
   HiGlobe,
-  HiHome,
-  HiLightBulb,
   HiLogin,
-  HiMail,
   HiOfficeBuilding,
-  HiOutlineCog,
-  HiOutlineHome,
-  HiOutlineLightBulb,
   HiOutlineLightningBolt,
   HiOutlineSearch,
-  HiOutlineShoppingBag,
-  HiOutlineSparkles,
-  HiOutlineUser,
-  HiOutlineViewGrid,
-  HiSearch,
-  HiShieldCheck,
-  HiShoppingBag,
-  HiSun,
-  HiTicket,
   HiTrash,
-  HiUser,
-  HiViewGrid,
   HiXCircle,
 } from "react-icons/hi";
 import { useDispatch, useSelector } from "react-redux";
+import Conditional from "./conditional";
+import { useFrameworkComponentStyles } from "./framework.styles";
+import ImpersonationBanner from "./framework/impersonation-banner";
 
-interface FrameworkProps {
+type Tab =
+  | "home"
+  | "games"
+  | "catalog"
+  | "invent"
+  | "social"
+  | "avatar"
+  | "settings"
+  | "messages"
+  | "none";
+type FrameworkProps = {
   user: User;
   children: React.ReactNode;
   footer?: boolean;
-  activeTab:
-    | "home"
-    | "games"
-    | "catalog"
-    | "invent"
-    | "social"
-    | "avatar"
-    | "settings"
-    | "messages"
-    | "none";
-  // @deprecated - use noContentPadding instead
+  activeTab?: Tab;
   noPadding?: boolean;
   modernTitle?: string;
   noOverflow?: boolean;
@@ -118,62 +100,7 @@ interface FrameworkProps {
   actions?: [string | React.ReactNode, () => void][];
   integratedTabs?: React.ReactNode;
   relative?: boolean;
-}
-
-export const frameworkStyles = createStyles((theme) => ({
-  header: {
-    paddingTop: theme.spacing.sm,
-    backgroundColor:
-      theme.colorScheme === "dark"
-        ? theme.colors.dark[6]
-        : theme.colors.gray[0],
-    borderBottom: `1px solid ${
-      theme.colorScheme === "dark" ? "transparent" : theme.colors.gray[2]
-    }`,
-  },
-
-  mainSection: {
-    paddingBottom: theme.spacing.sm,
-  },
-
-  user: {
-    color: theme.colorScheme === "dark" ? theme.colors.dark[0] : theme.black,
-    padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
-    borderRadius: theme.radius.md,
-    transition: "background-color 100ms ease",
-
-    "&:hover": {
-      backgroundColor:
-        theme.colorScheme === "dark" ? theme.colors.dark[8] : theme.white,
-    },
-  },
-
-  userActive: {
-    backgroundColor:
-      theme.colorScheme === "dark" ? theme.colors.dark[8] : theme.white,
-  },
-
-  currency: {
-    color: theme.colorScheme === "dark" ? theme.colors.dark[0] : theme.black,
-    padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
-    borderRadius: theme.radius.md,
-    transition: "background-color 100ms ease",
-
-    "&:hover": {
-      backgroundColor:
-        theme.colorScheme === "dark" ? theme.colors.dark[8] : theme.white,
-    },
-  },
-
-  currencyActive: {
-    backgroundColor:
-      theme.colorScheme === "dark" ? theme.colors.dark[8] : theme.white,
-  },
-
-  tabsList: {
-    borderBottom: "0 !important",
-  },
-}));
+};
 
 const Framework = ({
   user,
@@ -192,10 +119,10 @@ const Framework = ({
   footer = true,
   noOverflow,
 }: FrameworkProps) => {
-  const { classes } = frameworkStyles();
+  const { classes } = useFrameworkComponentStyles();
   const { opened: sidebarOpened, setOpened: setSidebarOpened } = useSidebar();
   const [userMenuOpened, _setUserMenuOpened] = useState(false);
-  const [currencyMenuOpened, _setCurrencyMenuOpened] = useState(false);
+  const [currencyMenuOpened] = useState(false);
   const router = useRouter();
   const mobile = useMediaQuery("950");
   const oldCookie = getCookie(".frameworksession.old");
@@ -212,153 +139,6 @@ const Framework = ({
     }
   }, [router.asPath]);
 
-  const tabs = [
-    {
-      label: "Home",
-      href: "/",
-      icon: <HiOutlineHome />,
-      color: "pink",
-      description: "Your experience at a glance",
-    },
-    {
-      label: "Games",
-      href: "/games",
-      icon: <HiOutlineViewGrid />,
-      color: "violet",
-      description: "Browse Frameworks catalog of immersive games",
-    },
-    {
-      label: "Catalog",
-      href: "/catalog",
-      icon: <HiOutlineShoppingBag />,
-      color: "blue",
-      description: "Find some new items for your avatar",
-    },
-    {
-      label: "Invent",
-      href: "/invent/games",
-      icon: <HiOutlineLightBulb />,
-      color: "teal",
-      description: "Where imagination comes to life",
-    },
-    {
-      label: "Social",
-      href: "/social",
-      icon: <HiOutlineSparkles />,
-      color: "green",
-      description: "See what your friends are up to",
-    },
-    {
-      label: "Avatar",
-      href: "/avatar",
-      icon: <HiOutlineUser />,
-      color: "orange",
-      description: "Manage your avatar",
-    },
-    {
-      label: "Settings",
-      href: "/settings/account",
-      icon: <HiOutlineCog />,
-      color: "grape",
-      description: "Manage your account and other settings",
-    },
-  ];
-  const { toggleColorScheme } = useMantineColorScheme();
-  let [spotlight, setSpotlight] = useState([
-    {
-      title: "Home",
-      icon: <HiHome />,
-      description: "Your experience starts here.",
-      onTrigger: () => router.push("/"),
-    },
-    {
-      title: "Games",
-      icon: <HiViewGrid />,
-      description: "Find games to play on Framework.",
-      onTrigger: () => router.push("/games"),
-    },
-    {
-      title: "Catalog",
-      icon: <HiShoppingBag />,
-      description:
-        "Find new items for your avatar, or purchase other digital goods.",
-      onTrigger: () => router.push("/catalog"),
-    },
-    {
-      title: "Invent",
-      icon: <HiLightBulb />,
-      description: "Where dreams are made, create your first game here.",
-      onTrigger: () => router.push("/invent/games"),
-    },
-    {
-      title: "Chat",
-      icon: <HiMail />,
-      description: "Chat with your friends in real time.",
-      onTrigger: () => router.push("/chat"),
-    },
-    {
-      title: "Avatar",
-      icon: <HiUser />,
-      description: "Customize your avatar.",
-      onTrigger: () => router.push("/avatar"),
-    },
-    {
-      title: "Settings",
-      icon: <HiCog />,
-      description: "Change your account settings.",
-      onTrigger: () => router.push("/settings/account"),
-    },
-    {
-      title: "Profile",
-      icon: <HiUser />,
-      description: "View your profile.",
-      onTrigger: () => router.push(`/users/${user.username}`),
-    },
-    {
-      title: "Daily prize",
-      icon: <HiGift />,
-      description: "Claim your daily prize.",
-      onTrigger: () => router.push("/prizes"),
-    },
-    {
-      title: "Redeem gift code",
-      icon: <HiGift />,
-      description: "Redeem a gift code.",
-      onTrigger: () => router.push("/redeem"),
-    },
-    {
-      title: "Tickets",
-      icon: <HiTicket />,
-      description: "View your ticket dashboard.",
-      onTrigger: () => router.push("/tickets"),
-    },
-    {
-      title: "Ticket history",
-      icon: <HiTicket />,
-      description: "View your ticket transaction history.",
-      onTrigger: () => router.push("/tickets/transactions"),
-    },
-    {
-      title: "Purchase tickets",
-      icon: <HiTicket />,
-      description: "Purchase tickets.",
-      onTrigger: () => router.push("/tickets/buy"),
-    },
-    {
-      title: "Change theme",
-      icon: <HiSun />,
-      description: "Change the UI color scheme.",
-      onTrigger: () => toggleColorScheme(),
-      disabled: amoled,
-    },
-    {
-      title: "Browse snippets",
-      icon: <HiCode />,
-      description: "Browse code snippets from the community.",
-      onTrigger: () => router.push("/snippets"),
-    },
-  ]);
-
   const [warningSeen, setEmailWarningSeen] = useLocalStorage({
     key: "email-warning-seen",
     defaultValue: false,
@@ -367,7 +147,7 @@ const Framework = ({
   const [isSSR, setIsSSR] = useState(true);
   const socket = useContext(SocketContext);
 
-  const items = tabs.map((tab) => (
+  const items = appConfig.nav.map((tab) => (
     <TabNav.Tab
       value={tab.label.toLowerCase()}
       key={tab.label}
@@ -386,18 +166,6 @@ const Framework = ({
     setIsSSR(false);
   }, []);
   React.useEffect(() => {
-    if (user && user.role && user.role === "ADMIN") {
-      setSpotlight([
-        ...spotlight,
-        {
-          title: "Admin Dashboard",
-          icon: <HiShieldCheck />,
-          description: "Manage your Framework instance.",
-          onTrigger: () => router.push("/admin/dashboard"),
-        },
-      ]);
-    }
-
     if (user) {
       setUserStore(user);
     }
@@ -443,8 +211,15 @@ const Framework = ({
 
   return (
     <SpotlightProvider
-      actions={spotlight.filter((s) => !s.disabled)}
-      searchIcon={<HiSearch size={18} />}
+      actions={spotlight.map((item) => ({
+        title: item.title,
+        description: item.description,
+        icon: item.icon,
+        onTrigger() {
+          router.push(item.path);
+        },
+      }))}
+      searchIcon={<HiOutlineSearch size={18} />}
       searchPlaceholder="Search..."
       shortcut="mod + space"
       nothingFoundMessage="Nothing found..."
@@ -464,46 +239,9 @@ const Framework = ({
           <Chat />
         </Affix>
       )}
-      {impersonating && (
-        <Box
-          sx={(theme) => ({
-            backgroundColor: theme.colorScheme === "dark" ? "black" : "white",
-            borderBottom: `1px solid ${
-              theme.colorScheme === "dark"
-                ? "transparent"
-                : theme.colors.gray[2]
-            }`,
-          })}
-          py="md"
-        >
-          <Container className="flex justify-between items-center">
-            <Text>
-              You are impersonating{" "}
-              <span className="font-bold">{user?.username}</span>.{" "}
-            </Text>
-            <Button
-              variant="white"
-              onClick={async () => {
-                const newCookie = getCookie(".frameworksession.old");
-
-                await logout().then(() => {
-                  setCookie(".frameworksession", newCookie);
-                  deleteCookie(".frameworksession.old");
-
-                  router.push("/admin/users");
-                  showNotification({
-                    title: "Impersonation stopped",
-                    message: "You are no longer impersonating this user.",
-                    icon: <HiCheckCircle />,
-                  });
-                });
-              }}
-            >
-              Stop impersonating
-            </Button>
-          </Container>
-        </Box>
-      )}
+      <Conditional if={impersonating}>
+        <ImpersonationBanner />
+      </Conditional>
       <div
         className={classes.header}
         style={{
@@ -529,7 +267,7 @@ const Framework = ({
           }}
         >
           <Group position="apart">
-            <Group spacing={12}>
+            <Group spacing="sm">
               <ContextMenu
                 width={200}
                 className="items-center flex"
@@ -652,8 +390,7 @@ const Framework = ({
                 <Badge className="md:block hidden">Dev</Badge>
               )}
             </Group>
-
-            {mobile && (
+            <Conditional if={mobile}>
               <div className="flex items-center gap-1">
                 {user ? (
                   <>
@@ -691,19 +428,18 @@ const Framework = ({
                   </>
                 )}
               </div>
-            )}
-            {!mobile && user && (
+            </Conditional>
+            <Conditional if={!mobile && user}>
               <Group>
                 <NotificationFlyout />
                 {Fw.Feature.enabled(Fw.FeatureIdentifier.Bits) && (
                   <CurrencyMenu currencyMenuOpened={currencyMenuOpened} bits />
                 )}
                 <CurrencyMenu currencyMenuOpened={currencyMenuOpened} />
-
                 <UserMenu userMenuOpened={userMenuOpened} />
               </Group>
-            )}
-            {!mobile && !user && (
+            </Conditional>
+            <Conditional if={!mobile && !user}>
               <Group>
                 <Link href="/login" passHref>
                   <Button variant="default" leftIcon={<HiLogin />}>
@@ -714,10 +450,10 @@ const Framework = ({
                   <Button leftIcon={<HiDocumentText />}>Sign up</Button>
                 </Link>
               </Group>
-            )}
+            </Conditional>
           </Group>
         </Container>
-        {!mobile && (
+        <Conditional if={!mobile}>
           <Container mt={10}>
             <Group position="apart">
               <TabNav
@@ -752,7 +488,7 @@ const Framework = ({
               </Popover>
             </Group>
           </Container>
-        )}
+        </Conditional>
         <UpdateDrawer />
         <Drawer
           opened={sidebarOpened}
@@ -764,7 +500,7 @@ const Framework = ({
         >
           <Container>
             <Stack spacing={"xs"} mb="md">
-              {tabs.map((tab) => (
+              {appConfig.nav.map((tab) => (
                 <Link href={tab.href} passHref key={tab.href}>
                   <NavLink
                     className="rounded-md"
@@ -793,109 +529,112 @@ const Framework = ({
         </Drawer>
       </div>
       <Banner />
-      {!noPadding ? (
-        <>
-          {modernTitle && modernSubtitle && (
-            <Box
-              sx={(theme) => ({
-                backgroundColor: theme.colorScheme === "dark" ? "#000" : "#fff",
-                position: immersive ? "sticky" : "relative",
-                top: immersive ? "108.7px" : "0",
-              })}
-              mb={noContentPadding ? 0 : 32}
-              p={32}
-            >
-              <Container>
-                <Group position="apart">
-                  <div>
-                    <Title mb={8}>
-                      {modernTitle}
-                      {beta && (
-                        <Badge
-                          sx={{
-                            verticalAlign: "middle",
-                          }}
-                          ml={12}
-                        >
-                          Beta
-                        </Badge>
-                      )}
-                    </Title>
-                    <Text color="dimmed">{modernSubtitle}</Text>
-                    {returnTo && (
-                      <Link href={returnTo.href} passHref>
-                        <Anchor
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 8,
-                          }}
-                          mt={16}
-                        >
-                          <HiArrowLeft />
-                          {returnTo.label}
-                        </Anchor>
-                      </Link>
-                    )}
-                  </div>
-                  <div className={mobile ? "flex gap-2" : ""}>
-                    {actions && (
-                      <div>
-                        {actions.map(([label, onClick], index) => (
-                          <Anchor
-                            key={index}
-                            onClick={onClick}
-                            sx={(theme) => ({
-                              color:
-                                theme.colorScheme === "dark" ? "#fff" : "#000",
-                              "&:after": {
-                                content: "''",
-                                display: "block",
-                                width: "100%",
-                                height: "2px",
-                                backgroundColor:
-                                  theme.colorScheme === "dark"
-                                    ? "#fff"
-                                    : "#000" + "80",
-                                transform: "scaleX(0)",
-                                transition: "transform 0.3s ease-in-out",
-                              },
-                              fontWeight: 500,
-                            })}
-                          >
-                            {label}
-                          </Anchor>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </Group>
-                {integratedTabs && <div className="mt-8">{integratedTabs}</div>}
-              </Container>
-            </Box>
-          )}
-          <Container
-            mt={noContentPadding ? 0 : 26}
-            sx={{
-              ...(noContentPadding && {
-                padding: "0px",
-                maxWidth: "100%",
-              }),
-              ...(noOverflow && {
-                overflow: "hidden",
-              }),
-            }}
+      <Conditional if={!noPadding}>
+        <Conditional if={modernTitle && modernSubtitle}>
+          <Box
+            sx={(theme) => ({
+              backgroundColor: theme.colorScheme === "dark" ? "#000" : "#fff",
+              position: immersive ? "sticky" : "relative",
+              top: immersive ? "108.7px" : "0",
+            })}
+            mb={noContentPadding ? 0 : 32}
+            p={32}
           >
-            {user && !user.emailVerified && !warningSeen && !isSSR && (
-              <EmailReminder setWarningSeen={setEmailWarningSeen} />
-            )}
-            {children}
-          </Container>
-        </>
-      ) : (
+            <Container>
+              <Group position="apart">
+                <div>
+                  <Title mb={8}>
+                    {modernTitle}
+                    {beta && (
+                      <Badge
+                        sx={{
+                          verticalAlign: "middle",
+                        }}
+                        ml={12}
+                      >
+                        Beta
+                      </Badge>
+                    )}
+                  </Title>
+                  <Text color="dimmed">{modernSubtitle}</Text>
+                  {returnTo && (
+                    <Link href={returnTo.href} passHref>
+                      <Anchor
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                        }}
+                        mt={16}
+                      >
+                        <HiArrowLeft />
+                        {returnTo.label}
+                      </Anchor>
+                    </Link>
+                  )}
+                </div>
+                <div className={mobile ? "flex gap-2" : ""}>
+                  {actions && (
+                    <div>
+                      {actions.map(([label, onClick], index) => (
+                        <Anchor
+                          key={index}
+                          onClick={onClick}
+                          sx={(theme) => ({
+                            color:
+                              theme.colorScheme === "dark" ? "#fff" : "#000",
+                            "&:after": {
+                              content: "''",
+                              display: "block",
+                              width: "100%",
+                              height: "2px",
+                              backgroundColor:
+                                theme.colorScheme === "dark"
+                                  ? "#fff"
+                                  : "#000" + "80",
+                              transform: "scaleX(0)",
+                              transition: "transform 0.3s ease-in-out",
+                            },
+                            fontWeight: 500,
+                          })}
+                        >
+                          {label}
+                        </Anchor>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </Group>
+              {integratedTabs && <div className="mt-8">{integratedTabs}</div>}
+            </Container>
+          </Box>
+        </Conditional>
+      </Conditional>
+      <Conditional if={!noPadding}>
+        <Container
+          mt={noContentPadding ? 0 : 26}
+          sx={{
+            ...(noContentPadding && {
+              padding: "0px",
+              maxWidth: "100%",
+            }),
+            ...(noOverflow && {
+              overflow: "hidden",
+            }),
+          }}
+        >
+          {user && !user.emailVerified && !warningSeen && !isSSR && (
+            <EmailReminder setWarningSeen={setEmailWarningSeen} />
+          )}
+          {children}
+        </Container>
+      </Conditional>
+      <Conditional if={noPadding}>
         <div>{children}</div>
-      )}
-      {!immersive && footer && <Footer />}
+      </Conditional>
+      <Conditional if={!immersive && footer}>
+        <Footer />
+      </Conditional>
     </SpotlightProvider>
   );
 };
