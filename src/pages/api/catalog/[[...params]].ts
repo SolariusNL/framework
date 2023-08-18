@@ -598,6 +598,13 @@ class CatalogRouter {
             id,
             onSale: true,
           },
+          include: {
+            author: {
+              select: {
+                username: true,
+              },
+            },
+          },
         });
 
         if (!limited) {
@@ -658,6 +665,18 @@ class CatalogRouter {
               update: {
                 tickets: {
                   decrement: price,
+                },
+                transactions: {
+                  create: {
+                    type: TransactionType.OUTBOUND,
+                    to: {
+                      connect: {
+                        id: limited.authorId,
+                      },
+                    },
+                    tickets: price,
+                    description: `Bought ${limited.name} from ${limited.author.username}`,
+                  },
                 },
               },
             },
@@ -788,6 +807,20 @@ class CatalogRouter {
                 }), has been sold for ${price}T$ to @${user.username}!`,
               },
             },
+            transactions: {
+              create: {
+                type: TransactionType.INBOUND,
+                from: {
+                  connect: {
+                    id: user.id,
+                  },
+                },
+                tickets: price,
+                description: `Sold ${resell.item.name} to @${
+                  user.username
+                } with serial ${resell.id.split("-")[0]}`,
+              },
+            },
           },
         });
         await prisma.user.update({
@@ -797,6 +830,20 @@ class CatalogRouter {
           data: {
             tickets: {
               decrement: price,
+            },
+            transactions: {
+              create: {
+                type: TransactionType.OUTBOUND,
+                to: {
+                  connect: {
+                    id: resell.sellerId,
+                  },
+                },
+                tickets: price,
+                description: `Bought ${resell.item.name} from @${
+                  resell.sellerId
+                } with serial ${resell.id.split("-")[0]}`,
+              },
             },
           },
         });
