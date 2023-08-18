@@ -256,6 +256,7 @@ export const userSelect: Prisma.UserSelect = {
   quickLoginEnabled: true,
   newsletterSubscribed: true,
   lastSurvey: true,
+  robloxTransfer: true,
 };
 
 const article = Prisma.validator<Prisma.AdminArticleArgs>()({

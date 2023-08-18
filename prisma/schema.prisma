@@ -195,6 +195,7 @@ model User {
   ai                         Boolean                     @default(false)
   createdCatalogItems        CatalogItem[]               @relation("catalogItemAuthor")
   createdLimitedCatalogItems LimitedCatalogItem[]        @relation("limitedCatalogItemAuthor")
+  robloxTransfer             Boolean                     @default(false)
 }
 
 model Story {

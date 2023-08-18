@@ -7,6 +7,7 @@ export enum ExperimentId {
   AmoledDarkMode = "amoled-dark-mode",
   FrameworkAI = "framework-ai",
   LoginManager = "login-manager",
+  RobloxAuth = "roblox-auth",
 }
 export enum ExperimentStage {
   Alpha = "alpha",
@@ -42,6 +43,14 @@ export const EXPERIMENTS = [
     description: "An experimental login manager to monitor recent logins",
     stage: ExperimentStage.Alpha,
     id: ExperimentId.LoginManager,
+    refreshNecessary: false,
+  },
+  {
+    name: "Roblox Authentication",
+    description:
+      "An experimental Roblox authentication flow to convert Robux to Tickets",
+    stage: ExperimentStage.Alpha,
+    id: ExperimentId.RobloxAuth,
     refreshNecessary: false,
   },
 ];

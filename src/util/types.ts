@@ -34,7 +34,8 @@ export type UserPreferences =
   | "@chat/my-color"
   | "@dismissible/chat/conversation-tooltip"
   | "@app/secret-gift"
-  | "@app/notification-manager";
+  | "@app/notification-manager"
+  | "@user/seen-roblox-convert";
 export const userPreferences: UserPreferences[] = [
   "@chat/bell",
   "@chat/enabled",
@@ -42,6 +43,7 @@ export const userPreferences: UserPreferences[] = [
   "@dismissible/chat/conversation-tooltip",
   "@app/secret-gift",
   "@app/notification-manager",
+  "@user/seen-roblox-convert",
 ];
 export const defaultUserPreferences: Record<
   UserPreferences,
@@ -53,6 +55,7 @@ export const defaultUserPreferences: Record<
   "@dismissible/chat/conversation-tooltip": false,
   "@app/secret-gift": false,
   "@app/notification-manager": true,
+  "@user/seen-roblox-convert": false,
 };
 export const userPreferenceValidators: Partial<
   Record<UserPreferences, (value: string | boolean | number) => boolean>
@@ -60,6 +63,8 @@ export const userPreferenceValidators: Partial<
   "@chat/my-color": (value) =>
     typeof value === "string" && MANTINE_COLORS.includes(value),
   "@app/secret-gift": (value) => typeof value === "boolean" && value === true,
+  "@user/seen-roblox-convert": (value) =>
+    typeof value === "boolean" && value === true,
 };
 
 export type PascalToCamel<S extends string> =

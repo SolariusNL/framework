@@ -11,18 +11,35 @@ import FollowMesh from "@/components/mesh/follow";
 import LikeGameMesh from "@/components/mesh/like-game";
 import ReferMesh from "@/components/mesh/refer";
 import SidebarTabNavigation from "@/layouts/SidebarTabNavigation";
+import Landing from "@/pages/landing";
 import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
+import useExperimentsStore, {
+  ExperimentId,
+} from "@/stores/useExperimentsStore";
+import { Flow } from "@/stores/useFlow";
+import usePreferences from "@/stores/usePreferences";
 import IResponseBase from "@/types/api/IResponseBase";
 import authorizedRoute from "@/util/auth";
 import fetchJson from "@/util/fetch";
+import { Fw } from "@/util/fw";
+import { Preferences } from "@/util/preferences";
 import prisma from "@/util/prisma";
 import { User } from "@/util/prisma-types";
-import { ActionIcon, Badge, Divider, NavLink, Text } from "@mantine/core";
+import {
+  ActionIcon,
+  Badge,
+  Button,
+  Divider,
+  NavLink,
+  Text,
+  Title,
+} from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { openSpotlight } from "@mantine/spotlight";
 import { motion } from "framer-motion";
 import { GetServerSidePropsContext, NextPage } from "next";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import {
   HiBell,
@@ -40,7 +57,7 @@ import {
   HiX,
   HiXCircle,
 } from "react-icons/hi";
-import Landing from "./landing";
+import NoSSR from "react-no-ssr";
 
 interface HomeProps {
   user: User;
@@ -49,6 +66,7 @@ interface HomeProps {
 const Home: NextPage<HomeProps> = ({ user: u }) => {
   const [timeMessage, setTimeMessage] = useState("");
   const { user, setProperty } = useAuthorizedUserStore();
+  const { experiments } = useExperimentsStore();
 
   const widgets = [
     {
@@ -127,6 +145,8 @@ const Home: NextPage<HomeProps> = ({ user: u }) => {
   }, []);
 
   const [activeIndex, setActiveIndex] = useState(0);
+  const prefStore = usePreferences();
+  const router = useRouter();
 
   return u ? (
     <Framework
@@ -137,6 +157,46 @@ const Home: NextPage<HomeProps> = ({ user: u }) => {
     >
       <SidebarTabNavigation>
         <SidebarTabNavigation.Sidebar>
+          <NoSSR>
+            {prefStore.preferences["@user/seen-roblox-convert"] !== true &&
+              experiments.includes(ExperimentId.RobloxAuth) && (
+                <div className="p-3 overflow-hidden relative w-full rounded-md mb-4">
+                  <CatalogMesh className="absolute top-0 left-0 w-full h-full" />
+                  <div className="flex flex-col gap-2 relative text-white">
+                    <div className="flex justify-between gap-2 items-start">
+                      <Title order={3}>Convert your Robux to Tickets</Title>
+                      <ActionIcon
+                        radius="xl"
+                        size="sm"
+                        className="text-white"
+                        onClick={() =>
+                          Preferences.setPreferences({
+                            "@user/seen-roblox-convert": true,
+                          })
+                        }
+                      >
+                        <HiX />
+                      </ActionIcon>
+                    </div>
+                    <Text size="sm" className="font-title">
+                      Connect your Roblox account to Framework to convert your
+                      Robux to Tickets at a{" "}
+                      <span className="font-bold">1:1</span> ratio.
+                    </Text>
+                    <Button
+                      fullWidth
+                      color="pink"
+                      className="border-0 mt-2"
+                      onClick={() =>
+                        Fw.Flows.toggleFlow(Flow.RobloxAuth, router)
+                      }
+                    >
+                      Get started
+                    </Button>
+                  </div>
+                </div>
+              )}
+          </NoSSR>
           {widgets.map((widget) => (
             <NavLink
               label={widget.title}
