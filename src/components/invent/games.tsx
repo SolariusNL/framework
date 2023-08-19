@@ -330,7 +330,12 @@ const Games = ({ user }: GamesProps) => {
                         >
                           Edit
                         </Menu.Item>
-                        <Menu.Item icon={<HiBookOpen />}>
+                        <Menu.Item
+                          icon={<HiBookOpen />}
+                          onClick={() =>
+                            router.push(`/game/${game.id}/legality`)
+                          }
+                        >
                           Legality questionnaire
                         </Menu.Item>
                         <Menu.Item
