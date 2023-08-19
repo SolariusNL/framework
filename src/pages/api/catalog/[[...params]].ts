@@ -2,10 +2,17 @@ import IResponseBase from "@/types/api/IResponseBase";
 import Authorized, { Account } from "@/util/api/authorized";
 import prisma from "@/util/prisma";
 import { nonCurrentUserSelect, NonUser, type User } from "@/util/prisma-types";
-import type { AssetType } from "@/util/types";
-import { prismaAssetTypeMap, prismaInventoryMapping } from "@/util/types";
+import type { AssetFrontend, AssetItemType, AssetType } from "@/util/types";
+import {
+  assetItemTypeWithTypeProp,
+  prismaAssetItemTypeModelMap,
+  prismaAssetItemTypeViewMap,
+  prismaAssetTypeMap,
+  prismaInventoryMapping,
+} from "@/util/types";
 import {
   CatalogItem,
+  CatalogItemType,
   Inventory,
   LimitedCatalogItemReceipt,
   LimitedCatalogItemResell,
@@ -52,6 +59,9 @@ export type GetCatalogItemOwnershipStatusResponse = IResponseBase<{
 }>;
 export type GetAssetStargazingStatusResponse = IResponseBase<{
   stargazing: boolean;
+}>;
+export type GetCatalogBrowseAssetsResponse = IResponseBase<{
+  assets: AssetFrontend[];
 }>;
 
 export interface AveragePriceByDay {
@@ -1161,6 +1171,79 @@ class CatalogRouter {
       success: true,
       data: {
         stargazing: catalogItem.stargazers.length > 0,
+      },
+    };
+  }
+
+  @Get("/browse")
+  @Authorized()
+  public async getCatalogBrowseAssets(
+    @Query("type") type: AssetItemType,
+    @Query("include_limiteds") includeLimiteds: boolean,
+    @Query("search") search: string,
+    @Query("page") page: number
+  ) {
+    if (!type)
+      return <GetCatalogBrowseAssetsResponse>{
+        success: false,
+        message: "No type provided",
+      };
+
+    includeLimiteds = Boolean(String(includeLimiteds).toLowerCase() === "true");
+
+    const queryExecutor = prisma[
+      prismaAssetItemTypeModelMap[type]
+    ] as never as {
+      findMany: (
+        args: Prisma.CatalogItemFindFirstArgs
+      ) => Promise<AssetFrontend[]>;
+    };
+    const hasType = assetItemTypeWithTypeProp.includes(type);
+
+    const generic = await queryExecutor.findMany({
+      where: {
+        ...(hasType ? { type: type.toUpperCase() as CatalogItemType } : {}),
+        ...(search
+          ? {
+              name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            }
+          : {}),
+      },
+      skip: (page - 1) * 40,
+      take: 40,
+    });
+    const limited =
+      includeLimiteds && prismaAssetItemTypeViewMap[type] === "catalog-item"
+        ? await prisma.limitedCatalogItem.findMany({
+            where: {
+              type: type.toUpperCase() as CatalogItemType,
+              ...(search
+                ? {
+                    name: {
+                      contains: search,
+                      mode: "insensitive",
+                    },
+                  }
+                : {}),
+            },
+            skip: (page - 1) * 40,
+            take: 40,
+          })
+        : [];
+
+    const result = [...generic, ...limited].sort((a, b) => {
+      if (a.name < b.name) return -1;
+      if (a.name === b.name) return 0;
+      return 1;
+    });
+
+    return <GetCatalogBrowseAssetsResponse>{
+      success: true,
+      data: {
+        assets: result,
       },
     };
   }

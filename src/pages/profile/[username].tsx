@@ -167,18 +167,6 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
           timeZone: utc?.[0],
         })
       );
-
-      if (process.env.NODE_ENV !== "development") {
-        const interval = setInterval(() => {
-          setViewingTime(
-            new Date().toLocaleTimeString([], {
-              timeZone: utc?.[0],
-            })
-          );
-        }, 1000);
-
-        return () => clearInterval(interval);
-      }
     }
   }, [viewing]);
 

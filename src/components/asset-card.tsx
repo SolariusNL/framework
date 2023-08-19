@@ -1,4 +1,3 @@
-import IconTooltip from "@/components/icon-tooltip";
 import { GetLimitedRecentAveragePriceResponse } from "@/pages/api/catalog/[[...params]]";
 import { iconPlaceholderMap } from "@/pages/asset/[type]/[id]";
 import { fetchAndSetData } from "@/util/fetch";
@@ -10,10 +9,17 @@ import {
   AssetType,
   prismaAssetItemTypeViewMap,
 } from "@/util/types";
-import { AspectRatio, Avatar, Badge, Card, Title } from "@mantine/core";
+import {
+  AspectRatio,
+  Avatar,
+  Badge,
+  Card,
+  Title,
+  Tooltip,
+} from "@mantine/core";
 import Link from "next/link";
 import { FC, useEffect, useState } from "react";
-import { HiOutlineTicket, HiSparkles } from "react-icons/hi";
+import { HiOutlineTicket } from "react-icons/hi";
 
 type AssetCardProps = {
   asset: AssetFrontend;
@@ -71,14 +77,16 @@ const AssetCard: FC<AssetCardProps> = ({ asset, type }) => {
 
   return (
     <Link
-      href={`/asset/${prismaAssetItemTypeViewMap[type] || "catalog-item"}/${
-        asset.id
-      }`}
+      href={`/asset/${
+        type === "limiteds" || asset.limited
+          ? "limited-catalog-item"
+          : prismaAssetItemTypeViewMap[type as AssetItemType] || "catalog-item"
+      }/${asset.id}`}
       passHref
       key={asset.id}
     >
       <Card radius="md" sx={cardStyles} component="a" p={0}>
-        <Card.Section mb="md">
+        <Card.Section mb="md" className="relative">
           <AspectRatio ratio={1}>
             <Avatar
               radius="md"
@@ -97,6 +105,23 @@ const AssetCard: FC<AssetCardProps> = ({ asset, type }) => {
               }
             </Avatar>
           </AspectRatio>
+          <div className="absolute bottom-2 left-2 flex items-center justify-center">
+            {asset.limited ? (
+              <Tooltip label="Limited item. Price shown is recent average price and not representative of the actual price.">
+                <Badge
+                  variant="gradient"
+                  gradient={{
+                    from: "pink",
+                    to: "purple",
+                  }}
+                  radius="sm"
+                  className="opacity-50"
+                >
+                  Limited
+                </Badge>
+              </Tooltip>
+            ) : null}
+          </div>
         </Card.Section>
         <div className="flex justify-between mb-4">
           <Title order={4}>{asset.name}</Title>
@@ -117,19 +142,6 @@ const AssetCard: FC<AssetCardProps> = ({ asset, type }) => {
                 </span>
               </div>
             </Badge>
-          </div>
-          <div className="flex flex-col gap-2 text-right">
-            {asset.limited ? (
-              <IconTooltip
-                icon={<HiSparkles className="text-pink-300" />}
-                label="Limited"
-              />
-            ) : (
-              <IconTooltip
-                icon={<HiSparkles className="text-sky-300" />}
-                label="Generic"
-              />
-            )}
           </div>
         </div>
       </Card>
