@@ -37,6 +37,7 @@ import {
   HiQrcode,
   HiUser,
   HiUsers,
+  HiViewGrid,
 } from "react-icons/hi";
 import { useFrameworkComponentStyles } from "../framework.styles";
 
@@ -169,6 +170,12 @@ const UserMenu = ({
             onClick={() => router.push("/developer/servers")}
           >
             Developers
+          </Menu.Item>
+          <Menu.Item
+            icon={<HiViewGrid />}
+            onClick={() => router.push("/inventory/" + user?.username)}
+          >
+            Inventory
           </Menu.Item>
           <Menu.Item
             icon={<HiUsers />}
