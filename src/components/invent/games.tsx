@@ -26,6 +26,7 @@ import { getCookie } from "cookies-next";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import {
+  HiBookOpen,
   HiChartBar,
   HiCheckCircle,
   HiDotsVertical,
@@ -328,6 +329,9 @@ const Games = ({ user }: GamesProps) => {
                           }
                         >
                           Edit
+                        </Menu.Item>
+                        <Menu.Item icon={<HiBookOpen />}>
+                          Legality questionnaire
                         </Menu.Item>
                         <Menu.Item
                           icon={<HiServer />}
