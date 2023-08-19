@@ -1,4 +1,3 @@
-import { Global } from "@mantine/core";
 import clsx from "@/util/clsx";
 import useMediaQuery from "@/util/media-query";
 
@@ -9,8 +8,12 @@ const SidebarTabNavigation: React.FC<{
   Sidebar: (props: {
     children: React.ReactNode;
     customWidth?: number;
+    className?: string;
   }) => JSX.Element;
-  Content: (props: { children: React.ReactNode }) => JSX.Element;
+  Content: (props: {
+    children: React.ReactNode;
+    className?: string;
+  }) => JSX.Element;
 } = ({ children, customGap }) => {
   return (
     <div
@@ -24,13 +27,16 @@ const SidebarTabNavigation: React.FC<{
   );
 };
 
-SidebarTabNavigation.Sidebar = ({ children, customWidth }) => {
+SidebarTabNavigation.Sidebar = ({ children, customWidth, className }) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const mobile = useMediaQuery("768");
 
   return (
     <div
-      className="md:flex md:flex-col md:gap-2 flex-row grid grid-cols-2 gap-2 md:grid-cols-1 md:grid-rows-3"
+      className={clsx(
+        "md:flex md:flex-col md:gap-2 flex-row grid grid-cols-2 gap-2 md:grid-cols-1 md:grid-rows-3",
+        className
+      )}
       {...(!mobile && { style: { width: customWidth || 240 } })}
     >
       {children}
@@ -38,8 +44,8 @@ SidebarTabNavigation.Sidebar = ({ children, customWidth }) => {
   );
 };
 
-SidebarTabNavigation.Content = ({ children }) => {
-  return <div className="flex-1">{children}</div>;
+SidebarTabNavigation.Content = ({ children, className }) => {
+  return <div className={clsx("flex-1", className)}>{children}</div>;
 };
 
 export default SidebarTabNavigation;

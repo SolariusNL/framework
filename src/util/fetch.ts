@@ -1,3 +1,4 @@
+import IResponseBase from "@/types/api/IResponseBase";
 import { getCookie } from "cookies-next";
 
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
@@ -72,5 +73,19 @@ async function fetchJson<T>(
 
   return transformedData;
 }
+
+export const fetchAndSetData = async <T extends IResponseBase>(
+  url: string,
+  setData: (data: T["data"]) => void
+) => {
+  const response = await fetchJson<{ success: boolean; data?: T }>(url, {
+    method: "GET",
+    auth: true,
+  });
+
+  if (response.success) {
+    setData(response.data!);
+  }
+};
 
 export default fetchJson;

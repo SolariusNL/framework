@@ -60,6 +60,10 @@ interface ChangeEmailBody {
   newEmail: string;
 }
 
+export type GetUserInventoryAvailabilityResponse = IResponseBase<{
+  available: boolean;
+}>;
+
 class UserRouter {
   @Get("/@me")
   @Authorized()
@@ -1553,6 +1557,31 @@ class UserRouter {
 
     return {
       success: true,
+    };
+  }
+
+  @Get("/:uid/inventory-availability")
+  @Authorized()
+  public async getInventoryAvailability(@Param("uid") uid: string) {
+    const user = await prisma.user.findFirst({
+      where: {
+        id: Number(uid),
+      },
+    });
+
+    if (!user)
+      return <GetUserInventoryAvailabilityResponse>{
+        success: false,
+        message: "User not found",
+      };
+
+    return <GetUserInventoryAvailabilityResponse>{
+      success: true,
+      data: {
+        available: !user.privacyPreferences.includes(
+          PrivacyPreferences.HIDE_INVENTORY
+        ),
+      },
     };
   }
 }

@@ -1,6 +1,6 @@
 import { NonUser } from "@/util/prisma-types";
 import { MANTINE_COLORS } from "@mantine/core";
-import { Prisma } from "@prisma/client";
+import { CatalogItemType, Prisma } from "@prisma/client";
 
 export type Primitive = string | number | bigint | boolean | null | undefined;
 
@@ -91,8 +91,11 @@ export type AssetFrontend = {
   quantitySold: number;
   originalStock?: number;
   originalPrice?: number;
+  recentAveragePrice?: number;
+  rapLastUpdated?: string;
 };
 export type AssetType = "catalog-item" | "limited-catalog-item" | "sound";
+export type AssetItemType = Lowercase<CatalogItemType> | "sound" | "limiteds";
 export const prismaAssetTypeMap: Record<
   AssetType,
   PascalToCamel<Prisma.ModelName>
@@ -101,6 +104,35 @@ export const prismaAssetTypeMap: Record<
   "limited-catalog-item": "limitedCatalogItem",
   sound: "sound",
 };
+export const prismaAssetItemTypeModelMap: Record<
+  AssetItemType,
+  PascalToCamel<Prisma.ModelName>
+> = {
+  gear: "catalogItem",
+  hat: "catalogItem",
+  pants: "catalogItem",
+  shirt: "catalogItem",
+  sound: "sound",
+  tshirt: "catalogItem",
+  limiteds: "limitedCatalogItem",
+};
+export const prismaAssetItemTypeViewMap: Record<AssetItemType, AssetType> = {
+  gear: "catalog-item",
+  hat: "catalog-item",
+  pants: "catalog-item",
+  shirt: "catalog-item",
+  sound: "sound",
+  tshirt: "catalog-item",
+  limiteds: "limited-catalog-item",
+};
+export const assetItemTypeWithTypeProp: AssetItemType[] = [
+  "gear",
+  "hat",
+  "pants",
+  "shirt",
+  "tshirt",
+  "limiteds",
+];
 export const prismaInventoryMapping: Record<
   AssetType,
   KeysOf<

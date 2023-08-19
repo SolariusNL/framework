@@ -21,7 +21,7 @@ import useChatStore from "@/stores/useChatStore";
 import IResponseBase from "@/types/api/IResponseBase";
 import authorizedRoute from "@/util/auth";
 import { exclude } from "@/util/exclude";
-import fetchJson from "@/util/fetch";
+import fetchJson, { fetchAndSetData } from "@/util/fetch";
 import getMediaUrl from "@/util/get-media";
 import prisma from "@/util/prisma";
 import { Game, User } from "@/util/prisma-types";
@@ -51,11 +51,14 @@ import {
   HiFlag,
   HiLockClosed,
   HiMap,
+  HiOutlineClock,
+  HiOutlineViewGrid,
   HiUser,
   HiUserGroup,
   HiXCircle,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
+import { GetUserInventoryAvailabilityResponse } from "../api/users/[[...params]]";
 
 interface ProfileProps {
   user: User;
@@ -69,6 +72,13 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
   const [viewing, setViewing] = React.useState(profile);
   const [viewingTime, setViewingTime] = React.useState<string>();
   const [isFollowing, setIsFollowing] = React.useState(following);
+  const [additionalDetails, setAdditionalDetails] = React.useState<
+    Array<{
+      icon: JSX.Element;
+      title: string;
+      value: string | number | JSX.Element;
+    }>
+  >([]);
   const { setOpened } = useChatStore();
 
   const FollowButton = (
@@ -157,7 +167,40 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
           timeZone: utc?.[0],
         })
       );
+
+      if (process.env.NODE_ENV !== "development") {
+        const interval = setInterval(() => {
+          setViewingTime(
+            new Date().toLocaleTimeString([], {
+              timeZone: utc?.[0],
+            })
+          );
+        }, 1000);
+
+        return () => clearInterval(interval);
+      }
     }
+  }, [viewing]);
+
+  React.useEffect(() => {
+    fetchAndSetData<GetUserInventoryAvailabilityResponse>(
+      `/api/users/${viewing.id}/inventory-availability`,
+      (data) => {
+        if (data?.available) {
+          setAdditionalDetails([
+            {
+              icon: <HiOutlineViewGrid />,
+              title: "Inventory",
+              value: (
+                <Link href={`/inventory/${viewing.username}`} passHref>
+                  <Anchor>See inventory</Anchor>
+                </Link>
+              ),
+            },
+          ]);
+        }
+      }
+    );
   }, [viewing]);
 
   return (
@@ -512,10 +555,16 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
                         value: 0,
                       },
                       {
+                        icon: <HiOutlineClock />,
+                        title: "Local time",
+                        value: viewingTime,
+                      },
+                      {
                         icon: <Rocket />,
                         title: "Trading availability",
                         value: "Unavailable",
                       },
+                      ...additionalDetails,
                     ].map((item) => (
                       <div
                         className="grid grid-cols-2 gap-2 items-center"

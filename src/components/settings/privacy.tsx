@@ -75,6 +75,11 @@ const PrivacyTab = ({ user }: PrivacyTabProps) => {
           "Users can send you chat requests to start a conversation even if you're not friends",
         label: "Allow chat requests",
       },
+      HIDE_INVENTORY: {
+        title: "Hide inventory",
+        description: "Users can't see your inventory if you have this enabled",
+        label: "Hide inventory",
+      },
     },
   };
   const categoryDescriptions = {

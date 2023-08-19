@@ -30,6 +30,7 @@ enum PrivacyPreferences {
   RECEIVE_NEWSLETTER
   USER_DISCOVERY
   CHAT_REQUESTS
+  HIDE_INVENTORY
 }
 
 enum PremiumSubscriptionType {

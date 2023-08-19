@@ -22,7 +22,7 @@ import {
 } from "@/pages/api/catalog/[[...params]]";
 import IResponseBase from "@/types/api/IResponseBase";
 import authorizedRoute from "@/util/auth";
-import fetchJson from "@/util/fetch";
+import fetchJson, { fetchAndSetData } from "@/util/fetch";
 import { Fw } from "@/util/fw";
 import getMediaUrl from "@/util/get-media";
 import prisma from "@/util/prisma";
@@ -57,27 +57,13 @@ import {
   HiXCircle,
 } from "react-icons/hi";
 
-const initialData = [
-  { time: "2018-12-22", open: 100, high: 100, low: 100, close: 100 },
-  { time: "2018-12-23", open: 100, high: 101, low: 99, close: 100.5 },
-  { time: "2018-12-24", open: 100.5, high: 102, low: 99.5, close: 101 },
-  { time: "2018-12-25", open: 100.8, high: 102.5, low: 99.8, close: 102 },
-  { time: "2018-12-26", open: 101.5, high: 103, low: 100, close: 101.2 },
-  { time: "2018-12-27", open: 101, high: 102, low: 100.5, close: 101.8 },
-  { time: "2018-12-28", open: 101.7, high: 102.3, low: 100.5, close: 101 },
-  { time: "2018-12-29", open: 101, high: 102, low: 100.8, close: 101.5 },
-  { time: "2018-12-30", open: 101.3, high: 102.2, low: 100.5, close: 101.2 },
-  { time: "2018-12-31", open: 101, high: 102.5, low: 100.7, close: 102 },
-  { time: "2019-01-01", open: 102, high: 103, low: 101, close: 102.5 },
-];
-
 type AssetViewProps = {
   asset: AssetFrontend;
   user: User;
   type: AssetType;
 };
 
-const iconPlaceholderMap: Record<AssetType, JSX.Element> = {
+export const iconPlaceholderMap: Record<AssetType, JSX.Element> = {
   "catalog-item": <HiCubeTransparent className="w-full h-full aspect-square" />,
   "limited-catalog-item": (
     <HiCubeTransparent className="w-full h-full aspect-square" />
@@ -118,19 +104,6 @@ const AssetView: React.FC<AssetViewProps> = ({
 
   const { colors } = useMantineTheme();
 
-  const fetchAndSetData = async <T extends IResponseBase>(
-    url: string,
-    setData: (data: T["data"]) => void
-  ) => {
-    const response = await fetchJson<{ success: boolean; data?: T }>(url, {
-      method: "GET",
-      auth: true,
-    });
-
-    if (response.success) {
-      setData(response.data!);
-    }
-  };
   const setResellProp = (property: keyof typeof resell, value: any) => {
     setResell({
       ...resell,

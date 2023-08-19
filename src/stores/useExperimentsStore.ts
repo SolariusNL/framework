@@ -8,6 +8,7 @@ export enum ExperimentId {
   FrameworkAI = "framework-ai",
   LoginManager = "login-manager",
   RobloxAuth = "roblox-auth",
+  InventoryFilter = "inventory-filter",
 }
 export enum ExperimentStage {
   Alpha = "alpha",
@@ -18,7 +19,7 @@ export const EXPERIMENTS = [
   {
     name: "AMOLED Theme",
     description: "An experimental pitch-black theme for the app",
-    stage: ExperimentStage.Alpha,
+    stage: ExperimentStage.Candidate,
     id: ExperimentId.AmoledDarkMode,
     refreshNecessary: true,
     additionalSetup: (value: boolean) => {
@@ -49,8 +50,16 @@ export const EXPERIMENTS = [
     name: "Roblox Authentication",
     description:
       "An experimental Roblox authentication flow to convert Robux to Tickets",
-    stage: ExperimentStage.Alpha,
+    stage: ExperimentStage.Beta,
     id: ExperimentId.RobloxAuth,
+    refreshNecessary: false,
+  },
+  {
+    name: "Inventory Filter",
+    description:
+      "An experimental inventory filtering system to granularly search through your inventory",
+    stage: ExperimentStage.Alpha,
+    id: ExperimentId.InventoryFilter,
     refreshNecessary: false,
   },
 ];

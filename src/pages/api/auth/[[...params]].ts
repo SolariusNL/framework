@@ -361,7 +361,7 @@ class AuthRouter {
     createNotification(
       session.user.id,
       NotificationType.INFO,
-      "Welcome to Framework! We hope you enjoy your stay! Framework was built with the goal of being a free, open source game platform to share their creations with the world.",
+      "Welcome to Framework! We hope you enjoy your stay! Framework was built with the goal of being a free, open source game platform for people to share their creations with the world.",
       "Welcome!"
     );
 
