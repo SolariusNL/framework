@@ -449,7 +449,7 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
                   : "This user hasn't written a biography yet."}
               </Text>
               <ShadedCard>
-                <div className="grid md:grid-cols-2 grid-cols-1 gap-2 gap-y-6">
+                <div className="grid grid-cols-2 gap-2 gap-y-6">
                   {[
                     {
                       icon: <HiCake />,
@@ -575,7 +575,7 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
                 </div>
               </ReactNoSSR>
             </div>
-            <div className="flex-auto md:w-3/4 w-full flex flex-col gap-6">
+            <div className="flex-auto min-w-0 md:w-3/4 w-full flex flex-col gap-6">
               {viewing.games.length > 0 && (
                 <ThumbnailCarousel
                   slides={viewing.games.map((game) => (

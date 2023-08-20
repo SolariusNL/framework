@@ -219,7 +219,7 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
             />
           </Grid.Col>
           <Grid.Col span={mobile ? 24 : 8} p={10}>
-            <div className="flex flex-col justify-between h-full">
+            <div className="flex flex-col h-full">
               <div>
                 <Group position="apart" pl={0} pr={0} p={10}>
                   <Link
@@ -370,6 +370,8 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                     ? "Unfollow"
                     : "Follow"}
                 </Button>
+              </div>
+              <div className="mt-auto">
                 <ReactNoSSR>
                   <Votes
                     game={game}

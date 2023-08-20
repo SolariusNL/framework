@@ -51,13 +51,13 @@ const Links = ({
   }, []);
 
   return (
-    <ShadedCard p="md" {...props}>
+    <ShadedCard className="min-w-0 truncate text-ellipsis" p="md" {...props}>
       {user.profileLinks.map((link, i) => (
         <Card.Section
           key={i}
           p="md"
           withBorder
-          className="dark:!border-zinc-900 !border-gray-200"
+          className="dark:!border-zinc-900 !border-gray-200 flex flex-col"
         >
           <div className="flex gap-2 items-center">
             <Text weight={700} size="sm" color="dimmed" mb={4}>
@@ -83,6 +83,7 @@ const Links = ({
           <Anchor
             onClick={() => Fw.Links.externalWarning(link.url)}
             target="_blank"
+            className="truncate"
           >
             {link.url}
           </Anchor>
