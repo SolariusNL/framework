@@ -1,4 +1,5 @@
 import DataGrid from "@/components/data-grid";
+import { UdmuxData } from "@/util/udmux";
 import { Progress, Text, Title } from "@mantine/core";
 import { useLocalStorage, useOs } from "@mantine/hooks";
 import { useRouter } from "next/router";
@@ -14,16 +15,21 @@ const UdmuxChallenge: FC = () => {
   const [ip, setIp] = useState<string>("Offline");
   const [rayId, setRayId] = useState<string>("Acquiring...");
   const [progress, setProgress] = useState<number>(0);
-  const [udmuxGuard, setUdmuxGuard] = useLocalStorage<boolean>({
-    key: "@fw/udmux-guard-seen",
-    defaultValue: false,
+  const [udmuxGuard, setUdmuxGuard] = useLocalStorage<UdmuxData>({
+    key: "@fw/udmux-guard-seen/@v2",
+    defaultValue: {
+      lastSeen: 0,
+    },
   });
 
   const os = useOs();
   const router = useRouter();
 
   useEffect(() => {
-    if (udmuxGuard) {
+    if (
+      new Date(udmuxGuard.lastSeen).getTime() >
+      Date.now() - 1000 * 60 * 60 * 12
+    ) {
       router.push("/");
       return;
     }
@@ -61,8 +67,10 @@ const UdmuxChallenge: FC = () => {
   useEffect(() => {
     if (progress >= 100) {
       setTimeout(() => {
-        setUdmuxGuard(true);
-      }, 1500);
+        setUdmuxGuard({
+          lastSeen: Date.now(),
+        });
+      }, 4500);
     }
   }, [progress]);
 

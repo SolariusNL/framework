@@ -33,7 +33,7 @@ class InventoryRouter {
     uid = parseInt(uid.toString());
 
     if (type === "limiteds") {
-      const items = await prisma.limitedInventoryItem.findMany({
+      let items = await prisma.limitedInventoryItem.findMany({
         where: {
           inventory: {
             userId: uid,
@@ -43,6 +43,44 @@ class InventoryRouter {
           item: true,
         },
       });
+
+      for (const item of items) {
+        if (
+          new Date().getTime() - item.item.rapLastUpdated.getTime() >
+          15 * 60 * 1000
+        ) {
+          const receipts = await prisma.limitedCatalogItemReceipt.findMany({
+            where: {
+              itemId: item.itemId,
+              createdAt: {
+                gte: new Date(Date.now() - 1000 * 60 * 60 * 24 * 60),
+              },
+            },
+            orderBy: {
+              createdAt: "desc",
+            },
+            take: 120,
+          });
+
+          const totalSalePrice = receipts.reduce(
+            (sum, receipt) => sum + receipt.salePrice,
+            0
+          );
+          const averageSalePrice = Math.round(totalSalePrice / receipts.length);
+
+          await prisma.limitedCatalogItem.update({
+            where: {
+              id: item.itemId,
+            },
+            data: {
+              recentAveragePrice: averageSalePrice || item.item.price,
+              rapLastUpdated: new Date(),
+            },
+          });
+          item.item.recentAveragePrice = averageSalePrice;
+          item.item.rapLastUpdated = new Date();
+        }
+      }
 
       return <GetInventoryItemsByTypeResponse>{
         success: true,

@@ -10,6 +10,7 @@ import "@/styles/fonts.css";
 import "@/styles/framework.css";
 import "@/styles/tw.css";
 import components from "@/util/components";
+import { UdmuxData } from "@/util/udmux";
 import {
   ColorScheme,
   ColorSchemeProvider,
@@ -86,9 +87,11 @@ const Framework: FC<FrameworkProps> & {
     key: "@fw/seen-unknown-host",
     defaultValue: false,
   });
-  const [udmuxGuard, setUdmuxGuard] = useLocalStorage<boolean>({
-    key: "@fw/udmux-guard-seen",
-    defaultValue: false,
+  const [udmuxGuard, setUdmuxGuard] = useLocalStorage<UdmuxData>({
+    key: "@fw/udmux-guard-seen/@v2",
+    defaultValue: {
+      lastSeen: 0,
+    },
   });
 
   const router = useRouter();
@@ -110,7 +113,10 @@ const Framework: FC<FrameworkProps> & {
     });
   }
   async function checkUdmux() {
-    if (!udmuxGuard) {
+    if (
+      !udmuxGuard.lastSeen ||
+      Date.now() - new Date(udmuxGuard.lastSeen).getTime() > 1000 * 60 * 60 * 12
+    ) {
       if (Math.random() < 0.1) {
         router.push("/udmux-challenge");
       }
