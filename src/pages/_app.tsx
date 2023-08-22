@@ -197,8 +197,8 @@ const Framework: FC<FrameworkProps> & {
           siteName: "Framework - Solarius",
           images: [
             {
-              secureUrl: "/opengraph.png",
-              url: "/opengraph.png",
+              secureUrl: process.env.NEXT_PUBLIC_HOSTNAME + "/opengraph.png",
+              url: process.env.NEXT_PUBLIC_HOSTNAME + "/opengraph.png",
               alt: "Framework SEO Banner",
               width: 800,
               height: 400,
