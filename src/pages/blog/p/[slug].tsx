@@ -28,8 +28,14 @@ const BlogPost: NextPage<BlogPostProps> = ({ post, user }) => {
           url: "https://framework.solarius.me/blog/p/" + post.slug,
           images: [
             {
-              secureUrl: process.env.NEXT_PUBLIC_HOSTNAME + "/opengraph.png",
-              url: process.env.NEXT_PUBLIC_HOSTNAME + "/opengraph.png",
+              secureUrl:
+                "https://" +
+                process.env.NEXT_PUBLIC_HOSTNAME +
+                "/opengraph.png",
+              url:
+                "https://" +
+                process.env.NEXT_PUBLIC_HOSTNAME +
+                "/opengraph.png",
               alt: "Framework SEO Banner",
               width: 800,
               height: 400,
