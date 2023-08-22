@@ -268,11 +268,14 @@ const Store: React.FC<StoreProps> = ({ game }) => {
             </ShadedButton>
           </Conditional>
           <Conditional if={gamepasses && gamepasses.length === 0}>
-            <ShadedCard className="col-span-full">
+            <ShadedCard className="col-span-full flex flex-col justify-center items-center">
               <ModernEmptyState
                 title="No gamepasses"
                 body="You haven't created any gamepasses yet."
               />
+              <Button mt="lg" onClick={() => setOpened(true)}>
+                Create a new gamepass
+              </Button>
             </ShadedCard>
           </Conditional>
           <Conditional if={!gamepasses}>
