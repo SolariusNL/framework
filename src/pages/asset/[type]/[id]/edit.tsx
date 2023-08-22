@@ -191,7 +191,7 @@ const AssetView: React.FC<AssetViewProps> = ({
                   as={`/asset/${type}/${asset.id}`}
                 >
                   <Button radius="xl" variant="subtle" color="gray">
-                    Cancel
+                    Back to asset
                   </Button>
                 </Link>
                 <Button

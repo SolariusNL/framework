@@ -26,7 +26,13 @@ import {
 import { PrivacyPreferences } from "@prisma/client";
 import { GetServerSidePropsContext } from "next";
 import { FC, useEffect, useState } from "react";
-import { HiCog, HiMusicNote, HiSearch, HiSparkles } from "react-icons/hi";
+import {
+  HiCog,
+  HiCubeTransparent,
+  HiMusicNote,
+  HiSearch,
+  HiSparkles,
+} from "react-icons/hi";
 import { TbShirt } from "react-icons/tb";
 import { GetInventoryItemsByTypeResponse } from "../api/inventory/[[...params]]";
 
@@ -107,6 +113,11 @@ const groups: SidebarItemGroup[] = [
         value: "sound",
         name: "Sounds",
         icon: <HiMusicNote />,
+      },
+      {
+        value: "gamepass",
+        name: "Gamepasses",
+        icon: <HiCubeTransparent />,
       },
     ],
   },

@@ -22,7 +22,7 @@ import {
 import { useDebouncedValue } from "@mantine/hooks";
 import { GetServerSidePropsContext, NextPage } from "next";
 import React, { useEffect } from "react";
-import { HiCog, HiMusicNote } from "react-icons/hi";
+import { HiCog, HiCubeTransparent, HiMusicNote } from "react-icons/hi";
 import { TbShirt } from "react-icons/tb";
 import { GetCatalogBrowseAssetsResponse } from "./api/catalog/[[...params]]";
 
@@ -92,6 +92,11 @@ const groups: SidebarItemGroup[] = [
         value: "sound",
         name: "Sounds",
         icon: <HiMusicNote />,
+      },
+      {
+        value: "gamepass",
+        name: "Gamepasses",
+        icon: <HiCubeTransparent />,
       },
     ],
   },
