@@ -1,9 +1,20 @@
 import IResponseBase from "@/types/api/IResponseBase";
 import Authorized, { Account } from "@/util/api/authorized";
+import { assetFrontendInclude } from "@/util/includes";
 import prisma from "@/util/prisma";
 import type { User } from "@/util/prisma-types";
-import { Body, Post, createHandler } from "@storyofams/next-api-decorators";
+import { AssetFrontend } from "@/util/types";
+import {
+  Body,
+  Get,
+  Post,
+  createHandler,
+} from "@storyofams/next-api-decorators";
 import { z } from "zod";
+
+export type GetSoundsResponse = IResponseBase<{
+  sounds: AssetFrontend[];
+}>;
 
 const uploadSoundSchema = z.object({
   name: z.string().min(1).max(100),
@@ -59,6 +70,24 @@ class SoundRouter {
       success: true,
       data: {
         sound,
+      },
+    };
+  }
+
+  @Get("/my")
+  @Authorized()
+  public async getSounds(@Account() user: User) {
+    const sounds = (await prisma.sound.findMany({
+      where: {
+        authorId: user.id,
+      },
+      include: assetFrontendInclude,
+    })) as never as AssetFrontend[];
+
+    return <GetSoundsResponse>{
+      success: true,
+      data: {
+        sounds,
       },
     };
   }

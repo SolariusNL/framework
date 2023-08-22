@@ -159,7 +159,14 @@ const ImageUploader = ({
           >
             {(props) =>
               button ? (
-                button
+                <div
+                  onClick={() => {
+                    if (onBegin) onBegin();
+                    props.onClick();
+                  }}
+                >
+                  {button}
+                </div>
               ) : (
                 <Button
                   leftIcon={<HiUpload />}

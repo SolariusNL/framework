@@ -1,37 +1,39 @@
+import Conditional from "@/components/conditional";
 import Descriptive from "@/components/descriptive";
 import EditGameTab from "@/components/edit-game/edit-game-tab";
 import ImageUploader from "@/components/image-uploader";
-import ModernEmptyState from "@/components/modern-empty-state";
-import Stateful from "@/components/stateful";
+import { GetGameGamepassesResponse } from "@/pages/api/experiences/[[...params]]";
 import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
-import abbreviateNumber from "@/util/abbreviate";
+import { fetchAndSetData } from "@/util/fetch";
 import { Game } from "@/util/prisma-types";
+import { AssetFrontend } from "@/util/types";
 import {
-  ActionIcon,
   Button,
   Image,
   Modal,
   NumberInput,
-  Table,
+  Skeleton,
   Text,
   Textarea,
   TextInput,
-  Tooltip,
   useMantineColorScheme,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { Gamepass } from "@prisma/client";
 import { getCookie } from "cookies-next";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   HiCheckCircle,
   HiInbox,
   HiPlus,
   HiTicket,
-  HiTrash,
   HiXCircle,
 } from "react-icons/hi";
+import AssetCard from "../asset-card";
+import ModernEmptyState from "../modern-empty-state";
+import ShadedButton from "../shaded-button";
+import ShadedCard from "../shaded-card";
 
 interface StoreProps {
   game: Game & {
@@ -77,12 +79,153 @@ const Store: React.FC<StoreProps> = ({ game }) => {
       },
     },
   });
-  const [gamepasses, setGamepasses] = React.useState(game.gamepasses);
   const imgRef = React.useRef<HTMLImageElement | null>(null);
   const { colorScheme } = useMantineColorScheme();
+  const [gamepasses, setGamepasses] = useState<AssetFrontend[]>([]);
+  const [opened, setOpened] = useState(false);
+
+  const fetchData = async () => {
+    await Promise.all([
+      fetchAndSetData<GetGameGamepassesResponse>(
+        `/api/experiences/${game.id}/gamepasses`,
+        (data) => setGamepasses(data?.gamepasses!)
+      ),
+    ]);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <>
+      <Modal
+        opened={opened}
+        onClose={() => setOpened(false)}
+        title="Create a new gamepass"
+        className={colorScheme}
+      >
+        <form
+          onSubmit={form.onSubmit(async (values) => {
+            await fetch(`/api/games/${game.id}/gamepass/new`, {
+              method: "POST",
+              body: JSON.stringify(values),
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: String(getCookie(".frameworksession")),
+              },
+            })
+              .then(async (res) => res.json())
+              .then(async (res) => {
+                if (res.success) {
+                  showNotification({
+                    title: "Created gamepass",
+                    message: "Your gamepass has been created successfully",
+                    icon: <HiCheckCircle />,
+                  });
+                  setOpened(false);
+                  setGamepasses((prev: any) => [
+                    ...prev,
+                    res.gamepass as Gamepass,
+                  ]);
+
+                  const formData = new FormData();
+                  const file = new File(
+                    [
+                      Buffer.from(
+                        values.icon.replace(/^data:image\/\w+;base64,/, ""),
+                        "base64"
+                      ),
+                    ],
+                    "gamepass.jpeg",
+                    {
+                      type: "image/jpeg",
+                    }
+                  );
+
+                  formData.append("gamepass", file);
+
+                  await fetch(`/api/media/upload/gamepass/${res.gamepass.id}`, {
+                    method: "POST",
+                    headers: {
+                      authorization: String(getCookie(".frameworksession")),
+                    },
+                    body: formData,
+                  }).catch((err) => {
+                    showNotification({
+                      title: "Failed to upload icon",
+                      message: "Failed to upload icon. Please try again.",
+                      icon: <HiXCircle />,
+                    });
+                  });
+                }
+              })
+              .finally(() => {
+                form.reset();
+              });
+          })}
+        >
+          <TextInput
+            label="Name"
+            description="The name of the gamepass"
+            required
+            mb="md"
+            placeholder="VIP"
+            classNames={BLACK}
+            icon={<HiInbox />}
+            {...form.getInputProps("name")}
+          />
+          <Textarea
+            label="Description"
+            description="The description of the gamepass, what it grants the user, etc."
+            required
+            placeholder="VIP grants you access to the VIP room and other perks!"
+            mb="md"
+            classNames={BLACK}
+            {...form.getInputProps("description")}
+          />
+          <NumberInput
+            label="Price"
+            description="The price of the gamepass in Tickets"
+            required
+            placeholder="100"
+            mb="md"
+            classNames={BLACK}
+            icon={<HiTicket />}
+            {...form.getInputProps("price")}
+          />
+          <Descriptive
+            title="Icon"
+            description="The icon of the gamepass"
+            required
+          >
+            <div className="flex items-center justify-between mb-4">
+              {form.values.icon ? (
+                <Image
+                  src={form.values.icon}
+                  width={64}
+                  height={64}
+                  radius="md"
+                  ref={imgRef}
+                />
+              ) : (
+                <div className="w-16 h-16 rounded-md dark:bg-zinc-900 bg-gray-100 border dark:border-zinc-700 border-gray-200 border-solid" />
+              )}
+              <ImageUploader
+                crop
+                ratio={1}
+                imgRef={imgRef}
+                onFinished={(img) => {
+                  form.setFieldValue("icon", img);
+                }}
+              />
+            </div>
+          </Descriptive>
+          <Button type="submit" mt={16}>
+            Create gamepass
+          </Button>
+        </form>
+      </Modal>
       <EditGameTab value="store">
         <Text mb={32}>
           Your store is a digital storefront where users can purchase products
@@ -109,225 +252,35 @@ const Store: React.FC<StoreProps> = ({ game }) => {
           not permitted and may result in your account being moderated.
         </Text>
 
-        <Table striped mb={16}>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Description</th>
-              <th>Price</th>
-              <th>Owners</th>
-              <th>Revenue</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {gamepasses.length === 0 ? (
-              <tr>
-                <td colSpan={6}>
-                  <ModernEmptyState
-                    title="No gamepasses"
-                    body="Create a gamepass to get started"
-                  />
-                </td>
-              </tr>
-            ) : (
-              gamepasses.map((gamepass) => (
-                <tr key={gamepass.id}>
-                  <td>{gamepass.name}</td>
-                  <td>
-                    <Text lineClamp={2}>{gamepass.description}</Text>
-                  </td>
-                  <td>{gamepass.price}</td>
-                  <td>{gamepass.owners.length}</td>
-                  <td>{abbreviateNumber(gamepass.totalRevenue)}</td>
-                  <td>
-                    <Tooltip label="Delete this gamepass">
-                      <ActionIcon
-                        color="red"
-                        onClick={async () => {
-                          await fetch(
-                            `/api/games/${game.id}/gamepass/${gamepass.id}/delete`,
-                            {
-                              method: "POST",
-                              headers: {
-                                "Content-Type": "application/json",
-                                Authorization: String(
-                                  getCookie(".frameworksession")
-                                ),
-                              },
-                            }
-                          );
-
-                          setGamepasses(
-                            gamepasses.filter((gp) => gp.id !== gamepass.id)
-                          );
-                          showNotification({
-                            title: "Deleted gamepass",
-                            message: "The gamepass was deleted successfully",
-                            icon: <HiTrash />,
-                          });
-                        }}
-                      >
-                        <HiTrash />
-                      </ActionIcon>
-                    </Tooltip>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </Table>
-
-        <Stateful>
-          {(opened, setOpened) => (
-            <>
-              <Button
-                variant="subtle"
-                leftIcon={<HiPlus />}
-                onClick={() => setOpened(true)}
-              >
+        <div className="grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 gap-4 gap-y-8">
+          <Conditional if={gamepasses && gamepasses.length > 0}>
+            {gamepasses.map((gamepass, index) => (
+              <AssetCard type="gamepass" asset={gamepass} key={index} />
+            ))}
+            <ShadedButton
+              className="flex items-center text-center justify-center flex-col gap-2"
+              onClick={() => setOpened(true)}
+            >
+              <HiPlus className="text-2xl" />
+              <Text size="sm" color="dimmed">
                 Create a new gamepass
-              </Button>
-              <Modal
-                opened={opened}
-                onClose={() => setOpened(false)}
-                title="Create a new gamepass"
-                className={colorScheme}
-              >
-                <form
-                  onSubmit={form.onSubmit(async (values) => {
-                    await fetch(`/api/games/${game.id}/gamepass/new`, {
-                      method: "POST",
-                      body: JSON.stringify(values),
-                      headers: {
-                        "Content-Type": "application/json",
-                        Authorization: String(getCookie(".frameworksession")),
-                      },
-                    })
-                      .then(async (res) => res.json())
-                      .then(async (res) => {
-                        if (res.success) {
-                          showNotification({
-                            title: "Created gamepass",
-                            message:
-                              "Your gamepass has been created successfully",
-                            icon: <HiCheckCircle />,
-                          });
-                          setOpened(false);
-                          setGamepasses((prev: any) => [
-                            ...prev,
-                            res.gamepass as Gamepass,
-                          ]);
-
-                          const formData = new FormData();
-                          const file = new File(
-                            [
-                              Buffer.from(
-                                values.icon.replace(
-                                  /^data:image\/\w+;base64,/,
-                                  ""
-                                ),
-                                "base64"
-                              ),
-                            ],
-                            "gamepass.jpeg",
-                            {
-                              type: "image/jpeg",
-                            }
-                          );
-
-                          formData.append("gamepass", file);
-
-                          await fetch(
-                            `/api/media/upload/gamepass/${res.gamepass.id}`,
-                            {
-                              method: "POST",
-                              headers: {
-                                authorization: String(
-                                  getCookie(".frameworksession")
-                                ),
-                              },
-                              body: formData,
-                            }
-                          ).catch((err) => {
-                            showNotification({
-                              title: "Failed to upload icon",
-                              message:
-                                "Failed to upload icon. Please try again.",
-                              icon: <HiXCircle />,
-                            });
-                          });
-                        }
-                      })
-                      .finally(() => {
-                        form.reset();
-                      });
-                  })}
-                >
-                  <TextInput
-                    label="Name"
-                    description="The name of the gamepass"
-                    required
-                    mb="md"
-                    placeholder="VIP"
-                    classNames={BLACK}
-                    icon={<HiInbox />}
-                    {...form.getInputProps("name")}
-                  />
-                  <Textarea
-                    label="Description"
-                    description="The description of the gamepass, what it grants the user, etc."
-                    required
-                    placeholder="VIP grants you access to the VIP room and other perks!"
-                    mb="md"
-                    classNames={BLACK}
-                    {...form.getInputProps("description")}
-                  />
-                  <NumberInput
-                    label="Price"
-                    description="The price of the gamepass in Tickets"
-                    required
-                    placeholder="100"
-                    mb="md"
-                    classNames={BLACK}
-                    icon={<HiTicket />}
-                    {...form.getInputProps("price")}
-                  />
-                  <Descriptive
-                    title="Icon"
-                    description="The icon of the gamepass"
-                    required
-                  >
-                    <div className="flex items-center justify-between mb-4">
-                      {form.values.icon ? (
-                        <Image
-                          src={form.values.icon}
-                          width={64}
-                          height={64}
-                          radius="md"
-                          ref={imgRef}
-                        />
-                      ) : (
-                        <div className="w-16 h-16 rounded-md dark:bg-zinc-900 bg-gray-100 border dark:border-zinc-700 border-gray-200 border-solid" />
-                      )}
-                      <ImageUploader
-                        crop
-                        ratio={1}
-                        imgRef={imgRef}
-                        onFinished={(img) => {
-                          form.setFieldValue("icon", img);
-                        }}
-                      />
-                    </div>
-                  </Descriptive>
-                  <Button type="submit" mt={16}>
-                    Create gamepass
-                  </Button>
-                </form>
-              </Modal>
-            </>
-          )}
-        </Stateful>
+              </Text>
+            </ShadedButton>
+          </Conditional>
+          <Conditional if={gamepasses && gamepasses.length === 0}>
+            <ShadedCard className="col-span-full">
+              <ModernEmptyState
+                title="No gamepasses"
+                body="You haven't created any gamepasses yet."
+              />
+            </ShadedCard>
+          </Conditional>
+          <Conditional if={!gamepasses}>
+            {Array.from(Array(4)).map((_, index) => (
+              <Skeleton height={180} key={index} />
+            ))}
+          </Conditional>
+        </div>
       </EditGameTab>
     </>
   );

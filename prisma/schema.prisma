@@ -185,6 +185,7 @@ model User {
   stories                    Story[]                     @relation("stories")
   sounds                     Sound[]                     @relation("userSounds")
   starredSounds              Sound[]                     @relation("userStarredSounds")
+  starredGamepasses          Gamepass[]                  @relation("userStarredGamepasses")
   gettingStartedDismissed    Boolean                     @default(false)
   starredCatalogItems        CatalogItem[]               @relation("starredCatalogItems")
   starredLimitedCatalogItems LimitedCatalogItem[]        @relation("starredLimitedCatalogItems")
@@ -743,16 +744,32 @@ model AdminActivityLog {
 }
 
 model Gamepass {
-  id           String   @id @default(uuid())
-  game         Game     @relation("gamepasses", fields: [gameId], references: [id])
-  gameId       Int
-  name         String
-  description  String
-  price        Int
-  iconUri      String   @default("")
-  createdAt    DateTime @default(now())
-  owners       User[]   @relation("userGamepasses")
-  totalRevenue Int      @default(0)
+  id            String                 @id @default(uuid())
+  game          Game                   @relation("gamepasses", fields: [gameId], references: [id])
+  gameId        Int
+  name          String
+  description   String
+  onSale        Boolean                @default(true)
+  limited       Boolean                @default(false)
+  rows          GamepassKeyValuePair[]
+  price         Int                    @default(0)
+  priceBits     Int                    @default(0)
+  iconUri       String                 @default("")
+  createdAt     DateTime               @default(now())
+  stargazers    User[]                 @relation("userStarredGamepasses")
+  author        User                   @relation("userGamepasses", fields: [authorId], references: [id])
+  authorId      Int
+  apartOf       Inventory[]            @relation("userGamepasses")
+  previewUri    String
+  canAuthorEdit Boolean                @default(true)
+}
+
+model GamepassKeyValuePair {
+  id     String   @id @default(uuid())
+  item   Gamepass @relation(references: [id], fields: [itemId])
+  itemId String
+  key    String
+  value  String
 }
 
 model CosmicWebhookSignature {
@@ -998,22 +1015,23 @@ model GameUpdateLog {
 }
 
 model Sound {
-  id          String              @id @default(uuid())
-  author      User                @relation("userSounds", fields: [authorId], references: [id])
-  authorId    Int
-  name        String
-  audioUri    String
-  stargazers  User[]              @relation("userStarredSounds")
-  createdAt   DateTime            @default(now())
-  updatedAt   DateTime            @default(now())
-  duration    Int                 @default(0)
-  description String              @default("")
-  rows        SoundKeyValuePair[]
-  price       Int                 @default(0)
-  priceBits   Int                 @default(0)
-  onSale      Boolean             @default(false)
-  limited     Boolean             @default(false)
-  apartOf     Inventory[]         @relation("userSounds")
+  id            String              @id @default(uuid())
+  author        User                @relation("userSounds", fields: [authorId], references: [id])
+  authorId      Int
+  name          String
+  audioUri      String
+  stargazers    User[]              @relation("userStarredSounds")
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @default(now())
+  duration      Int                 @default(0)
+  description   String              @default("")
+  rows          SoundKeyValuePair[]
+  price         Int                 @default(0)
+  priceBits     Int                 @default(0)
+  onSale        Boolean             @default(false)
+  limited       Boolean             @default(false)
+  apartOf       Inventory[]         @relation("userSounds")
+  canAuthorEdit Boolean             @default(true)
 }
 
 model SoundKeyValuePair {
@@ -1294,22 +1312,23 @@ model DeveloperProfileSkill {
 }
 
 model CatalogItem {
-  id           String                    @id @default(uuid())
-  createdAt    DateTime                  @default(now())
-  name         String
-  description  String
-  price        Int
-  priceBits    Int
-  type         CatalogItemType
-  previewUri   String
-  stargazers   User[]                    @relation("starredCatalogItems")
-  onSale       Boolean                   @default(true)
-  limited      Boolean                   @default(false)
-  apartOf      Inventory[]               @relation("standardCatalogItems")
-  rows         CatalogItemKeyValuePair[]
-  author       User                      @relation("catalogItemAuthor", fields: [authorId], references: [id])
-  authorId     Int                       @default(1)
-  quantitySold Int                       @default(0)
+  id            String                    @id @default(uuid())
+  createdAt     DateTime                  @default(now())
+  name          String
+  description   String
+  price         Int
+  priceBits     Int
+  type          CatalogItemType
+  previewUri    String
+  stargazers    User[]                    @relation("starredCatalogItems")
+  onSale        Boolean                   @default(true)
+  limited       Boolean                   @default(false)
+  apartOf       Inventory[]               @relation("standardCatalogItems")
+  rows          CatalogItemKeyValuePair[]
+  author        User                      @relation("catalogItemAuthor", fields: [authorId], references: [id])
+  authorId      Int                       @default(1)
+  quantitySold  Int                       @default(0)
+  canAuthorEdit Boolean                   @default(false)
 }
 
 model CatalogItemKeyValuePair {
@@ -1351,6 +1370,7 @@ model LimitedCatalogItem {
   authorId           Int                              @default(1)
   rows               LimitedCatalogItemKeyValuePair[]
   quantitySold       Int                              @default(0)
+  canAuthorEdit      Boolean                          @default(false)
 }
 
 model LimitedCatalogItemKeyValuePair {
@@ -1382,13 +1402,14 @@ model LimitedCatalogItemResell {
 }
 
 model Inventory {
-  id        String                 @id @default(uuid())
-  createdAt DateTime               @default(now())
-  user      User                   @relation("inventory", fields: [userId], references: [id])
-  userId    Int                    @unique
-  items     CatalogItem[]          @relation("standardCatalogItems")
-  limited   LimitedInventoryItem[] @relation("limitedInventoryItems")
-  sounds    Sound[]                @relation("userSounds")
+  id         String                 @id @default(uuid())
+  createdAt  DateTime               @default(now())
+  user       User                   @relation("inventory", fields: [userId], references: [id])
+  userId     Int                    @unique
+  items      CatalogItem[]          @relation("standardCatalogItems")
+  limited    LimitedInventoryItem[] @relation("limitedInventoryItems")
+  sounds     Sound[]                @relation("userSounds")
+  gamepasses Gamepass[]             @relation("userGamepasses")
 }
 
 model LimitedInventoryItem {

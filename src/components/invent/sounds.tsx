@@ -1,8 +1,10 @@
 import InventTab from "@/components/invent/invent";
+import { GetSoundsResponse } from "@/pages/api/sounds/[[...params]]";
 import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
 import IResponseBase from "@/types/api/IResponseBase";
-import fetchJson from "@/util/fetch";
+import fetchJson, { fetchAndSetData } from "@/util/fetch";
 import { User } from "@/util/prisma-types";
+import { AssetFrontend } from "@/util/types";
 import {
   Button,
   FileInput,
@@ -26,6 +28,8 @@ import {
   HiUpload,
   HiXCircle,
 } from "react-icons/hi";
+import AssetCard from "../asset-card";
+import ModernEmptyState from "../modern-empty-state";
 
 type SoundsProps = {
   user: User;
@@ -39,6 +43,7 @@ type Form = {
 const Sounds = ({ user }: SoundsProps) => {
   const [opened, setOpened] = useState(false);
   const [previewing, setPreviewing] = useState(false);
+  const [sounds, setSounds] = useState<AssetFrontend[]>([]);
   const form = useForm<Form>({
     initialValues: {
       name: "",
@@ -61,16 +66,6 @@ const Sounds = ({ user }: SoundsProps) => {
     },
   });
   const audioRef = useRef<HTMLAudioElement>(null);
-
-  useEffect(() => {
-    audioRef.current?.addEventListener("ended", () => setPreviewing(false));
-
-    return () => {
-      audioRef.current?.removeEventListener("ended", () =>
-        setPreviewing(false)
-      );
-    };
-  }, [previewing]);
 
   const createSound = (
     <Modal
@@ -205,6 +200,28 @@ const Sounds = ({ user }: SoundsProps) => {
     </Modal>
   );
 
+  const fetchSounds = async () => {
+    await Promise.all([
+      fetchAndSetData<GetSoundsResponse>("/api/sounds/my", (data) =>
+        setSounds(data?.sounds || [])
+      ),
+    ]);
+  };
+
+  useEffect(() => {
+    audioRef.current?.addEventListener("ended", () => setPreviewing(false));
+
+    return () => {
+      audioRef.current?.removeEventListener("ended", () =>
+        setPreviewing(false)
+      );
+    };
+  }, [previewing]);
+
+  useEffect(() => {
+    fetchSounds();
+  }, []);
+
   return (
     <>
       {createSound}
@@ -224,7 +241,22 @@ const Sounds = ({ user }: SoundsProps) => {
             </Button>
           </>
         }
-      ></InventTab>
+      >
+        <div className="grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 gap-4 gap-y-8">
+          {sounds.length === 0 ? (
+            <div className="col-span-full">
+              <ModernEmptyState
+                title="No sounds"
+                body="You haven't created any sounds yet."
+              />
+            </div>
+          ) : (
+            sounds.map((sound) => (
+              <AssetCard key={sound.id} asset={sound} type="sound" />
+            ))
+          )}
+        </div>
+      </InventTab>
     </>
   );
 };

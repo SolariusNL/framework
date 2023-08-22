@@ -613,13 +613,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     where: { id: Number(id) },
     select: {
       ...gameSelect,
-      gamepasses: {
-        include: {
-          owners: {
-            select: { id: true },
-          },
-        },
-      },
       privateAccess: { select: { id: true } },
       private: true,
       authorId: true,

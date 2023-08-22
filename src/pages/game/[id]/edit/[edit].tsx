@@ -187,13 +187,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
               createdAt: true,
             },
           },
-          gamepasses: {
-            include: {
-              owners: {
-                select: { id: true },
-              },
-            },
-          },
           envs: true,
           team: true,
         },

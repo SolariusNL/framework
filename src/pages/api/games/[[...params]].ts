@@ -3,7 +3,6 @@ import { parse } from "@/components/render-markdown";
 import IResponseBase from "@/types/api/IResponseBase";
 import Authorized, { Account } from "@/util/api/authorized";
 import registerAutomodHandler from "@/util/automod";
-import logger from "@/util/logger";
 import prisma from "@/util/prisma";
 import {
   gameSelect,
@@ -33,7 +32,6 @@ import {
   ValidationPipe,
 } from "@storyofams/next-api-decorators";
 import * as Validate from "class-validator";
-import fetch from "node-fetch";
 import { default as sanitize, default as sanitizeHtml } from "sanitize-html";
 import { z } from "zod";
 
@@ -1408,6 +1406,13 @@ class GameRouter {
             id: Number(id),
           },
         },
+        author: {
+          connect: {
+            id: user.id,
+          },
+        },
+        priceBits: body.price * 10,
+        previewUri: "",
       },
     });
 
@@ -1473,145 +1478,6 @@ class GameRouter {
     };
   }
 
-  @Post("/:id/gamepass/:gamepassId/purchase")
-  @Authorized()
-  async purchaseGamePass(
-    @Account() user: User,
-    @Param("id") id: number,
-    @Param("gamepassId") gamepassId: string
-  ) {
-    const game = await prisma.game.findFirst({
-      where: {
-        id: Number(id),
-      },
-      include: {
-        author: true,
-      },
-    });
-
-    if (!game) {
-      return {
-        success: false,
-        error: "Game not found",
-      };
-    }
-
-    const gamepass = await prisma.gamepass.findFirst({
-      where: {
-        id: String(gamepassId),
-        gameId: Number(id),
-      },
-    });
-
-    if (!gamepass) {
-      return {
-        success: false,
-        error: "Gamepass not found",
-      };
-    }
-
-    if (user.tickets < gamepass.price) {
-      return {
-        success: false,
-        error: "Not enough tickets",
-      };
-    }
-
-    if (user.playing && user.playing.id === game.id) {
-      const connections = await prisma.connection.findMany({
-        where: {
-          online: true,
-          game: {
-            id: game.id,
-          },
-        },
-      });
-
-      for (const connection of connections) {
-        try {
-          const sig = await prisma.cosmicWebhookSignature.create({
-            data: {},
-          });
-          await fetch(
-            `http://${connection.ip}:${connection.port}/api/webhook/gamepassPurchaseSuccess`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "nucleus-signature": sig.secret,
-              },
-              body: JSON.stringify({
-                gamepassId: gamepass.id,
-                userId: user.id,
-              }),
-            }
-          );
-        } catch (e) {
-          logger().warn(
-            `Failed to send webhook to ${connection.ip}:${connection.port} for gamepass purchase success`
-          );
-        }
-      }
-    }
-
-    await prisma.user.update({
-      where: {
-        id: user.id,
-      },
-      data: {
-        tickets: {
-          decrement: gamepass.price,
-        },
-        ownedGamepasses: {
-          connect: {
-            id: String(gamepassId),
-          },
-        },
-      },
-    });
-
-    await prisma.gamepass.update({
-      where: {
-        id: String(gamepassId),
-      },
-      data: {
-        totalRevenue: {
-          increment: gamepass.price,
-        },
-      },
-    });
-
-    await prisma.user.update({
-      where: {
-        id: game.author.id,
-      },
-      data: {
-        tickets: {
-          increment: gamepass.price,
-        },
-      },
-    });
-
-    await logTransaction(
-      gamepass.price,
-      "Purchase of gamepass " + gamepass.name,
-      user.id,
-      TransactionType.OUTBOUND,
-      game.author.id
-    );
-    await logTransaction(
-      gamepass.price,
-      "Sale of gamepass " + gamepass.name,
-      game.author.id,
-      TransactionType.INBOUND,
-      user.id
-    );
-
-    return {
-      success: true,
-    };
-  }
-
   @Get("/gamepasses/get")
   @Authorized()
   async getGamePasses(@Account() user: User) {
@@ -1622,27 +1488,6 @@ class GameRouter {
       select: {
         id: true,
         name: true,
-        gamepasses: {
-          select: {
-            id: true,
-            name: true,
-            price: true,
-            description: true,
-            game: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-            owners: {
-              select: {
-                id: true,
-              },
-            },
-            totalRevenue: true,
-            iconUri: true,
-          },
-        },
       },
     });
 

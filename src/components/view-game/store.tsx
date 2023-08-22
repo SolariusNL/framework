@@ -1,30 +1,33 @@
 import ModernEmptyState from "@/components/modern-empty-state";
-import PurchaseConfirmation from "@/components/purchase-confirmation";
-import ShadedButton from "@/components/shaded-button";
-import Stateful from "@/components/stateful";
 import ViewGameTab from "@/components/view-game/view-game";
 import { useFrameworkUser } from "@/contexts/FrameworkUser";
-import clsx from "@/util/clsx";
-import { Fw } from "@/util/fw";
-import getMediaUrl from "@/util/get-media";
+import { GetGameGamepassesResponse } from "@/pages/api/experiences/[[...params]]";
+import { fetchAndSetData } from "@/util/fetch";
 import { Game } from "@/util/prisma-types";
-import { Avatar, Text } from "@mantine/core";
-import { openConfirmModal } from "@mantine/modals";
-import { showNotification } from "@mantine/notifications";
-import { Gamepass } from "@prisma/client";
-import { getCookie } from "cookies-next";
-import { useState } from "react";
-import { HiCheckCircle, HiTicket } from "react-icons/hi";
+import { AssetFrontend } from "@/util/types";
+import { useEffect, useState } from "react";
+import AssetCard from "../asset-card";
 
 interface StoreProps {
-  game: Game & {
-    gamepasses: Array<Gamepass & { owners: Array<{ id: number }> }>;
-  };
+  game: Game;
 }
 
 const Store: React.FC<StoreProps> = ({ game }) => {
   const user = useFrameworkUser()!;
-  const [gamepasses, setGamepasses] = useState(game.gamepasses);
+  const [gamepasses, setGamepasses] = useState<AssetFrontend[]>([]);
+
+  const fetchData = async () => {
+    await Promise.all([
+      fetchAndSetData<GetGameGamepassesResponse>(
+        `/api/experiences/${game.id}/gamepasses`,
+        (data) => setGamepasses(data?.gamepasses!)
+      ),
+    ]);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <ViewGameTab
@@ -32,7 +35,7 @@ const Store: React.FC<StoreProps> = ({ game }) => {
       title="Store"
       description="Purchase gamepasses to unlock new features in the game."
     >
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 gap-y-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 sm:grid-cols-3 gap-4 gap-y-8">
         {gamepasses.length === 0 ? (
           <div className="col-span-full">
             <ModernEmptyState
@@ -42,131 +45,7 @@ const Store: React.FC<StoreProps> = ({ game }) => {
           </div>
         ) : (
           gamepasses.map((gamepass) => (
-            <Stateful key={gamepass.id}>
-              {(opened, setOpened) => (
-                <>
-                  <PurchaseConfirmation
-                    opened={opened}
-                    setOpened={setOpened}
-                    productTitle={gamepass.name}
-                    productDescription={gamepass.description}
-                    onPurchaseComplete={async () => {
-                      await fetch(
-                        `/api/games/${game.id}/gamepass/${gamepass.id}/purchase`,
-                        {
-                          method: "POST",
-                          headers: {
-                            "Content-Type": "application/json",
-                            Authorization: String(
-                              getCookie(".frameworksession")
-                            ),
-                          },
-                        }
-                      )
-                        .then((res) => res.json())
-                        .then((res) => {
-                          if (res.success) {
-                            setOpened(false);
-                            showNotification({
-                              title: "Purchase successful",
-                              message: `You have successfully purchased ${gamepass.name} for ${gamepass.price}T$.`,
-                              icon: <HiCheckCircle />,
-                            });
-                            setGamepasses(
-                              gamepasses.map((gp) => {
-                                if (gp.id === gamepass.id) {
-                                  return {
-                                    ...gp,
-                                    owners: [...gp.owners, { id: user.id }],
-                                  };
-                                }
-                                return gp;
-                              })
-                            );
-                          }
-                        });
-                    }}
-                    price={gamepass.price}
-                  />
-                  <ShadedButton
-                    className="w-full flex flex-col"
-                    onClick={() => {
-                      openConfirmModal({
-                        title: gamepass.name,
-                        children: (
-                          <>
-                            <Text mb={4}>Description</Text>
-                            <Text size="sm" color="dimmed" mb="md">
-                              {gamepass.description}
-                            </Text>
-                            <Text mb={4}>Price</Text>
-                            <Text
-                              size="sm"
-                              color="dimmed"
-                              className="flex items-center gap-2"
-                              mb="md"
-                            >
-                              <HiTicket />
-                              {gamepass.price}T$
-                            </Text>
-                          </>
-                        ),
-                        labels: {
-                          confirm: gamepass.owners.some(
-                            (owner) => owner.id === user.id
-                          )
-                            ? "Already owned"
-                            : "Purchase",
-                          cancel: "Nevermind",
-                        },
-                        confirmProps: {
-                          leftIcon: <HiTicket />,
-                          disabled:
-                            gamepass.owners.some(
-                              (owner) => owner.id === user.id
-                            ) || user.tickets < gamepass.price,
-                        },
-                        onConfirm: () => {
-                          setOpened(true);
-                        },
-                      });
-                    }}
-                  >
-                    <Avatar
-                      className="rounded-md aspect-square w-full h-full bg-cover"
-                      src={getMediaUrl(gamepass.iconUri)}
-                      alt={gamepass.name}
-                      radius="md"
-                      color={Fw.Strings.color(gamepass.name)}
-                    >
-                      {Fw.Strings.initials(gamepass.name)}
-                    </Avatar>
-                    <Text size="lg" mt="md">
-                      {gamepass.name}
-                    </Text>
-                    <div
-                      className={clsx(
-                        "flex items-center gap-2 text-green-700",
-                        gamepass.owners.some((owner) => owner.id === user.id) &&
-                          "opacity-50"
-                      )}
-                    >
-                      <HiTicket className="flex-shrink-0" />
-                      <Text
-                        size="sm"
-                        className={clsx(
-                          gamepass.owners.some(
-                            (owner) => owner.id === user.id
-                          ) && "line-through"
-                        )}
-                      >
-                        {gamepass.price}T$
-                      </Text>
-                    </div>
-                  </ShadedButton>
-                </>
-              )}
-            </Stateful>
+            <AssetCard key={gamepass.id} asset={gamepass} type="gamepass" />
           ))
         )}
       </div>

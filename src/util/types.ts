@@ -93,9 +93,18 @@ export type AssetFrontend = {
   originalPrice?: number;
   recentAveragePrice?: number;
   rapLastUpdated?: string;
+  canAuthorEdit: boolean;
 };
-export type AssetType = "catalog-item" | "limited-catalog-item" | "sound";
-export type AssetItemType = Lowercase<CatalogItemType> | "sound" | "limiteds";
+export type AssetType =
+  | "catalog-item"
+  | "limited-catalog-item"
+  | "sound"
+  | "gamepass";
+export type AssetItemType =
+  | Lowercase<CatalogItemType>
+  | "sound"
+  | "gamepass"
+  | "limiteds";
 export const prismaAssetTypeMap: Record<
   AssetType,
   PascalToCamel<Prisma.ModelName>
@@ -103,6 +112,7 @@ export const prismaAssetTypeMap: Record<
   "catalog-item": "catalogItem",
   "limited-catalog-item": "limitedCatalogItem",
   sound: "sound",
+  gamepass: "gamepass",
 };
 export const prismaAssetItemTypeModelMap: Record<
   AssetItemType,
@@ -115,6 +125,7 @@ export const prismaAssetItemTypeModelMap: Record<
   sound: "sound",
   tshirt: "catalogItem",
   limiteds: "limitedCatalogItem",
+  gamepass: "gamepass",
 };
 export const prismaAssetItemTypeViewMap: Record<AssetItemType, AssetType> = {
   gear: "catalog-item",
@@ -124,6 +135,7 @@ export const prismaAssetItemTypeViewMap: Record<AssetItemType, AssetType> = {
   sound: "sound",
   tshirt: "catalog-item",
   limiteds: "limited-catalog-item",
+  gamepass: "gamepass",
 };
 export const assetItemTypeWithTypeProp: AssetItemType[] = [
   "gear",
@@ -142,4 +154,5 @@ export const prismaInventoryMapping: Record<
   "catalog-item": "items",
   "limited-catalog-item": "limited",
   sound: "sounds",
+  gamepass: "gamepasses",
 };

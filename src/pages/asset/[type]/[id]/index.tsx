@@ -10,6 +10,7 @@ import Stateful from "@/components/stateful";
 import VerticalDivider from "@/components/vertical-divider";
 import Bit from "@/icons/Bit";
 import Exchange from "@/icons/Exchange";
+import Rocket from "@/icons/Rocket";
 import {
   ChartData,
   GetAssetStargazingStatusResponse,
@@ -43,6 +44,7 @@ import {
 import { showNotification } from "@mantine/notifications";
 import { Prisma } from "@prisma/client";
 import { GetServerSidePropsContext } from "next";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   HiCheck,
@@ -52,6 +54,7 @@ import {
   HiOutlineStar,
   HiOutlineTag,
   HiOutlineTicket,
+  HiPencil,
   HiShoppingBag,
   HiStar,
   HiXCircle,
@@ -69,6 +72,7 @@ export const iconPlaceholderMap: Record<AssetType, JSX.Element> = {
     <HiCubeTransparent className="w-full h-full aspect-square" />
   ),
   sound: <HiMusicNote className="w-full h-full aspect-square" />,
+  gamepass: <Rocket className="w-full h-full aspect-square" />,
 };
 
 const AssetView: React.FC<AssetViewProps> = ({
@@ -441,6 +445,16 @@ const AssetView: React.FC<AssetViewProps> = ({
                 <div className="flex items-center gap-6">
                   <Title order={2}>{asset.name}</Title>
                   <Divider className="flex-grow" />
+                  {asset.canAuthorEdit && asset.author.id === user.id && (
+                    <Link
+                      href="/asset/[type]/[id]/edit"
+                      as={`/asset/${type}/${asset.id}/edit`}
+                    >
+                      <ActionIcon radius="xl" size="lg" variant="light">
+                        <HiPencil />
+                      </ActionIcon>
+                    </Link>
+                  )}
                 </div>
                 <div className="gap-4 items-center flex">
                   <Text color="dimmed" size="sm">

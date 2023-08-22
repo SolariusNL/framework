@@ -86,6 +86,14 @@ interface OHLCData {
 const postLimitedResellSchema = z.object({
   price: z.number().min(1),
 });
+const patchItemEditSchema = z
+  .object({
+    name: z.string().min(1).max(64).optional(),
+    description: z.string().min(1).max(128).optional(),
+    price: z.number().optional(),
+    previewUri: z.string().optional(),
+  })
+  .strict();
 
 function transformToOHLCData(
   receipts: LimitedCatalogItemReceipt[]
@@ -882,6 +890,61 @@ class CatalogRouter {
         };
       }
     }
+
+    return <IResponseBase>{
+      success: true,
+    };
+  }
+
+  @Patch("/sku/:id/edit")
+  @Authorized()
+  public async patchItemEdit(
+    @Param("id") id: string,
+    @Account() user: User,
+    @Body() body: unknown,
+    @Query("type") type: AssetType
+  ) {
+    if (!type || !prismaAssetTypeMap[type]) {
+      return <IResponseBase>{
+        success: false,
+        message: "Invalid type provided",
+      };
+    }
+
+    const queryExecutor = prisma[prismaAssetTypeMap[type]] as never as {
+      findFirst: (
+        args: Prisma.CatalogItemFindFirstArgs
+      ) => Promise<CatalogItem & { apartOf: Inventory[] }>;
+      update: (
+        args: Prisma.CatalogItemUpdateArgs
+      ) => Promise<CatalogItem & { apartOf: Inventory[] }>;
+    };
+
+    const item = (await queryExecutor.findFirst({
+      where: {
+        id,
+        canAuthorEdit: true,
+        author: {
+          id: user.id,
+        },
+      },
+    })) as CatalogItem;
+
+    if (!item) {
+      return <IResponseBase>{
+        success: false,
+        message: "No item found with this id that can be edited by you",
+      };
+    }
+
+    const data = patchItemEditSchema.parse(body);
+
+    await queryExecutor.update({
+      where: {
+        id,
+      },
+      data,
+    });
 
     return <IResponseBase>{
       success: true,

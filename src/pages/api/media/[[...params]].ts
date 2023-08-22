@@ -2,11 +2,13 @@ import Authorized, { Account } from "@/util/api/authorized";
 import { getAccountFromSession } from "@/util/auth";
 import prisma from "@/util/prisma";
 import type { User } from "@/util/prisma-types";
+import { AssetType, prismaAssetTypeMap } from "@/util/types";
+import { CatalogItem, Prisma } from "@prisma/client";
 import {
-  createHandler,
   Param,
   Post,
   UseMiddleware,
+  createHandler,
 } from "@storyofams/next-api-decorators";
 import multer from "multer";
 import path from "path";
@@ -159,6 +161,7 @@ const gamepassIcons = createMulter("gamepass", async (req, file, cb) => {
       id: String(req.params.gamepassId),
     },
     data: {
+      previewUri: `/gamepass/${gamepass.id}.webp?at=${Date.now()}`,
       iconUri: `/gamepass/${gamepass.id}.webp?at=${Date.now()}`,
     },
   });
@@ -228,6 +231,34 @@ const convoIcons = createMulter("convo", async (req, file, cb) => {
   });
 
   cb(null, conversation.id + ".webp");
+});
+
+const assetIcons = createMulter("asset", async (req, file, cb) => {
+  const user = await getAccountFromSession(
+    String(req.headers["authorization"])
+  );
+
+  if (!req.params.assetId) return cb(new Error("No asset id provided"), "");
+  const type = req.query.type as AssetType;
+  if (!type) return cb(new Error("No asset type provided"), "");
+
+  const queryExecutor = prisma[prismaAssetTypeMap[type]] as never as {
+    findFirst: (args: Prisma.CatalogItemFindFirstArgs) => Promise<CatalogItem>;
+  };
+
+  const asset = await queryExecutor.findFirst({
+    where: {
+      id: String(req.params.assetId),
+      author: {
+        id: user?.id,
+      },
+      canAuthorEdit: true,
+    },
+  });
+
+  if (!asset) return cb(new Error("Asset not found"), "");
+
+  cb(null, asset.id + ".webp");
 });
 
 const sounds = createMulter(
@@ -345,6 +376,19 @@ class MediaRouter {
   ) {
     return {
       icon: `/convo/${convoId}.webp`,
+      success: true,
+    };
+  }
+
+  @Post("/upload/asset/:assetId")
+  @Authorized()
+  @UseMiddleware(assetIcons.single("asset"))
+  async uploadAssetIcon(
+    @Account() account: User,
+    @Param("assetId") assetId: string
+  ) {
+    return {
+      icon: `/asset/${assetId}.webp`,
       success: true,
     };
   }
