@@ -942,7 +942,14 @@ class CatalogRouter {
       where: {
         id,
       },
-      data,
+      data: {
+        ...data,
+        ...(data.price
+          ? {
+              priceBits: data.price * 10,
+            }
+          : {}),
+      },
     });
 
     return <IResponseBase>{
