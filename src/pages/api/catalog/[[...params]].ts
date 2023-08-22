@@ -605,6 +605,33 @@ class CatalogRouter {
           },
         },
       });
+      await prisma.user.update({
+        where: {
+          id: item.authorId,
+        },
+        data: {
+          tickets: {
+            increment: item.price,
+          },
+          transactions: {
+            create: {
+              type: TransactionType.INBOUND,
+              from: {
+                connect: {
+                  id: user.id,
+                },
+              },
+              to: {
+                connect: {
+                  id: item.authorId,
+                },
+              },
+              tickets: item.price,
+              description: `Sold ${item.name} to ${user.username}`,
+            },
+          },
+        },
+      });
 
       return <IResponseBase>{
         success: true,
@@ -668,39 +695,6 @@ class CatalogRouter {
           });
         }
 
-        await prisma.inventory.update({
-          where: {
-            userId: user.id,
-          },
-          data: {
-            limited: {
-              create: {
-                itemId: id,
-                count: 1,
-              },
-            },
-            user: {
-              update: {
-                tickets: {
-                  decrement: price,
-                },
-                transactions: {
-                  create: {
-                    type: TransactionType.OUTBOUND,
-                    to: {
-                      connect: {
-                        id: limited.authorId,
-                      },
-                    },
-                    tickets: price,
-                    description: `Bought ${limited.name} from ${limited.author.username}`,
-                  },
-                },
-              },
-            },
-          },
-        });
-
         await prisma.limitedCatalogItem.update({
           where: {
             id,
@@ -726,6 +720,11 @@ class CatalogRouter {
           },
           include: {
             item: true,
+            seller: {
+              select: {
+                username: true,
+              },
+            },
           },
         });
 
@@ -864,7 +863,7 @@ class CatalogRouter {
                 },
                 tickets: price,
                 description: `Bought ${resell.item.name} from @${
-                  resell.sellerId
+                  resell.seller.username
                 } with serial ${resell.id.split("-")[0]}`,
               },
             },
