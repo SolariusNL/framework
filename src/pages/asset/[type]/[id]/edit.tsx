@@ -1,5 +1,6 @@
 import Framework from "@/components/framework";
 import ImageUploader from "@/components/image-uploader";
+import LabelledCheckbox from "@/components/labelled-checkbox";
 import Owner from "@/components/owner";
 import IResponseBase from "@/types/api/IResponseBase";
 import authorizedRoute from "@/util/auth";
@@ -36,7 +37,12 @@ type AssetViewProps = {
   user: User;
   type: AssetType;
 };
-type ChangeableFields = "name" | "description" | "previewUri" | "price";
+type ChangeableFields =
+  | "name"
+  | "description"
+  | "previewUri"
+  | "price"
+  | "onSale";
 
 const AssetView: React.FC<AssetViewProps> = ({
   asset: assetInitial,
@@ -47,7 +53,10 @@ const AssetView: React.FC<AssetViewProps> = ({
   const [uploaded, setUploaded] = useState<string | null>(null);
   const imageRef = useRef<HTMLImageElement>(null);
 
-  const changeField = (field: ChangeableFields, value: string | number) => {
+  const changeField = (
+    field: ChangeableFields,
+    value: string | number | boolean
+  ) => {
     setAsset((prev) => ({
       ...prev,
       [field]: value,
@@ -64,6 +73,7 @@ const AssetView: React.FC<AssetViewProps> = ({
           name: asset.name,
           description: asset.description,
           price: asset.price,
+          onSale: asset.onSale,
           ...(previewUri ? { previewUri } : {}),
         },
       }
@@ -175,6 +185,16 @@ const AssetView: React.FC<AssetViewProps> = ({
                 }}
                 className="w-[50%]"
               />
+              <div className="my-4">
+                <LabelledCheckbox
+                  label="For sale"
+                  description="This asset will be available for purchase."
+                  checked={asset.onSale}
+                  onChange={(e) =>
+                    changeField("onSale", e.currentTarget.checked)
+                  }
+                />
+              </div>
               <Textarea
                 className="my-4"
                 classNames={{

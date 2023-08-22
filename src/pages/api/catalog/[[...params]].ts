@@ -92,6 +92,7 @@ const patchItemEditSchema = z
     description: z.string().min(1).max(128).optional(),
     price: z.number().optional(),
     previewUri: z.string().optional(),
+    onSale: z.boolean().optional(),
   })
   .strict();
 
