@@ -30,7 +30,8 @@ const UdmuxChallenge: FC = () => {
       new Date(udmuxGuard.lastSeen).getTime() >
       Date.now() - 1000 * 60 * 60 * 12
     ) {
-      router.push("/");
+      const returnTo = router.query.redirect || "/";
+      router.push(String(returnTo));
       return;
     }
 

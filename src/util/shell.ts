@@ -8,6 +8,6 @@ logger().info(
 );
 
 const server = repl.start({
-  prompt: "fw ~| >",
+  prompt: "fw #"
 });
 server.context.db = prisma;

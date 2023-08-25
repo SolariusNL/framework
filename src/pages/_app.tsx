@@ -118,7 +118,7 @@ const Framework: FC<FrameworkProps> & {
       Date.now() - new Date(udmuxGuard.lastSeen).getTime() > 1000 * 60 * 60 * 12
     ) {
       if (Math.random() < 0.1) {
-        router.push("/udmux-challenge");
+        router.push("/udmux-challenge?redirect=" + router.asPath);
       }
     }
   }
@@ -126,10 +126,7 @@ const Framework: FC<FrameworkProps> & {
   useEffect(() => {
     router.events.on("routeChangeComplete", () => {
       fetchFlags();
-      checkUdmux();
     });
-
-    checkUdmux();
 
     if (
       typeof window !== "undefined" &&
@@ -158,7 +155,6 @@ const Framework: FC<FrameworkProps> & {
     return () => {
       router.events.off("routeChangeComplete", () => {
         fetchFlags();
-        checkUdmux();
       });
     };
   }, []);
@@ -179,6 +175,9 @@ const Framework: FC<FrameworkProps> & {
       setEnabled(false);
     }
   }, [amoled]);
+  useEffect(() => {
+    checkUdmux();
+  }, [router.pathname]);
 
   return (
     <>
