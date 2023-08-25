@@ -33,6 +33,11 @@ enum PrivacyPreferences {
   HIDE_INVENTORY
 }
 
+enum UserSignalType {
+  CLEAR_LOCALSTORAGE
+  MODAL_ALERT
+}
+
 enum PremiumSubscriptionType {
   PREMIUM_ONE_MONTH
   PREMIUM_SIX_MONTHS
@@ -198,6 +203,7 @@ model User {
   createdCatalogItems        CatalogItem[]               @relation("catalogItemAuthor")
   createdLimitedCatalogItems LimitedCatalogItem[]        @relation("limitedCatalogItemAuthor")
   robloxTransfer             Boolean                     @default(false)
+  signals                    UserSignal[]                @relation("userSignals")
 }
 
 model Story {
@@ -207,6 +213,23 @@ model Story {
   createdAt DateTime @default(now())
   imageUri  String
   views     Int      @default(0)
+}
+
+model UserSignal {
+  id        String              @id @default(uuid())
+  user      User                @relation("userSignals", fields: [userId], references: [id])
+  userId    Int
+  type      UserSignalType
+  createdAt DateTime            @default(now())
+  data      UserSignalDataRow[] @relation("userSignalData")
+}
+
+model UserSignalDataRow {
+  id       String     @id @default(uuid())
+  signal   UserSignal @relation("userSignalData", fields: [signalId], references: [id])
+  signalId String
+  key      String
+  value    String
 }
 
 model ConnectedAccount {
