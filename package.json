@@ -19,7 +19,8 @@
     "create-config": "ts-node --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\" scripts/create-config.ts",
     "create-config-schema": "typescript-json-schema src/types/Configuration.ts Configuration > framework.schema.json",
     "emails:dev": "cd email && yarn run dev",
-    "profanity": "ts-node --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\" scripts/profanity.ts"
+    "profanity": "ts-node --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\" scripts/profanity.ts",
+    "console": "ts-node --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\" src/util/shell.ts"
   },
   "dependencies": {
     "@emoji-mart/react": "^1.1.0",
