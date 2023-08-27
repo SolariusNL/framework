@@ -1,15 +1,19 @@
 import Chat from "@/components/chat";
+import Conditional from "@/components/conditional";
 import ContextMenu from "@/components/context-menu";
 import EmailReminder from "@/components/email-reminder";
 import Footer from "@/components/foot";
 import FrameworkLogo from "@/components/framework-logo";
+import { useFrameworkComponentStyles } from "@/components/framework.styles";
 import Banner from "@/components/framework/banner";
 import CurrencyMenu from "@/components/framework/currency-menu";
+import ImpersonationBanner from "@/components/framework/impersonation-banner";
 import MobileSearchMenu from "@/components/framework/mobile-search";
 import NotificationFlyout from "@/components/framework/notification-flyout";
 import Search from "@/components/framework/search";
 import UpdateDrawer from "@/components/framework/update-drawer";
 import UserMenu from "@/components/framework/user-menu";
+import Products from "@/components/products";
 import TabNav from "@/components/tab-nav";
 import appConfig from "@/config/app";
 import { spotlight } from "@/config/spotlight";
@@ -67,9 +71,6 @@ import {
   HiXCircle,
 } from "react-icons/hi";
 import { useDispatch, useSelector } from "react-redux";
-import Conditional from "./conditional";
-import { useFrameworkComponentStyles } from "./framework.styles";
-import ImpersonationBanner from "./framework/impersonation-banner";
 
 type Tab =
   | "home"
@@ -267,7 +268,8 @@ const Framework = ({
           }}
         >
           <Group position="apart">
-            <Group spacing="sm">
+            <Group spacing="sm" className="relative">
+              <Products />
               <ContextMenu
                 width={200}
                 className="items-center flex"

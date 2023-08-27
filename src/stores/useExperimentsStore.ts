@@ -9,6 +9,7 @@ export enum ExperimentId {
   LoginManager = "login-manager",
   RobloxAuth = "roblox-auth",
   InventoryFilter = "inventory-filter",
+  ProductPicker = "product-picker",
 }
 export enum ExperimentStage {
   Alpha = "alpha",
@@ -62,6 +63,14 @@ export const EXPERIMENTS = [
     id: ExperimentId.InventoryFilter,
     refreshNecessary: false,
   },
+  {
+    name: "Product Picker",
+    description:
+      "An experimental product picker to easily go to other Solarius products",
+    stage: ExperimentStage.Alpha,
+    id: ExperimentId.ProductPicker,
+    refreshNecessary: false,
+  }
 ];
 
 interface ExperimentsStore {

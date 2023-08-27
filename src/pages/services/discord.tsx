@@ -1,21 +1,15 @@
-import Framework from "@/components/framework";
+import InlineError from "@/components/inline-error";
+import OuterUI from "@/layouts/OuterUI";
 import authorizedRoute from "@/util/auth";
-import getMediaUrl from "@/util/get-media";
+import { Fw } from "@/util/fw";
 import { User } from "@/util/prisma-types";
-import {
-  Alert,
-  Avatar,
-  Button,
-  Container,
-  Paper,
-  Text,
-  TextInput,
-  Title,
-} from "@mantine/core";
+import { Avatar, Button, Text, TextInput, Title } from "@mantine/core";
 import { DiscordConnectCode } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
+import { useRouter } from "next/router";
 import { useState } from "react";
+import { BLACK } from "../teams/t/[slug]/issue/create";
 
 interface DiscordServiceProps {
   user: User;
@@ -27,8 +21,10 @@ const DiscordService: NextPage<DiscordServiceProps> = ({ user }) => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [fetchedInfo, setFetchedInfo] = useState<DiscordConnectCode>();
+  const router = useRouter();
 
   const connectDiscord = async () => {
+    setLoading(true);
     await fetch("/api/oauth/services/discord/connect", {
       method: "POST",
       headers: {
@@ -47,85 +43,92 @@ const DiscordService: NextPage<DiscordServiceProps> = ({ user }) => {
           setSuccess(true);
           setFetchedInfo(res);
         }
-      });
+      })
+      .finally(() => setLoading(false));
   };
 
   return (
-    <Framework
-      user={user}
-      activeTab="none"
-      modernTitle="Connect Discord"
-      modernSubtitle="Enter the code you've received from the bot to connect your Discord account."
+    <OuterUI
+      title="Link with Discord"
+      description="Link your Discord account to your Framework account."
     >
-      <Container size={460} my={30}>
-        <Paper
-          withBorder
-          shadow="md"
-          p={30}
-          radius="md"
-          mt="xl"
-          sx={(theme) => ({
-            background:
-              theme.colorScheme === "dark" ? theme.colors.dark[8] : theme.white,
-          })}
-        >
-          {success ? (
-            <div className="items-center flex flex-col">
-              <Avatar
-                src={getMediaUrl(fetchedInfo!.imageUrl)}
-                size="xl"
-                radius={999}
-                mb={24}
-              />
-              <Title order={5}>
-                Hello, {fetchedInfo?.username}
-                <span className="text-gray-500">
-                  #{fetchedInfo?.discriminator}
-                </span>
-                !
-              </Title>
-            </div>
-          ) : (
-            <>
-              <Text mb={12}>
-                Enter the code.{" "}
-                <span className="text-gray-500 font-semibold">
-                  (Example: 196-441-591)
-                </span>
-              </Text>
+      {success && fetchedInfo !== undefined ? (
+        <div className="items-center flex flex-col">
+          <Avatar
+            src={fetchedInfo!.imageUrl}
+            size="xl"
+            radius={999}
+            mb={24}
+            color={Fw.Strings.color(fetchedInfo?.username!)}
+          >
+            {Fw.Strings.initials(fetchedInfo?.username!)}
+          </Avatar>
+          <Title order={2}>Hello, @{fetchedInfo.username}</Title>
+          <Text size="sm" color="dimmed" mt="md" align="center">
+            Your Discord account has been linked to your Framework account.
+          </Text>
+          <Button
+            mt="xl"
+            radius="xl"
+            variant="light"
+            onClick={() => router.push("/")}
+          >
+            Go Home
+          </Button>
+        </div>
+      ) : (
+        <>
+          <Text size="sm" color="dimmed">
+            Enter the code you received from the Discord bot.
+          </Text>
+          <TextInput
+            required
+            label="Code"
+            placeholder="123-456-789"
+            my="lg"
+            value={enteredCode}
+            onChange={(e) => {
+              const inputValue = e.currentTarget.value.replace(/-/g, "");
+              let formattedValue = "";
 
-              <TextInput
-                required
-                label="Code"
-                description="Enter the code."
-                placeholder="000-000-000"
-                mb={16}
-                value={enteredCode}
-                onChange={(e) => setEnteredCode(e.currentTarget.value)}
-              />
+              for (let i = 0; i < inputValue.length; i += 3) {
+                formattedValue += inputValue.slice(i, i + 3) + "-";
+              }
 
-              <Button
-                fullWidth
-                disabled={
-                  enteredCode.length !== 11 ||
-                  enteredCode.split("-").length !== 3 ||
-                  enteredCode.split("-").some((x) => x.length !== 3)
-                }
-                onClick={connectDiscord}
-              >
-                Connect
-              </Button>
+              formattedValue = formattedValue.slice(0, -1);
 
-              {error && (
-                <Alert mt={12} title="Error" color="red">
-                  {error}
-                </Alert>
-              )}
-            </>
+              setEnteredCode(formattedValue);
+            }}
+            classNames={BLACK}
+            maxLength={11}
+          />
+          <div className="flex justify-end">
+            <Button
+              disabled={
+                enteredCode.length !== 11 ||
+                enteredCode.split("-").length !== 3 ||
+                enteredCode.split("-").some((x) => x.length !== 3)
+              }
+              onClick={connectDiscord}
+              variant="light"
+              radius="xl"
+              loading={loading}
+            >
+              Connect
+            </Button>
+          </div>
+          {error && (
+            <InlineError
+              title="An error occurred."
+              variant="error"
+              className="mt-6"
+            >
+              {error}
+            </InlineError>
           )}
-        </Paper>
-      </Container>
-    </Framework>
+        </>
+      )}
+    </OuterUI>
   );
 };
 
