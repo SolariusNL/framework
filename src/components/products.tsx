@@ -24,7 +24,7 @@ const Products: FC = () => {
           {products.map((product) => (
             <ShadedButton
               sx={(theme) => ({
-                border: `1px solid transparent`,
+                border: "1px solid transparent",
                 borderRadius: theme.radius.sm * 2,
                 backgroundColor:
                   theme.colors[product.color][
@@ -38,6 +38,7 @@ const Products: FC = () => {
                 },
               })}
               className="flex gap-4 p-2"
+              key={product.name}
             >
               <div className="flex items-start">{product.icon}</div>
               <div className="flex gap-2 flex-col">
