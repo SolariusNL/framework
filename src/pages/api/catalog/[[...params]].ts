@@ -709,6 +709,70 @@ class CatalogRouter {
             },
           },
         });
+        await prisma.limitedInventoryItem.create({
+          data: {
+            inventory: {
+              connect: {
+                userId: user.id,
+              },
+            },
+            item: {
+              connect: {
+                id,
+              },
+            },
+            count: 1,
+          },
+        });
+        await prisma.user.update({
+          where: {
+            id: limited.authorId,
+          },
+          data: {
+            tickets: {
+              increment: price,
+            },
+            transactions: {
+              create: {
+                type: TransactionType.INBOUND,
+                from: {
+                  connect: {
+                    id: user.id,
+                  },
+                },
+                to: {
+                  connect: {
+                    id: limited.authorId,
+                  },
+                },
+                tickets: price,
+                description: `Sold ${limited.name} to ${user.username}`,
+              },
+            },
+          },
+        });
+        await prisma.user.update({
+          where: {
+            id: user.id,
+          },
+          data: {
+            tickets: {
+              decrement: price,
+            },
+            transactions: {
+              create: {
+                type: TransactionType.OUTBOUND,
+                to: {
+                  connect: {
+                    id: limited.authorId,
+                  },
+                },
+                tickets: price,
+                description: `Bought ${limited.name} from ${limited.author.username}`,
+              },
+            },
+          },
+        });
 
         return <IResponseBase>{
           success: true,
