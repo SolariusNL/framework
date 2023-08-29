@@ -211,6 +211,7 @@ const Profile: NextPage<ProfileProps> = ({
         openGraph={{
           title: `${String(viewing.username)} on Framework`,
           description: Fw.Strings.limitLength(viewing.bio, 120),
+          type: "profile",
           ...(viewing.avatarUri && {
             images: [
               {
