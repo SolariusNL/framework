@@ -10,12 +10,7 @@ const InfraLogo: FC<SVGProps<SVGSVGElement>> = (props) => {
       xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
-      <rect
-        width="66"
-        height="66"
-        rx="8"
-        className="dark:fill-white fill-[#333338]"
-      />
+      <rect width="66" height="66" rx="8" className="fill-transparent" />
       <path
         d="M35.2261 35.2727C34.6486 28.2733 28.7848 22.7727 21.6364 22.7727C14.1052 22.7727 8 28.8779 8 36.4091C8 43.9402 14.1052 50.0454 21.6364 50.0454H42.0909V35.2727H35.2261Z"
         fill="#528BFF"

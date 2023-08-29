@@ -14,7 +14,7 @@ const AnalyticsLogo: FC<SVGProps<SVGSVGElement>> = (props) => {
         width="66"
         height="66"
         rx="8"
-        className="dark:fill-white fill-[#333338]"
+        className="fill-transparent"
       />
       <rect
         x="14"

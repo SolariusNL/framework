@@ -8,3 +8,4 @@ export * from "./nums";
 export * from "./presence";
 export * from "./string-parser";
 export * from "./strings";
+export * from "./util";

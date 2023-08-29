@@ -10,12 +10,7 @@ const VortexLogo: FC<SVGProps<SVGSVGElement>> = (props) => {
       xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
-      <rect
-        width="66"
-        height="66"
-        rx="8"
-        className="dark:fill-white fill-[#333338]"
-      />
+      <rect width="66" height="66" rx="8" className="fill-transparent" />
       <rect
         x="17.2588"
         y="17.2589"

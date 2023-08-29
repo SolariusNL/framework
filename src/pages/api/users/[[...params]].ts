@@ -1561,7 +1561,6 @@ class UserRouter {
   }
 
   @Get("/:uid/inventory-availability")
-  @Authorized()
   public async getInventoryAvailability(@Param("uid") uid: string) {
     const user = await prisma.user.findFirst({
       where: {

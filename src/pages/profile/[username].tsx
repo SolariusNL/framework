@@ -17,11 +17,13 @@ import countries from "@/data/countries";
 import getTimezones from "@/data/timezones";
 import Rocket from "@/icons/Rocket";
 import Soodam from "@/icons/Soodam";
+import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
 import useChatStore from "@/stores/useChatStore";
 import IResponseBase from "@/types/api/IResponseBase";
 import authorizedRoute from "@/util/auth";
 import { exclude } from "@/util/exclude";
 import fetchJson, { fetchAndSetData } from "@/util/fetch";
+import { Fw } from "@/util/fw";
 import getMediaUrl from "@/util/get-media";
 import prisma from "@/util/prisma";
 import { Game, User } from "@/util/prisma-types";
@@ -66,7 +68,11 @@ interface ProfileProps {
   following: boolean;
 }
 
-const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
+const Profile: NextPage<ProfileProps> = ({
+  user: initialUser,
+  profile,
+  following,
+}) => {
   const [reportOpened, setReportOpened] = React.useState(false);
   const { setOpen, setUser, setDefaultTab } = useUserInformationDialog();
   const [viewing, setViewing] = React.useState(profile);
@@ -80,6 +86,7 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
     }>
   >([]);
   const { setOpened } = useChatStore();
+  const { user } = useAuthorizedUserStore();
 
   const FollowButton = (
     <Button
@@ -200,21 +207,23 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
       />
       <NextSeo
         title={String(viewing.username)}
-        description={String(viewing.bio.substring(0, 160))}
+        description={Fw.Strings.limitLength(viewing.bio, 120)}
         openGraph={{
           title: `${String(viewing.username)} on Framework`,
-          description: String(viewing.bio.substring(0, 160)),
+          description: Fw.Strings.limitLength(viewing.bio, 120),
           ...(viewing.avatarUri && {
             images: [
               {
-                url: String(viewing.avatarUri),
+                url: Fw.Util.appUrl(getMediaUrl(viewing.avatarUri)),
                 alt: `${String(viewing.username)}'s avatar`,
+                width: 128,
+                height: 128,
               },
             ],
           }),
         }}
       />
-      <Framework user={user} activeTab="none">
+      <Framework user={initialUser} activeTab="none">
         {viewing.banned ? (
           <div className="flex items-center justify-center flex-col w-full py-8">
             <ShadedCard>
@@ -398,7 +407,7 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
                       Following
                     </Text>
                   </div>
-                  {viewing.id !== user.id && (
+                  {user && viewing.id !== user.id && (
                     <>
                       <div className="mt-4">
                         <div className="hidden md:flex items-center gap-2">
@@ -608,7 +617,7 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
                   ))}
                 />
               )}
-              {user.profileLinks && <Links user={viewing} />}
+              {viewing.profileLinks && <Links user={viewing} />}
               <div className="grid grid-cols-2 gap-2">
                 {[
                   [<AlphaBadge user={viewing} key="alpha" />, true],
@@ -636,10 +645,7 @@ const Profile: NextPage<ProfileProps> = ({ user, profile, following }) => {
 };
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
-  const auth = await authorizedRoute(ctx, true, false);
-  if (auth.redirect) {
-    return auth;
-  }
+  const auth = await authorizedRoute(ctx, false, false);
 
   const { username } = ctx.query;
   const viewing = await prisma.user.findFirst({
@@ -694,24 +700,26 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     };
   }
 
-  const following = await prisma.user.findFirst({
-    where: {
-      id: auth.props.user?.id,
-      following: {
-        some: {
-          id: viewing.id,
+  const following = auth.props?.user
+    ? await prisma.user.findFirst({
+        where: {
+          id: auth.props.user?.id,
+          following: {
+            some: {
+              id: viewing.id,
+            },
+          },
         },
-      },
-    },
-  });
+      })
+    : false;
 
   return {
     props: {
-      user: JSON.parse(JSON.stringify(auth.props?.user)),
       profile: JSON.parse(
         JSON.stringify(exclude(viewing, "email", "inviteCode", "tickets"))
       ),
       following: !!following,
+      ...auth.props,
     },
   };
 }

@@ -1,3 +1,6 @@
+import Authorized, { Account } from "@/util/api/authorized";
+import prisma from "@/util/prisma";
+import type { User } from "@/util/prisma-types";
 import { DomainStatus } from "@prisma/client";
 import {
   Body,
@@ -10,9 +13,6 @@ import {
 import { randomUUID } from "crypto";
 import { promises } from "node:dns";
 import { z } from "zod";
-import Authorized, { Account } from "@/util/api/authorized";
-import prisma from "@/util/prisma";
-import type { User } from "@/util/prisma-types";
 
 const domainSchema = z.object({
   domain: z
@@ -159,7 +159,6 @@ class DomainRouter {
   }
 
   @Get("/u/:id")
-  @Authorized()
   public async getUserDomains(@Param("id") id: number) {
     const domains = await prisma.domain.findMany({
       where: {

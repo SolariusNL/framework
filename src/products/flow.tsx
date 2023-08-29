@@ -10,12 +10,7 @@ const FlowLogo: FC<SVGProps<SVGSVGElement>> = (props) => {
       xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
-      <rect
-        width="66"
-        height="66"
-        rx="8"
-        className="dark:fill-white fill-[#333338]"
-      />
+      <rect width="66" height="66" rx="8" className="fill-transparent" />
       <path
         d="M29.0444 52.6253C28.7426 52.6253 28.4258 52.5951 28.109 52.5046C26.0421 51.9916 24.7749 49.8946 25.2878 47.8277L33.0122 16.9303C33.5402 14.8634 35.6372 13.6112 37.7041 14.1091C39.771 14.6371 41.0232 16.7342 40.5102 18.801L32.7859 49.6985C32.3483 51.4485 30.7793 52.6253 29.0444 52.6253Z"
         fill="#9328FF"

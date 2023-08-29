@@ -10,12 +10,7 @@ const FrameworkLogo: FC<SVGProps<SVGSVGElement>> = (props) => {
       xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
-      <rect
-        width="66"
-        height="66"
-        rx="8"
-        className="dark:fill-white fill-[#333338]"
-      />
+      <rect width="66" height="66" rx="8" className="fill-transparent" />
       <mask
         id="mask0_802_2"
         style={{ maskType: "alpha" }}

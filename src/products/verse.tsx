@@ -10,12 +10,7 @@ const VerseLogo: FC<SVGProps<SVGSVGElement>> = (props) => {
       xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
-      <rect
-        width="66"
-        height="66"
-        rx="8"
-        className="dark:fill-white fill-[#333338]"
-      />
+      <rect width="66" height="66" rx="8" className="fill-transparent" />
       <path
         d="M12 30.7503C12 20.3948 20.3948 12 30.7503 12V12V36.0053C30.7503 46.3608 22.3555 54.7556 12 54.7556V54.7556V30.7503Z"
         fill="#4A3AFF"
