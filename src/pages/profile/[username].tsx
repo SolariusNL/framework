@@ -212,6 +212,13 @@ const Profile: NextPage<ProfileProps> = ({
           title: `${String(viewing.username)} on Framework`,
           description: Fw.Strings.limitLength(viewing.bio, 120),
           type: "profile",
+          defaultImageHeight: 128,
+          defaultImageWidth: 128,
+          profile: {
+            username: String(viewing.username),
+            firstName: viewing.alias || viewing.username,
+            lastName: "",
+          },
           ...(viewing.avatarUri && {
             images: [
               {
