@@ -219,16 +219,32 @@ const Profile: NextPage<ProfileProps> = ({
             firstName: viewing.alias || viewing.username,
             lastName: "",
           },
-          ...(viewing.avatarUri && {
-            images: [
-              {
-                url: getMediaUrl(viewing.avatarUri),
-                alt: `${String(viewing.username)}'s avatar`,
-                width: 64,
-                height: 64,
-              },
-            ],
-          }),
+          images: [
+            ...(viewing.avatarUri
+              ? [
+                  {
+                    url: getMediaUrl(viewing.avatarUri),
+                    alt: `${String(viewing.username)}'s avatar`,
+                    width: 64,
+                    height: 64,
+                  },
+                ]
+              : [
+                  {
+                    secureUrl:
+                      "https://" +
+                      process.env.NEXT_PUBLIC_HOSTNAME +
+                      "/opengraph.png",
+                    url:
+                      "https://" +
+                      process.env.NEXT_PUBLIC_HOSTNAME +
+                      "/opengraph.png",
+                    alt: "Framework SEO Banner",
+                    width: 800,
+                    height: 400,
+                  },
+                ]),
+          ],
         }}
       />
       <Framework user={initialUser} activeTab="none">
