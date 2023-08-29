@@ -214,10 +214,10 @@ const Profile: NextPage<ProfileProps> = ({
           ...(viewing.avatarUri && {
             images: [
               {
-                url: Fw.Util.appUrl(getMediaUrl(viewing.avatarUri)),
+                url: getMediaUrl(viewing.avatarUri),
                 alt: `${String(viewing.username)}'s avatar`,
-                width: 128,
-                height: 128,
+                width: 64,
+                height: 64,
               },
             ],
           }),
