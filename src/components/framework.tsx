@@ -13,7 +13,6 @@ import NotificationFlyout from "@/components/framework/notification-flyout";
 import Search from "@/components/framework/search";
 import UpdateDrawer from "@/components/framework/update-drawer";
 import UserMenu from "@/components/framework/user-menu";
-import Products from "@/components/products";
 import TabNav from "@/components/tab-nav";
 import appConfig from "@/config/app";
 import { spotlight } from "@/config/spotlight";
@@ -54,6 +53,7 @@ import { showNotification } from "@mantine/notifications";
 import { SpotlightProvider } from "@mantine/spotlight";
 import { deleteCookie, getCookie } from "cookies-next";
 import isElectron from "is-electron";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useContext, useEffect, useState } from "react";
@@ -71,6 +71,10 @@ import {
   HiXCircle,
 } from "react-icons/hi";
 import { useDispatch, useSelector } from "react-redux";
+
+const Products = dynamic(() => import("@/components/products"), {
+  ssr: false,
+});
 
 type Tab =
   | "home"

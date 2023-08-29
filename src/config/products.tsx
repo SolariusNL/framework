@@ -1,42 +1,66 @@
-import FrameworkLogo from "@/components/framework-logo";
-import { MantineColor } from "@mantine/core";
+import AnalyticsLogo from "@/products/analytics";
+import FlowLogo from "@/products/flow";
+import FrameworkLogo from "@/products/framework";
+import InfraLogo from "@/products/infra";
+import PayLogo from "@/products/pay";
+import VerseLogo from "@/products/verse";
+import VortexLogo from "@/products/vortex";
 
 type Product = {
   name: string;
-  subname: string;
-  url: string;
-  icon: JSX.Element;
-  color: MantineColor;
+  description: string;
+  href: string;
+  icon: React.FC<React.SVGProps<SVGSVGElement>>;
 };
 
 const products: Product[] = [
   {
+    href: "#",
     name: "Framework",
-    subname: "The best place to play games.",
-    url: "/",
-    icon: <FrameworkLogo square className="w-6 h-6" />,
-    color: "blue",
+    description:
+      "A free and open source game platform for building your dream games.",
+    icon: FrameworkLogo,
   },
   {
-    name: "Framework",
-    subname: "The best place to play games.",
-    url: "/",
-    icon: <FrameworkLogo square className="w-6 h-6" />,
-    color: "pink",
+    href: "#",
+    name: "Infra",
+    description:
+      "A powerful and scalable backend for your games, apps, and websites.",
+    icon: InfraLogo,
   },
   {
-    name: "Framework",
-    subname: "The best place to play games.",
-    url: "/",
-    icon: <FrameworkLogo square className="w-6 h-6" />,
-    color: "grape",
+    href: "#",
+    name: "Verse",
+    description:
+      "Verse is a decentralised and encrypted social network for the future.",
+    icon: VerseLogo,
   },
   {
-    name: "Framework",
-    subname: "The best place to play games.",
-    url: "/",
-    icon: <FrameworkLogo square className="w-6 h-6" />,
-    color: "indigo",
+    href: "#",
+    name: "Vortex",
+    description:
+      "Vortex is a powerful, open source 3D and 2D game engine for Framework.",
+    icon: VortexLogo,
+  },
+  {
+    href: "#",
+    name: "Pay",
+    description: "Pay is a simple, secure, and fast no-code payment gateway.",
+    icon: PayLogo,
+  },
+  {
+    href: "#",
+    name: "Flow",
+    description:
+      "Flow is a comprehensive visual scripting system that transpiles to TypeScript.",
+    icon: FlowLogo,
+  },
+  {
+    href: "#",
+    name: "Analytics",
+    description:
+      "Analytics is a powerful privacy-focused analytics platform for your suite.",
+    icon: AnalyticsLogo,
   },
 ];
 

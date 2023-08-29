@@ -1,58 +1,57 @@
+import ShadedButton from "@/components/shaded-button";
 import products from "@/config/products";
 import useExperimentsStore, {
   ExperimentId,
 } from "@/stores/useExperimentsStore";
-import { ActionIcon, Popover, Text, Title } from "@mantine/core";
+import clsx from "@/util/clsx";
+import {
+  ActionIcon,
+  Popover,
+  Text,
+  useMantineColorScheme,
+} from "@mantine/core";
 import { FC } from "react";
 import { HiOutlineArchive } from "react-icons/hi";
-import ShadedButton from "./shaded-button";
+import ReactNoSSR from "react-no-ssr";
 
 const Products: FC = () => {
   const { experiments } = useExperimentsStore();
+  const { colorScheme } = useMantineColorScheme();
+
   return experiments.includes(ExperimentId.ProductPicker) ? (
-    <Popover transition="pop" width={500}>
-      <Popover.Target>
-        <ActionIcon
-          variant="subtle"
-          className="md:-ml-10 absolute md:flex hidden text-dimmed items-center justify-center"
-        >
-          <HiOutlineArchive />
-        </ActionIcon>
-      </Popover.Target>
-      <Popover.Dropdown>
-        <div className="grid grid-cols-2 gap-2">
-          {products.map((product) => (
-            <ShadedButton
-              sx={(theme) => ({
-                border: "1px solid transparent",
-                borderRadius: theme.radius.sm * 2,
-                backgroundColor:
-                  theme.colors[product.color][
-                    theme.colorScheme == "dark" ? 9 : 0
-                  ] + "15",
-                "&:hover": {
-                  borderColor:
-                    theme.colors[product.color][
-                      theme.colorScheme == "dark" ? 2 : 9
-                    ] + "50",
-                },
-              })}
-              className="flex gap-4 p-2"
-              key={product.name}
-            >
-              <div className="flex items-start">{product.icon}</div>
-              <div className="flex gap-2 flex-col">
-                <Title order={5}>{product.name}</Title>
-                <Text size="sm" color="dimmed">
-                  {product.subname}
-                </Text>
-              </div>
-            </ShadedButton>
-          ))}
-        </div>
-      </Popover.Dropdown>
-    </Popover>
-  ) : null;
+    <ReactNoSSR>
+      <Popover transition="pop">
+        <Popover.Target>
+          <ActionIcon
+            variant="subtle"
+            className="md:-ml-10 absolute md:flex hidden text-dimmed items-center justify-center"
+          >
+            <HiOutlineArchive />
+          </ActionIcon>
+        </Popover.Target>
+        <Popover.Dropdown className={clsx("px-1 py-1", colorScheme)}>
+          <div className="grid grid-cols-2 gap-2">
+            {products.map((product) => (
+              <a
+                href={product.href}
+                key={product.name}
+                className="no-underline"
+              >
+                <ShadedButton className="flex gap-4 items-center rounded-[4px] dark:hover:bg-slate-400/5">
+                  <product.icon className="h-6 w-6" />
+                  <Text className="font-title font-semibold">
+                    {product.name}
+                  </Text>
+                </ShadedButton>
+              </a>
+            ))}
+          </div>
+        </Popover.Dropdown>
+      </Popover>
+    </ReactNoSSR>
+  ) : (
+    <></>
+  );
 };
 
 export default Products;
