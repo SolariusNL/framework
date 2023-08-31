@@ -1,11 +1,11 @@
-import { Button, Text } from "@mantine/core";
-import { GetServerSideProps } from "next";
-import { FC } from "react";
-import { HiLogout, HiMail, HiXCircle } from "react-icons/hi";
 import OuterUI from "@/layouts/OuterUI";
 import logout from "@/util/api/logout";
 import authorizedRoute from "@/util/auth";
 import { User } from "@/util/prisma-types";
+import { Button, Text } from "@mantine/core";
+import { GetServerSideProps } from "next";
+import { FC } from "react";
+import { HiExclamation, HiLogout } from "react-icons/hi";
 
 type AccountLockedProps = {
   user: User;
@@ -14,8 +14,8 @@ type AccountLockedProps = {
 const AccountLocked: FC<AccountLockedProps> = () => {
   return (
     <OuterUI description="Your account has been locked by a Solarius staff member.">
-      <div className="flex items-center flex-col gap-2 justify-center">
-        <HiXCircle className="text-red-500 flex-shrink-0 w-6 h-6" />
+      <div className="flex items-center gap-2 justify-center">
+        <HiExclamation className="text-red-500 flex-shrink-0 w-6 h-6" />
         <Text color="red" weight={600} size="lg">
           Account locked
         </Text>
@@ -25,22 +25,17 @@ const AccountLocked: FC<AccountLockedProps> = () => {
         Solarius for additional information regarding the status of your
         account.
       </Text>
-      <div className="flex justify-end gap-2 mt-6">
+      <div className="flex justify-center gap-2 mt-6">
         <Button
           leftIcon={<HiLogout />}
           color="red"
           onClick={async () => {
             await logout();
           }}
+          radius="xl"
+          variant="light"
         >
           Logout
-        </Button>
-        <Button
-          leftIcon={<HiMail />}
-          component="a"
-          href="mailto:support@solarius.me"
-        >
-          Contact us
         </Button>
       </div>
     </OuterUI>
