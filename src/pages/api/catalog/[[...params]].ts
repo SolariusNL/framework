@@ -23,6 +23,7 @@ import {
 import {
   Body,
   createHandler,
+  Delete,
   Get,
   Param,
   Patch,
@@ -1379,6 +1380,112 @@ class CatalogRouter {
       data: {
         assets: result,
       },
+    };
+  }
+
+  @Delete("/sku/:id/delete")
+  @Authorized()
+  public async deleteSku(
+    @Account() user: User,
+    @Param("id") id: string,
+    @Query("type") type?: AssetType
+  ) {
+    if (!type || !prismaAssetTypeMap[type]) {
+      return <IResponseBase>{
+        success: false,
+        message: "No type provided - or provided type is invalid",
+      };
+    }
+
+    if (type === "limited-catalog-item") {
+      const limited = await prisma.limitedCatalogItem.findFirst({
+        where: {
+          id,
+        },
+      });
+
+      if (!limited) {
+        return <GetCatalogItemOwnershipStatusResponse>{
+          success: false,
+          message: "No limited item found with this id",
+        };
+      }
+
+      const owned = await prisma.limitedInventoryItem.findFirst({
+        where: {
+          inventory: {
+            userId: user.id,
+          },
+          itemId: id,
+        },
+      });
+
+      if (!owned)
+        return <IResponseBase>{
+          success: false,
+          message: "No such item exists.",
+        };
+
+      if (owned?.count > 1) {
+        await prisma.limitedInventoryItem.update({
+          where: {
+            id: owned.id,
+          },
+          data: {
+            count: {
+              decrement: 1,
+            },
+          },
+        });
+      } else {
+        await prisma.limitedInventoryItem.delete({
+          where: {
+            id: owned.id,
+          },
+        });
+      }
+    } else {
+      const queryExecutor = prisma[prismaAssetTypeMap[type]] as never as {
+        findFirst: (args: Prisma.CatalogItemFindFirstArgs) => Promise<any>;
+        update: (args: Prisma.CatalogItemUpdateArgs) => Promise<any>;
+      };
+
+      const catalogItem = await queryExecutor.findFirst({
+        where: {
+          id,
+        },
+        include: {
+          apartOf: {
+            where: {
+              userId: user.id,
+            },
+          },
+        },
+      });
+
+      if (!catalogItem) {
+        return <GetCatalogItemOwnershipStatusResponse>{
+          success: false,
+          message: "No catalog item found with this id",
+        };
+      }
+
+      await queryExecutor.update({
+        where: {
+          id,
+        },
+        data: {
+          apartOf: {
+            disconnect: {
+              userId: user.id,
+            },
+          },
+        },
+      });
+    }
+
+    return <IResponseBase>{
+      success: true,
     };
   }
 }

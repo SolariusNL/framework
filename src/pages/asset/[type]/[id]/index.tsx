@@ -35,12 +35,15 @@ import {
   Badge,
   Button,
   Divider,
+  MantineColor,
   Modal,
   NumberInput,
   Text,
   Title,
+  Tooltip,
   useMantineTheme,
 } from "@mantine/core";
+import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import { Prisma } from "@prisma/client";
 import { GetServerSidePropsContext } from "next";
@@ -57,6 +60,7 @@ import {
   HiPencil,
   HiShoppingBag,
   HiStar,
+  HiTrash,
   HiXCircle,
 } from "react-icons/hi";
 
@@ -214,6 +218,7 @@ const AssetView: React.FC<AssetViewProps> = ({
               setResellTarget(null);
               setConfirmPurchaseOpened(true);
             }}
+            radius="xl"
           >
             {asset.limited && asset.stock <= 0
               ? "See resellers"
@@ -454,6 +459,74 @@ const AssetView: React.FC<AssetViewProps> = ({
                         <HiPencil />
                       </ActionIcon>
                     </Link>
+                  )}
+                  {ownership?.owned && (
+                    <Tooltip label="Remove from inventory">
+                      <ActionIcon
+                        radius="xl"
+                        size="lg"
+                        variant="light"
+                        color="red"
+                        onClick={() =>
+                          openConfirmModal({
+                            title: "Remove item from inventory",
+                            children: (
+                              <Text size="sm" color="dimmed">
+                                Are you sure you want to remove {asset.name}{" "}
+                                from your inventory? Note that{" "}
+                                <span className="font-semibold">
+                                  you will not receive a refund
+                                </span>
+                                .
+                              </Text>
+                            ),
+                            labels: {
+                              confirm: "Confirm removal",
+                              cancel: "Nevermind",
+                            },
+                            confirmProps: {
+                              radius: "xl",
+                              variant: "light",
+                              color: "red",
+                            },
+                            cancelProps: {
+                              radius: "xl",
+                              variant: "light",
+                              color: "gray" as MantineColor
+                            },
+                            async onConfirm() {
+                              await fetchJson<IResponseBase>(
+                                `/api/catalog/sku/${asset.id}/delete?type=${type}`,
+                                {
+                                  method: "DELETE",
+                                  auth: true,
+                                }
+                              ).then((res) => {
+                                if (res.success) {
+                                  showNotification({
+                                    title: "Removed item",
+                                    message:
+                                      "This item has been removed from your inventory.",
+                                    icon: <HiCheckCircle />,
+                                  });
+                                  if (asset.limited) fetchLimitedDetails();
+                                  else fetchGenericDetails();
+                                } else {
+                                  showNotification({
+                                    title: "Error",
+                                    message: res.message,
+                                    color: "red",
+                                    icon: <HiXCircle />,
+                                  });
+                                }
+                              });
+                            },
+                          })
+                        }
+                      >
+                        <HiTrash />
+                      </ActionIcon>
+                    </Tooltip>
                   )}
                 </div>
                 <div className="gap-4 items-center flex">
