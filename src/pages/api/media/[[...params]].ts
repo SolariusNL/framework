@@ -34,7 +34,7 @@ const convertToWebp = (file: string) => {
 const imageOnly = (req: any, file: any, callback: any) => {
   const ext = path.extname(file.originalname).toLowerCase();
 
-  if (ext !== ".png" && ext !== ".jpg" && ext !== ".jpeg") {
+  if (ext !== ".png" && ext !== ".jpg" && ext !== ".jpeg" && ext !== ".gif") {
     return callback(new Error("Only images are allowed"));
   }
 
