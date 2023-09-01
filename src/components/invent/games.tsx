@@ -170,7 +170,7 @@ const Games = ({ user }: GamesProps) => {
                         : "red"
                     }
                     variant="light"
-                    onClick={(e) => {
+                    onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                       e.stopPropagation();
                       openModal({
                         title: "Health",
@@ -265,7 +265,9 @@ const Games = ({ user }: GamesProps) => {
                           variant="light"
                           size="lg"
                           radius="xl"
-                          onClick={(e) => {
+                          onClick={(
+                            e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+                          ) => {
                             e.stopPropagation();
                           }}
                         >
@@ -274,7 +276,7 @@ const Games = ({ user }: GamesProps) => {
                       </Menu.Target>
 
                       <Menu.Dropdown
-                        onClick={(e) => {
+                        onClick={(e: React.MouseEvent<HTMLDivElement>) => {
                           e.stopPropagation();
                         }}
                       >
