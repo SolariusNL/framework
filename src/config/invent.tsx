@@ -1,11 +1,4 @@
-import Advertisements from "@/components/invent/advertisements";
-import GameUpdates from "@/components/invent/game-updates";
-import GamePasses from "@/components/invent/gamepasses";
-import Games from "@/components/invent/games";
-import Nucleus from "@/components/invent/nucleus";
-import Secrets from "@/components/invent/secrets";
-import Snippets from "@/components/invent/snippets";
-import Sounds from "@/components/invent/sounds";
+import dynamic from "next/dynamic";
 import {
   HiOutlineClipboardCheck,
   HiOutlineCloud,
@@ -20,7 +13,37 @@ import {
   HiOutlineTicket,
   HiOutlineViewGrid,
 } from "react-icons/hi";
-import { TbShirt } from "react-icons/tb";
+
+const Games = dynamic(() => import("@/components/invent/games"), {
+  ssr: false,
+});
+const Advertisements = dynamic(
+  () => import("@/components/invent/advertisements"),
+  {
+    ssr: false,
+  }
+);
+const GameUpdates = dynamic(() => import("@/components/invent/game-updates"), {
+  ssr: false,
+});
+const Gamepasses = dynamic(() => import("@/components/invent/gamepasses"), {
+  ssr: false,
+});
+const Nucleus = dynamic(() => import("@/components/invent/nucleus"), {
+  ssr: false,
+});
+const Secrets = dynamic(() => import("@/components/invent/secrets"), {
+  ssr: false,
+});
+const Shirts = dynamic(() => import("@/components/invent/shirts"), {
+  ssr: false,
+});
+const Snippets = dynamic(() => import("@/components/invent/snippets"), {
+  ssr: false,
+});
+const Sounds = dynamic(() => import("@/components/invent/sounds"), {
+  ssr: false,
+});
 
 const tabs = [
   {
@@ -37,7 +60,7 @@ const tabs = [
       },
       {
         name: "gamepasses",
-        component: GamePasses,
+        component: Gamepasses,
         href: "/invent/gamepasses",
         tab: {
           icon: <HiOutlineTicket />,
@@ -112,7 +135,7 @@ const tabs = [
       },
       {
         name: "t-shirts",
-        component: TbShirt,
+        component: Shirts,
         href: "/invent/t-shirts",
         tab: {
           icon: <HiOutlineShoppingCart />,

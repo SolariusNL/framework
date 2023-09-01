@@ -4,20 +4,28 @@ import { User } from "@/util/prisma-types";
 import {
   ActionIcon,
   Button,
+  Menu,
   Modal,
   Stack,
-  Table,
   Text,
   TextInput,
-  Tooltip,
+  Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { openModal } from "@mantine/modals";
+import { openConfirmModal, openModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import { Prism } from "@mantine/prism";
 import { getCookie } from "cookies-next";
 import { useState } from "react";
-import { HiCheckCircle, HiCode, HiPlus, HiTrash } from "react-icons/hi";
+import {
+  HiCheckCircle,
+  HiDotsVertical,
+  HiOutlineCode,
+  HiOutlineTrash,
+  HiPlus,
+} from "react-icons/hi";
+import ShadedButton from "../shaded-button";
+import ShadedCard from "../shaded-card";
 
 interface SecretsProps {
   user: User;
@@ -121,14 +129,16 @@ const Secrets = ({ user }: SecretsProps) => {
               label="Value"
               description="The value of the secret"
               mb={10}
-              maxLength={1024}
+              maxLength={128}
               minLength={1}
               required
               placeholder="1234567890"
               {...form.getInputProps("value")}
             />
             <div className="flex justify-end">
-              <Button type="submit">Create</Button>
+              <Button type="submit" radius="xl" variant="light">
+                Create
+              </Button>
             </div>
           </Stack>
         </form>
@@ -149,37 +159,22 @@ const Secrets = ({ user }: SecretsProps) => {
         }
         tabSubtitle="Store secrets on Framework that can be accessed by your apps."
       >
-        <Table>
-          <thead>
-            <tr>
-              <th>Created</th>
-              <th>Name</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {secrets.map((secret) => (
-              <tr key={secret.id}>
-                <td>
-                  {new Date(secret.createdAt).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}{" "}
-                  at{" "}
-                  {new Date(secret.createdAt).toLocaleTimeString("en-US", {
-                    hour: "numeric",
-                    minute: "numeric",
-                    hour12: true,
-                  })}
-                </td>
-                <td>{secret.name}</td>
-                <td>
-                  <div className="flex gap-2 items-center">
-                    <Tooltip label="See code">
-                      <ActionIcon
-                        size="md"
-                        onClick={() => {
+        <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
+          {secrets.length > 0 ? (
+            secrets.map((secret) => (
+              <ShadedButton className="flex flex-col gap-2" key={secret.id}>
+                <div className="flex justify-between gap-4 w-full">
+                  <Title order={3}>{secret.name}</Title>
+                  <Menu>
+                    <Menu.Target>
+                      <ActionIcon radius="xl" variant="light">
+                        <HiDotsVertical />
+                      </ActionIcon>
+                    </Menu.Target>
+                    <Menu.Dropdown>
+                      <Menu.Item
+                        icon={<HiOutlineCode />}
+                        onClick={() =>
                           openModal({
                             title: "Secret usage",
                             children: (
@@ -193,37 +188,60 @@ const Secrets = ({ user }: SecretsProps) => {
                                 </Prism>
                               </>
                             ),
-                          });
-                        }}
+                          })
+                        }
                       >
-                        <HiCode />
-                      </ActionIcon>
-                    </Tooltip>
-                    <Tooltip label="Delete secret">
-                      <ActionIcon
+                        See code
+                      </Menu.Item>
+                      <Menu.Item
+                        icon={<HiOutlineTrash />}
                         color="red"
-                        size="md"
-                        onClick={() => deleteSecret(secret.id)}
+                        onClick={() =>
+                          openConfirmModal({
+                            title: "Confirm deletion",
+                            children: (
+                              <Text size="sm" color="dimmed">
+                                Are you sure you want to delete this secret? Any
+                                code that references it will stop working.
+                              </Text>
+                            ),
+                            labels: {
+                              confirm: "Delete",
+                              cancel: "Nevermind",
+                            },
+                            confirmProps: {
+                              variant: "light",
+                              radius: "xl",
+                              color: "red",
+                            },
+                            cancelProps: {
+                              variant: "light",
+                              radius: "xl",
+                              color: "gray",
+                            },
+                            onConfirm: () => deleteSecret(secret.id),
+                          })
+                        }
                       >
-                        <HiTrash />
-                      </ActionIcon>
-                    </Tooltip>
-                  </div>
-                </td>
-              </tr>
-            ))}
-            {secrets.length === 0 && (
-              <tr>
-                <td colSpan={3}>
-                  <ModernEmptyState
-                    title="No secrets"
-                    body="Safely store secrets on Framework for your apps to access."
-                  />
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </Table>
+                        Delete secret
+                      </Menu.Item>
+                    </Menu.Dropdown>
+                  </Menu>
+                </div>
+                <Text size="sm" color="dimmed">
+                  Created on {new Date(secret.createdAt).toLocaleString()}
+                </Text>
+              </ShadedButton>
+            ))
+          ) : (
+            <ShadedCard className="col-span-full flex justify-center">
+              <ModernEmptyState
+                title="No secrets"
+                body="Get started by creating a secret to safely store your variables"
+              />
+            </ShadedCard>
+          )}
+        </div>
       </InventTab>
     </>
   );
