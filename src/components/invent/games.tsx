@@ -1,21 +1,18 @@
-import Copy from "@/components/copy";
 import InventTab from "@/components/invent/invent";
 import ModernEmptyState from "@/components/modern-empty-state";
-import abbreviateNumber from "@/util/abbreviate";
 import shutdownNucleus from "@/util/fetch/shutdownNucleus";
+import { Fw } from "@/util/fw";
 import getMediaUrl from "@/util/get-media";
 import { User } from "@/util/prisma-types";
 import {
   ActionIcon,
-  Badge,
+  Avatar,
   Button,
   Group,
-  Image,
   Menu,
   Stack,
   Text,
   Title,
-  Tooltip,
   useMantineColorScheme,
   useMantineTheme,
 } from "@mantine/core";
@@ -26,23 +23,24 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import {
   HiBookOpen,
-  HiChartBar,
   HiCheckCircle,
   HiDotsVertical,
   HiExclamation,
   HiExclamationCircle,
   HiExternalLink,
   HiInformationCircle,
+  HiOutlineChartBar,
+  HiOutlineThumbDown,
+  HiOutlineThumbUp,
   HiPencil,
   HiPlus,
   HiServer,
-  HiThumbDown,
-  HiThumbUp,
   HiTrash,
   HiUsers,
   HiXCircle,
 } from "react-icons/hi";
-import ShadedCard from "../shaded-card";
+import DataGrid from "../data-grid";
+import ShadedButton from "../shaded-button";
 
 interface GamesProps {
   user: User;
@@ -140,178 +138,146 @@ const Games = ({ user }: GamesProps) => {
           });
 
           return (
-            <ShadedCard key={game.id}>
-              <div className="h-full">
-                <Text weight={500} size="xl" mb={16}>
-                  {game.name}
-                </Text>
-                <div className="flex justify-between mb-6">
-                  <Group>
-                    <Image
+            <ShadedButton
+              onClick={() => router.push(`/game/${game.id}`)}
+              key={game.id}
+            >
+              <div className="h-full w-full">
+                <div className="flex justify-between gap-4">
+                  <div className="flex items-start gap-4">
+                    <Avatar
+                      color={Fw.Strings.color(game.name)}
                       src={getMediaUrl(game.iconUri)}
-                      width={48}
-                      height={48}
-                      withPlaceholder
-                    />
-                    <Stack spacing={5}>
-                      <Group>
-                        <div
-                          style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: 12,
-                          }}
-                        >
-                          <div
-                            style={{
-                              display: "inline-flex",
-                              alignItems: "center",
-                            }}
-                          >
-                            <Badge color="teal" variant="dot" size="sm">
-                              Active
-                            </Badge>
-                          </div>
-                          <div
-                            style={{
-                              display: "inline-flex",
-                              alignItems: "center",
-                            }}
-                          >
-                            <Text color="dimmed" size="sm">
-                              id: <strong>{game.id}</strong>
-                            </Text>
-                            <Copy value={game.id} />
-                          </div>
-                        </div>
-                      </Group>
-                      <div style={{ display: "flex", gap: 12 }}>
-                        {[
-                          {
-                            property: game.likedBy.length,
-                            icon: HiThumbUp,
-                            tooltip: "Likes",
-                          },
-                          {
-                            property: game.dislikedBy.length,
-                            icon: HiThumbDown,
-                            tooltip: "Dislikes",
-                          },
-                          {
-                            property: game.visits,
-                            icon: HiUsers,
-                            tooltip: "Visits",
-                          },
-                        ].map((stat) => (
-                          <Tooltip label={stat.tooltip} key={stat.tooltip}>
-                            <div
-                              style={{
-                                display: "flex",
-                                gap: 6,
-                                alignItems: "center",
-                              }}
-                            >
-                              <stat.icon
-                                size={14}
-                                color={
-                                  colorScheme === "dark" ? "#909296" : "#868e96"
-                                }
-                              />
-                              <Text size="sm" color="dimmed">
-                                {String(abbreviateNumber(stat.property))}
-                              </Text>
-                            </div>
-                          </Tooltip>
-                        ))}
-                      </div>
-                    </Stack>
-                  </Group>
-                  <div>
-                    <ActionIcon
-                      color={
-                        warnings.length <= 1
-                          ? "green"
-                          : warnings.length == 2
-                          ? "yellow"
-                          : "red"
-                      }
-                      variant="light"
-                      onClick={() =>
-                        openModal({
-                          title: "Health",
-                          children: (
-                            <>
-                              <Stack spacing={8}>
-                                {warnings.map((warning) => (
-                                  <div
-                                    className="flex gap-4"
-                                    key={warning.title}
-                                  >
-                                    <div>
-                                      {warning.severity == "low" ? (
-                                        <HiInformationCircle
-                                          color={theme.colors.gray[5]}
-                                          size={24}
-                                        />
-                                      ) : warning.severity == "medium" ? (
-                                        <HiExclamation
-                                          color={theme.colors.yellow[5]}
-                                          size={24}
-                                        />
-                                      ) : (
-                                        <HiExclamationCircle
-                                          color={theme.colors.red[5]}
-                                          size={24}
-                                        />
-                                      )}
-                                    </div>
-                                    <div>
-                                      <Text weight={600}>{warning.title}</Text>
-                                      <Text color="dimmed" size="sm">
-                                        {warning.description}
-                                      </Text>
-                                    </div>
-                                  </div>
-                                ))}
-                                {warnings.length == 0 && (
-                                  <ModernEmptyState
-                                    title="No issues found"
-                                    body="Your game is in good shape!"
-                                  />
-                                )}
-                              </Stack>
-                            </>
-                          ),
-                        })
-                      }
+                      size={64}
                     >
-                      {warnings.length <= 1 ? (
-                        <HiCheckCircle />
-                      ) : (
-                        warnings.length >= 2 && <HiExclamationCircle />
-                      )}
-                    </ActionIcon>
+                      {Fw.Strings.initials(game.name)}
+                    </Avatar>
+                    <div className="flex flex-col">
+                      <Text weight={500} size="xl">
+                        {game.name}
+                      </Text>
+                      <Text size="sm" color="dimmed">
+                        @{game.team ? game.team.name : user.username}
+                      </Text>
+                    </div>
                   </div>
+                  <ActionIcon
+                    color={
+                      warnings.length <= 1
+                        ? "green"
+                        : warnings.length == 2
+                        ? "yellow"
+                        : "red"
+                    }
+                    variant="light"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openModal({
+                        title: "Health",
+                        children: (
+                          <>
+                            <Stack spacing={8}>
+                              {warnings.map((warning) => (
+                                <div className="flex gap-4" key={warning.title}>
+                                  <div>
+                                    {warning.severity == "low" ? (
+                                      <HiInformationCircle
+                                        color={theme.colors.gray[5]}
+                                        size={24}
+                                      />
+                                    ) : warning.severity == "medium" ? (
+                                      <HiExclamation
+                                        color={theme.colors.yellow[5]}
+                                        size={24}
+                                      />
+                                    ) : (
+                                      <HiExclamationCircle
+                                        color={theme.colors.red[5]}
+                                        size={24}
+                                      />
+                                    )}
+                                  </div>
+                                  <div>
+                                    <Text weight={600}>{warning.title}</Text>
+                                    <Text color="dimmed" size="sm">
+                                      {warning.description}
+                                    </Text>
+                                  </div>
+                                </div>
+                              ))}
+                              {warnings.length == 0 && (
+                                <ModernEmptyState
+                                  title="No issues found"
+                                  body="Your game is in good shape!"
+                                />
+                              )}
+                            </Stack>
+                          </>
+                        ),
+                      });
+                    }}
+                  >
+                    {warnings.length <= 1 ? (
+                      <HiCheckCircle />
+                    ) : (
+                      warnings.length >= 2 && <HiExclamationCircle />
+                    )}
+                  </ActionIcon>
                 </div>
-                <div className="flex justify-between">
+                <DataGrid
+                  className="my-4"
+                  mdCols={3}
+                  smCols={2}
+                  defaultCols={2}
+                  items={[
+                    {
+                      tooltip: "Likes",
+                      value: Fw.Nums.beautify(game.likedBy.length),
+                      icon: <HiOutlineThumbUp />,
+                    },
+                    {
+                      tooltip: "Dislikes",
+                      value: Fw.Nums.beautify(game.dislikedBy.length),
+                      icon: <HiOutlineThumbDown />,
+                    },
+                    {
+                      tooltip: "Visits",
+                      value: Fw.Nums.beautify(game.visits),
+                      icon: <HiOutlineChartBar />,
+                    },
+                  ]}
+                />
+                <div className="flex justify-end">
                   <Group spacing={6}>
                     <Link passHref href={`/game/${game.id}`}>
                       <Button
                         size="sm"
-                        variant="default"
+                        variant="light"
                         leftIcon={<HiExternalLink />}
+                        radius="xl"
                       >
                         View
                       </Button>
                     </Link>
                     <Menu shadow="md" withArrow>
                       <Menu.Target>
-                        <ActionIcon variant="default" size="lg">
+                        <ActionIcon
+                          variant="light"
+                          size="lg"
+                          radius="xl"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                          }}
+                        >
                           <HiDotsVertical />
                         </ActionIcon>
                       </Menu.Target>
 
-                      <Menu.Dropdown>
+                      <Menu.Dropdown
+                        onClick={(e) => {
+                          e.stopPropagation();
+                        }}
+                      >
                         <Menu.Item
                           icon={<HiPencil />}
                           onClick={() =>
@@ -425,17 +391,14 @@ const Games = ({ user }: GamesProps) => {
                       </Menu.Dropdown>
                     </Menu>
                   </Group>
-                  <Button variant="default" leftIcon={<HiChartBar />}>
-                    Analytics
-                  </Button>
                 </div>
               </div>
-            </ShadedCard>
+            </ShadedButton>
           );
         })}
         {user.emailVerified && (
           <Link href="/game/create" passHref>
-            <ShadedCard className="flex-1 opacity-50 cursor-pointer hover:opacity-100 transition-opacity duration-200 ease-in-out p-6 shadow-md py-12 h-fit">
+            <ShadedButton className="flex flex-col items-center justify-center text-center opacity-50 duration-75 transition-opacity hover:opacity-100">
               <Text className="text-center" size="xl" weight={500}>
                 Create a new game
               </Text>
@@ -443,7 +406,7 @@ const Games = ({ user }: GamesProps) => {
                 Get started with a new game and build your library for others to
                 enjoy.
               </Text>
-            </ShadedCard>
+            </ShadedButton>
           </Link>
         )}
       </div>

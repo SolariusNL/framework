@@ -28,11 +28,11 @@ const InventTab = ({
 
   return (
     <>
-      <Title order={3} mb={6}>
+      <Title order={3} mb={2}>
         {tabTitle}
       </Title>
       {tabSubtitle && (
-        <Text color="dimmed" mb={16}>
+        <Text color="dimmed" mb={16} size="sm">
           {tabSubtitle}
         </Text>
       )}
