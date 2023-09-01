@@ -5,13 +5,13 @@ import GameRating from "@/components/game-rating";
 import ThumbnailCarousel from "@/components/image-carousel";
 import InlineError from "@/components/inline-error";
 import Launching from "@/components/launching";
+import Owner from "@/components/owner";
 import PlaceholderGameResource from "@/components/placeholder-game-resource";
 import ReportUser from "@/components/report-user";
 import ShadedButton from "@/components/shaded-button";
 import ShadedCard from "@/components/shaded-card";
 import TabNav from "@/components/tab-nav";
 import UserContext from "@/components/user-context";
-import Verified from "@/components/verified";
 import ConnectionTab from "@/components/view-game/connection";
 import FundsTab from "@/components/view-game/funds";
 import InfoTab from "@/components/view-game/info";
@@ -20,6 +20,7 @@ import UpdateLogTab from "@/components/view-game/update-log";
 import Votes from "@/components/view-game/votes";
 import IResponseBase from "@/types/api/IResponseBase";
 import authorizedRoute from "@/util/auth";
+import clsx from "@/util/clsx";
 import { getIpcRenderer } from "@/util/electron";
 import fetchJson from "@/util/fetch";
 import { Fw } from "@/util/fw";
@@ -42,6 +43,7 @@ import {
   Menu,
   Skeleton,
   Stack,
+  Tabs,
   Text,
   Title,
   Tooltip,
@@ -65,6 +67,7 @@ import {
   HiFolder,
   HiInformationCircle,
   HiOutlineClock,
+  HiOutlineXCircle,
   HiPencil,
   HiPlay,
   HiPlus,
@@ -229,52 +232,22 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                         : `/profile/${game.author.username}`
                     }
                   >
-                    <Group
-                      sx={{
-                        cursor: "pointer",
-                      }}
-                    >
-                      {game.team ? (
-                        <Avatar
-                          src={getMediaUrl(game.team.iconUri)}
-                          alt={game.team.name}
-                          radius="xl"
-                          size={48}
-                        />
-                      ) : (
-                        <UserContext user={game.author}>
-                          <Avatar
-                            src={
-                              getMediaUrl(game.author.avatarUri) ||
-                              `https://avatars.dicebear.com/api/identicon/${game.authorId}.png`
-                            }
-                            alt={game.author.username}
-                            radius="xl"
-                            size={48}
-                          />
-                        </UserContext>
-                      )}
-                      <Stack spacing={3}>
-                        <div className="flex items-center gap-2">
-                          <div className="flex items-center gap-2">
-                            {!game.team && game.author.verified && <Verified />}
-                            <Text weight={700}>
-                              {game.team
-                                ? game.team.name
-                                : game.author.username}
-                            </Text>
-                          </div>
-                          {game.team && (
-                            <Badge radius="md" size="sm">
-                              Team
-                            </Badge>
-                          )}
-                        </div>
-                        <Text color="dimmed" size="sm">
-                          {game.team ? "Managed by this team" : "Game author"}
-                        </Text>
-                      </Stack>
-                    </Group>
+                    <Owner
+                      user={
+                        game.team
+                          ? ({
+                              username: game.team.name,
+                              avatarUri: game.team.iconUri,
+                              alias: game.team.name,
+                            } as NonUser)
+                          : game.author
+                      }
+                      {...(game.team
+                        ? {
+                            overrideHref: `/teams/t/${game.team.slug}`,
+                          }
+                        : {})}
+                    />
                   </Link>
 
                   <Group>
@@ -320,6 +293,7 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                 <Button.Group mt="lg" mb="sm">
                   <Button
                     color="green"
+                    radius="xl"
                     leftIcon={<HiPlay />}
                     fullWidth
                     size="xl"
@@ -351,6 +325,8 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                           setLaunchingOpen(true);
                         }
                       }}
+                      radius="xl"
+                      color="blue"
                     />
                   </Tooltip>
                 </Button.Group>
@@ -363,6 +339,8 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                   size="lg"
                   mb="xl"
                   onClick={async () => await followGame()}
+                  radius="xl"
+                  variant="light"
                 >
                   {following === null
                     ? "..."
@@ -385,8 +363,17 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
           </Grid.Col>
         </Grid>
 
-        <TabNav defaultValue="info" mb={0}>
-          <TabNav.List grow mb="md">
+        <Tabs
+          defaultValue="info"
+          classNames={{
+            tab: clsx(
+              "rounded-t-[4px]",
+              "dark:hover:!bg-neutral-800/25 dark:hover:text-dark-100"
+            ),
+          }}
+          mb={0}
+        >
+          <Tabs.List grow mb="md">
             <div
               style={{
                 ...(mobile
@@ -442,7 +429,7 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                 Updates
               </TabNav.Tab>
             </div>
-          </TabNav.List>
+          </Tabs.List>
 
           <div className="grid md:grid-cols-3 grid-cols-1 gap-3">
             <div className="col-span-2">
@@ -516,7 +503,15 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                       value: new Date(game.updatedAt).toLocaleDateString(),
                       tooltip: "Updated at",
                     },
+                    {
+                      icon: <HiOutlineXCircle />,
+                      tooltip: "Rating",
+                      value: game.rating?.type || "RP",
+                    },
                   ]}
+                  mdCols={3}
+                  smCols={2}
+                  defaultCols={2}
                   className="!mt-0"
                 />
               </ShadedCard>
@@ -596,7 +591,7 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
               <GameRating game={game} />
             </Stack>
           </div>
-        </TabNav>
+        </Tabs>
       </Framework>
     </>
   );
