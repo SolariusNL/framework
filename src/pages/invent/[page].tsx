@@ -1,238 +1,121 @@
-import StudioPromptBackground from "@/assets/subtlebackground.png";
 import Framework from "@/components/framework";
-import Advertisements from "@/components/invent/advertisements";
-import GameUpdates from "@/components/invent/game-updates";
-import GamePasses from "@/components/invent/gamepasses";
-import Games from "@/components/invent/games";
-import Nucleus from "@/components/invent/nucleus";
-import Secrets from "@/components/invent/secrets";
-import Shirts from "@/components/invent/shirts";
-import Snippets from "@/components/invent/snippets";
-import Sounds from "@/components/invent/sounds";
-import TabNav from "@/components/tab-nav";
+import LoadingIndicator from "@/components/loading-indicator";
+import tabs from "@/config/invent";
+import SidebarTabNavigation from "@/layouts/SidebarTabNavigation";
 import authorizedRoute from "@/util/auth";
-import useMediaQuery from "@/util/media-query";
+import clsx from "@/util/clsx";
 import prisma from "@/util/prisma";
 import { User, gameSelect } from "@/util/prisma-types";
-import { Skeleton } from "@mantine/core";
-import { useLocalStorage } from "@mantine/hooks";
+import { Divider, NativeSelect, Tabs, Text } from "@mantine/core";
 import { GetServerSidePropsContext, NextPage } from "next";
-import Image from "next/image";
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import {
-  HiClipboardCheck,
-  HiCloud,
-  HiDownload,
-  HiFilm,
-  HiIdentification,
-  HiKey,
-  HiMusicNote,
-  HiScissors,
-  HiServer,
-  HiShoppingCart,
-  HiTicket,
-  HiViewGrid,
-} from "react-icons/hi";
-import ReactNoSSR from "react-no-ssr";
+import { useRouter } from "next/router";
+import React, { useState } from "react";
 
 interface InventProps {
   user: User;
   activePage: string;
 }
 
-const tabs = [
-  {
-    name: "games",
-    component: Games,
-    href: "/invent/games",
-    tab: {
-      icon: <HiViewGrid />,
-      label: "Games",
-    },
-  },
-  {
-    name: "checklists",
-    href: "/checklists",
-    tab: {
-      icon: <HiClipboardCheck />,
-      label: "Checklists",
-    },
-  },
-  {
-    name: "sounds",
-    component: Sounds,
-    href: "/invent/sounds",
-    tab: {
-      icon: <HiMusicNote />,
-      label: "Sounds",
-    },
-  },
-  {
-    name: "gamepasses",
-    component: GamePasses,
-    href: "/invent/gamepasses",
-    tab: {
-      icon: <HiTicket />,
-      label: "Game Passes",
-    },
-  },
-  {
-    name: "shirts",
-    component: Shirts,
-    href: "/invent/shirts",
-    tab: {
-      icon: <HiShoppingCart />,
-      label: "Shirts",
-    },
-  },
-  {
-    name: "snippets",
-    component: Snippets,
-    href: "/invent/snippets",
-    tab: {
-      icon: <HiScissors />,
-      label: "Snippets",
-    },
-  },
-  {
-    name: "secrets",
-    component: Secrets,
-    href: "/invent/secrets",
-    tab: {
-      icon: <HiKey />,
-      label: "Secrets",
-    },
-  },
-  {
-    name: "nucleus",
-    component: Nucleus,
-    href: "/invent/nucleus",
-    tab: {
-      icon: <HiServer />,
-      label: "Nucleus",
-    },
-  },
-  {
-    name: "connections",
-    href: "/developer/servers",
-    tab: {
-      icon: <HiCloud />,
-      label: "Connections",
-    },
-  },
-  {
-    name: "advertisements",
-    component: Advertisements,
-    href: "/invent/advertisements",
-    tab: {
-      icon: <HiFilm />,
-      label: "Advertisements",
-    },
-  },
-  {
-    name: "updates",
-    component: GameUpdates,
-    href: "/invent/updates",
-    tab: {
-      icon: <HiDownload />,
-      label: "Game Updates",
-    },
-  },
-  {
-    name: "developer",
-    href: "/developer/profile",
-    tab: {
-      icon: <HiIdentification />,
-      label: "Developer Profile",
-    },
-  },
-];
-
 const Invent: NextPage<InventProps> = ({ user, activePage }) => {
-  const mobile = useMediaQuery("768");
-  const [studioHidden] = useLocalStorage({
-    key: "studio-prompt-seen",
-    defaultValue: false,
-  });
   const [active, setActive] = useState(activePage || "games");
-  const page = tabs.find((item) => item.name === active) || tabs[0];
-
-  useEffect(() => {
-    console.log(page);
-  }, []);
+  const router = useRouter();
+  const page = tabs
+    .map((group) => group.children)
+    .flat()
+    .find((tab) => tab.name === active)?.component;
 
   return (
-    <Framework
-      user={user}
-      activeTab="invent"
-      modernTitle="Invent"
-      modernSubtitle="Manage your games, plugins, and more"
-    >
-      <TabNav
-        variant="pills"
-        orientation={mobile ? "horizontal" : "vertical"}
-        value={active}
-      >
-        <ReactNoSSR
-          onSSR={
-            <>
-              {Array.from({ length: 12 }).map((_, i) => (
-                <div className="flex flex-col gap-1" key={i}>
-                  <Skeleton height={32} />
+    <Framework user={user} activeTab="invent">
+      <SidebarTabNavigation>
+        <SidebarTabNavigation.Sidebar className="w-full flex-shrink-0">
+          <NativeSelect
+            className="md:hidden block col-span-full"
+            data={tabs
+              .map((group) => group.children)
+              .flat()
+              .map((tab) => ({
+                value: tab.name,
+                label: tab.tab.label,
+              }))}
+            value={active}
+            onChange={(event) => {
+              const value = event.currentTarget.value;
+              if (value) {
+                const tab = tabs
+                  .map((group) => group.children)
+                  .flat()
+                  .find((tab) => tab.name === value);
+                if (tab?.href) router.push(tab.href);
+                else router.push(`/invent/${value}`);
+              }
+            }}
+            size="lg"
+          />
+          <Tabs
+            orientation="vertical"
+            variant="pills"
+            defaultValue="hat"
+            value={active}
+            onTabChange={(value) => setActive(value as string)}
+            className="md:block hidden"
+            classNames={{
+              tab: clsx(
+                "data-[active]:bg-[#f1ebff] data-[active]:text-[#631fff] data-[active]:font-semibold",
+                "hover:bg-[#f1ebff]/75 hover:text-[#631fff]",
+                "dark:data-[active]:bg-[#2a1d4e] dark:data-[active]:text-[#b9a5e8] dark:data-[active]:font-semibold",
+                "dark:hover:bg-[#2a1d4e]/75 dark:hover:text-[#b9a5e8]",
+                "transition-colors duration-50 ease-in-out"
+              ),
+            }}
+          >
+            <Tabs.List className="w-full flex flex-col gap-4">
+              {tabs.map((group) => (
+                <div className="flex flex-col gap-1" key={group.name}>
+                  <div className="flex gap-4 items-center mb-2">
+                    <Text size="sm" color="dimmed" weight={500}>
+                      {group.name}
+                    </Text>
+                    <Divider className="flex-grow" />
+                  </div>
+                  {group.children.map((tab) => (
+                    <Tabs.Tab
+                      key={tab.name}
+                      value={tab.name}
+                      data-active={active === tab.name}
+                      icon={
+                        <span
+                          className={clsx(
+                            "flex items-center justify-center",
+                            active !== tab.name && "text-dimmed"
+                          )}
+                        >
+                          {tab.tab.icon}
+                        </span>
+                      }
+                      onClick={() => {
+                        if (tab.href) router.push(tab.href);
+                      }}
+                    >
+                      {tab.tab.label}
+                    </Tabs.Tab>
+                  ))}
                 </div>
               ))}
-            </>
-          }
-        >
-          <TabNav.List className="flex-wrap gap-1">
-            {tabs.map((tab) => (
-              <Link href={tab.href} key={tab.name}>
-                <TabNav.Tab
-                  key={tab.name}
-                  value={tab.name}
-                  icon={tab.tab.icon}
-                  classNames={{ root: "relative !rounded-md" }}
-                  className="rounded-md"
-                >
-                  {tab.tab.label}
-                </TabNav.Tab>
-              </Link>
-            ))}
-
-            {studioHidden && (
-              <Link href="/studio/activate">
-                <TabNav.Tab
-                  value="studio"
-                  icon={<HiDownload />}
-                  classNames={{ root: "relative !rounded-md" }}
-                  className="rounded-md"
-                >
-                  <Image
-                    src={StudioPromptBackground.src}
-                    alt="Subtle background"
-                    layout="fill"
-                    objectFit="cover"
-                    objectPosition="left"
-                    className="absolute inset-0 !rounded-md scale-x-150"
-                  />
-                  Download Studio
-                </TabNav.Tab>
-              </Link>
-            )}
-          </TabNav.List>
-        </ReactNoSSR>
-
-        <ReactNoSSR
-          onSSR={
-            <>
-              <Skeleton height={300} />
-            </>
-          }
-        >
-          {page.component && page.component({ user })}
-        </ReactNoSSR>
-      </TabNav>
+            </Tabs.List>
+          </Tabs>
+        </SidebarTabNavigation.Sidebar>
+        <SidebarTabNavigation.Content>
+          {page ? (
+            React.createElement(page as React.ElementType, {
+              user,
+            })
+          ) : (
+            <div className="w-full flex justify-center items-center py-12">
+              <LoadingIndicator />
+            </div>
+          )}
+        </SidebarTabNavigation.Content>
+      </SidebarTabNavigation>
     </Framework>
   );
 };
@@ -251,7 +134,12 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     select: gameSelect,
   });
 
-  if (!tabs.find((item) => item.name === pageStr)) {
+  if (
+    !tabs
+      .map((group) => group.children)
+      .flat()
+      .find((tab) => tab.name === pageStr)
+  ) {
     return {
       redirect: {
         destination: "/invent/games",

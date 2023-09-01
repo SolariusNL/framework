@@ -12,7 +12,6 @@ import {
   Group,
   Image,
   Menu,
-  Paper,
   Stack,
   Text,
   Title,
@@ -43,6 +42,7 @@ import {
   HiUsers,
   HiXCircle,
 } from "react-icons/hi";
+import ShadedCard from "../shaded-card";
 
 interface GamesProps {
   user: User;
@@ -140,17 +140,7 @@ const Games = ({ user }: GamesProps) => {
           });
 
           return (
-            <Paper
-              shadow="md"
-              p="md"
-              key={game.id}
-              sx={{
-                flex: 1,
-                backgroundColor:
-                  colorScheme == "dark" ? theme.colors.dark[8] : "#fff",
-                height: "auto",
-              }}
-            >
+            <ShadedCard key={game.id}>
               <div className="h-full">
                 <Text weight={500} size="xl" mb={16}>
                   {game.name}
@@ -440,20 +430,12 @@ const Games = ({ user }: GamesProps) => {
                   </Button>
                 </div>
               </div>
-            </Paper>
+            </ShadedCard>
           );
         })}
         {user.emailVerified && (
           <Link href="/game/create" passHref>
-            <Paper
-              withBorder
-              radius="md"
-              sx={{
-                backgroundColor:
-                  colorScheme == "dark" ? theme.colors.dark[8] : "#fff",
-              }}
-              className="flex-1 opacity-50 cursor-pointer hover:opacity-100 transition-opacity duration-200 ease-in-out p-6 shadow-md py-12 h-fit"
-            >
+            <ShadedCard className="flex-1 opacity-50 cursor-pointer hover:opacity-100 transition-opacity duration-200 ease-in-out p-6 shadow-md py-12 h-fit">
               <Text className="text-center" size="xl" weight={500}>
                 Create a new game
               </Text>
@@ -461,7 +443,7 @@ const Games = ({ user }: GamesProps) => {
                 Get started with a new game and build your library for others to
                 enjoy.
               </Text>
-            </Paper>
+            </ShadedCard>
           </Link>
         )}
       </div>
