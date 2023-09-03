@@ -3,16 +3,17 @@ import {
   HiOutlineClipboardCheck,
   HiOutlineCloud,
   HiOutlineDownload,
+  HiOutlineExclamation,
   HiOutlineFilm,
   HiOutlineIdentification,
   HiOutlineKey,
+  HiOutlineMailOpen,
   HiOutlineMusicNote,
   HiOutlineScissors,
-  HiOutlineServer,
-  HiOutlineShoppingCart,
   HiOutlineTicket,
   HiOutlineViewGrid,
 } from "react-icons/hi";
+import { TbShirt } from "react-icons/tb";
 
 const Games = dynamic(() => import("@/components/invent/games"), {
   ssr: false,
@@ -86,15 +87,6 @@ const tabs = [
         },
       },
       {
-        name: "nucleus",
-        component: Nucleus,
-        href: "/invent/nucleus",
-        tab: {
-          icon: <HiOutlineServer />,
-          label: "Nucleus",
-        },
-      },
-      {
         name: "connections",
         href: "/developer/servers",
         tab: {
@@ -138,8 +130,17 @@ const tabs = [
         component: Shirts,
         href: "/invent/t-shirts",
         tab: {
-          icon: <HiOutlineShoppingCart />,
+          icon: <TbShirt />,
           label: "T-Shirts",
+        },
+      },
+      {
+        name: "shirts",
+        component: Shirts,
+        href: "/invent/shirts",
+        tab: {
+          icon: <TbShirt />,
+          label: "Shirts",
         },
       },
       {
@@ -162,6 +163,22 @@ const tabs = [
         tab: {
           icon: <HiOutlineClipboardCheck />,
           label: "Checklists",
+        },
+      },
+      {
+        name: "issues",
+        href: "/teams/issues",
+        tab: {
+          icon: <HiOutlineExclamation />,
+          label: "Issues",
+        },
+      },
+      {
+        name: "feedback",
+        href: "/teams/feedback",
+        tab: {
+          icon: <HiOutlineMailOpen />,
+          label: "Feedback",
         },
       },
     ],

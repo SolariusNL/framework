@@ -42,18 +42,18 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import {
-  HiBell,
-  HiChat,
-  HiCloud,
   HiCube,
   HiCubeTransparent,
+  HiOutlineBell,
+  HiOutlineChatAlt,
+  HiOutlineCloud,
+  HiOutlineSearch,
+  HiOutlineSparkles,
+  HiOutlineUserGroup,
   HiPhotograph,
-  HiSearch,
   HiShare,
   HiShoppingCart,
-  HiSparkles,
   HiUserAdd,
-  HiUsers,
   HiX,
   HiXCircle,
 } from "react-icons/hi";
@@ -75,7 +75,7 @@ const Home: NextPage<HomeProps> = ({ user: u }) => {
       id: "friends",
       component: <FriendsWidget />,
       side: "left",
-      icon: <HiUsers />,
+      icon: <HiOutlineUserGroup />,
     },
     {
       title: "Spotlight",
@@ -83,7 +83,7 @@ const Home: NextPage<HomeProps> = ({ user: u }) => {
       id: "quick-links",
       component: <></>,
       side: "left",
-      icon: <HiSearch />,
+      icon: <HiOutlineSearch />,
       onClick: () => openSpotlight(),
     },
     {
@@ -92,7 +92,7 @@ const Home: NextPage<HomeProps> = ({ user: u }) => {
       id: "subscription",
       component: <SubscriptionWidget />,
       side: "left",
-      icon: <HiSparkles />,
+      icon: <HiOutlineSparkles />,
     },
     {
       title: "Feed",
@@ -100,7 +100,7 @@ const Home: NextPage<HomeProps> = ({ user: u }) => {
       id: "feed",
       component: <FeedWidget />,
       side: "right",
-      icon: <HiChat />,
+      icon: <HiOutlineChatAlt />,
     },
     {
       title: "Updates",
@@ -108,7 +108,7 @@ const Home: NextPage<HomeProps> = ({ user: u }) => {
       id: "updates",
       component: <UpdatesWidget />,
       side: "right",
-      icon: <HiCloud />,
+      icon: <HiOutlineCloud />,
     },
     {
       title: "Notifications",
@@ -127,7 +127,7 @@ const Home: NextPage<HomeProps> = ({ user: u }) => {
             {u.notifications.length}
           </Badge>
         ) : (
-          <HiBell />
+          <HiOutlineBell />
         ),
     },
   ];
