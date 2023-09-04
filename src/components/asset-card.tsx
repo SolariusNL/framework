@@ -129,17 +129,24 @@ const AssetCard: FC<AssetCardProps> = ({ asset, type }) => {
         </div>
         <div className="flex justify-between items-center w-full">
           <div>
-            <Badge color="teal" radius="sm" className="px-1.5" size="lg">
+            <Badge
+              color={asset.onSale ? "teal" : "gray"}
+              radius="sm"
+              className="px-1.5"
+              size="lg"
+            >
               <div className="flex items-center gap-2">
                 <HiOutlineTicket />
                 <span>
-                  {asset.limited
-                    ? rap
-                      ? Fw.Nums.beautify(rap)
-                      : "..."
-                    : asset.price > 0
-                    ? asset.price
-                    : "Free"}
+                  {asset.onSale
+                    ? asset.limited
+                      ? rap
+                        ? Fw.Nums.beautify(rap)
+                        : "..."
+                      : asset.price > 0
+                      ? asset.price
+                      : "Free"
+                    : "N/A"}
                 </span>
               </div>
             </Badge>

@@ -4,6 +4,7 @@ import LabelledCheckbox from "@/components/labelled-checkbox";
 import Owner from "@/components/owner";
 import IResponseBase from "@/types/api/IResponseBase";
 import authorizedRoute from "@/util/auth";
+import clsx from "@/util/clsx";
 import fetchJson from "@/util/fetch";
 import { Fw } from "@/util/fw";
 import getMediaUrl from "@/util/get-media";
@@ -109,9 +110,11 @@ const AssetView: React.FC<AssetViewProps> = ({
         headers: {
           authorization: String(getCookie(".frameworksession")),
         },
-      }).then(async (res: any) => {
-        await saveDataRequest(res.icon);
-      });
+      })
+        .then((res) => res.json())
+        .then(async (res: { icon: string }) => {
+          await saveDataRequest(res.icon);
+        });
     } else {
       await saveDataRequest();
     }
@@ -122,7 +125,7 @@ const AssetView: React.FC<AssetViewProps> = ({
       <div className="w-full flex justify-center mt-12">
         <div className="max-w-2xl w-full px-4">
           <div className="flex sm:flex-row flex-col gap-8">
-            <div className="w-full relative group">
+            <div className="w-full relative h-fit group">
               <Avatar
                 radius="md"
                 src={
@@ -140,7 +143,12 @@ const AssetView: React.FC<AssetViewProps> = ({
               </Avatar>
               <ImageUploader
                 button={
-                  <div className="bg-zinc-800/50 rounded-md cursor-pointer transition-all opacity-0 group-hover:opacity-100 flex absolute top-0 left-0 w-full h-full items-center justify-center">
+                  <div
+                    className={clsx(
+                      "bg-zinc-800/50 rounded-md cursor-pointer transition-all opacity-0 group-hover:opacity-100 flex absolute top-0 left-0 w-full h-full items-center justify-center",
+                      "h-fit"
+                    )}
+                  >
                     <HiOutlineCamera className="w-12 h-12 text-white" />
                   </div>
                 }
