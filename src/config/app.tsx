@@ -1,11 +1,11 @@
 import {
+  HiOutlineAdjustments,
   HiOutlineCog,
   HiOutlineHome,
-  HiOutlineLightBulb,
-  HiOutlineShoppingBag,
+  HiOutlinePlay,
+  HiOutlineShoppingCart,
   HiOutlineSparkles,
-  HiOutlineUser,
-  HiOutlineViewGrid,
+  HiOutlineUserGroup,
 } from "react-icons/hi";
 
 const appConfig = {
@@ -20,35 +20,35 @@ const appConfig = {
     {
       label: "Games",
       href: "/games",
-      icon: <HiOutlineViewGrid />,
+      icon: <HiOutlinePlay />,
       color: "violet",
       description: "Browse Frameworks catalog of immersive games",
     },
     {
       label: "Catalog",
       href: "/catalog",
-      icon: <HiOutlineShoppingBag />,
+      icon: <HiOutlineShoppingCart />,
       color: "blue",
       description: "Find some new items for your avatar",
     },
     {
       label: "Invent",
       href: "/invent/games",
-      icon: <HiOutlineLightBulb />,
+      icon: <HiOutlineSparkles />,
       color: "teal",
       description: "Where imagination comes to life",
     },
     {
       label: "Social",
       href: "/social",
-      icon: <HiOutlineSparkles />,
+      icon: <HiOutlineUserGroup />,
       color: "green",
       description: "See what your friends are up to",
     },
     {
       label: "Avatar",
       href: "/avatar",
-      icon: <HiOutlineUser />,
+      icon: <HiOutlineAdjustments />,
       color: "orange",
       description: "Manage your avatar",
     },

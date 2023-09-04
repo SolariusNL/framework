@@ -58,6 +58,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { FC, useContext, useEffect, useRef, useState } from "react";
 import {
+  HiArrowLeft,
   HiArrowRight,
   HiArrowSmDown,
   HiChatAlt2,
@@ -1248,7 +1249,7 @@ const Chat: React.FC = () => {
             {chatOpened && (
               <motion.div
                 initial={{ height: 0 }}
-                animate={{ height: conversationOpen ? "418px" : "330px" }}
+                animate={{ height: conversationOpen ? "450px" : "330px" }}
                 exit={{ height: 0 }}
                 transition={{
                   type: "spring",
@@ -1278,20 +1279,19 @@ const Chat: React.FC = () => {
                           <Card.Section px={16} py={10}>
                             <div className="flex justify-between items-center gap-4">
                               <div className="w-[45%]">
-                                <Button
-                                  variant="subtle"
+                                <ActionIcon
+                                  radius="xl"
+                                  color="gray"
                                   className="flex gap-1 text-center items-center"
-                                  size="sm"
                                   onClick={() => {
                                     setConversationOpen(false);
                                     setConversation(null);
                                     setCurrentConversation(null);
                                     setConversationData([]);
                                   }}
-                                  compact
                                 >
-                                  Go back
-                                </Button>
+                                  <HiArrowLeft />
+                                </ActionIcon>
                               </div>
                               <div
                                 onClick={() => {
@@ -1467,7 +1467,7 @@ const Chat: React.FC = () => {
                           >
                             <div
                               style={{
-                                height: 290,
+                                height: 320,
                                 display: "flex",
                                 flexDirection: "column-reverse",
                                 overflowX: "hidden",

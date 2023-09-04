@@ -1,5 +1,6 @@
 import Bit from "@/icons/Bit";
 import Exchange from "@/icons/Exchange";
+import Rocket from "@/icons/Rocket";
 import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
 import IResponseBase from "@/types/api/IResponseBase";
 import abbreviateNumber from "@/util/abbreviate";
@@ -23,12 +24,13 @@ import { useRouter } from "next/router";
 import React from "react";
 import Celebration from "react-confetti";
 import {
-  HiCurrencyDollar,
   HiGift,
-  HiShoppingBag,
-  HiStar,
+  HiOutlineGift,
+  HiOutlineShoppingBag,
+  HiOutlineSparkles,
+  HiOutlineTicket,
+  HiOutlineViewList,
   HiTicket,
-  HiViewList,
 } from "react-icons/hi";
 import { useFrameworkComponentStyles } from "../framework.styles";
 
@@ -91,13 +93,13 @@ const CurrencyMenu = ({
       </Menu.Label>
 
       <Menu.Item
-        icon={<HiCurrencyDollar />}
+        icon={<HiOutlineTicket />}
         onClick={() => router.push("/tickets")}
       >
         Your Tickets
       </Menu.Item>
       <Menu.Item
-        icon={<HiViewList />}
+        icon={<HiOutlineViewList />}
         onClick={() => router.push("/tickets/transactions")}
       >
         Transaction history
@@ -105,25 +107,31 @@ const CurrencyMenu = ({
       <Menu.Divider />
       <Menu.Label>Store</Menu.Label>
       <Menu.Item
-        icon={<HiShoppingBag />}
+        icon={<HiOutlineShoppingBag />}
         onClick={() => router.push("/tickets/buy")}
       >
         Purchase Tickets
       </Menu.Item>
-      <Menu.Item icon={<HiShoppingBag />}>Purchase Studio</Menu.Item>
+      <Menu.Item icon={<HiOutlineShoppingBag />}>Purchase Studio</Menu.Item>
       {!user?.premium && (
         <>
           <Menu.Divider />
-          <Menu.Item icon={<HiStar />} onClick={() => router.push("/premium")}>
+          <Menu.Item icon={<Rocket />} onClick={() => router.push("/premium")}>
             Get premium
           </Menu.Item>
         </>
       )}
       <Menu.Divider />
-      <Menu.Item icon={<HiGift />} onClick={() => router.push("/prizes")}>
+      <Menu.Item
+        icon={<HiOutlineGift />}
+        onClick={() => router.push("/prizes")}
+      >
         Daily prizes
       </Menu.Item>
-      <Menu.Item icon={<HiTicket />} onClick={() => router.push("/redeem")}>
+      <Menu.Item
+        icon={<HiOutlineSparkles />}
+        onClick={() => router.push("/redeem")}
+      >
         Redeem code
       </Menu.Item>
     </>

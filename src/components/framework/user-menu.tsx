@@ -28,16 +28,16 @@ import React, { forwardRef, useEffect } from "react";
 import {
   HiChevronDown,
   HiChevronRight,
-  HiCloud,
-  HiCog,
-  HiGlobe,
-  HiInformationCircle,
-  HiLibrary,
-  HiLogout,
-  HiQrcode,
-  HiUser,
-  HiUsers,
-  HiViewGrid,
+  HiOutlineCloud,
+  HiOutlineCog,
+  HiOutlineGlobe,
+  HiOutlineInformationCircle,
+  HiOutlineLibrary,
+  HiOutlineLogout,
+  HiOutlineQrcode,
+  HiOutlineUserCircle,
+  HiOutlineUserGroup,
+  HiOutlineViewBoards,
 } from "react-icons/hi";
 import { useFrameworkComponentStyles } from "../framework.styles";
 
@@ -151,7 +151,7 @@ const UserMenu = ({
           {user?.role == "ADMIN" && (
             <>
               <Menu.Item
-                icon={<HiLibrary />}
+                icon={<HiOutlineLibrary />}
                 onClick={() => router.push("/admin/dashboard")}
               >
                 Admin dashboard
@@ -160,25 +160,25 @@ const UserMenu = ({
             </>
           )}
           <Menu.Item
-            icon={<HiUser />}
+            icon={<HiOutlineUserCircle />}
             onClick={() => router.push(`/profile/${user?.username}`)}
           >
             Profile
           </Menu.Item>
           <Menu.Item
-            icon={<HiCloud />}
+            icon={<HiOutlineCloud />}
             onClick={() => router.push("/developer/servers")}
           >
             Developers
           </Menu.Item>
           <Menu.Item
-            icon={<HiViewGrid />}
+            icon={<HiOutlineViewBoards />}
             onClick={() => router.push("/inventory/" + user?.username)}
           >
             Inventory
           </Menu.Item>
           <Menu.Item
-            icon={<HiUsers />}
+            icon={<HiOutlineUserGroup />}
             onClick={() => router.push("/teams")}
             rightSection={
               <HoverCard width={300} shadow="lg">
@@ -215,13 +215,13 @@ const UserMenu = ({
           </Tooltip>
           <Menu.Divider />
           <Menu.Item
-            icon={<HiCog />}
+            icon={<HiOutlineCog />}
             onClick={() => router.push("/settings/account")}
           >
             Settings
           </Menu.Item>
           <Menu.Item
-            icon={<HiInformationCircle />}
+            icon={<HiOutlineInformationCircle />}
             onClick={() => {
               setUpdateDrawerOpened(true);
               if (mobile) setSidebarOpened(false);
@@ -230,7 +230,7 @@ const UserMenu = ({
             What&apos;s new?
           </Menu.Item>
           <Menu.Item
-            icon={<HiGlobe />}
+            icon={<HiOutlineGlobe />}
             onClick={() => {
               setFeedbackOpened(true);
               if (mobile) setSidebarOpened(false);
@@ -241,7 +241,7 @@ const UserMenu = ({
           <Menu.Divider />
           {user?.quickLoginEnabled && (
             <Menu.Item
-              icon={<HiQrcode />}
+              icon={<HiOutlineQrcode />}
               onClick={() => {
                 setQuickLoginOpened(true);
                 setSidebarOpened(false);
@@ -254,7 +254,7 @@ const UserMenu = ({
           <Menu.Item
             sx={{ fontWeight: 500 }}
             color="red"
-            icon={<HiLogout />}
+            icon={<HiOutlineLogout />}
             onClick={async () =>
               await logout().then(() => router.push("/login"))
             }
