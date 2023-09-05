@@ -1,0 +1,57 @@
+version: "3"
+
+services:
+  framework-app:
+    container_name: next-app
+    build:
+      context: .
+      dockerfile: framework.dev.Dockerfile
+
+    environment:
+      ENV_VARIABLE: ${ENV_VARIABLE}
+      NEXT_PUBLIC_ENV_VARIABLE: ${NEXT_PUBLIC_ENV_VARIABLE}
+
+    env_file:
+      - .env
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+    restart: always
+    ports:
+      - 3000:3000
+    networks:
+      - framework_network
+
+  framework-cron:
+    container_name: next-cron
+    build:
+      context: .
+      dockerfile: cron.dev.Dockerfile
+    volumes:
+      - ./cron:/app
+    restart: always
+    networks:
+      - framework_network
+
+  postgres:
+    container_name: postgres
+    image: postgres:13.1-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks:
+      - framework_network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  framework_network:
+    external: true
