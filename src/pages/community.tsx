@@ -29,7 +29,7 @@ const platforms = [
     name: "Windows",
     icon: <FaWindows />,
     tip: "Provided in exe format",
-    download: "https://example.com",
+    download: "https://cloud.solarius.me/index.php/s/agwRCAo2PpxaFHt/download",
   },
 ];
 
