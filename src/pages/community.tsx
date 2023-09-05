@@ -84,14 +84,16 @@ const Community: FC<CommunityProps> = ({ user }) => {
                 <Text size="sm" mt="xs" color="dimmed">
                   {platform.tip}
                 </Text>
-                <Button
-                  radius="xl"
-                  variant="light"
-                  className="mt-4"
-                  leftIcon={<HiDownload />}
-                >
-                  Download
-                </Button>
+                <a href={platform.download}>
+                  <Button
+                    radius="xl"
+                    variant="light"
+                    className="mt-4"
+                    leftIcon={<HiDownload />}
+                  >
+                    Download
+                  </Button>
+                </a>
               </div>
             ))}
           </div>
