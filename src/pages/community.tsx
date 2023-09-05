@@ -16,19 +16,19 @@ const platforms = [
   {
     name: "Linux",
     icon: <FaLinux />,
-    tip: "Provided in appimage format",
+    tip: ".appimage",
     download: "https://cloud.solarius.me/index.php/s/iDyRQrmpmygL44C/download",
   },
   {
     name: "macOS",
     icon: <FaApple />,
-    tip: "Provided in dmg format",
+    tip: ".dmg",
     download: "https://cloud.solarius.me/index.php/s/qiQdZNMASbp7rp5/download",
   },
   {
     name: "Windows",
     icon: <FaWindows />,
-    tip: "Provided in exe format",
+    tip: ".exe",
     download: "https://cloud.solarius.me/index.php/s/agwRCAo2PpxaFHt/download",
   },
 ];
