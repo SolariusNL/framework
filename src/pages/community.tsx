@@ -17,7 +17,7 @@ const platforms = [
     name: "Linux",
     icon: <FaLinux />,
     tip: "Provided in appimage format",
-    download: "https://example.com",
+    download: "https://cloud.solarius.me/index.php/s/iDyRQrmpmygL44C/download",
   },
   {
     name: "macOS",
