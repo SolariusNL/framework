@@ -20,7 +20,7 @@ Framework is open source on GitHub, and we welcome all contributions. If you fin
 
 ## How can I get in touch?
 
-You can find us on [Discord](https://discord.gg/g88JS6Tmte), where we have multiple channels for you to get in touch with us. You can also email us at [contact@solarius.me](mailto:contact@solarius.me) if you have any questions or concerns that you'd like to discuss privately.
+You can find us on [Revolt](https://framework.solarius.me/community), where we have multiple channels for you to get in touch with us. You can also email us at [contact@solarius.me](mailto:contact@solarius.me) if you have any questions or concerns that you'd like to discuss privately.
 
 ## What is the current state of Framework?
 

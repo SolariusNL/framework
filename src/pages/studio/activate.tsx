@@ -137,7 +137,7 @@ const ActivateStudio: React.FC<ActivateStudioProps> = ({ user }) => {
           </ul>
           <Text size="sm" color="dimmed" mb="md" mt="lg">
             We hope that you enjoy using Studio. If you have any questions or
-            feedback, please feel free to reach out to us on Discord, or through
+            feedback, please feel free to reach out to us on Revolt, or through
             our Feedback prompt in Studio.
           </Text>
         </div>

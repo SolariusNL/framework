@@ -18,11 +18,11 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import Link from "next/link";
-import { BsDiscord } from "react-icons/bs";
 import {
   HiArrowRight,
   HiChevronDown,
   HiExternalLink,
+  HiOutlineUserGroup,
   HiUserGroup,
   HiUsers,
 } from "react-icons/hi";
@@ -116,10 +116,10 @@ const tabs = [
         href: "/teams",
       },
       {
-        icon: BsDiscord,
-        title: "Discord",
-        description: "Join the Framework community on Discord",
-        href: "https://discord.gg/g88JS6Tmte",
+        icon: HiOutlineUserGroup,
+        title: "Revolt",
+        description: "Join the Framework community on Revolt",
+        href: "https://framework.solarius.me/community",
       },
     ],
     footer: {

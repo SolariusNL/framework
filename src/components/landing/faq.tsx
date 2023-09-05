@@ -1,5 +1,5 @@
-import { Accordion, Col, createStyles, Grid, Text, Title } from "@mantine/core";
 import clsx from "@/util/clsx";
+import { Accordion, Col, createStyles, Grid, Text, Title } from "@mantine/core";
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -98,7 +98,7 @@ const Faq: React.FC = () => {
           </Title>
           <Text color="dimmed">
             Here are some common questions about Framework. If you have any
-            other questions, feel free to ask them in our Discord server, or
+            other questions, feel free to ask them in our Revolt server, or
             contact our team directly.
           </Text>
         </Col>
