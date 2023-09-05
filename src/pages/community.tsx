@@ -6,7 +6,7 @@ import { Anchor, Button, Divider, Text, Title } from "@mantine/core";
 import { GetServerSideProps } from "next";
 import { FC } from "react";
 import { FaApple, FaLinux, FaWindows } from "react-icons/fa";
-import { HiDownload } from "react-icons/hi";
+import { HiOutlineDownload, HiOutlineLogin } from "react-icons/hi";
 
 type CommunityProps = {
   user: User;
@@ -23,7 +23,7 @@ const platforms = [
     name: "macOS",
     icon: <FaApple />,
     tip: "Provided in dmg format",
-    download: "https://example.com",
+    download: "https://cloud.solarius.me/index.php/s/qiQdZNMASbp7rp5/download",
   },
   {
     name: "Windows",
@@ -59,6 +59,23 @@ const Community: FC<CommunityProps> = ({ user }) => {
             . An account is required to use Revolt.
           </Text>
           <Title order={4} mt={32} mb="sm">
+            Join the server
+          </Title>
+          <Text size="sm" color="dimmed">
+            If you already have a Revolt account, you can join the server by
+            clicking the button below.
+          </Text>
+          <a href="https://revolt.solarius.me/invite/sWm6yMMP">
+            <Button
+              radius="xl"
+              variant="light"
+              className="mt-4"
+              leftIcon={<HiOutlineLogin />}
+            >
+              Join the server
+            </Button>
+          </a>
+          <Title order={4} mt={32} mb="sm">
             Revolt desktop app
           </Title>
           <Text size="sm" color="dimmed">
@@ -89,7 +106,7 @@ const Community: FC<CommunityProps> = ({ user }) => {
                     radius="xl"
                     variant="light"
                     className="mt-4"
-                    leftIcon={<HiDownload />}
+                    leftIcon={<HiOutlineDownload />}
                   >
                     Download
                   </Button>
@@ -107,11 +124,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const auth = await authorizedRoute(ctx, false, false);
   if (auth.redirect) return auth;
 
-  return {
-    props: {
-      user: auth.props.user,
-    },
-  };
+  return auth;
 };
 
 export default Community;
