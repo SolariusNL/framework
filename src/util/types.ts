@@ -156,3 +156,22 @@ export const prismaInventoryMapping: Record<
   sound: "sounds",
   gamepass: "gamepasses",
 };
+
+export type Reportable = AssetType | "user" | "game";
+export const reportCategories: string[] = [
+  "Scam or fraud involving Tickets, trading, or account theft",
+  "Inappropriate content",
+  "Exploiting or cheating",
+  "Impersonation",
+  "Questionable content",
+  "Sexual content without proper age gating",
+  "Harassment or bullying",
+  "Hate speech or discrimination",
+  "Privacy violation",
+  "Spam or phishing",
+  "Violence or threats",
+  "Copyright infringement",
+  "Technical issues or bugs",
+  "Account security concerns",
+  "Other (please specify)",
+];

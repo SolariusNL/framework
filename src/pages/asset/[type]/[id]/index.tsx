@@ -21,6 +21,7 @@ import {
   GetResellersResponse,
   LimitedCatalogItemResellWithSeller,
 } from "@/pages/api/catalog/[[...params]]";
+import useReportAbuse from "@/stores/useReportAbuse";
 import IResponseBase from "@/types/api/IResponseBase";
 import authorizedRoute from "@/util/auth";
 import fetchJson, { fetchAndSetData } from "@/util/fetch";
@@ -54,13 +55,14 @@ import {
   HiCheckCircle,
   HiCubeTransparent,
   HiMusicNote,
+  HiOutlineFlag,
+  HiOutlinePencil,
   HiOutlineStar,
   HiOutlineTag,
   HiOutlineTicket,
-  HiPencil,
+  HiOutlineTrash,
   HiShoppingBag,
   HiStar,
-  HiTrash,
   HiXCircle,
 } from "react-icons/hi";
 
@@ -109,6 +111,7 @@ const AssetView: React.FC<AssetViewProps> = ({
   );
   const [resellTarget, setResellTarget] =
     useState<LimitedCatalogItemResellWithSeller | null>(null);
+  const { open: openReportModal } = useReportAbuse();
 
   const { colors } = useMantineTheme();
 
@@ -447,87 +450,104 @@ const AssetView: React.FC<AssetViewProps> = ({
 
             <div className="w-full">
               <div className="flex flex-col gap-4 mb-8">
-                <div className="flex items-center gap-6">
+                <div className="flex items-center gap-4">
                   <Title order={2}>{asset.name}</Title>
                   <Divider className="flex-grow" />
-                  {asset.canAuthorEdit && asset.author.id === user.id && (
-                    <Link
-                      href="/asset/[type]/[id]/edit"
-                      as={`/asset/${type}/${asset.id}/edit`}
-                    >
-                      <ActionIcon radius="xl" size="lg" variant="light">
-                        <HiPencil />
-                      </ActionIcon>
-                    </Link>
-                  )}
-                  {ownership?.owned && (
-                    <Tooltip label="Remove from inventory">
-                      <ActionIcon
-                        radius="xl"
-                        size="lg"
-                        variant="light"
-                        color="red"
-                        onClick={() =>
-                          openConfirmModal({
-                            title: "Remove item from inventory",
-                            children: (
-                              <Text size="sm" color="dimmed">
-                                Are you sure you want to remove {asset.name}{" "}
-                                from your inventory? Note that{" "}
-                                <span className="font-semibold">
-                                  you will not receive a refund
-                                </span>
-                                .
-                              </Text>
-                            ),
-                            labels: {
-                              confirm: "Confirm removal",
-                              cancel: "Nevermind",
-                            },
-                            confirmProps: {
-                              radius: "xl",
-                              variant: "light",
-                              color: "red",
-                            },
-                            cancelProps: {
-                              radius: "xl",
-                              variant: "light",
-                              color: "gray" as MantineColor
-                            },
-                            async onConfirm() {
-                              await fetchJson<IResponseBase>(
-                                `/api/catalog/sku/${asset.id}/delete?type=${type}`,
-                                {
-                                  method: "DELETE",
-                                  auth: true,
-                                }
-                              ).then((res) => {
-                                if (res.success) {
-                                  showNotification({
-                                    title: "Removed item",
-                                    message:
-                                      "This item has been removed from your inventory.",
-                                    icon: <HiCheckCircle />,
-                                  });
-                                  if (asset.limited) fetchLimitedDetails();
-                                  else fetchGenericDetails();
-                                } else {
-                                  showNotification({
-                                    title: "Error",
-                                    message: res.message,
-                                    color: "red",
-                                    icon: <HiXCircle />,
-                                  });
-                                }
-                              });
-                            },
-                          })
-                        }
+                  <div className="flex items-center gap-2">
+                    {asset.canAuthorEdit && asset.author.id === user.id && (
+                      <Link
+                        href="/asset/[type]/[id]/edit"
+                        as={`/asset/${type}/${asset.id}/edit`}
                       >
-                        <HiTrash />
-                      </ActionIcon>
-                    </Tooltip>
-                  )}
+                        <ActionIcon radius="xl" size="lg" variant="light">
+                          <HiOutlinePencil />
+                        </ActionIcon>
+                      </Link>
+                    )}
+                    <ActionIcon
+                      radius="xl"
+                      size="lg"
+                      variant="light"
+                      color="red"
+                      onClick={() =>
+                        openReportModal({
+                          contentType: type,
+                          contentId: asset.id,
+                          author: asset.author,
+                        })
+                      }
+                    >
+                      <HiOutlineFlag />
+                    </ActionIcon>
+                    {ownership?.owned && (
+                      <Tooltip label="Remove from inventory">
+                        <ActionIcon
+                          radius="xl"
+                          size="lg"
+                          variant="light"
+                          color="red"
+                          onClick={() =>
+                            openConfirmModal({
+                              title: "Remove item from inventory",
+                              children: (
+                                <Text size="sm" color="dimmed">
+                                  Are you sure you want to remove {asset.name}{" "}
+                                  from your inventory? Note that{" "}
+                                  <span className="font-semibold">
+                                    you will not receive a refund
+                                  </span>
+                                  .
+                                </Text>
+                              ),
+                              labels: {
+                                confirm: "Confirm removal",
+                                cancel: "Nevermind",
+                              },
+                              confirmProps: {
+                                radius: "xl",
+                                variant: "light",
+                                color: "red",
+                              },
+                              cancelProps: {
+                                radius: "xl",
+                                variant: "light",
+                                color: "gray" as MantineColor,
+                              },
+                              async onConfirm() {
+                                await fetchJson<IResponseBase>(
+                                  `/api/catalog/sku/${asset.id}/delete?type=${type}`,
+                                  {
+                                    method: "DELETE",
+                                    auth: true,
+                                  }
+                                ).then((res) => {
+                                  if (res.success) {
+                                    showNotification({
+                                      title: "Removed item",
+                                      message:
+                                        "This item has been removed from your inventory.",
+                                      icon: <HiCheckCircle />,
+                                    });
+                                    if (asset.limited) fetchLimitedDetails();
+                                    else fetchGenericDetails();
+                                  } else {
+                                    showNotification({
+                                      title: "Error",
+                                      message: res.message,
+                                      color: "red",
+                                      icon: <HiXCircle />,
+                                    });
+                                  }
+                                });
+                              },
+                            })
+                          }
+                        >
+                          <HiOutlineTrash />
+                        </ActionIcon>
+                      </Tooltip>
+                    )}
+                  </div>
                 </div>
                 <div className="gap-4 items-center flex">
                   <Text color="dimmed" size="sm">

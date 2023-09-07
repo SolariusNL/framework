@@ -6,6 +6,7 @@ import { UserInformationWrapper } from "@/contexts/UserInformationDialog";
 import { store } from "@/reducers/store";
 import useAmoled from "@/stores/useAmoled";
 import useFastFlags, { fetchFlags } from "@/stores/useFastFlags";
+import useReportAbuse from "@/stores/useReportAbuse";
 import "@/styles/fonts.css";
 import "@/styles/framework.css";
 import "@/styles/tw.css";
@@ -60,6 +61,9 @@ const ResetPasswordModal = dynamic(
     ssr: false,
   }
 );
+const ReportAbuseModal = dynamic(() => import("@/components/report-abuse"), {
+  ssr: false,
+});
 const ActiveFlow = dynamic(() => import("@/components/active-flow"), {
   ssr: false,
 });
@@ -77,7 +81,7 @@ const Framework: FC<FrameworkProps> & {
   const { Component, pageProps } = props;
   const { setEnabled } = useAmoled();
   const { flags } = useFastFlags();
-
+  const { props: reportProps } = useReportAbuse();
   const [colorScheme, setColorScheme] = useState<ColorScheme>(
     props.colorScheme
   );
@@ -263,6 +267,7 @@ const Framework: FC<FrameworkProps> & {
                           <CookieAcknowledgementDialog />
                           <ResetEmailModal />
                           <ResetPasswordModal />
+                          <ReportAbuseModal {...reportProps!} />
                           <Component {...pageProps} key={router.asPath} />
                           {router.query.flow && <ActiveFlow />}
                         </FrameworkUserProvider>
