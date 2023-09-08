@@ -1,81 +1,82 @@
+import { category } from "@/components/report-user";
 import IResponseBase from "@/types/api/IResponseBase";
 import Authorized, { Account } from "@/util/api/authorized";
 import prisma from "@/util/prisma";
 import type { User } from "@/util/prisma-types";
 import { RateLimitMiddleware } from "@/util/rate-limit";
 import {
-  Reportable,
-  prismaReportAbuseTypeMap,
-  reportCategories,
-} from "@/util/types";
-import {
-  AbuseReportContentIdType,
-  AbuseReportState,
-  Prisma,
-} from "@prisma/client";
-import { Body, Post, createHandler } from "@storyofams/next-api-decorators";
+  Body,
+  Param,
+  Post,
+  createHandler,
+} from "@storyofams/next-api-decorators";
 import { z } from "zod";
 
 export const createAbuseReportSchema = z.object({
-  contentType: z.string(),
-  contentId: z.string(),
-  category: z.string().refine((val) => reportCategories.includes(val)),
-  description: z.string().max(500),
+  reason: z.string(),
+  description: z.string().max(256).min(3),
+  links: z.string().refine(
+    (value) => {
+      const expectedPrefix = `https://${process.env.NEXT_PUBLIC_HOSTNAME}`;
+      return value.startsWith(expectedPrefix);
+    },
+    {
+      message: "String must start with application hostname",
+    }
+  ),
 });
 
 class AbuseRouter {
-  @Post("/new")
+  @Post("/:uid/new")
   @RateLimitMiddleware(5)()
   @Authorized()
   public async createAbuseReport(
     @Account() author: User,
-    @Body() body: z.infer<typeof createAbuseReportSchema>
+    @Body() body: z.infer<typeof createAbuseReportSchema>,
+    @Param("uid") uid: string
   ) {
-    const { contentId, category, description, contentType } =
-      createAbuseReportSchema.parse(body);
-    const type = contentType as Reportable;
+    const { description, reason, links } = createAbuseReportSchema.parse(body);
+    const reporting = Number(uid);
 
-    if (!prismaReportAbuseTypeMap[type]) {
+    if (!Object.keys(category).find((c) => c === reason)) {
       return <IResponseBase>{
         success: false,
-        message: "Invalid report type provided",
+        message: "Invalid report category",
       };
     }
 
-    const queryExecutor = prisma[prismaReportAbuseTypeMap[type]] as never as {
-      findFirst: (args: Prisma.CatalogItemFindFirstArgs) => Promise<any>;
-    };
+    if (author.id === reporting)
+      return <IResponseBase>{
+        success: false,
+        message: "You cannot report yourself",
+      };
 
-    const content = await queryExecutor.findFirst({
+    const reportingUser = await prisma.user.findFirst({
       where: {
-        id: contentId,
+        id: reporting,
       },
     });
 
-    if (!content) {
+    if (!reportingUser)
       return <IResponseBase>{
         success: false,
-        message: "Invalid content ID provided",
+        message: "The user you're trying to report does not exist",
       };
-    }
 
-    const contentIdIsNumber = !isNaN(Number(contentId));
-
-    await prisma.abuseReport.create({
+    await prisma.userReport.create({
       data: {
         author: {
           connect: {
             id: author.id,
           },
         },
-        state: AbuseReportState.OPEN,
-        contentIdType: contentIdIsNumber
-          ? AbuseReportContentIdType.NUMBER
-          : AbuseReportContentIdType.STRING,
-        category,
+        user: {
+          connect: {
+            id: reportingUser.id,
+          },
+        },
+        reason,
         description,
-        contentType,
-        contentId,
       },
     });
 

@@ -1,25 +1,36 @@
-import { getCookie } from "@/util/cookies";
+import IResponseBase from "@/types/api/IResponseBase";
+import fetchJson from "@/util/fetch";
 import { NonUser } from "@/util/prisma-types";
 import {
+  ActionIcon,
   Button,
   Checkbox,
   Modal,
   Select,
   Text,
+  TextInput,
   Textarea,
   useMantineColorScheme,
 } from "@mantine/core";
+import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import React from "react";
-import { HiCheckCircle, HiOutlineUpload } from "react-icons/hi";
+import { HiCheckCircle, HiOutlineUpload, HiXCircle } from "react-icons/hi";
+import Descriptive from "./descriptive";
 import InlineError from "./inline-error";
 
-interface ReportUserProps {
+type ReportUserProps = {
   user: NonUser;
   opened: boolean;
   setOpened: (opened: boolean) => void;
   game?: number;
-}
+};
+type ReportForm = {
+  reason: ReportCategory;
+  description: string;
+  links: string[];
+  terms: boolean;
+};
 
 export type ReportCategory =
   | "Racist, sexist or otherwise offensive content"
@@ -43,52 +54,49 @@ export const category = {
 } as const;
 
 const ReportUser = ({ user, opened, setOpened, game }: ReportUserProps) => {
-  const [reason, setReason] = React.useState<ReportCategory>("Other");
-  const [description, setDescription] = React.useState("");
-  const [checked, setChecked] = React.useState(false);
-
   const [loading, setLoading] = React.useState(false);
-  const [success, setSuccess] = React.useState(false);
-  const [error, setError] = React.useState("");
 
-  const handleReport = async () => {
-    setLoading(true);
-    setError("");
-    setSuccess(false);
-
-    await fetch(`/api/users/${user.id}/report`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        authorization: String(getCookie(".frameworksession")),
+  const form = useForm<ReportForm>({
+    initialValues: {
+      reason: "Other",
+      description: "",
+      links: [],
+      terms: false,
+    },
+    validate: {
+      description: (value) => {
+        if (!value) return "Description cannot be empty";
+        if (value.length > 256 || value.length < 3)
+          return "Description must exceeed 3 characters and may not surpass 256 characters.";
       },
-      body: JSON.stringify({
-        reason,
-        description,
-        ...(game && { game }),
-      }),
+    },
+  });
+
+  const handleReport = async (values: ReportForm) => {
+    setLoading(true);
+
+    await fetchJson<IResponseBase>(`/api/users/${user.id}/report`, {
+      method: "POST",
+      body: values,
+      auth: true,
     })
-      .then((res) => res.json())
       .then((res) => {
         if (res.success) {
-          setSuccess(true);
           showNotification({
             title: "Report Successful",
             message: `You have reported ${user.username}`,
             icon: <HiCheckCircle />,
           });
           setOpened(false);
-          setReason("Other");
-          setDescription("");
-          setChecked(false);
-          setSuccess(false);
-          setError("");
+          form.reset();
         } else {
-          setError(res.message || "Something went wrong");
+          showNotification({
+            title: "Error",
+            message: res.message,
+            icon: <HiXCircle />,
+            color: "red",
+          });
         }
-      })
-      .catch((err) => {
-        setError(err.message || "Something went wrong");
       })
       .finally(() => {
         setLoading(false);
@@ -99,7 +107,7 @@ const ReportUser = ({ user, opened, setOpened, game }: ReportUserProps) => {
     <Modal
       opened={opened}
       onClose={() => setOpened(false)}
-      title={`Reporting ${user.username}`}
+      title={`Report ${user.username} for abuse`}
       className={useMantineColorScheme().colorScheme}
     >
       <Text size="sm" color="dimmed" className="mb-6">
@@ -108,54 +116,100 @@ const ReportUser = ({ user, opened, setOpened, game }: ReportUserProps) => {
         keep Framework safe!
       </Text>
 
-      <Select
-        label="Category"
-        description="Choose a category you think suits this report."
-        data={Object.keys(category)}
-        mb={12}
-        value={reason}
-        onChange={(v) => setReason(v as ReportCategory)}
-        required
-      />
-
-      <Textarea
-        label="Description"
-        description="Describe the report."
-        mb={24}
-        required
-        placeholder="This user was being rude and was using offensive language."
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
-      <Checkbox
-        label="I agree that this report is being made in good faith and is not a false accusation of wrongdoing."
-        checked={checked}
-        onChange={() => setChecked(!checked)}
-      />
-
-      {error && (
-        <InlineError className="my-6" title="Couldn't report" variant="error">
-          {error}
-        </InlineError>
-      )}
-      {success && (
-        <InlineError className="my-6" title="Report sent" variant="success">
-          Thank you for reporting this user.
-        </InlineError>
-      )}
-
-      <div className="flex justify-end mt-6 gap-2">
-        <Button
-          disabled={!checked || description.length < 10 || success}
-          loading={loading}
-          onClick={handleReport}
-          variant="light"
-          radius="xl"
-          leftIcon={<HiOutlineUpload />}
-        >
-          Report {user.username}
-        </Button>
-      </div>
+      <form onSubmit={form.onSubmit(handleReport)}>
+        <Select
+          label="Category"
+          description="Choose a category you think suits this report."
+          data={Object.keys(category)}
+          className="mb-2"
+          required
+          {...form.getInputProps("reason")}
+        />
+        <Textarea
+          label="Description"
+          description="Describe the report."
+          required
+          placeholder="This user was being rude and was using offensive language."
+          {...form.getInputProps("description")}
+        />
+        <div className="mt-3 mb-6">
+          <Descriptive
+            title="URLs"
+            description="Insert URLs pointing to abusive content"
+            required
+          >
+            {form.values.links.length > 0 ? (
+              form.values.links.map((_l, index) => (
+                <div className="flex gap-2 items-center" key={index}>
+                  <ActionIcon
+                    variant="light"
+                    color="red"
+                    onClick={() => form.removeListItem("links", index)}
+                  >
+                    <HiXCircle />
+                  </ActionIcon>
+                  <TextInput
+                    placeholder="Enter a URL to violating content"
+                    className="flex-1"
+                    {...form.getInputProps(`links.${index}` as const)}
+                  />
+                </div>
+              ))
+            ) : (
+              <InlineError variant="info" title="No URLs">
+                It is recommended that you paste in URLs to violating content to
+                expedite the moderation process.
+              </InlineError>
+            )}
+            <div className="mt-1 flex justify-end gap-2">
+              <Button
+                radius="xl"
+                variant="light"
+                disabled={form.values.links.length === 5}
+                onClick={() => {
+                  form.insertListItem("links", window.location.href);
+                }}
+              >
+                Paste current URL
+              </Button>
+              <Button
+                radius="xl"
+                variant="light"
+                onClick={() => form.insertListItem("links", "")}
+                disabled={form.values.links.length === 5}
+              >
+                Add
+              </Button>
+            </div>
+          </Descriptive>
+        </div>
+        <Checkbox
+          label="I agree that this report is being made in good faith and is not a false accusation of wrongdoing."
+          size="sm"
+          {...form.getInputProps("terms", {
+            type: "checkbox",
+          })}
+        />
+        <div className="flex justify-end mt-6 gap-2">
+          <Button
+            radius="xl"
+            variant="light"
+            color="gray"
+            onClick={() => setOpened(false)}
+          >
+            Cancel
+          </Button>
+          <Button
+            loading={loading}
+            variant="light"
+            radius="xl"
+            leftIcon={<HiOutlineUpload />}
+            type="submit"
+          >
+            Report {user.username}
+          </Button>
+        </div>
+      </form>
     </Modal>
   );
 };
