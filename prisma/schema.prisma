@@ -204,6 +204,7 @@ model User {
   createdLimitedCatalogItems LimitedCatalogItem[]        @relation("limitedCatalogItemAuthor")
   robloxTransfer             Boolean                     @default(false)
   signals                    UserSignal[]                @relation("userSignals")
+  filedAbuseReports          AbuseReport[]               @relation("filedAbuseReports")
 }
 
 model Story {
@@ -1471,4 +1472,27 @@ enum AppConfigUnionType {
   BOOLEAN
   ARRAY
   OBJECT
+}
+
+model AbuseReport {
+  id            String                   @id @default(uuid())
+  createdAt     DateTime                 @default(now())
+  author        User                     @relation("filedAbuseReports", fields: [authorId], references: [id])
+  authorId      Int
+  state         AbuseReportState
+  contentType   String
+  contentId     String
+  contentIdType AbuseReportContentIdType
+  category      String
+  description   String
+}
+
+enum AbuseReportState {
+  OPEN
+  CLOSED
+}
+
+enum AbuseReportContentIdType {
+  STRING
+  NUMBER
 }

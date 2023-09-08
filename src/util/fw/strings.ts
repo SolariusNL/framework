@@ -41,4 +41,9 @@ export const Strings = {
   upper(str: string) {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
   },
+  pascalToNormal(str: string) {
+    return str
+      .replace(/([A-Z])/g, " $1")
+      .replace(/^./, (str) => str.toUpperCase());
+  },
 };

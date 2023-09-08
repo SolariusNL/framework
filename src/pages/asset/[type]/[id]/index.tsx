@@ -21,7 +21,6 @@ import {
   GetResellersResponse,
   LimitedCatalogItemResellWithSeller,
 } from "@/pages/api/catalog/[[...params]]";
-import useReportAbuse from "@/stores/useReportAbuse";
 import IResponseBase from "@/types/api/IResponseBase";
 import authorizedRoute from "@/util/auth";
 import fetchJson, { fetchAndSetData } from "@/util/fetch";
@@ -55,7 +54,6 @@ import {
   HiCheckCircle,
   HiCubeTransparent,
   HiMusicNote,
-  HiOutlineFlag,
   HiOutlinePencil,
   HiOutlineStar,
   HiOutlineTag,
@@ -111,7 +109,6 @@ const AssetView: React.FC<AssetViewProps> = ({
   );
   const [resellTarget, setResellTarget] =
     useState<LimitedCatalogItemResellWithSeller | null>(null);
-  const { open: openReportModal } = useReportAbuse();
 
   const { colors } = useMantineTheme();
 
@@ -464,21 +461,6 @@ const AssetView: React.FC<AssetViewProps> = ({
                         </ActionIcon>
                       </Link>
                     )}
-                    <ActionIcon
-                      radius="xl"
-                      size="lg"
-                      variant="light"
-                      color="red"
-                      onClick={() =>
-                        openReportModal({
-                          contentType: type,
-                          contentId: asset.id,
-                          author: asset.author,
-                        })
-                      }
-                    >
-                      <HiOutlineFlag />
-                    </ActionIcon>
                     {ownership?.owned && (
                       <Tooltip label="Remove from inventory">
                         <ActionIcon

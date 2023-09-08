@@ -1,5 +1,9 @@
 import Owner from "@/components/owner";
+import { createAbuseReportSchema } from "@/pages/api/abuse/[[...params]]";
 import useReportAbuse, { ReportAbuseProps } from "@/stores/useReportAbuse";
+import IResponseBase from "@/types/api/IResponseBase";
+import fetchJson from "@/util/fetch";
+import { Fw } from "@/util/fw";
 import { reportCategories } from "@/util/types";
 import {
   Button,
@@ -10,8 +14,15 @@ import {
   useMantineColorScheme,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { showNotification } from "@mantine/notifications";
 import { FC } from "react";
-import { HiOutlineTag, HiOutlineUpload } from "react-icons/hi";
+import {
+  HiCheckCircle,
+  HiOutlineTag,
+  HiOutlineUpload,
+  HiXCircle,
+} from "react-icons/hi";
+import { z } from "zod";
 
 type ReportAbusePromptProps = ReportAbuseProps;
 type ReportAbuseForm = {
@@ -28,6 +39,35 @@ const ReportAbusePrompt: FC<ReportAbusePromptProps> = (props) => {
       description: "",
     },
   });
+
+  const submitForm = async (values: ReportAbuseForm) => {
+    await fetchJson<IResponseBase>("/api/abuse/new", {
+      method: "POST",
+      body: {
+        category: values.category,
+        contentId: props.contentId,
+        contentType: props.contentType,
+        description: values.description,
+      } as z.infer<typeof createAbuseReportSchema>,
+      auth: true,
+    }).then((res) => {
+      if (res.success) {
+        setOpened(false);
+        showNotification({
+          title: "Report submitted",
+          message: "Your report has been submitted successfully. Thank you!",
+          icon: <HiCheckCircle />,
+        });
+      } else {
+        showNotification({
+          color: "red",
+          title: "Error",
+          message: res.message,
+          icon: <HiXCircle />,
+        });
+      }
+    });
+  };
 
   return (
     <Modal
@@ -52,50 +92,53 @@ const ReportAbusePrompt: FC<ReportAbusePromptProps> = (props) => {
           <Text size="sm" mb="sm" color="dimmed" weight={500}>
             Content type
           </Text>
-          <Text>
-            {props.contentType
-              .replace(/([A-Z])/g, " $1")
-              .replace(/^./, (str) => str.toUpperCase())}
-          </Text>
+          <Text>{Fw.Strings.pascalToNormal(props.contentType)}</Text>
           <Text color="dimmed" size="sm" className="flex items-center gap-2">
             <HiOutlineTag />
             <span>{props.contentId.split("-")[0]}</span>
           </Text>
         </div>
       </div>
-      <div className="flex flex-col mt-6 gap-4">
-        <Select
-          label="Category"
-          description="What type of abuse are you reporting?"
-          placeholder="Select a category"
-          required
-          data={reportCategories.map((cat) => ({
-            value: cat,
-            label: cat,
-          }))}
-          {...form.getInputProps("category")}
-        />
-        <Textarea
-          label="Description"
-          description="Please describe the abuse you are reporting."
-          placeholder="Describe the abuse you are reporting"
-          required
-          {...form.getInputProps("description")}
-        />
-      </div>
-      <div className="mt-6 flex justify-end gap-2">
-        <Button
-          variant="light"
-          radius="xl"
-          color="gray"
-          onClick={() => setOpened(false)}
-        >
-          Cancel
-        </Button>
-        <Button variant="light" radius="xl" leftIcon={<HiOutlineUpload />}>
-          Submit
-        </Button>
-      </div>
+      <form onSubmit={form.onSubmit(submitForm)}>
+        <div className="flex flex-col mt-6 gap-4">
+          <Select
+            label="Category"
+            description="What type of abuse are you reporting?"
+            placeholder="Select a category"
+            required
+            data={reportCategories.map((cat) => ({
+              value: cat,
+              label: cat,
+            }))}
+            {...form.getInputProps("category")}
+          />
+          <Textarea
+            label="Description"
+            description="Please describe the abuse you are reporting."
+            placeholder="Describe the abuse you are reporting"
+            required
+            {...form.getInputProps("description")}
+          />
+        </div>
+        <div className="mt-6 flex justify-end gap-2">
+          <Button
+            variant="light"
+            radius="xl"
+            color="gray"
+            onClick={() => setOpened(false)}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="light"
+            radius="xl"
+            leftIcon={<HiOutlineUpload />}
+            type="submit"
+          >
+            Submit
+          </Button>
+        </div>
+      </form>
     </Modal>
   );
 };

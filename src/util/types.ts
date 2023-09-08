@@ -175,3 +175,11 @@ export const reportCategories: string[] = [
   "Account security concerns",
   "Other (please specify)",
 ];
+export const prismaReportAbuseTypeMap: Record<
+  Reportable,
+  PascalToCamel<Prisma.ModelName>
+> = {
+  ...prismaAssetTypeMap,
+  user: "user",
+  game: "game",
+};
