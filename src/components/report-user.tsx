@@ -1,6 +1,6 @@
+import { getCookie } from "@/util/cookies";
+import { NonUser } from "@/util/prisma-types";
 import {
-  Alert,
-  Anchor,
   Button,
   Checkbox,
   Modal,
@@ -10,11 +10,9 @@ import {
   useMantineColorScheme,
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
-import Link from "next/link";
 import React from "react";
-import { HiCheckCircle, HiXCircle } from "react-icons/hi";
-import { getCookie } from "@/util/cookies";
-import { NonUser } from "@/util/prisma-types";
+import { HiCheckCircle, HiOutlineUpload } from "react-icons/hi";
+import InlineError from "./inline-error";
 
 interface ReportUserProps {
   user: NonUser;
@@ -104,21 +102,10 @@ const ReportUser = ({ user, opened, setOpened, game }: ReportUserProps) => {
       title={`Reporting ${user.username}`}
       className={useMantineColorScheme().colorScheme}
     >
-      <Text mb={6}>
-        By reporting this user, you agree that this report was made in
-        accordance with the{" "}
-        <Link passHref href="/guidelines" target="_blank">
-          <Anchor>Community Guidelines</Anchor>
-        </Link>{" "}
-        and the{" "}
-        <Link passHref href="/terms" target="_blank">
-          <Anchor>Terms of Service</Anchor>
-        </Link>{" "}
-        of Framework.
-      </Text>
-      <Text mb={14}>
-        You also agree that this report was made in good faith and you are not
-        alleging that the user is guilty of any wrongdoing.
+      <Text size="sm" color="dimmed" className="mb-6">
+        Please review and fill out the report abuse form below. We will review
+        your report and take action as soon as possible. Thank you for helping
+        keep Framework safe!
       </Text>
 
       <Select
@@ -129,9 +116,6 @@ const ReportUser = ({ user, opened, setOpened, game }: ReportUserProps) => {
         value={reason}
         onChange={(v) => setReason(v as ReportCategory)}
         required
-        classNames={{
-          input: "dark:bg-black dark:border-zinc-800",
-        }}
       />
 
       <Textarea
@@ -140,48 +124,34 @@ const ReportUser = ({ user, opened, setOpened, game }: ReportUserProps) => {
         mb={24}
         required
         placeholder="This user was being rude and was using offensive language."
-        classNames={{
-          input: "dark:bg-black dark:border-zinc-800",
-        }}
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
       <Checkbox
         label="I agree that this report is being made in good faith and is not a false accusation of wrongdoing."
-        mb={12}
         checked={checked}
-        classNames={{
-          input: "dark:bg-black dark:border-zinc-800",
-        }}
         onChange={() => setChecked(!checked)}
       />
 
       {error && (
-        <Alert
-          mb={12}
-          title="Couldn't report"
-          icon={<HiXCircle size={24} />}
-          color="red"
-        >
+        <InlineError className="my-6" title="Couldn't report" variant="error">
           {error}
-        </Alert>
+        </InlineError>
       )}
       {success && (
-        <Alert
-          mb={12}
-          title="Report sent"
-          icon={<HiCheckCircle size={24} />}
-          color="green"
-        >
+        <InlineError className="my-6" title="Report sent" variant="success">
           Thank you for reporting this user.
-        </Alert>
+        </InlineError>
       )}
 
-      <div className="flex justify-end mt-2">
+      <div className="flex justify-end mt-6 gap-2">
         <Button
           disabled={!checked || description.length < 10 || success}
           loading={loading}
           onClick={handleReport}
+          variant="light"
+          radius="xl"
+          leftIcon={<HiOutlineUpload />}
         >
           Report {user.username}
         </Button>
