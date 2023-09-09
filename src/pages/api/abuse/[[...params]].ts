@@ -1,9 +1,11 @@
 import { category } from "@/components/report-user";
 import IResponseBase from "@/types/api/IResponseBase";
 import Authorized, { Account } from "@/util/api/authorized";
+import createNotification from "@/util/notifications";
 import prisma from "@/util/prisma";
 import type { User } from "@/util/prisma-types";
 import { RateLimitMiddleware } from "@/util/rate-limit";
+import { NotificationType } from "@prisma/client";
 import {
   Body,
   Param,
@@ -84,6 +86,19 @@ class AbuseRouter {
         description,
         links,
       },
+    });
+
+    const adminsToNotify = await prisma.user.findMany({
+      where: { notificationPreferences: { has: "ADMIN_REPORTS" } },
+    });
+
+    adminsToNotify.forEach(async (admin) => {
+      await createNotification(
+        admin.id,
+        NotificationType.ALERT,
+        `There is a new report to review for @${reportingUser.username}.`,
+        "New report"
+      );
     });
 
     return <IResponseBase>{
