@@ -604,6 +604,7 @@ model UserReport {
   createdAt   DateTime @default(now())
   game        Game?    @relation("gameReport", fields: [gameId], references: [id])
   gameId      Int?
+  links       String[]
 }
 
 enum NotificationType {

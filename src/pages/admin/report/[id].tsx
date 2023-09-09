@@ -1,12 +1,10 @@
-import NoteTable, { NoteUser } from "@/components/admin/note-table";
-import Punish from "@/components/admin/pages/punish";
 import Framework from "@/components/framework";
 import InlineError from "@/components/inline-error";
 import ModernEmptyState from "@/components/modern-empty-state";
-import Owner from "@/components/owner";
 import ShadedCard from "@/components/shaded-card";
 import UserContext from "@/components/user-context";
 import authorizedRoute from "@/util/auth";
+import clsx from "@/util/clsx";
 import getMediaUrl from "@/util/get-media";
 import prisma from "@/util/prisma";
 import {
@@ -14,19 +12,15 @@ import {
   NonUser,
   Report,
   User,
-  gameSelect,
   nonCurrentUserSelect,
 } from "@/util/prisma-types";
 import {
+  Anchor,
   Avatar,
-  Badge,
   Button,
-  Card,
   Divider,
-  Grid,
   Group,
   Stack,
-  Table,
   Text,
   ThemeIcon,
   Title,
@@ -34,19 +28,21 @@ import {
 import { UserAdminNotes } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import {
   HiArrowLeft,
   HiOutlineClock,
+  HiOutlineLink,
   HiOutlineTag,
   HiOutlineUser,
   HiOutlineXCircle,
-  HiShieldCheck,
   HiX,
 } from "react-icons/hi";
-import ReactNoSSR from "react-no-ssr";
+
+const Punish = dynamic(() => import("@/components/admin/pages/punish"));
 
 interface ReportProps {
   user: User;
@@ -142,8 +138,8 @@ const ReportPage: NextPage<ReportProps> = ({ user, report }) => {
             onComplete={closeReport}
           />
         ) : (
-          <Grid columns={6} gutter="xl">
-            <Grid.Col span={4}>
+          <div className="flex md:flex-row flex-col md:gap-4 gap-12">
+            <div className="md:w-[2/3] md:flex-[2]">
               <Group mb={12}>
                 <Link href="/admin/reports">
                   <Button
@@ -155,16 +151,18 @@ const ReportPage: NextPage<ReportProps> = ({ user, report }) => {
                   </Button>
                 </Link>
               </Group>
-              <Title order={3} mb={24}>
-                Report {report.id.split("-")[0]}{" "}
-                {report.processed && (
-                  <Badge>
-                    <HiShieldCheck /> Closed
-                  </Badge>
-                )}
-              </Title>
-
-              <div className="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-2 gap-4">
+              <div className="flex items-center gap-4">
+                <Title
+                  order={3}
+                  className={clsx(
+                    report.processed && "line-through text-dimmed"
+                  )}
+                >
+                  Report {report.id.split("-")[0]}
+                </Title>
+                <Divider className="flex-grow" />
+              </div>
+              <div className="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-2 my-8 gap-4">
                 {[
                   {
                     label: "Created",
@@ -179,7 +177,11 @@ const ReportPage: NextPage<ReportProps> = ({ user, report }) => {
                   {
                     label: "Author",
                     icon: <HiOutlineUser />,
-                    value: <Owner user={report.user} size={30} />,
+                    value: (
+                      <Link href={`/profile/${report.author.username}`}>
+                        <Anchor>@{report.author.username}</Anchor>
+                      </Link>
+                    ),
                   },
                 ]
                   .filter((x) => x.value)
@@ -197,64 +199,83 @@ const ReportPage: NextPage<ReportProps> = ({ user, report }) => {
                     </div>
                   ))}
               </div>
-
+              <div className="flex gap-2 items-center mb-4">
+                <Text size="sm" weight={500} color="dimmed">
+                  Report details
+                </Text>
+                <Divider className={clsx("flex-grow")} />
+              </div>
               {report.description.length < 30 && (
                 <InlineError
                   title="Short description"
-                  className="my-8"
+                  className="mb-6 mt-2"
                   variant="warning"
                 >
-                  This report has a short description. This could mean that this
-                  report is not genuine. Please review the report carefully.
+                  The briefness of this report&apos;s description might suggest
+                  it&apos;s not genuine. Please take a close look at the report.
                 </InlineError>
               )}
-
-              <Title order={3} mb="sm">
-                {report.reason}
-              </Title>
+              <div className="flex gap-2 mb-2">
+                <Text
+                  weight={500}
+                  size="sm"
+                  color="dimmed"
+                  style={{ width: "25%" }}
+                  className="flex items-center gap-2 flex-shrink-0"
+                >
+                  <HiOutlineTag />
+                  Report category
+                </Text>
+                <Text
+                  style={{
+                    maxWidth: "70%",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                  size="sm"
+                >
+                  {report.reason}
+                </Text>
+              </div>
               <Text>{report.description}</Text>
-              <Divider mt={32} mb={32} />
-              {!report.game ? (
-                <ModernEmptyState
-                  title="No data"
-                  body="This report has no data associated with it."
-                />
-              ) : (
-                report.game && (
-                  <Table striped>
-                    <tbody>
-                      {[
-                        ["Game ID", report.game.id],
-                        ["Name", report.game.name],
-                        [
-                          "Description",
-                          report.game.description.replace(/(<([^>]+)>)/gi, ""),
-                        ],
-                        [
-                          "Created",
-                          new Date(report.game.createdAt).toLocaleDateString(),
-                        ],
-                        ["Icon URI", report.game.iconUri || "None"],
-                        ["Likes", report.game.likedBy.length],
-                        ["Dislikes", report.game.dislikedBy.length],
-                        ["Visits", report.game.visits],
-                        ["Playing", report.game.playing],
-                        ["Rating", report.game.rating?.type || "None"],
-                      ].map(([key, value]) => (
-                        <tr key={key}>
-                          <td className="whitespace-nowrap">{key}</td>
-                          <td>{value}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </Table>
-                )
-              )}
-            </Grid.Col>
-            <Grid.Col span={2}>
-              <Text size="sm" color="dimmed" weight={500} mb={6}>
-                Actions
-              </Text>
+              <div className="flex flex-col gap-1 mt-8">
+                <div className="flex gap-2 items-center mb-2">
+                  <Text size="sm" weight={500} color="dimmed">
+                    Attached links
+                  </Text>
+                  <Divider className={clsx("flex-grow")} />
+                </div>
+                {report.links.length === 0 ? (
+                  <ShadedCard>
+                    <ModernEmptyState
+                      title="No links"
+                      body="No links were attached to this report."
+                    />
+                  </ShadedCard>
+                ) : (
+                  report.links.map((link) => (
+                    <Anchor
+                      className="flex items-center gap-2 w-fit"
+                      href={link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      key={link}
+                    >
+                      <HiOutlineLink />
+                      {link}
+                    </Anchor>
+                  ))
+                )}
+              </div>
+            </div>
+            <div className="md:w-[1/3] md:flex-1">
+              <div className="flex gap-2 items-center mb-2">
+                <Text size="sm" weight={500} color="dimmed">
+                  Report details
+                </Text>
+                <Divider className={clsx("flex-grow")} />
+              </div>
               <Stack spacing={8} mb={16}>
                 <Button
                   color="red"
@@ -298,19 +319,9 @@ const ReportPage: NextPage<ReportProps> = ({ user, report }) => {
                 >
                   Close report
                 </Button>
-
-                <ReactNoSSR>
-                  <ShadedCard withBorder shadow="md">
-                    {[report.user, report.author].map((user) => (
-                      <Card.Section withBorder p="md" key={user.id}>
-                        <NoteTable user={user as unknown as NoteUser} />
-                      </Card.Section>
-                    ))}
-                  </ShadedCard>
-                </ReactNoSSR>
               </Stack>
-            </Grid.Col>
-          </Grid>
+            </div>
+          </div>
         )}
       </Framework>
     </>
@@ -329,49 +340,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     where: {
       id: String(id),
     },
-    select: {
-      user: {
-        select: {
-          ...nonCurrentUserSelect.select,
-          notes: {
-            select: {
-              author: {
-                select: {
-                  ...nonCurrentUserSelect.select,
-                },
-              },
-              content: true,
-              createdAt: true,
-              id: true,
-            },
-          },
-        },
-      },
-      author: {
-        select: {
-          ...nonCurrentUserSelect.select,
-          notes: {
-            select: {
-              author: {
-                select: {
-                  ...nonCurrentUserSelect.select,
-                },
-              },
-              content: true,
-              createdAt: true,
-              id: true,
-            },
-          },
-        },
-      },
-      description: true,
-      id: true,
-      reason: true,
-      processed: true,
-      createdAt: true,
-      game: {
-        select: gameSelect,
-      },
+    include: {
+      user: nonCurrentUserSelect,
+      author: nonCurrentUserSelect,
     },
   });
 

@@ -15,15 +15,7 @@ import { z } from "zod";
 export const createAbuseReportSchema = z.object({
   reason: z.string(),
   description: z.string().max(256).min(3),
-  links: z.string().refine(
-    (value) => {
-      const expectedPrefix = `https://${process.env.NEXT_PUBLIC_HOSTNAME}`;
-      return value.startsWith(expectedPrefix);
-    },
-    {
-      message: "String must start with application hostname",
-    }
-  ),
+  links: z.array(z.string().url()),
 });
 
 class AbuseRouter {
@@ -42,6 +34,19 @@ class AbuseRouter {
       return <IResponseBase>{
         success: false,
         message: "Invalid report category",
+      };
+    }
+
+    if (
+      links.some(
+        (l) =>
+          !l.startsWith(`http://${process.env.NEXT_PUBLIC_HOSTNAME}`) &&
+          !l.startsWith(`https://${process.env.NEXT_PUBLIC_HOSTNAME}`)
+      )
+    ) {
+      return <IResponseBase>{
+        success: false,
+        message: "Invalid link - does not belong to Framework",
       };
     }
 
@@ -77,6 +82,7 @@ class AbuseRouter {
         },
         reason,
         description,
+        links,
       },
     });
 

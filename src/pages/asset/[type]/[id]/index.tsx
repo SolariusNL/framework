@@ -550,6 +550,7 @@ const AssetView: React.FC<AssetViewProps> = ({
                         weight={500}
                         color="dimmed"
                         style={{ width: "35%" }}
+                        className="flex-shrink-0"
                       >
                         {row.key}
                       </Text>

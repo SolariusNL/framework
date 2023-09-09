@@ -75,7 +75,7 @@ const ReportUser = ({ user, opened, setOpened, game }: ReportUserProps) => {
   const handleReport = async (values: ReportForm) => {
     setLoading(true);
 
-    await fetchJson<IResponseBase>(`/api/users/${user.id}/report`, {
+    await fetchJson<IResponseBase>(`/api/abuse/${user.id}/new`, {
       method: "POST",
       body: values,
       auth: true,
@@ -157,8 +157,8 @@ const ReportUser = ({ user, opened, setOpened, game }: ReportUserProps) => {
               ))
             ) : (
               <InlineError variant="info" title="No URLs">
-                It is recommended that you paste in URLs to violating content to
-                expedite the moderation process.
+                To facilitate the moderation process, we suggest that you
+                include URLs of content that violates the rules.
               </InlineError>
             )}
             <div className="mt-1 flex justify-end gap-2">
@@ -184,7 +184,7 @@ const ReportUser = ({ user, opened, setOpened, game }: ReportUserProps) => {
           </Descriptive>
         </div>
         <Checkbox
-          label="I agree that this report is being made in good faith and is not a false accusation of wrongdoing."
+          label="I confirm that this report is submitted in an honest manner and is not a false allegation of misconduct."
           size="sm"
           {...form.getInputProps("terms", {
             type: "checkbox",
