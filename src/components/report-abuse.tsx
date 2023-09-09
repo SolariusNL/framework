@@ -1,5 +1,4 @@
 import Owner from "@/components/owner";
-import { createAbuseReportSchema } from "@/pages/api/abuse/[[...params]]";
 import useReportAbuse, { ReportAbuseProps } from "@/stores/useReportAbuse";
 import IResponseBase from "@/types/api/IResponseBase";
 import fetchJson from "@/util/fetch";
@@ -22,7 +21,6 @@ import {
   HiOutlineUpload,
   HiXCircle,
 } from "react-icons/hi";
-import { z } from "zod";
 
 type ReportAbusePromptProps = ReportAbuseProps;
 type ReportAbuseForm = {
@@ -48,7 +46,7 @@ const ReportAbusePrompt: FC<ReportAbusePromptProps> = (props) => {
         contentId: props.contentId,
         contentType: props.contentType,
         description: values.description,
-      } as z.infer<typeof createAbuseReportSchema>,
+      },
       auth: true,
     }).then((res) => {
       if (res.success) {
