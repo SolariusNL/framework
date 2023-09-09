@@ -1,6 +1,7 @@
 import Framework from "@/components/framework";
 import InlineError from "@/components/inline-error";
 import ModernEmptyState from "@/components/modern-empty-state";
+import Owner from "@/components/owner";
 import ShadedCard from "@/components/shaded-card";
 import UserContext from "@/components/user-context";
 import authorizedRoute from "@/util/auth";
@@ -215,28 +216,45 @@ const ReportPage: NextPage<ReportProps> = ({ user, report }) => {
                   it&apos;s not genuine. Please take a close look at the report.
                 </InlineError>
               )}
-              <div className="flex gap-2 mb-2">
-                <Text
-                  weight={500}
-                  size="sm"
-                  color="dimmed"
-                  style={{ width: "25%" }}
-                  className="flex items-center gap-2 flex-shrink-0"
-                >
-                  <HiOutlineTag />
-                  Report category
-                </Text>
-                <Text
-                  style={{
-                    maxWidth: "70%",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                  }}
-                  size="sm"
-                >
-                  {report.reason}
-                </Text>
+              <div className="flex flex-col gap-4 mb-4">
+                {[
+                  {
+                    label: "Report category",
+                    value: report.reason,
+                    icon: <HiOutlineTag />,
+                  },
+                  {
+                    label: "Reported user",
+                    value: <Owner user={report.user} />,
+                    icon: <HiOutlineUser />,
+                  },
+                ].map((x) => (
+                  <div
+                    className="flex gap-2 items-start md:flex-row flex-col"
+                    key={x.label}
+                  >
+                    <Text
+                      weight={500}
+                      size="sm"
+                      color="dimmed"
+                      className="flex items-center gap-2 flex-shrink-0 md:w-[25%] w-full"
+                    >
+                      {x.icon}
+                      {x.label}
+                    </Text>
+                    <Text
+                      style={{
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                      className="md:max-w-[75%] max-w-full"
+                      size="sm"
+                    >
+                      {x.value}
+                    </Text>
+                  </div>
+                ))}
               </div>
               <Text>{report.description}</Text>
               <div className="flex flex-col gap-1 mt-8">
