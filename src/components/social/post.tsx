@@ -6,11 +6,18 @@ import { Fw } from "@/util/fw";
 import getMediaUrl from "@/util/get-media";
 import { NonUser } from "@/util/prisma-types";
 import { getRelativeTime } from "@/util/relative-time";
-import { ActionIcon, Avatar, Text } from "@mantine/core";
+import { ActionIcon, Avatar, Badge, Text } from "@mantine/core";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { FC } from "react";
-import { HiOutlineDotsVertical, HiOutlineFlag } from "react-icons/hi";
+import {
+  HiHeart,
+  HiOutlineDotsVertical,
+  HiOutlineFlag,
+  HiOutlineHeart,
+  HiOutlineShare,
+  HiShare,
+} from "react-icons/hi";
 
 const RenderMarkdown = dynamic(() => import("../render-markdown"), {
   ssr: false,
@@ -83,10 +90,32 @@ const SocialPost: FC<SocialPostProps> = ({ post }) => {
               {post.contentMd}
             </RenderMarkdown>
           )}
-          <div className="mt-4 flex flex-wrap gap-2">
-            <Text size="sm" color="dimmed">
-              {getRelativeTime(post.createdAt)}
-            </Text>
+          <div className="mt-4 flex justify-between items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <ActionIcon color="pink" size="lg" radius="xl" variant="light">
+                <HiOutlineHeart />
+              </ActionIcon>
+              <ActionIcon size="lg" radius="xl" variant="light" color="blue">
+                <HiOutlineShare />
+              </ActionIcon>
+              <Text size="sm" color="dimmed" ml="sm">
+                {getRelativeTime(post.createdAt)}
+              </Text>
+            </div>
+            <div className="flex items-center gap-2">
+              <Badge color="pink" radius="sm" className="px-1.5" size="lg">
+                <div className="flex items-center gap-2">
+                  <HiHeart />
+                  <span>{Fw.Nums.beautify(post._count.hearts)}</span>
+                </div>
+              </Badge>
+              <Badge color="blue" radius="sm" className="px-1.5" size="lg">
+                <div className="flex items-center gap-2">
+                  <HiShare />
+                  <span>{Fw.Nums.beautify(post._count.shares)}</span>
+                </div>
+              </Badge>
+            </div>
           </div>
         </div>
         <div className="flex flex-col flex-shrink-0 items-center gap-2">
