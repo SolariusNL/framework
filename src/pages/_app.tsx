@@ -6,7 +6,7 @@ import { UserInformationWrapper } from "@/contexts/UserInformationDialog";
 import { store } from "@/reducers/store";
 import useAmoled from "@/stores/useAmoled";
 import useFastFlags, { fetchFlags } from "@/stores/useFastFlags";
-import useReportAbuse from "@/stores/useReportAbuse";
+import useReportAbuse, { ReportAbuseProps } from "@/stores/useReportAbuse";
 import "@/styles/fonts.css";
 import "@/styles/framework.css";
 import "@/styles/tw.css";
@@ -267,7 +267,7 @@ const Framework: FC<FrameworkProps> & {
                           <CookieAcknowledgementDialog />
                           <ResetEmailModal />
                           <ResetPasswordModal />
-                          <ReportAbuseModal {...reportProps} />
+                          <ReportAbuseModal {...reportProps as ReportAbuseProps} />
                           <Component {...pageProps} key={router.asPath} />
                           {router.query.flow && <ActiveFlow />}
                         </FrameworkUserProvider>
