@@ -1,5 +1,4 @@
 import PlaceholderGameResource from "@/components/placeholder-game-resource";
-import ReportUser from "@/components/report-user";
 import getMediaUrl from "@/util/get-media";
 import { Game } from "@/util/prisma-types";
 import { getRatingColor } from "@/util/universe/ratings";
@@ -17,7 +16,6 @@ import {
 } from "@mantine/core";
 import { randomId } from "@mantine/hooks";
 import Link from "next/link";
-import { useState } from "react";
 import { HiThumbUp, HiUsers } from "react-icons/hi";
 
 interface GameCardProps {
@@ -39,7 +37,6 @@ export const gradientPairs: Array<[MantineColor, MantineColor]> = [
 
 const GameCard = ({ game, onClick }: GameCardProps) => {
   const theme = useMantineTheme();
-  const [reportOpen, setReportOpen] = useState(false);
 
   const CardItem = (
     <Card
@@ -126,11 +123,6 @@ const GameCard = ({ game, onClick }: GameCardProps) => {
 
   return (
     <>
-      <ReportUser
-        user={game.author}
-        opened={reportOpen}
-        setOpened={setReportOpen}
-      />
       {onClick ? (
         <div onClick={onClick}>{CardItem}</div>
       ) : (

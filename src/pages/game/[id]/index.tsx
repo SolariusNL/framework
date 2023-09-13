@@ -7,7 +7,6 @@ import InlineError from "@/components/inline-error";
 import Launching from "@/components/launching";
 import Owner from "@/components/owner";
 import PlaceholderGameResource from "@/components/placeholder-game-resource";
-import ReportUser from "@/components/report-user";
 import ShadedButton from "@/components/shaded-button";
 import ShadedCard from "@/components/shaded-card";
 import TabNav from "@/components/tab-nav";
@@ -18,6 +17,7 @@ import InfoTab from "@/components/view-game/info";
 import Store from "@/components/view-game/store";
 import UpdateLogTab from "@/components/view-game/update-log";
 import Votes from "@/components/view-game/votes";
+import useReportAbuse from "@/stores/useReportAbuse";
 import IResponseBase from "@/types/api/IResponseBase";
 import authorizedRoute from "@/util/auth";
 import clsx from "@/util/clsx";
@@ -93,7 +93,7 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
   const [game, setGame] = useState(gameData);
   const [launchingOpen, setLaunchingOpen] = useState(false);
   const [similarGames, setSimilarGames] = useState<Game[] | null>(null);
-  const [report, setReport] = useState(false);
+  const { setOpened: setReportOpened } = useReportAbuse();
   const [following, setFollowing] = useState<boolean | null>(null);
   const mobile = useMediaQuery("768");
   const router = useRouter();
@@ -165,12 +165,6 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
 
   return (
     <>
-      <ReportUser
-        user={game.author as NonUser}
-        game={game.id}
-        opened={report}
-        setOpened={setReport}
-      />
       <NextSeo
         title={String(game.name)}
         description={String(game.description.replace(/(<([^>]+)>)/gi, ""))}
@@ -272,7 +266,7 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                           <Menu.Item
                             disabled={game.author.id === user.id}
                             onClick={() => {
-                              setReport(true);
+                              setReportOpened(true, game.author);
                             }}
                             icon={<HiFlag />}
                             color="red"

@@ -1,6 +1,6 @@
+import useReportAbuse, { ReportAbuseProps } from "@/stores/useReportAbuse";
 import IResponseBase from "@/types/api/IResponseBase";
 import fetchJson from "@/util/fetch";
-import { NonUser } from "@/util/prisma-types";
 import {
   ActionIcon,
   Button,
@@ -14,17 +14,11 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
-import React from "react";
+import React, { FC } from "react";
 import { HiCheckCircle, HiOutlineUpload, HiXCircle } from "react-icons/hi";
 import Descriptive from "./descriptive";
 import InlineError from "./inline-error";
 
-type ReportUserProps = {
-  user: NonUser;
-  opened: boolean;
-  setOpened: (opened: boolean) => void;
-  game?: number;
-};
 type ReportForm = {
   reason: ReportCategory;
   description: string;
@@ -53,7 +47,8 @@ export const category = {
   Other: "other",
 } as const;
 
-const ReportUser = ({ user, opened, setOpened, game }: ReportUserProps) => {
+const ReportUser: FC<ReportAbuseProps> = ({ user }) => {
+  const { opened, setOpened, props } = useReportAbuse();
   const [loading, setLoading] = React.useState(false);
 
   const form = useForm<ReportForm>({
@@ -75,7 +70,7 @@ const ReportUser = ({ user, opened, setOpened, game }: ReportUserProps) => {
   const handleReport = async (values: ReportForm) => {
     setLoading(true);
 
-    await fetchJson<IResponseBase>(`/api/abuse/${user.id}/new`, {
+    await fetchJson<IResponseBase>(`/api/abuse/${props?.user.id}/new`, {
       method: "POST",
       body: values,
       auth: true,
@@ -84,7 +79,8 @@ const ReportUser = ({ user, opened, setOpened, game }: ReportUserProps) => {
         if (res.success) {
           showNotification({
             title: "Report Successful",
-            message: `You have reported ${user.username}`,
+            message:
+              "Thank you for your report against " + props?.user.username + "!",
             icon: <HiCheckCircle />,
           });
           setOpened(false);
@@ -107,7 +103,7 @@ const ReportUser = ({ user, opened, setOpened, game }: ReportUserProps) => {
     <Modal
       opened={opened}
       onClose={() => setOpened(false)}
-      title={`Report ${user.username} for abuse`}
+      title={`Report ${props?.user.username} for abuse`}
       className={useMantineColorScheme().colorScheme}
     >
       <Text size="sm" color="dimmed" className="mb-6">
@@ -206,7 +202,7 @@ const ReportUser = ({ user, opened, setOpened, game }: ReportUserProps) => {
             leftIcon={<HiOutlineUpload />}
             type="submit"
           >
-            Report {user.username}
+            Report {props?.user.username}
           </Button>
         </div>
       </form>

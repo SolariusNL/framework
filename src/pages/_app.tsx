@@ -61,7 +61,7 @@ const ResetPasswordModal = dynamic(
     ssr: false,
   }
 );
-const ReportAbuseModal = dynamic(() => import("@/components/report-abuse"), {
+const ReportAbuseModal = dynamic(() => import("@/components/report-user"), {
   ssr: false,
 });
 const ActiveFlow = dynamic(() => import("@/components/active-flow"), {
@@ -267,7 +267,7 @@ const Framework: FC<FrameworkProps> & {
                           <CookieAcknowledgementDialog />
                           <ResetEmailModal />
                           <ResetPasswordModal />
-                          <ReportAbuseModal {...reportProps!} />
+                          <ReportAbuseModal {...reportProps} />
                           <Component {...pageProps} key={router.asPath} />
                           {router.query.flow && <ActiveFlow />}
                         </FrameworkUserProvider>

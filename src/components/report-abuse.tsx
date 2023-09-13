@@ -1,8 +1,6 @@
-import Owner from "@/components/owner";
 import useReportAbuse, { ReportAbuseProps } from "@/stores/useReportAbuse";
 import IResponseBase from "@/types/api/IResponseBase";
 import fetchJson from "@/util/fetch";
-import { Fw } from "@/util/fw";
 import { reportCategories } from "@/util/types";
 import {
   Button,
@@ -41,12 +39,6 @@ const ReportAbusePrompt: FC<ReportAbusePromptProps> = (props) => {
   const submitForm = async (values: ReportAbuseForm) => {
     await fetchJson<IResponseBase>("/api/abuse/new", {
       method: "POST",
-      body: {
-        category: values.category,
-        contentId: props.contentId,
-        contentType: props.contentType,
-        description: values.description,
-      },
       auth: true,
     }).then((res) => {
       if (res.success) {
@@ -84,16 +76,15 @@ const ReportAbusePrompt: FC<ReportAbusePromptProps> = (props) => {
           <Text size="sm" mb="sm" color="dimmed" weight={500}>
             Associated user
           </Text>
-          <Owner user={props.author} />
         </div>
         <div className="flex-1">
           <Text size="sm" mb="sm" color="dimmed" weight={500}>
             Content type
           </Text>
-          <Text>{Fw.Strings.pascalToNormal(props.contentType)}</Text>
+          <Text>Deprecated</Text>
           <Text color="dimmed" size="sm" className="flex items-center gap-2">
             <HiOutlineTag />
-            <span>{props.contentId.split("-")[0]}</span>
+            <span>Deprecated</span>
           </Text>
         </div>
       </div>

@@ -1,5 +1,5 @@
-import ReportUser from "@/components/report-user";
 import { useFrameworkUser } from "@/contexts/FrameworkUser";
+import useReportAbuse from "@/stores/useReportAbuse";
 import getMediaUrl from "@/util/get-media";
 import { NonUser } from "@/util/prisma-types";
 import {
@@ -22,16 +22,11 @@ interface UserContextProps {
 }
 
 const UserContext = ({ user, children, customHref }: UserContextProps) => {
-  const [reportOpened, setReportOpened] = React.useState(false);
   const currentUser = useFrameworkUser();
+  const { setOpened: setReportOpened } = useReportAbuse();
 
   return (
     <>
-      <ReportUser
-        user={user}
-        opened={reportOpened}
-        setOpened={setReportOpened}
-      />
       <HoverCard
         width={320}
         shadow="md"
@@ -70,7 +65,7 @@ const UserContext = ({ user, children, customHref }: UserContextProps) => {
             </Group>
             <ActionIcon
               color="red"
-              onClick={() => setReportOpened(true)}
+              onClick={() => setReportOpened(true, user)}
               variant="light"
               disabled={currentUser?.id === user.id}
             >

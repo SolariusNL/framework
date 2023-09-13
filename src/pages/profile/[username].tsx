@@ -61,6 +61,7 @@ import {
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import { GetUserInventoryAvailabilityResponse } from "../api/users/[[...params]]";
+import useReportAbuse from "@/stores/useReportAbuse";
 
 interface ProfileProps {
   user: User;
@@ -73,7 +74,7 @@ const Profile: NextPage<ProfileProps> = ({
   profile,
   following,
 }) => {
-  const [reportOpened, setReportOpened] = React.useState(false);
+  const { setOpened: setReportOpened } = useReportAbuse();
   const { setOpen, setUser, setDefaultTab } = useUserInformationDialog();
   const [viewing, setViewing] = React.useState(profile);
   const [viewingTime, setViewingTime] = React.useState<string>();
@@ -132,7 +133,7 @@ const Profile: NextPage<ProfileProps> = ({
     <Button
       leftIcon={<HiFlag />}
       color="red"
-      onClick={() => setReportOpened(true)}
+      onClick={() => setReportOpened(true, viewing)}
     >
       Report
     </Button>
@@ -200,11 +201,6 @@ const Profile: NextPage<ProfileProps> = ({
 
   return (
     <>
-      <ReportUser
-        user={viewing}
-        opened={reportOpened}
-        setOpened={setReportOpened}
-      />
       <NextSeo
         title={String(viewing.username)}
         description={Fw.Strings.limitLength(viewing.bio, 120)}

@@ -3,14 +3,12 @@ import { Reportable } from "@/util/types";
 import create from "zustand";
 
 export type ReportAbuseProps = {
-  contentType: Reportable;
-  author: NonUser;
-  contentId: string;
+  user: NonUser;
 };
 
 type ReportAbuseStore = {
   opened: boolean;
-  setOpened: (opened: boolean) => void;
+  setOpened: (opened: boolean, user?: NonUser) => void;
   open: (props: ReportAbuseProps) => void;
   props: ReportAbuseProps | undefined;
 };
@@ -23,14 +21,11 @@ const useReportAbuse = create<ReportAbuseStore>((set) => ({
     set({ props });
   },
   props: {
-    contentType: "catalog-item",
-    contentId: "",
-    author: {
+    user: {
       id: 0,
       username: "",
       alias: "",
-      avatarUri: "",
-    } as NonUser,
+    } as NonUser
   },
 }));
 

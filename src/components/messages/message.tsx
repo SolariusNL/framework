@@ -3,6 +3,7 @@ import ShadedCard from "@/components/shaded-card";
 import Stateful from "@/components/stateful";
 import UserContext from "@/components/user-context";
 import { useFrameworkUser } from "@/contexts/FrameworkUser";
+import useReportAbuse from "@/stores/useReportAbuse";
 import getMediaUrl from "@/util/get-media";
 import { Message } from "@/util/prisma-types";
 import { getRelativeTime } from "@/util/relative-time";
@@ -28,7 +29,7 @@ interface MessageProps {
 }
 
 const Message: React.FC<MessageProps> = ({ message, setMessages }) => {
-  const [reportOpen, setReportOpen] = React.useState(false);
+  const { setOpened: setReportOpened } = useReportAbuse();
   const user = useFrameworkUser()!;
 
   const read = async () => {
@@ -52,11 +53,6 @@ const Message: React.FC<MessageProps> = ({ message, setMessages }) => {
 
   return (
     <>
-      <ReportUser
-        user={message.sender}
-        opened={reportOpen}
-        setOpened={setReportOpen}
-      />
       <Stateful>
         {(opened, setOpened) => (
           <>
@@ -139,7 +135,7 @@ const Message: React.FC<MessageProps> = ({ message, setMessages }) => {
                   color="red"
                   leftIcon={<HiFlag />}
                   onClick={() => {
-                    setReportOpen(true);
+                    setReportOpened(true, message.sender);
                     setOpened(false);
                   }}
                 >

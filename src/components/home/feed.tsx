@@ -4,10 +4,10 @@ import Markdown, { ToolbarItem } from "@/components/markdown";
 import ModernEmptyState from "@/components/modern-empty-state";
 import sanitizeInappropriateContent from "@/components/reconsideration-prompt";
 import RenderMarkdown from "@/components/render-markdown";
-import ReportUser from "@/components/report-user";
 import ShadedCard from "@/components/shaded-card";
 import { useFrameworkUser } from "@/contexts/FrameworkUser";
 import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
+import useReportAbuse from "@/stores/useReportAbuse";
 import IResponseBase from "@/types/api/IResponseBase";
 import fetchJson from "@/util/fetch";
 import { Fw } from "@/util/fw";
@@ -66,8 +66,7 @@ const FeedWidget: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const user = useFrameworkUser()!;
   const [statusPosts, setStatusPosts] = useState<StatusPost[]>([]);
-  const [reportOpened, setReportOpened] = useState(false);
-  const [reportUser, setReportUser] = useState<NonUser>();
+  const { setOpened: setReportOpened } = useReportAbuse();
   const [newPost, setNewPost] = useState(false);
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
@@ -132,11 +131,6 @@ const FeedWidget: React.FC = () => {
 
   return (
     <>
-      <ReportUser
-        user={(reportOpened ? reportUser : user) as NonUser}
-        opened={reportOpened}
-        setOpened={setReportOpened}
-      />
       <Modal
         title="New post"
         opened={newPost}
@@ -229,8 +223,7 @@ const FeedWidget: React.FC = () => {
                               color="red"
                               icon={<HiFlag />}
                               onClick={() => {
-                                setReportUser(status.user);
-                                setReportOpened(true);
+                                setReportOpened(true, status.user);
                               }}
                             >
                               Report

@@ -1,11 +1,11 @@
 import ContextMenu from "@/components/context-menu";
 import LoadingIndicator from "@/components/loading-indicator";
 import ModernEmptyState from "@/components/modern-empty-state";
-import ReportUser from "@/components/report-user";
 import ShadedButton from "@/components/shaded-button";
 import ShadedCard from "@/components/shaded-card";
 import Verified from "@/components/verified";
 import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
+import useReportAbuse from "@/stores/useReportAbuse";
 import { Fw } from "@/util/fw";
 import getMediaUrl from "@/util/get-media";
 import { NonUser } from "@/util/prisma-types";
@@ -78,8 +78,8 @@ export const Friend: React.FC<{
   const { user } = useAuthorizedUserStore();
   const { colors } = useMantineTheme();
   const router = useRouter();
-  const [reportOpened, setReportOpened] = useState(false);
   const { copy } = useClipboard();
+  const { setOpened: setReportOpened } = useReportAbuse();
 
   if (friend.username.startsWith("[Deleted")) {
     return <></>;
@@ -87,11 +87,6 @@ export const Friend: React.FC<{
 
   return (
     <>
-      <ReportUser
-        opened={reportOpened}
-        setOpened={setReportOpened}
-        user={friend}
-      />
       <ContextMenu
         width={dropdownWidth || 160}
         dropdown={
@@ -105,7 +100,7 @@ export const Friend: React.FC<{
             <Menu.Item
               icon={<HiFlag />}
               color="red"
-              onClick={() => setReportOpened(true)}
+              onClick={() => setReportOpened(true, friend)}
               disabled={user?.id === friend.id}
             >
               Report

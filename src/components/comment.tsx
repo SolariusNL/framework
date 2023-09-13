@@ -1,7 +1,7 @@
-import ReportUser from "@/components/report-user";
 import ShadedCard from "@/components/shaded-card";
 import UserContext from "@/components/user-context";
 import { useFrameworkUser } from "@/contexts/FrameworkUser";
+import useReportAbuse from "@/stores/useReportAbuse";
 import getMediaUrl from "@/util/get-media";
 import { NonUser } from "@/util/prisma-types";
 import { getRelativeTime } from "@/util/relative-time";
@@ -69,12 +69,11 @@ const Comment = ({
   const currentUser = useFrameworkUser();
   const [editing, setEditing] = useState(false);
   const [msg, setMsg] = useState(body);
-  const [opened, setOpened] = useState(false);
   const [oldMsg, setOldMsg] = useState(body);
+  const { setOpened: openReport } = useReportAbuse();
 
   return (
     <>
-      <ReportUser user={user} opened={opened} setOpened={setOpened} />
       <ShadedCard className={classes.comment}>
         <div
           style={{
@@ -180,7 +179,7 @@ const Comment = ({
                       <Menu.Item
                         icon={<HiFlag />}
                         color="red"
-                        onClick={() => setOpened(true)}
+                        onClick={() => openReport(true, user)}
                       >
                         Report
                       </Menu.Item>
