@@ -1,5 +1,4 @@
 import { NonUser } from "@/util/prisma-types";
-import { Reportable } from "@/util/types";
 import create from "zustand";
 
 export type ReportAbuseProps = {
@@ -15,7 +14,15 @@ type ReportAbuseStore = {
 
 const useReportAbuse = create<ReportAbuseStore>((set) => ({
   opened: false,
-  setOpened: (opened) => set({ opened }),
+  setOpened: (opened, user) => {
+    set({ opened });
+    if (user)
+      set({
+        props: {
+          user: user as NonUser,
+        },
+      });
+  },
   open: (props) => {
     set({ opened: true });
     set({ props });
@@ -25,7 +32,7 @@ const useReportAbuse = create<ReportAbuseStore>((set) => ({
       id: 0,
       username: "",
       alias: "",
-    } as NonUser
+    } as NonUser,
   },
 }));
 

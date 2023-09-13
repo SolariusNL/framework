@@ -1,6 +1,7 @@
 import useReportAbuse, { ReportAbuseProps } from "@/stores/useReportAbuse";
 import IResponseBase from "@/types/api/IResponseBase";
 import fetchJson from "@/util/fetch";
+import { NonUser } from "@/util/prisma-types";
 import {
   ActionIcon,
   Button,
