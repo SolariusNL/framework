@@ -1592,16 +1592,14 @@ const Chat: React.FC = () => {
                                 ))}
                               {conversations.length === 0 ? (
                                 <>
-                                  <div className="flex justify-center">
-                                    <div className="flex items-center gap-2 p-8 pb-0">
-                                      <HiXCircle
-                                        size={12}
-                                        className="flex-shrink-0"
-                                      />
-                                      <Text size="sm" color="dimmed">
-                                        No conversations yet.
-                                      </Text>
-                                    </div>
+                                  <div className="flex justify-center px-8 mt-4">
+                                    <InlineError
+                                      variant="info"
+                                      title="It's quiet here"
+                                    >
+                                      You don&apos;t have any conversations yet.
+                                      Create one!
+                                    </InlineError>
                                   </div>
                                   <div className="flex justify-center p-8 pt-0">
                                     <Button

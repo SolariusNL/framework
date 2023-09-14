@@ -20,6 +20,7 @@ import {
   UnstyledButton,
   useMantineColorScheme,
 } from "@mantine/core";
+import { openConfirmModal } from "@mantine/modals";
 import { getCookie } from "cookies-next";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -256,7 +257,31 @@ const UserMenu = ({
             color="red"
             icon={<HiOutlineLogout />}
             onClick={async () =>
-              await logout().then(() => router.push("/login"))
+              openConfirmModal({
+                title: "Confirmation",
+                children: (
+                  <Text size="sm" color="dimmed">
+                    Are you sure you want to logout of your account?
+                  </Text>
+                ),
+                labels: {
+                  confirm: "Logout",
+                  cancel: "Nevermind",
+                },
+                confirmProps: {
+                  variant: "light",
+                  color: "red",
+                  radius: "xl",
+                },
+                cancelProps: {
+                  variant: "light",
+                  radius: "xl",
+                  color: "gray",
+                },
+                async onConfirm() {
+                  await logout().then(() => router.push("/login"));
+                },
+              })
             }
           >
             Logout
