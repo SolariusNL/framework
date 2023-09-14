@@ -2,7 +2,6 @@ import ModernEmptyState from "@/components/modern-empty-state";
 import SettingsTab from "@/components/settings/settings-tab";
 import SideBySide from "@/components/settings/side-by-side";
 import ShadedCard from "@/components/shaded-card";
-import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
 import logout from "@/util/api/logout";
 import clsx from "@/util/clsx";
 import { User } from "@/util/prisma-types";
@@ -50,6 +49,7 @@ const SessionsTab: React.FC<SessionsTabProps> = ({ user }) => {
   const router = useRouter();
   const [page, setPage] = useState(1);
   const [filter, setFilter] = useState<Filter>("all");
+  const currentSessionToken = getCookie(".frameworksession");
 
   const getOS = (os: string) =>
     getOperatingSystemDevice(getOperatingSystemEnumFromString(os));
@@ -60,6 +60,15 @@ const SessionsTab: React.FC<SessionsTabProps> = ({ user }) => {
     if (filter === "mobile") return getOS(session.os) === Device.Mobile;
     if (filter === "staff") return session.impersonation;
     if (filter === "oauth") return session.oauth !== null;
+  };
+  const sortFn = (a: SessionWithOAuth, b: SessionWithOAuth) => {
+    if (a.token === currentSessionToken) {
+      return -1;
+    } else if (b.token === currentSessionToken) {
+      return 1;
+    } else {
+      return 0;
+    }
   };
 
   const fetchSessions = async () => {
@@ -120,14 +129,26 @@ const SessionsTab: React.FC<SessionsTabProps> = ({ user }) => {
                           router.push("/");
                         },
                         closeOnConfirm: true,
-                        confirmProps: { color: "red", leftIcon: <HiCheck /> },
+                        confirmProps: {
+                          color: "red",
+                          leftIcon: <HiCheck />,
+                          radius: "xl",
+                          variant: "light",
+                        },
+                        cancelProps: {
+                          color: "gray",
+                          radius: "xl",
+                          variant: "light",
+                        },
                       });
                     }}
                     fullWidth
+                    radius="xl"
+                    variant="light"
                   >
                     Log out of all devices
                   </Button>
-                  <Text color="dimmed" mt={8}>
+                  <Text color="dimmed" mt={8} size="sm">
                     This will log you out of all devices, including this one.
                   </Text>
                 </>
@@ -141,9 +162,6 @@ const SessionsTab: React.FC<SessionsTabProps> = ({ user }) => {
                 page={page}
                 onChange={setPage}
                 radius="md"
-                classNames={{
-                  item: BLACK.input,
-                }}
               />
               <Select
                 icon={<HiFilter />}
@@ -157,23 +175,17 @@ const SessionsTab: React.FC<SessionsTabProps> = ({ user }) => {
                   { label: "Staff sessions", value: "staff" },
                   { label: "OAuth applications", value: "oauth" },
                 ]}
-                classNames={BLACK}
               />
             </div>
             {sessions.filter(filterFn).length > 0 ? (
               sessions
                 .filter(filterFn)
+                .sort(sortFn)
                 .slice((page - 1) * 5, page * 5)
                 .map((session) => (
-                  <ShadedCard
+                  <div
                     key={session.id}
-                    className="flex items-center justify-between overflow-visible"
-                    sx={(theme) => ({
-                      backgroundColor:
-                        theme.colorScheme === "dark"
-                          ? theme.colors.dark[8]
-                          : theme.colors.gray[1],
-                    })}
+                    className="flex items-center p-2 justify-between overflow-visible"
                   >
                     <div className="flex flex-col md:flex-row flex-shrink-0">
                       <Badge
@@ -266,7 +278,7 @@ const SessionsTab: React.FC<SessionsTabProps> = ({ user }) => {
                         }
                       />
                     </Tooltip>
-                  </ShadedCard>
+                  </div>
                 ))
             ) : (
               <ShadedCard className="flex items-center justify-center">
