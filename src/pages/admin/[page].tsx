@@ -1,3 +1,4 @@
+import Board from "@/components/admin/employee/board";
 import Tasks from "@/components/admin/employee/tasks";
 import Activity from "@/components/admin/pages/activity";
 import Articles from "@/components/admin/pages/articles";
@@ -65,6 +66,7 @@ import {
   HiIdentification,
   HiInboxIn,
   HiKey,
+  HiOutlineClipboardCheck,
   HiServer,
   HiShieldCheck,
   HiTable,
@@ -276,6 +278,14 @@ const data = [
     href: "/admin/cosmic",
     render: <Cosmic />,
     subtitle: "Manage Cosmic servers through the Nucleus API",
+  },
+  {
+    label: "Boards",
+    group: "Company",
+    icon: HiOutlineClipboardCheck,
+    href: "/admin/boards",
+    render: <Board />,
+    subtitle: "See news from HR",
   },
   {
     label: "ID",
