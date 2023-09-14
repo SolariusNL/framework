@@ -19,7 +19,7 @@ const posts = [
       id: 1,
       username: "Framework",
       alias: "Framework",
-      avatarUri: "https://media.solarius.me/avatars/Framework.webp",
+      avatarUri: "/avatars/Framework.webp",
       verified: true,
       _count: {
         followers: 0,
