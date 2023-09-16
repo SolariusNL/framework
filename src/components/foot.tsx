@@ -162,7 +162,7 @@ const Footer = () => {
     <footer className={clsx(classes.footer, "relative")}>
       <Container className={classes.inner}>
         <div className={classes.logo}>
-          <SoodamLogo height={64} width={64} />
+          <SoodamLogo height={30} />
           <Text
             size="xs"
             color="dimmed"
