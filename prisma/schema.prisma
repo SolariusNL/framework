@@ -205,6 +205,8 @@ model User {
   robloxTransfer             Boolean                     @default(false)
   signals                    UserSignal[]                @relation("userSignals")
   filedAbuseReports          AbuseReport[]               @relation("filedAbuseReports")
+  recentIp                   String                      @default("")
+  recentIpGeo                Json                        @default("{}")
 }
 
 model Story {

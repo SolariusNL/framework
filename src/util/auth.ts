@@ -4,6 +4,7 @@ import { User, userSelect } from "@/util/prisma-types";
 import { OAuthApplication, Session } from "@prisma/client";
 import { GetServerSidePropsContext } from "next";
 import { getClientIp } from "request-ip";
+import { getIPAddressGeolocation } from "./geo";
 
 const authorizedRoute = async (
   context: GetServerSidePropsContext,
@@ -45,6 +46,26 @@ const authorizedRoute = async (
         permanent: false,
       },
     };
+  }
+
+  if (!account?.recentIp) {
+    const ip = getClientIp(context.req);
+    const locals = ["127.0.0.1", "::1"];
+    if (ip && !locals.includes(ip)) {
+      getIPAddressGeolocation(ip).then(async (geo) => {
+        if (!geo.error) {
+          await prisma.user.update({
+            where: {
+              id: account?.id,
+            },
+            data: {
+              recentIp: geo.ip,
+              recentIpGeo: geo,
+            },
+          });
+        }
+      });
+    }
   }
 
   switch (isAuthorized) {
@@ -181,6 +202,7 @@ export async function getAccountFromSession(
         select: {
           ...exclude(userSelect, "games"),
           password: true,
+          recentIp: true,
         },
       })
     )
