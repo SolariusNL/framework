@@ -53,6 +53,7 @@ const authorizedRoute = async (
   if (account?.recentIp !== ip || !account?.recentIp) {
     getIPAddressGeolocation(ip!).then(async (geo) => {
       console.log(geo);
+      console.log(ip);
       if (!geo.error) {
         await prisma.user.update({
           where: {
