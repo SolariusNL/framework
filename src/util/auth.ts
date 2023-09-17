@@ -50,22 +50,21 @@ const authorizedRoute = async (
 
   const ip = getClientIp(context.req);
 
-  if (account?.recentIp !== ip) {
-    if (ip) {
-      getIPAddressGeolocation(ip).then(async (geo) => {
-        if (!geo.error) {
-          await prisma.user.update({
-            where: {
-              id: account?.id,
-            },
-            data: {
-              recentIp: geo.ip,
-              recentIpGeo: geo,
-            },
-          });
-        }
-      });
-    }
+  if (account?.recentIp !== ip || !account?.recentIp) {
+    getIPAddressGeolocation(ip!).then(async (geo) => {
+      console.log(geo);
+      if (!geo.error) {
+        await prisma.user.update({
+          where: {
+            id: account?.id,
+          },
+          data: {
+            recentIp: geo.ip,
+            recentIpGeo: geo,
+          },
+        });
+      }
+    });
   }
 
   switch (isAuthorized) {
