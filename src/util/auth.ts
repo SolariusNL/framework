@@ -6,6 +6,8 @@ import { GetServerSidePropsContext } from "next";
 import { getClientIp } from "request-ip";
 import { getIPAddressGeolocation } from "./geo";
 
+const locals = ["127.0.0.1", "::1"];
+
 const authorizedRoute = async (
   context: GetServerSidePropsContext,
   redirectIfNotAuthorized: boolean = true,
@@ -48,9 +50,9 @@ const authorizedRoute = async (
     };
   }
 
-  if (!account?.recentIp) {
-    const ip = getClientIp(context.req);
-    const locals = ["127.0.0.1", "::1"];
+  const ip = getClientIp(context.req);
+
+  if (account?.recentIp !== ip) {
     if (ip && !locals.includes(ip)) {
       getIPAddressGeolocation(ip).then(async (geo) => {
         if (!geo.error) {
