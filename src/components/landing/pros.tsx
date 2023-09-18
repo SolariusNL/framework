@@ -1,3 +1,4 @@
+import clsx from "@/util/clsx";
 import {
   Col,
   createStyles,
@@ -8,7 +9,6 @@ import {
   Title,
 } from "@mantine/core";
 import { HiEyeOff, HiLockOpen, HiServer, HiShieldCheck } from "react-icons/hi";
-import clsx from "@/util/clsx";
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -31,7 +31,7 @@ const features = [
     icon: HiLockOpen,
     title: "Free and open source",
     description:
-      "Framework is free (as in freedom and as in free beer) and open source, licensed under GNU AGPLv3. You can view the source code on our GitLab instance.",
+      "Framework is free (as in freedom and as in free beer) and open source, licensed under GNU AGPLv3. You can view the source code on our GitHub profile.",
     gradient: { from: "pink", to: "grape" },
   },
   {

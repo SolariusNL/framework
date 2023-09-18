@@ -1,6 +1,6 @@
+import clsx from "@/util/clsx";
 import { Col, createStyles, Grid, Text, Title } from "@mantine/core";
 import { HiCheckCircle } from "react-icons/hi";
-import clsx from "@/util/clsx";
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -28,7 +28,7 @@ const features = [
   {
     title: "Free and open source",
     description:
-      "Framework is free (as in freedom and as in free beer) and open source, licensed under GNU AGPLv3. You can view the source code on our GitLab instance.",
+      "Framework is free (as in freedom and as in free beer) and open source, licensed under GNU AGPLv3. You can view the source code on our GitHub repository.",
   },
   {
     title: "Privacy first",

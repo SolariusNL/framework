@@ -370,15 +370,15 @@ const Framework = ({
                     </Menu.Item>
                     <Menu.Divider />
                     <Link
-                      href="https://invent.solarius.me/Soodam.re/framework"
+                      href="https://github.com/SolariusNL/framework"
                       passHref
                     >
                       <Menu.Item icon={<HiExternalLink />}>
-                        View on GitLab
+                        View on GitHub
                       </Menu.Item>
                     </Link>
                     <Link
-                      href="https://invent.solarius.me/Soodam.re/framework/-/issues/new"
+                      href="https://github.com/SolariusNL/framework/issues/new"
                       passHref
                     >
                       <Menu.Item icon={<HiExternalLink />}>
