@@ -39,6 +39,7 @@ import {
   MantineColor,
   Modal,
   NumberInput,
+  Skeleton,
   Text,
   Title,
   Tooltip,
@@ -48,6 +49,7 @@ import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import { Prisma, Sound } from "@prisma/client";
 import { GetServerSidePropsContext } from "next";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -66,6 +68,16 @@ import {
   HiStar,
   HiXCircle,
 } from "react-icons/hi";
+
+const SoundLicenseDetails = dynamic(
+  () => import("@/components/sound-license-details"),
+  {
+    ssr: false,
+    loading() {
+      return <Skeleton height={180} className="mt-4" />;
+    },
+  }
+);
 
 type AssetViewProps = {
   asset: AssetFrontend;
@@ -479,6 +491,11 @@ const AssetView: React.FC<AssetViewProps> = ({
                   {stargazing ? <HiStar /> : <HiOutlineStar />}
                 </ActionIcon>
               </div>
+              {type === "sound" && (asset as unknown as Sound).licensedToId && (
+                <SoundLicenseDetails
+                  licensee={(asset as unknown as Sound).licensedToId!}
+                />
+              )}
             </div>
 
             <div className="w-full">

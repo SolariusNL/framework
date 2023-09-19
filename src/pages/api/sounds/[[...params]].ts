@@ -7,13 +7,22 @@ import { AssetFrontend } from "@/util/types";
 import {
   Body,
   Get,
+  Param,
   Post,
   createHandler,
 } from "@storyofams/next-api-decorators";
 import { z } from "zod";
 
+type LicenseHolderProperty = "name" | "location" | "id";
+export type LicenseHolderDetails = Record<LicenseHolderProperty, string>;
 export type GetSoundsResponse = IResponseBase<{
   sounds: AssetFrontend[];
+}>;
+export type GetSoundLicenseHolderNamesResponse = IResponseBase<{
+  licenseHolderNames: LicenseHolderDetails[];
+}>;
+export type GetSoundLicenseHolderResponse = IResponseBase<{
+  licenseHolder: LicenseHolderDetails;
 }>;
 
 const uploadSoundFieldsSchema = z
@@ -28,6 +37,8 @@ const uploadSoundSchema = z.object({
   description: z.string().min(1).max(500),
   duration: z.number().int().min(1),
   fields: uploadSoundFieldsSchema.optional(),
+  licensed: z.boolean().optional(),
+  licenseHolderId: z.string().uuid().optional(),
 });
 
 class SoundRouter {
@@ -37,7 +48,7 @@ class SoundRouter {
     @Body() body: z.infer<typeof uploadSoundSchema>,
     @Account() user: User
   ) {
-    const { name, description, duration, fields } =
+    const { name, description, duration, fields, licenseHolderId, licensed } =
       uploadSoundSchema.parse(body);
 
     const minutes = Math.floor(duration / 60);
@@ -63,18 +74,22 @@ class SoundRouter {
                 key: "Duration",
                 value: `${formattedMinutes}:${formattedSeconds}`,
               },
-              {
-                key: "Artist",
-                value: fields?.artist ?? "",
-              },
-              {
-                key: "Album",
-                value: fields?.album ?? "",
-              },
-              {
-                key: "Year",
-                value: fields?.year ?? "",
-              },
+              ...(fields
+                ? [
+                    {
+                      key: "Artist",
+                      value: fields.artist,
+                    },
+                    {
+                      key: "Album",
+                      value: fields.album,
+                    },
+                    {
+                      key: "Year",
+                      value: fields.year,
+                    },
+                  ]
+                : []),
             ],
           },
         },
@@ -88,6 +103,15 @@ class SoundRouter {
             },
           },
         },
+        ...(licensed
+          ? {
+              licensedTo: {
+                connect: {
+                  id: licenseHolderId,
+                },
+              },
+            }
+          : {}),
       },
     });
 
@@ -113,6 +137,51 @@ class SoundRouter {
       success: true,
       data: {
         sounds,
+      },
+    };
+  }
+
+  @Get("/licenses/holders")
+  @Authorized()
+  public async getSoundLicenseHolderNames(@Account() user: User) {
+    const licenseHolderNames = await prisma.soundLicenseHolder.findMany({
+      select: {
+        name: true,
+        location: true,
+        id: true,
+      },
+    });
+
+    return <GetSoundLicenseHolderNamesResponse>{
+      success: true,
+      data: {
+        licenseHolderNames,
+      },
+    };
+  }
+
+  @Get("/licenses/holders/:id")
+  @Authorized()
+  public async getSoundLicenseHolder(@Param("id") id: string) {
+    const licenseHolder = await prisma.soundLicenseHolder.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!licenseHolder) {
+      return <GetSoundLicenseHolderResponse>{
+        success: false,
+        error: {
+          message: "License holder not found",
+        },
+      };
+    }
+
+    return <GetSoundLicenseHolderResponse>{
+      success: true,
+      data: {
+        licenseHolder,
       },
     };
   }

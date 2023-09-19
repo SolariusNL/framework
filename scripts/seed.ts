@@ -69,6 +69,71 @@ const stages = [
       logger().info("Fast flags seeded");
     },
   },
+  {
+    name: "seed-sound-licenses",
+    description: "Seed sound licenses",
+    run: true,
+    execute: async () => {
+      const commonLicenseHolders = [
+        {
+          name: "SM Entertainment",
+          location: "South Korea",
+        },
+        {
+          name: "JYP Entertainment",
+          location: "South Korea",
+        },
+        {
+          name: "YG Entertainment",
+          location: "South Korea",
+        },
+        {
+          name: "Kakao Corporation",
+          location: "South Korea",
+        },
+        {
+          name: "Sony Music Japan",
+          location: "Japan",
+        },
+        {
+          name: "Avex Group",
+          location: "Japan",
+        },
+        {
+          name: "Universal Music Group",
+          location: "United States",
+        },
+        {
+          name: "Warner Music Group",
+          location: "United States",
+        },
+        {
+          name: "Sony Music Entertainment",
+          location: "United States",
+        },
+      ];
+
+      for (const holder of commonLicenseHolders) {
+        await prisma.soundLicenseHolder
+          .findFirst({
+            where: {
+              name: holder.name,
+            },
+          })
+          .then(async (f) => {
+            if (!f) {
+              await prisma.soundLicenseHolder.create({
+                data: holder,
+              });
+
+              logger().info(`Created sound license holder ${holder.name}`);
+            }
+          });
+      }
+
+      logger().info("Sound licenses seeded");
+    },
+  },
 ];
 
 async function seedDatabase() {

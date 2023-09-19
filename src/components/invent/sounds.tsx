@@ -1,5 +1,9 @@
 import InventTab from "@/components/invent/invent";
-import { GetSoundsResponse } from "@/pages/api/sounds/[[...params]]";
+import {
+  GetSoundLicenseHolderNamesResponse,
+  GetSoundsResponse,
+  LicenseHolderDetails,
+} from "@/pages/api/sounds/[[...params]]";
 import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
 import IResponseBase from "@/types/api/IResponseBase";
 import fetchJson, { fetchAndSetData } from "@/util/fetch";
@@ -10,6 +14,7 @@ import {
   Checkbox,
   FileInput,
   Modal,
+  Select,
   Stack,
   Text,
   TextInput,
@@ -43,6 +48,7 @@ type Form = {
   description: string;
   audio: File | null;
   licensed: boolean;
+  licenseHolderId?: string;
   additionalFields?: {
     artist: string;
     album: string;
@@ -57,6 +63,10 @@ const Sounds = ({ user }: SoundsProps) => {
   const [automaticallyPopulateMusicInfo, setAutomaticallyPopulateMusicInfo] =
     useState(false);
   const [picture, setPicture] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [licenseHolders, setLicenseHolders] = useState<LicenseHolderDetails[]>(
+    []
+  );
   const form = useForm<Form>({
     initialValues: {
       name: "",
@@ -94,6 +104,8 @@ const Sounds = ({ user }: SoundsProps) => {
       </Text>
       <form
         onSubmit={form.onSubmit(async (values) => {
+          setLoading(true);
+
           const duration = await new Promise<number>((resolve) => {
             const audio = new Audio(URL.createObjectURL(values.audio as File));
             audio.addEventListener("loadedmetadata", () => {
@@ -114,6 +126,8 @@ const Sounds = ({ user }: SoundsProps) => {
               description: values.description,
               duration: Math.round(duration),
               fields: values.additionalFields,
+              licensed: values.licensed,
+              licenseHolderId: values.licenseHolderId,
             },
             auth: true,
           })
@@ -164,6 +178,10 @@ const Sounds = ({ user }: SoundsProps) => {
                 });
                 setOpened(false);
                 form.reset();
+                setPicture(null);
+                setAutomaticallyPopulateMusicInfo(false);
+                fetchSounds();
+                setLoading(false);
               });
             })
             .catch((err) => {
@@ -215,6 +233,8 @@ const Sounds = ({ user }: SoundsProps) => {
             onChange={(file) => {
               form.setFieldValue("audio", file);
               if (automaticallyPopulateMusicInfo) {
+                setLoading(true);
+                setPicture(null);
                 read(file, {
                   onSuccess: (tag) => {
                     const { artist, album, year, picture, title } = tag.tags;
@@ -243,6 +263,18 @@ const Sounds = ({ user }: SoundsProps) => {
                           (album ? ` From the album ${album}.` : "") +
                           (year ? ` Released in ${year}.` : "")
                       );
+
+                    setLoading(false);
+                  },
+                  onError: () => {
+                    setLoading(false);
+                    showNotification({
+                      title: "Failed to read metadata",
+                      message:
+                        "We were unable to read the metadata from your audio file.",
+                      color: "red",
+                      icon: <HiXCircle />,
+                    });
                   },
                 });
               }
@@ -265,13 +297,33 @@ const Sounds = ({ user }: SoundsProps) => {
               />
             </div>
           )}
+          <Checkbox
+            label="This sound is licensed by a company or individual"
+            className="mt-4 mb-2"
+            {...form.getInputProps("licensed", { type: "checkbox" })}
+          />
+          {form.values.licensed && (
+            <Select
+              label="License holder"
+              description="Select a license holder that has been approved for use on our platform. These license holders are authorized because we have acquired the rights to use their content."
+              data={licenseHolders.map((holder) => ({
+                value: holder.id,
+                label: holder.name,
+              }))}
+              required
+              classNames={BLACK}
+              placeholder="Select a license holder"
+              className="mb-4"
+              {...form.getInputProps("licenseHolderId")}
+            />
+          )}
           <div className="flex justify-between gap-4 items-center">
             <Checkbox
               label="Get track info"
               checked={automaticallyPopulateMusicInfo}
-              onChange={(event) => {
-                setAutomaticallyPopulateMusicInfo(event.currentTarget.checked);
-              }}
+              onChange={(e) =>
+                setAutomaticallyPopulateMusicInfo(e.currentTarget.checked)
+              }
             />
             <div className="flex justify-end gap-2">
               <Button
@@ -300,6 +352,7 @@ const Sounds = ({ user }: SoundsProps) => {
                 type="submit"
                 variant="light"
                 radius="xl"
+                loading={loading}
               >
                 Create
               </Button>
@@ -314,6 +367,10 @@ const Sounds = ({ user }: SoundsProps) => {
     await Promise.all([
       fetchAndSetData<GetSoundsResponse>("/api/sounds/my", (data) =>
         setSounds(data?.sounds || [])
+      ),
+      fetchAndSetData<GetSoundLicenseHolderNamesResponse>(
+        "/api/sounds/licenses/holders",
+        (data) => setLicenseHolders(data?.licenseHolderNames || [])
       ),
     ]);
   };

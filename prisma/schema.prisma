@@ -1060,6 +1060,16 @@ model Sound {
   apartOf       Inventory[]         @relation("userSounds")
   canAuthorEdit Boolean             @default(true)
   previewUri    String              @default("")
+  licensedTo    SoundLicenseHolder? @relation("licensedSounds", fields: [licensedToId], references: [id])
+  licensedToId  String?
+}
+
+model SoundLicenseHolder {
+  id        String   @id @default(uuid())
+  name      String
+  location  String
+  createdAt DateTime @default(now())
+  sounds    Sound[]  @relation("licensedSounds")
 }
 
 model SoundKeyValuePair {
