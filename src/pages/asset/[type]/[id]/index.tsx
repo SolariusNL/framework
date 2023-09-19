@@ -23,6 +23,7 @@ import {
 } from "@/pages/api/catalog/[[...params]]";
 import IResponseBase from "@/types/api/IResponseBase";
 import authorizedRoute from "@/util/auth";
+import clsx from "@/util/clsx";
 import fetchJson, { fetchAndSetData } from "@/util/fetch";
 import { Fw } from "@/util/fw";
 import getMediaUrl from "@/util/get-media";
@@ -45,16 +46,18 @@ import {
 } from "@mantine/core";
 import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
-import { Prisma } from "@prisma/client";
+import { Prisma, Sound } from "@prisma/client";
 import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   HiCheck,
   HiCheckCircle,
   HiCubeTransparent,
   HiMusicNote,
+  HiOutlinePause,
   HiOutlinePencil,
+  HiOutlinePlay,
   HiOutlineStar,
   HiOutlineTag,
   HiOutlineTicket,
@@ -101,6 +104,7 @@ const AssetView: React.FC<AssetViewProps> = ({
     },
   });
   const [stargazing, setStargazing] = useState<boolean>();
+  const [playingSound, setPlayingSound] = useState(false);
   const [confirmPurchaseOpened, setConfirmPurchaseOpened] = useState(false);
   const [purchasePrice, setPurchasePrice] = useState<number>(
     assetInitial.limited
@@ -111,6 +115,7 @@ const AssetView: React.FC<AssetViewProps> = ({
     useState<LimitedCatalogItemResellWithSeller | null>(null);
 
   const { colors } = useMantineTheme();
+  const audioEl = useRef<HTMLAudioElement | null>(null);
 
   const setResellProp = (property: keyof typeof resell, value: any) => {
     setResell({
@@ -394,24 +399,55 @@ const AssetView: React.FC<AssetViewProps> = ({
           });
         }}
       />
+      {type === "sound" && (
+        <audio
+          src={getMediaUrl((asset as unknown as Sound).audioUri)}
+          ref={audioEl}
+        />
+      )}
       <div className="w-full flex justify-center mt-12">
         <div className="max-w-2xl w-full px-4">
           <div className="flex sm:flex-row flex-col gap-8">
             <div className="w-full">
-              <Avatar
-                radius="md"
-                src={
-                  asset.previewUri ? getMediaUrl(asset.previewUri) : undefined
-                }
-                color={Fw.Strings.color(asset.name)}
-                alt={asset.name}
-                className="aspect-square w-full h-fit"
-                classNames={{
-                  placeholder: "p-12",
-                }}
-              >
-                {iconPlaceholderMap[type]}
-              </Avatar>
+              <div className="relative h-fit group">
+                <Avatar
+                  radius="md"
+                  src={
+                    asset.previewUri ? getMediaUrl(asset.previewUri) : undefined
+                  }
+                  color={Fw.Strings.color(asset.name)}
+                  alt={asset.name}
+                  className="aspect-square w-full h-fit"
+                  classNames={{
+                    placeholder: "p-12",
+                  }}
+                >
+                  {iconPlaceholderMap[type]}
+                </Avatar>
+                {type === "sound" && (
+                  <div
+                    className={clsx(
+                      "bg-zinc-800/50 rounded-md cursor-pointer transition-all opacity-0 group-hover:opacity-100 flex absolute top-0 left-0 w-full h-full items-center justify-center",
+                      "h-fit"
+                    )}
+                    onClick={async () => {
+                      if (playingSound) {
+                        audioEl.current?.pause();
+                        setPlayingSound(false);
+                      } else {
+                        audioEl.current?.play();
+                        setPlayingSound(true);
+                      }
+                    }}
+                  >
+                    {playingSound ? (
+                      <HiOutlinePause className="w-12 h-12 text-white" />
+                    ) : (
+                      <HiOutlinePlay className="w-12 h-12 text-white" />
+                    )}
+                  </div>
+                )}
+              </div>
               <div className="mt-2 flex justify-end gap-2 items-center">
                 <Text color="yellow" weight={500}>
                   {Fw.Nums.beautify(asset._count.stargazers)}

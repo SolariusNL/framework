@@ -1059,6 +1059,7 @@ model Sound {
   limited       Boolean             @default(false)
   apartOf       Inventory[]         @relation("userSounds")
   canAuthorEdit Boolean             @default(true)
+  previewUri    String              @default("")
 }
 
 model SoundKeyValuePair {

@@ -7,6 +7,7 @@ import { User } from "@/util/prisma-types";
 import { AssetFrontend } from "@/util/types";
 import {
   Button,
+  Checkbox,
   FileInput,
   Modal,
   Stack,
@@ -18,10 +19,12 @@ import {
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { getCookie } from "cookies-next";
+import { read } from "jsmediatags";
 import { useEffect, useRef, useState } from "react";
 import {
   HiCheck,
   HiMusicNote,
+  HiOutlineTag,
   HiPlay,
   HiStop,
   HiTag,
@@ -29,6 +32,7 @@ import {
   HiXCircle,
 } from "react-icons/hi";
 import AssetCard from "../asset-card";
+import DataGrid from "../data-grid";
 import ModernEmptyState from "../modern-empty-state";
 
 type SoundsProps = {
@@ -38,17 +42,27 @@ type Form = {
   name: string;
   description: string;
   audio: File | null;
+  licensed: boolean;
+  additionalFields?: {
+    artist: string;
+    album: string;
+    year: string;
+  };
 };
 
 const Sounds = ({ user }: SoundsProps) => {
   const [opened, setOpened] = useState(false);
   const [previewing, setPreviewing] = useState(false);
   const [sounds, setSounds] = useState<AssetFrontend[]>([]);
+  const [automaticallyPopulateMusicInfo, setAutomaticallyPopulateMusicInfo] =
+    useState(false);
+  const [picture, setPicture] = useState<string | null>(null);
   const form = useForm<Form>({
     initialValues: {
       name: "",
       description: "",
       audio: null,
+      licensed: false,
     },
     validate: {
       name: (value) => {
@@ -99,6 +113,7 @@ const Sounds = ({ user }: SoundsProps) => {
               name: values.name,
               description: values.description,
               duration: Math.round(duration),
+              fields: values.additionalFields,
             },
             auth: true,
           })
@@ -112,7 +127,36 @@ const Sounds = ({ user }: SoundsProps) => {
                   authorization: String(getCookie(".frameworksession")),
                 },
                 body: formData,
-              }).then(() => {
+              }).then(async () => {
+                if (picture) {
+                  const formData = new FormData();
+                  formData.append(
+                    "asset",
+                    new File(
+                      [
+                        Buffer.from(
+                          picture.replace(/^data:image\/\w+;base64,/, ""),
+                          "base64"
+                        ),
+                      ],
+                      "asset.jpeg",
+                      {
+                        type: "image/jpeg",
+                      }
+                    )
+                  );
+
+                  await fetch(
+                    `/api/media/upload/asset/${res.data?.sound.id}?type=sound`,
+                    {
+                      method: "POST",
+                      body: formData,
+                      headers: {
+                        authorization: String(getCookie(".frameworksession")),
+                      },
+                    }
+                  );
+                }
                 showNotification({
                   title: "Sound created",
                   message: "Your sound has been created successfully.",
@@ -168,32 +212,98 @@ const Sounds = ({ user }: SoundsProps) => {
             classNames={BLACK}
             accept="audio/mp3,audio/wav,audio/ogg"
             required
-            {...form.getInputProps("audio")}
+            onChange={(file) => {
+              form.setFieldValue("audio", file);
+              if (automaticallyPopulateMusicInfo) {
+                read(file, {
+                  onSuccess: (tag) => {
+                    const { artist, album, year, picture, title } = tag.tags;
+                    form.setFieldValue("additionalFields", {
+                      artist: artist || "Unknown artist",
+                      album: album || "Unknown album",
+                      year: year || "Unknown year",
+                    });
+                    if (picture) {
+                      const base64String = picture.data.reduce(
+                        (str, byte) => str + String.fromCharCode(byte),
+                        ""
+                      );
+                      setPicture(
+                        `data:${picture.format};base64,${btoa(base64String)}`
+                      );
+                    }
+                    if (!form.values.name)
+                      form.setFieldValue("name", title || "Unknown track");
+                    if (!form.values.description)
+                      form.setFieldValue(
+                        "description",
+                        `${title || "unknown track"} by ${
+                          artist || "unknown artist"
+                        }.` +
+                          (album ? ` From the album ${album}.` : "") +
+                          (year ? ` Released in ${year}.` : "")
+                      );
+                  },
+                });
+              }
+            }}
           />
-          <div className="flex justify-end gap-2">
-            <Button
-              variant="default"
-              leftIcon={previewing ? <HiStop /> : <HiPlay />}
-              disabled={form.values.audio === null}
-              onClick={() => {
-                setPreviewing(!previewing);
-                if (!audioRef.current) return;
-
-                if (previewing) {
-                  audioRef.current.pause();
-                } else {
-                  audioRef.current.src = URL.createObjectURL(
-                    form.values.audio!
-                  );
-                  audioRef.current.play();
-                }
+          {form.values.additionalFields !== undefined && (
+            <div className="flex flex-col gap-2 my-4">
+              <Text size="sm" color="dimmed" weight={500}>
+                Detected metadata
+              </Text>
+              <DataGrid
+                className="!mt-2"
+                items={Object.entries(form.values.additionalFields).map(
+                  ([key, value]) => ({
+                    tooltip: key,
+                    value,
+                    icon: <HiOutlineTag />,
+                  })
+                )}
+              />
+            </div>
+          )}
+          <div className="flex justify-between gap-4 items-center">
+            <Checkbox
+              label="Get track info"
+              checked={automaticallyPopulateMusicInfo}
+              onChange={(event) => {
+                setAutomaticallyPopulateMusicInfo(event.currentTarget.checked);
               }}
-            >
-              {previewing ? "Stop preview" : "Preview"}
-            </Button>
-            <Button leftIcon={<HiCheck />} type="submit">
-              Create sound
-            </Button>
+            />
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="light"
+                leftIcon={previewing ? <HiStop /> : <HiPlay />}
+                disabled={form.values.audio === null}
+                onClick={() => {
+                  setPreviewing(!previewing);
+                  if (!audioRef.current) return;
+
+                  if (previewing) {
+                    audioRef.current.pause();
+                  } else {
+                    audioRef.current.src = URL.createObjectURL(
+                      form.values.audio!
+                    );
+                    audioRef.current.play();
+                  }
+                }}
+                radius="xl"
+              >
+                {previewing ? "Stop preview" : "Preview"}
+              </Button>
+              <Button
+                leftIcon={<HiCheck />}
+                type="submit"
+                variant="light"
+                radius="xl"
+              >
+                Create
+              </Button>
+            </div>
           </div>
         </Stack>
       </form>

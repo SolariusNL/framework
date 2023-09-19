@@ -244,6 +244,7 @@ const assetIcons = createMulter("asset", async (req, file, cb) => {
 
   const queryExecutor = prisma[prismaAssetTypeMap[type]] as never as {
     findFirst: (args: Prisma.CatalogItemFindFirstArgs) => Promise<CatalogItem>;
+    update: (args: Prisma.CatalogItemUpdateArgs) => Promise<CatalogItem>;
   };
 
   const asset = await queryExecutor.findFirst({
@@ -257,6 +258,15 @@ const assetIcons = createMulter("asset", async (req, file, cb) => {
   });
 
   if (!asset) return cb(new Error("Asset not found"), "");
+
+  await queryExecutor.update({
+    where: {
+      id: String(req.params.assetId),
+    },
+    data: {
+      previewUri: `/asset/${asset.id}.webp?at=${Date.now()}`,
+    },
+  });
 
   cb(null, asset.id + ".webp");
 });
@@ -296,7 +306,7 @@ const sounds = createMulter(
       },
     });
 
-    cb(null, sound.id + ".webm");
+    cb(null, sound.id + "." + extension);
   },
   (req, file, cb) => {
     if (!file.mimetype.startsWith("audio/")) {

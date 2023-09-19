@@ -16,10 +16,18 @@ export type GetSoundsResponse = IResponseBase<{
   sounds: AssetFrontend[];
 }>;
 
+const uploadSoundFieldsSchema = z
+  .object({
+    artist: z.string().min(1).max(100),
+    album: z.string().min(1).max(100),
+    year: z.string().min(1).max(100),
+  })
+  .strict();
 const uploadSoundSchema = z.object({
   name: z.string().min(1).max(100),
   description: z.string().min(1).max(500),
   duration: z.number().int().min(1),
+  fields: uploadSoundFieldsSchema.optional(),
 });
 
 class SoundRouter {
@@ -29,7 +37,8 @@ class SoundRouter {
     @Body() body: z.infer<typeof uploadSoundSchema>,
     @Account() user: User
   ) {
-    const { name, description, duration } = uploadSoundSchema.parse(body);
+    const { name, description, duration, fields } =
+      uploadSoundSchema.parse(body);
 
     const minutes = Math.floor(duration / 60);
     const seconds = duration % 60;
@@ -48,9 +57,25 @@ class SoundRouter {
           },
         },
         rows: {
-          create: {
-            key: "Duration",
-            value: `${formattedMinutes}:${formattedSeconds}`,
+          createMany: {
+            data: [
+              {
+                key: "Duration",
+                value: `${formattedMinutes}:${formattedSeconds}`,
+              },
+              {
+                key: "Artist",
+                value: fields?.artist ?? "",
+              },
+              {
+                key: "Album",
+                value: fields?.album ?? "",
+              },
+              {
+                key: "Year",
+                value: fields?.year ?? "",
+              },
+            ],
           },
         },
         apartOf: {
