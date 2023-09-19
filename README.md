@@ -23,6 +23,7 @@ If you believe you have found a security vulnerability in Framework, please repo
 - [Framework Wiki](https://wiki.solarius.me/)
 - [Solarius Help Center](https://help.solarius.me/)
 - [Changelog](https://changelog.solarius.me/)
+- To request an invite code to join, please contact us at [support@solarius.me](mailto:support@solarius.me).
 
 ## License
 
