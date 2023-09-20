@@ -1,6 +1,7 @@
+import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
+import cast from "@/util/cast";
 import { Checkbox, CheckboxProps, Text } from "@mantine/core";
 import { ChangeEvent } from "react";
-import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
 
 interface LabelledCheckboxProps {
   label: string;
@@ -23,7 +24,7 @@ const LabelledCheckbox: React.FC<LabelledCheckboxProps & CheckboxProps> = ({
             if (props.onChange) {
               if (props.disabled) return;
               props.onChange(
-                !props.checked as unknown as ChangeEvent<HTMLInputElement>
+                cast<ChangeEvent<HTMLInputElement>>(!props.checked)
               );
             }
           }}

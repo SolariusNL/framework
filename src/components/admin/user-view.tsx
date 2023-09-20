@@ -12,6 +12,7 @@ import { useFrameworkUser } from "@/contexts/FrameworkUser";
 import { useUserInformationDialog } from "@/contexts/UserInformationDialog";
 import employeeRoleMeta from "@/data/employeeRoles";
 import IResponseBase from "@/types/api/IResponseBase";
+import cast from "@/util/cast";
 import clsx from "@/util/clsx";
 import fetchJson from "@/util/fetch";
 import getMediaUrl from "@/util/get-media";
@@ -544,7 +545,7 @@ const UserView = ({ user: u, loading }: UserViewProps) => {
                   <Accordion.Item value="notes">
                     <Accordion.Control>Notes</Accordion.Control>
                     <Accordion.Panel>
-                      <NoteTable user={user as unknown as NoteUser} />
+                      <NoteTable user={cast<NoteUser>(user)} />
                     </Accordion.Panel>
                   </Accordion.Item>
                 </Accordion>

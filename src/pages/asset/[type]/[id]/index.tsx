@@ -23,6 +23,7 @@ import {
 } from "@/pages/api/catalog/[[...params]]";
 import IResponseBase from "@/types/api/IResponseBase";
 import authorizedRoute from "@/util/auth";
+import cast from "@/util/cast";
 import clsx from "@/util/clsx";
 import fetchJson, { fetchAndSetData } from "@/util/fetch";
 import { Fw } from "@/util/fw";
@@ -412,10 +413,7 @@ const AssetView: React.FC<AssetViewProps> = ({
         }}
       />
       {type === "sound" && (
-        <audio
-          src={getMediaUrl((asset as unknown as Sound).audioUri)}
-          ref={audioEl}
-        />
+        <audio src={getMediaUrl(cast<Sound>(asset).audioUri)} ref={audioEl} />
       )}
       <div className="w-full flex justify-center mt-12">
         <div className="max-w-2xl w-full px-4">
@@ -491,9 +489,9 @@ const AssetView: React.FC<AssetViewProps> = ({
                   {stargazing ? <HiStar /> : <HiOutlineStar />}
                 </ActionIcon>
               </div>
-              {type === "sound" && (asset as unknown as Sound).licensedToId && (
+              {type === "sound" && cast<Sound>(asset).licensedToId && (
                 <SoundLicenseDetails
-                  licensee={(asset as unknown as Sound).licensedToId!}
+                  licensee={String(cast<Sound>(asset).licensedToId)}
                 />
               )}
             </div>

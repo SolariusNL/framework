@@ -4,6 +4,7 @@ import type { ReportCategory } from "@/components/report-user";
 import IResponseBase from "@/types/api/IResponseBase";
 import { AdminAction } from "@/util/admin-action";
 import Authorized, { Account, AdminAuthorized } from "@/util/api/authorized";
+import cast from "@/util/cast";
 import { PREMIUM_PAYOUTS } from "@/util/constants";
 import generateGiftCode from "@/util/gift-codes";
 import { hashPass } from "@/util/hash/password";
@@ -350,7 +351,7 @@ class AdminRouter {
     return <IResponseBase<{ user: AdminViewUser }>>{
       success: true,
       data: {
-        user: user as unknown as AdminViewUser,
+        user: cast<AdminViewUser>(user)
       },
     };
   }

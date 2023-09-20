@@ -1,3 +1,4 @@
+import cast from "@/util/cast";
 import { Radio, RadioProps, Text } from "@mantine/core";
 import { ChangeEvent } from "react";
 
@@ -22,7 +23,7 @@ const LabelledRadio: React.FC<LabelledRadioProps & RadioProps> = ({
             if (props.onChange) {
               if (props.disabled) return;
               props.onChange(
-                !props.checked as unknown as ChangeEvent<HTMLInputElement>
+                cast<ChangeEvent<HTMLInputElement>>(!props.checked)
               );
             }
           }}
