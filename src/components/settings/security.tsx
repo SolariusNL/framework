@@ -1,13 +1,12 @@
+import InlineError from "@/components/inline-error";
 import LabelledCheckbox from "@/components/labelled-checkbox";
 import { updateAccount } from "@/components/settings/account";
 import SettingsTab from "@/components/settings/settings-tab";
 import SideBySide from "@/components/settings/side-by-side";
 import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
-import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
 import { getCookie } from "@/util/cookies";
 import { User } from "@/util/prisma-types";
 import {
-  Alert,
   Button,
   Group,
   Modal,
@@ -29,8 +28,8 @@ import {
   HiKey,
   HiLockClosed,
   HiMail,
+  HiOutlineCheck,
   HiPencil,
-  HiXCircle,
 } from "react-icons/hi";
 
 interface SecurityTabProps {
@@ -58,7 +57,6 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
   const [base32, setBase32] = useState("");
   const [twoFactorCode, setTwoFactorCode] = useState("");
   const [invalid, setInvalid] = useState(false);
-  const { setUser } = useAuthorizedUserStore();
 
   const sendEmailVerification = async () => {
     await fetch("/api/users/@me/verifyemail", {
@@ -226,16 +224,18 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
           placeholder="Enter your new password"
           required
         />
-        <Alert
-          color="orange"
-          title="Warning"
-          icon={<HiXCircle size={18} />}
-          mb={12}
-        >
+        <InlineError title="Warning" variant="warning">
           You will be logged out after changing your password.
-        </Alert>
-        <div className="flex justify-end">
-          <Button onClick={changePassword}>Confirm</Button>
+        </InlineError>
+        <div className="flex justify-end mt-4">
+          <Button
+            variant="light"
+            radius="xl"
+            leftIcon={<HiOutlineCheck />}
+            onClick={changePassword}
+          >
+            Confirm
+          </Button>
         </div>
       </Modal>
 
@@ -248,14 +248,22 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
         <TextInput
           label="New email"
           description="We will send you an email to verify your new email address. Your existing email address will no longer be valid."
-          mb={12}
           type="email"
           onChange={(e) => setNewEmail(e.target.value)}
           classNames={BLACK}
           required
           placeholder="Enter your new email"
         />
-        <Button onClick={changeEmail}>Confirm</Button>
+        <div className="flex justify-end mt-4">
+          <Button
+            variant="light"
+            radius="xl"
+            leftIcon={<HiOutlineCheck />}
+            onClick={changeEmail}
+          >
+            Confirm
+          </Button>
+        </div>
       </Modal>
 
       <Modal
