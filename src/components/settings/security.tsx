@@ -304,6 +304,8 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
               fullWidth
               onClick={async () => await verifyTwoFactor()}
               leftIcon={<HiCheck />}
+              radius="xl"
+              variant="light"
             >
               Verify TOTP
             </Button>
@@ -375,19 +377,9 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
                   classNames={BLACK}
                 />
                 {!user.emailVerified && (
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 8,
-                      marginTop: 12,
-                    }}
-                  >
-                    <HiExclamation />
-                    <Text color="dimmed">
-                      You have not verified your email address.
-                    </Text>
-                  </div>
+                  <InlineError variant="info" title="Info" className="mt-4">
+                    You have not verified your email address.
+                  </InlineError>
                 )}
               </div>
             }
