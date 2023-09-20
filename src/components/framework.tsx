@@ -25,6 +25,7 @@ import useFeedback from "@/stores/useFeedback";
 import { Flow } from "@/stores/useFlow";
 import usePreferences from "@/stores/usePreferences";
 import useSidebar from "@/stores/useSidebar";
+import clsx from "@/util/clsx";
 import { getIpcRenderer } from "@/util/electron";
 import { Fw } from "@/util/fw";
 import useMediaQuery from "@/util/media-query";
@@ -159,7 +160,16 @@ const Framework = ({
       onClick={() => {
         router.push(tab.href);
       }}
-      icon={tab.icon}
+      icon={
+        <span
+          className={clsx(
+            "flex items-center justify-center",
+            router.pathname !== tab.href && "text-dimmed"
+          )}
+        >
+          {tab.icon}
+        </span>
+      }
     >
       {tab.label}
     </TabNav.Tab>

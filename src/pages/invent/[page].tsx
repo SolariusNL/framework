@@ -69,9 +69,7 @@ const Invent: NextPage<InventProps> = ({ user, activePage }) => {
               classNames={{
                 tab: clsx(
                   "data-[active]:bg-[#f1ebff] data-[active]:text-[#631fff] data-[active]:font-semibold",
-                  "hover:bg-[#f1ebff]/75 hover:text-[#631fff]",
                   "dark:data-[active]:bg-[#2a1d4e] dark:data-[active]:text-[#b9a5e8] dark:data-[active]:font-semibold",
-                  "dark:hover:bg-[#2a1d4e]/75 dark:hover:text-[#b9a5e8]",
                   "transition-colors duration-50 ease-in-out"
                 ),
               }}
