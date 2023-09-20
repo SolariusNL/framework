@@ -20,6 +20,13 @@ const UpdateDrawer: React.FC = () => {
     href?: string;
   }> = [
     {
+      title: "0.9.0",
+      description: "Framework v0.9.0 is now available and brings many new changes.",
+      badge: BadgeType.NEW,
+      date: new Date("2023-09-19"),
+      href: "https://github.com/SolariusNL/framework/releases/tag/0.9.0"
+    },
+    {
       title: "Economy",
       description: "The Framework economy is now available. Powered by our Asset API, you can now purchase & trade goods on Framework.",
       badge: BadgeType.NEW,
