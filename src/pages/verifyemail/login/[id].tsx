@@ -1,25 +1,22 @@
-import ShadedCard from "@/components/shaded-card";
-import Stateful from "@/components/stateful";
-import getMediaUrl from "@/util/get-media";
+import Descriptive from "@/components/descriptive";
+import InlineError from "@/components/inline-error";
+import Owner from "@/components/owner";
+import PinInput from "@/components/pin-input";
+import OuterUI from "@/layouts/OuterUI";
+import logout from "@/util/api/logout";
 import prisma from "@/util/prisma";
 import { NonUser, nonCurrentUserSelect } from "@/util/prisma-types";
-import {
-  Alert,
-  Avatar,
-  Button,
-  Container,
-  Text,
-  TextInput,
-  Title,
-} from "@mantine/core";
+import { Anchor, Button, Text } from "@mantine/core";
+import { useForm } from "@mantine/form";
+import { openConfirmModal } from "@mantine/modals";
 import { EmailLoginRequest } from "@prisma/client";
 import { setCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { HiCheckCircle, HiXCircle } from "react-icons/hi";
+import { HiOutlineCheck } from "react-icons/hi";
 
-interface EmailLoginProps {
+type EmailLoginProps = {
   emailId: string;
   request: Omit<
     EmailLoginRequest & {
@@ -27,110 +24,128 @@ interface EmailLoginProps {
     },
     "code"
   >;
-}
+};
+type Form = {
+  code?: number;
+};
 
 const EmailLogin: NextPage<EmailLoginProps> = ({ emailId, request }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const form = useForm<Form>({
+    initialValues: {
+      code: undefined,
+    },
+    validate: {
+      code: (value: number) => {
+        if (value.toString().length !== 6) return "Code must be 6 digits";
+        if (!value) return "You must enter a code";
+      },
+    },
+  });
+
+  const submitForm = async (values: Form) => {
+    setLoading(true);
+
+    await fetch(`/api/auth/email/${emailId}/${values.code}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.success === true) {
+          setCookie(".frameworksession", res.token, {
+            maxAge: 60 * 60 * 24 * 7,
+          });
+          router.push("/");
+        } else {
+          setError(res.message || "An unknown error occurred");
+        }
+      })
+      .catch(() => {
+        setError("An unknown error occurred");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   return (
-    <Container size={460} my={30}>
-      <ShadedCard
-        withBorder
-        shadow="md"
-        p={30}
-        radius="md"
-        mt="xl"
-        sx={(theme) => ({
-          background:
-            theme.colorScheme === "dark"
-              ? theme.colors.dark[8]
-              : theme.colors.gray[0],
-        })}
-        className="flex flex-col items-center"
-      >
-        <Avatar
-          src={getMediaUrl(request.user.avatarUri)}
-          size="lg"
-          className="mb-4 rounded-full"
-        />
-        <Title order={4} mb={6}>
-          Hey, {request.user.username}.
-        </Title>
-        <Text color="dimmed" align="center" mb={32}>
-          Please check your email for a 6-digit code, then enter it below.
-        </Text>
-        <Stateful>
-          {(code: string, setCode: (code: string) => void) => (
-            <>
-              <TextInput
-                label="Code"
-                description="6-digit code"
-                required
-                value={code}
-                onChange={(e) => setCode(String(e.currentTarget.value))}
-                error={
-                  code && code.toString().length !== 6
-                    ? "Code must be 6 digits"
-                    : undefined
-                }
-                type="text"
-                placeholder="123456"
-                width="100%"
-                maxLength={6}
-                className="w-full mb-4"
-              />
-              {error && (
-                <Alert
-                  title="Failed to verify"
-                  color="red"
-                  className="w-full mb-4"
-                  icon={<HiXCircle />}
-                >
-                  {error || "An unknown error occurred"}
-                </Alert>
-              )}
-              <Button
-                fullWidth
-                leftIcon={<HiCheckCircle />}
-                loading={loading}
-                onClick={async () => {
-                  setLoading(true);
-
-                  await fetch(`/api/auth/email/${emailId}/${code}`, {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                  })
-                    .then((res) => res.json())
-                    .then((res) => {
-                      if (res.success === true) {
-                        setCookie(".frameworksession", res.token, {
-                          maxAge: 60 * 60 * 24 * 7,
-                        });
-                        router.push("/");
-                      } else {
-                        setError(res.message || "An unknown error occurred");
-                      }
-                    })
-                    .catch(() => {
-                      setError("An unknown error occurred");
-                    })
-                    .finally(() => {
-                      setLoading(false);
-                    });
-                }}
-                disabled={code && code.toString().length !== 6 ? true : loading}
-              >
-                Verify
-              </Button>
-            </>
+    <OuterUI
+      title="Verify your email"
+      description="Please check your email for a 6-digit verification code. Allow up to 10 minutes to receive an email and check your spam folder."
+    >
+      <div className="w-full flex items-center justify-center flex-col">
+        <div className="flex items-start gap-4 mb-4">
+          <Text size="sm" color="dimmed">
+            Logging in as
+          </Text>
+          <div className="flex flex-col gap-2">
+            <Owner user={request.user} />
+            <Anchor
+              size="sm"
+              onClick={() =>
+                openConfirmModal({
+                  title: "Confirmation",
+                  children: (
+                    <Text size="sm" color="dimmed">
+                      Are you sure you want to logout of your account?
+                    </Text>
+                  ),
+                  labels: {
+                    confirm: "Logout",
+                    cancel: "Nevermind",
+                  },
+                  confirmProps: {
+                    variant: "light",
+                    color: "red",
+                    radius: "xl",
+                  },
+                  cancelProps: {
+                    variant: "light",
+                    radius: "xl",
+                    color: "gray",
+                  },
+                  async onConfirm() {
+                    await logout().then(() => router.push("/login"));
+                  },
+                })
+              }
+            >
+              Not you? Sign out
+            </Anchor>
+          </div>
+        </div>
+        <form onSubmit={form.onSubmit(submitForm)}>
+          <Descriptive title="Code" required>
+            <PinInput length={6} {...form.getInputProps("code")} />
+          </Descriptive>
+          {error && (
+            <InlineError
+              className="mt-4"
+              title="An error occurred"
+              variant="error"
+            >
+              {error}
+            </InlineError>
           )}
-        </Stateful>
-      </ShadedCard>
-    </Container>
+          <div className="flex justify-end mt-4">
+            <Button
+              variant="light"
+              loading={loading}
+              radius="xl"
+              leftIcon={<HiOutlineCheck />}
+              type="submit"
+            >
+              Verify login
+            </Button>
+          </div>
+        </form>
+      </div>
+    </OuterUI>
   );
 };
 
