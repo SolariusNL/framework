@@ -3,13 +3,13 @@ import AlphaBadge from "@/components/badges/alpha";
 import EmailBadge from "@/components/badges/email";
 import PremiumBadge from "@/components/badges/premium";
 import TOTPBadge from "@/components/badges/totp";
+import DataGrid from "@/components/data-grid";
 import Framework from "@/components/framework";
 import IconTooltip from "@/components/icon-tooltip";
 import ThumbnailCarousel from "@/components/image-carousel";
 import PlaceholderGameResource from "@/components/placeholder-game-resource";
 import Donate from "@/components/profile/donate";
 import Links from "@/components/profile/links";
-import ReportUser from "@/components/report-user";
 import ShadedCard from "@/components/shaded-card";
 import Verified from "@/components/verified";
 import { useUserInformationDialog } from "@/contexts/UserInformationDialog";
@@ -19,6 +19,7 @@ import Rocket from "@/icons/Rocket";
 import Soodam from "@/icons/Soodam";
 import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
 import useChatStore from "@/stores/useChatStore";
+import useReportAbuse from "@/stores/useReportAbuse";
 import IResponseBase from "@/types/api/IResponseBase";
 import authorizedRoute from "@/util/auth";
 import { exclude } from "@/util/exclude";
@@ -61,7 +62,6 @@ import {
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 import { GetUserInventoryAvailabilityResponse } from "../api/users/[[...params]]";
-import useReportAbuse from "@/stores/useReportAbuse";
 
 interface ProfileProps {
   user: User;
@@ -478,79 +478,76 @@ const Profile: NextPage<ProfileProps> = ({
                   : "This user hasn't written a biography yet."}
               </Text>
               <ShadedCard>
-                <div className="grid grid-cols-2 gap-2 gap-y-6">
-                  {[
+                <DataGrid
+                  mdCols={2}
+                  smCols={2}
+                  defaultCols={2}
+                  className="!mt-0"
+                  items={[
                     {
                       icon: <HiCake />,
-                      title: "Joined",
+                      tooltip: "Joined",
                       value: new Date(viewing.createdAt).toLocaleDateString(),
                     },
                     {
                       icon: <HiMap />,
-                      title: "Country",
-                      value: viewing.country ? (
-                        <div className="flex items-center gap-2">
-                          <ReactCountryFlag
-                            style={{ borderRadius: "6px" }}
-                            countryCode={viewing.country}
-                            svg
-                          />
-                          <span>
-                            {
-                              countries.find((c) => c.code == viewing.country)
-                                ?.name
-                            }
-                          </span>
-                        </div>
-                      ) : (
-                        <span>
-                          <Text size="sm" color="dimmed">
-                            Unknown
-                          </Text>
-                        </span>
+                      tooltip: "Country",
+                      value: (
+                        <>
+                          {viewing.country ? (
+                            <div className="flex items-center gap-2">
+                              <ReactCountryFlag
+                                style={{ borderRadius: "6px" }}
+                                countryCode={viewing.country}
+                                svg
+                              />
+                              <span>
+                                {
+                                  countries.find(
+                                    (c) => c.code == viewing.country
+                                  )?.name
+                                }
+                              </span>
+                            </div>
+                          ) : (
+                            <span>
+                              <Text size="sm" color="dimmed">
+                                Unknown
+                              </Text>
+                            </span>
+                          )}
+                        </>
                       ),
                     },
                     {
                       icon: <HiClock />,
-                      title: "Timezone",
-                      value: viewing.timeZone ? (
-                        getTimezones().find(
-                          (tz) => tz.value == viewing.timeZone
-                        )?.value
-                      ) : (
-                        <span>
-                          <Text size="sm" color="dimmed">
-                            Unknown
-                          </Text>
-                        </span>
+                      tooltip: "Timezone",
+                      value: (
+                        <>
+                          {viewing.timeZone ? (
+                            getTimezones().find(
+                              (tz) => tz.value == viewing.timeZone
+                            )?.value
+                          ) : (
+                            <span>
+                              <Text size="sm" color="dimmed">
+                                Unknown
+                              </Text>
+                            </span>
+                          )}
+                        </>
                       ),
                     },
                     {
                       icon: <HiUserGroup />,
-                      title: "Visits",
+                      tooltip: "Visits",
                       value: viewing.games
                         .map((g) => g.visits)
-                        .reduce((a, b) => a + b, 0),
+                        .reduce((a, b) => a + b, 0)
+                        .toString(),
                     },
-                  ].map((item) => (
-                    <div
-                      className="flex flex-col gap-2 items-center"
-                      key={item.title}
-                    >
-                      <div className="flex items-center gap-2">
-                        <div className="text-gray-400 flex items-center">
-                          {item.icon}
-                        </div>
-                        <Text size="sm" color="dimmed">
-                          {item.title}
-                        </Text>
-                      </div>
-                      <Text size="sm" weight={500} align="center">
-                        {item.value}
-                      </Text>
-                    </div>
-                  ))}
-                </div>
+                  ]}
+                />
               </ShadedCard>
               <ReactNoSSR>
                 <div className="flex items-center justify-center mt-6 mb-2">
