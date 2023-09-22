@@ -1,4 +1,5 @@
 import ModernEmptyState from "@/components/modern-empty-state";
+import ShadedCard from "@/components/shaded-card";
 import getMediaUrl from "@/util/get-media";
 import { NonUser, User } from "@/util/prisma-types";
 import {
@@ -12,7 +13,6 @@ import {
   Group,
   Modal,
   Pagination,
-  Paper,
   SegmentedControl,
   Text,
   UnstyledButton,
@@ -155,18 +155,7 @@ const UserInformationWrapper = ({
         />
 
         {(selectedTab === "following" && (
-          <Paper
-            sx={(theme) => ({
-              backgroundColor:
-                theme.colorScheme === "dark"
-                  ? theme.colors.dark[8]
-                  : theme.white,
-            })}
-            withBorder
-            shadow="md"
-            p={12}
-            radius="md"
-          >
+          <ShadedCard>
             {user?._count.following === 0 ? (
               <ModernEmptyState
                 title={`${user?.username} is not following anyone`}
@@ -182,21 +171,10 @@ const UserInformationWrapper = ({
                 />
               ))
             )}
-          </Paper>
+          </ShadedCard>
         )) ||
           (selectedTab === "followers" && (
-            <Paper
-              sx={(theme) => ({
-                backgroundColor:
-                  theme.colorScheme === "dark"
-                    ? theme.colors.dark[8]
-                    : theme.white,
-              })}
-              withBorder
-              shadow="md"
-              p={12}
-              radius="md"
-            >
+            <ShadedCard>
               {user?._count.followers === 0 ? (
                 <ModernEmptyState
                   title={`${user?.username} has no followers`}
@@ -212,7 +190,7 @@ const UserInformationWrapper = ({
                   />
                 ))
               )}
-            </Paper>
+            </ShadedCard>
           ))}
 
         <div className="w-full flex justify-center mt-4">

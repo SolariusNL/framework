@@ -856,11 +856,7 @@ const Chat: React.FC = () => {
           </div>
 
           <Divider mt="lg" mb="lg" />
-          <ScrollArea
-            style={{
-              maxHeight: 200,
-            }}
-          >
+          <ScrollArea className="overflow-visible">
             <div className="flex flex-col gap-1">
               {conversation?.participants.map((participant) => (
                 <InlineUserCard
@@ -996,11 +992,7 @@ const Chat: React.FC = () => {
           Choose users to add to this conversation.
         </Text>
       </div>
-      <ScrollArea
-        style={{
-          maxHeight: 300,
-        }}
-      >
+      <ScrollArea className="overflow-visible">
         <div className="flex flex-col gap-1">
           {friends
             .filter(
