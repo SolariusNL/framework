@@ -552,7 +552,7 @@ const Profile: NextPage<ProfileProps> = ({
               <ReactNoSSR>
                 <div className="flex items-center justify-center mt-6 mb-2">
                   <div
-                    className="flex flex-col gap-3"
+                    className="flex flex-col gap-2"
                     style={{
                       maxWidth: "24rem",
                     }}
@@ -566,7 +566,7 @@ const Profile: NextPage<ProfileProps> = ({
                       {
                         icon: <HiChevronDoubleUp />,
                         title: "Reputation",
-                        value: 0,
+                        value: "100 reputation",
                       },
                       {
                         icon: <HiOutlineClock />,
@@ -575,13 +575,13 @@ const Profile: NextPage<ProfileProps> = ({
                       },
                       {
                         icon: <Rocket />,
-                        title: "Trading availability",
+                        title: "Trading",
                         value: "Unavailable",
                       },
                       ...additionalDetails,
                     ].map((item) => (
                       <div
-                        className="grid grid-cols-2 gap-2 items-center"
+                        className="grid grid-cols-2 gap-0 items-center"
                         key={item.title}
                       >
                         <div className="flex items-center gap-2">
