@@ -1,4 +1,4 @@
-import { Tabs, Text, Title } from "@mantine/core";
+import { Text, Title } from "@mantine/core";
 
 interface ViewGameTabProps {
   value: string;
@@ -14,7 +14,7 @@ const ViewGameTab = ({
   description,
 }: ViewGameTabProps) => {
   return (
-    <Tabs.Panel value={value}>
+    <div>
       <div className="flex md:flex-row md:items-center mb-4 flex-col md:gap-3 gap-1">
         <Title order={3}>{title}</Title>
         <Text size="sm" color="dimmed">
@@ -23,7 +23,7 @@ const ViewGameTab = ({
       </div>
 
       {children}
-    </Tabs.Panel>
+    </div>
   );
 };
 

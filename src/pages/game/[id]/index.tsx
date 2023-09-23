@@ -1,26 +1,19 @@
-import DataGrid from "@/components/data-grid";
 import Framework from "@/components/framework";
 import GameComments from "@/components/game-comments";
 import GameRating from "@/components/game-rating";
 import ThumbnailCarousel from "@/components/image-carousel";
 import InlineError from "@/components/inline-error";
 import Launching from "@/components/launching";
+import LoadingIndicator from "@/components/loading-indicator";
 import Owner from "@/components/owner";
 import PlaceholderGameResource from "@/components/placeholder-game-resource";
 import ShadedButton from "@/components/shaded-button";
 import ShadedCard from "@/components/shaded-card";
-import TabNav from "@/components/tab-nav";
 import UserContext from "@/components/user-context";
-import ConnectionTab from "@/components/view-game/connection";
-import FundsTab from "@/components/view-game/funds";
-import InfoTab from "@/components/view-game/info";
-import Store from "@/components/view-game/store";
-import UpdateLogTab from "@/components/view-game/update-log";
 import Votes from "@/components/view-game/votes";
 import useReportAbuse from "@/stores/useReportAbuse";
 import IResponseBase from "@/types/api/IResponseBase";
 import authorizedRoute from "@/util/auth";
-import clsx from "@/util/clsx";
 import { getIpcRenderer } from "@/util/electron";
 import fetchJson from "@/util/fetch";
 import { Fw } from "@/util/fw";
@@ -28,22 +21,19 @@ import getMediaUrl from "@/util/get-media";
 import useMediaQuery from "@/util/media-query";
 import prisma from "@/util/prisma";
 import { Game, NonUser, User, gameSelect } from "@/util/prisma-types";
-import { getGenreText } from "@/util/universe/genre";
 import {
   ActionIcon,
   AspectRatio,
   Avatar,
-  Badge,
-  Box,
   Button,
+  Divider,
   Grid,
   Group,
   Image,
-  Loader,
   Menu,
+  SegmentedControl,
   Skeleton,
   Stack,
-  Tabs,
   Text,
   Title,
   Tooltip,
@@ -54,40 +44,62 @@ import { getCookie } from "cookies-next";
 import isElectron from "is-electron";
 import { GetServerSidePropsContext, NextPage } from "next";
 import { NextSeo } from "next-seo";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import {
-  HiCake,
   HiCheckCircle,
-  HiCode,
-  HiCurrencyDollar,
   HiDotsVertical,
   HiFlag,
-  HiFolder,
-  HiInformationCircle,
-  HiOutlineClock,
-  HiOutlineXCircle,
   HiPencil,
   HiPlay,
   HiPlus,
-  HiServer,
-  HiShoppingBag,
   HiSparkles,
-  HiUsers,
-  HiViewGrid,
-  HiViewList,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
+
+const SSRLoader = (
+  <div className="flex justify-center items-center py-8">
+    <LoadingIndicator />
+  </div>
+);
+const InfoTab = dynamic(() => import("@/components/view-game/info"), {
+  ssr: false,
+  loading: () => SSRLoader,
+});
+const ConnectionTab = dynamic(
+  () => import("@/components/view-game/connection"),
+  {
+    ssr: false,
+    loading: () => SSRLoader,
+  }
+);
+const FundsTab = dynamic(() => import("@/components/view-game/funds"), {
+  ssr: false,
+  loading: () => SSRLoader,
+});
+const Store = dynamic(() => import("@/components/view-game/store"), {
+  ssr: false,
+  loading: () => SSRLoader,
+});
+const UpdateLogTab = dynamic(
+  () => import("@/components/view-game/update-log"),
+  {
+    ssr: false,
+    loading: () => SSRLoader,
+  }
+);
 
 type GameWithGamepass = Game & {
   gamepasses: Gamepass[];
 };
-
-interface GameViewProps {
+type GameViewProps = {
   gameData: GameWithGamepass;
   user: User;
-}
+};
+
+type Tab = "info" | "connection" | "funds" | "store" | "updatelog";
 
 const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
   const [game, setGame] = useState(gameData);
@@ -95,6 +107,9 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
   const [similarGames, setSimilarGames] = useState<Game[] | null>(null);
   const { setOpened: setReportOpened } = useReportAbuse();
   const [following, setFollowing] = useState<boolean | null>(null);
+  const [activeTab, setActiveTab] = useState<
+    "info" | "connection" | "funds" | "store" | "updatelog"
+  >("info" as Tab);
   const mobile = useMediaQuery("768");
   const router = useRouter();
 
@@ -357,174 +372,48 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
           </Grid.Col>
         </Grid>
 
-        <Tabs
-          defaultValue="info"
-          classNames={{
-            tab: clsx(
-              "rounded-t-[4px]",
-              "dark:hover:!bg-neutral-800/25 dark:hover:text-dark-100"
-            ),
-          }}
-          mb={0}
-        >
-          <Tabs.List grow mb="md">
-            <div
-              style={{
-                ...(mobile
-                  ? {
-                      display: "flex",
-                      flexDirection: "column",
-                      flex: 1,
-                    }
-                  : {
-                      display: "flex",
-                      flexDirection: "row",
-                      flex: 1,
-                    }),
-              }}
-            >
-              <TabNav.Tab
-                icon={<HiInformationCircle />}
-                value="info"
-                className="transition-all"
-              >
-                About
-              </TabNav.Tab>
-
-              <TabNav.Tab
-                icon={<HiServer />}
-                value="connection"
-                className="transition-all"
-              >
-                Servers
-              </TabNav.Tab>
-
-              <TabNav.Tab
-                icon={<HiCurrencyDollar />}
-                value="funds"
-                className="transition-all"
-              >
-                Funds
-              </TabNav.Tab>
-
-              <TabNav.Tab
-                icon={<HiShoppingBag />}
-                value="store"
-                className="transition-all"
-              >
-                Store
-              </TabNav.Tab>
-
-              <TabNav.Tab
-                icon={<HiFolder />}
-                value="updatelog"
-                className="transition-all"
-              >
-                Updates
-              </TabNav.Tab>
+        <SegmentedControl
+          data={[
+            {
+              label: "About",
+              value: "info",
+            },
+            {
+              label: "Servers",
+              value: "connection",
+            },
+            {
+              label: "Funds",
+              value: "funds",
+            },
+            {
+              label: "Store",
+              value: "store",
+            },
+            {
+              label: "Updates",
+              value: "updatelog",
+            },
+          ]}
+          value={activeTab}
+          fullWidth
+          onChange={(v) => setActiveTab(v as Tab)}
+        />
+        <div className="md:grid flex flex-col md:grid-cols-5 gap-4 mt-4">
+          <div className="col-span-3">
+            {activeTab === "info" && <InfoTab game={game} />}
+            {activeTab === "connection" && <ConnectionTab game={game} />}
+            {activeTab === "funds" && <FundsTab game={game} />}
+            {activeTab === "store" && <Store game={game} />}
+            {activeTab === "updatelog" && <UpdateLogTab game={game} />}
+            <div className="flex items-center gap-4 mt-8 mb-3">
+              <Title order={3}>Comments</Title>
+              <Divider className="flex-grow" />
             </div>
-          </Tabs.List>
-
-          <div className="grid md:grid-cols-3 grid-cols-1 gap-3">
-            <div className="col-span-2">
-              {[InfoTab, ConnectionTab, FundsTab, Store, UpdateLogTab].map(
-                (Tab, i) => (
-                  <ReactNoSSR
-                    key={i}
-                    onSSR={
-                      i == 0 ? (
-                        <Box
-                          sx={{
-                            alignItems: "center",
-                            display: "flex",
-                            justifyContent: "center",
-                            width: "100%",
-                          }}
-                        >
-                          <Loader />
-                        </Box>
-                      ) : undefined
-                    }
-                  >
-                    <Tab game={game as any} />
-                  </ReactNoSSR>
-                )
-              )}
-              <ShadedCard className="mt-8 mb-8">
-                <DataGrid
-                  items={[
-                    {
-                      icon: <HiViewList />,
-                      value: getGenreText(game.genre),
-                      tooltip: "Genre",
-                    },
-                    {
-                      icon: <HiUsers />,
-                      value: game.maxPlayersPerSession,
-                      tooltip: "Max players",
-                    },
-                    {
-                      icon: <HiServer />,
-                      value: game.playing,
-                      tooltip: "Playing",
-                    },
-                    {
-                      icon: <HiViewGrid />,
-                      value: game.visits,
-                      tooltip: "Visits",
-                    },
-                    {
-                      icon: <HiShoppingBag />,
-                      value: game.paywall ? "Paid access" : "Free access",
-                      tooltip: "Paywall",
-                    },
-                    {
-                      icon: <HiCode />,
-                      value: (
-                        <Badge>
-                          {game.updateLogs[0] ? game.updateLogs[0].tag : "N/A"}
-                        </Badge>
-                      ),
-                      tooltip: "Latest version",
-                    },
-                    {
-                      icon: <HiCake />,
-                      value: new Date(game.createdAt).toLocaleDateString(),
-                      tooltip: "Created at",
-                    },
-                    {
-                      icon: <HiOutlineClock />,
-                      value: new Date(game.updatedAt).toLocaleDateString(),
-                      tooltip: "Updated at",
-                    },
-                    {
-                      icon: <HiOutlineXCircle />,
-                      tooltip: "Rating",
-                      value: game.rating?.type || "RP",
-                    },
-                  ]}
-                  mdCols={3}
-                  smCols={2}
-                  defaultCols={2}
-                  className="!mt-0"
-                />
-              </ShadedCard>
-              <ReactNoSSR
-                onSSR={
-                  <Stack spacing={12}>
-                    <Skeleton height={160} />
-                    {Array(3)
-                      .fill(0)
-                      .map((_, i) => (
-                        <Skeleton key={i} height={100} />
-                      ))}
-                  </Stack>
-                }
-              >
-                <GameComments user={user} game={game} />
-              </ReactNoSSR>
-            </div>
-            <Stack spacing="xl" className="w-full">
+            <GameComments game={game} user={user} />
+          </div>
+          <div className="col-span-2">
+            {similarGames && similarGames.length > 0 && (
               <ShadedCard className="col-span-1 h-fit w-full">
                 <Title order={4} mb={16}>
                   More like this
@@ -582,10 +471,10 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                         ))}
                 </Stack>
               </ShadedCard>
-              <GameRating game={game} />
-            </Stack>
+            )}
+            <GameRating game={game} />
           </div>
-        </Tabs>
+        </div>
       </Framework>
     </>
   );
