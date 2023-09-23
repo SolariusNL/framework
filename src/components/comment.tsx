@@ -1,13 +1,10 @@
 import ShadedCard from "@/components/shaded-card";
-import UserContext from "@/components/user-context";
 import { useFrameworkUser } from "@/contexts/FrameworkUser";
 import useReportAbuse from "@/stores/useReportAbuse";
-import getMediaUrl from "@/util/get-media";
 import { NonUser } from "@/util/prisma-types";
 import { getRelativeTime } from "@/util/relative-time";
 import {
   ActionIcon,
-  Avatar,
   Button,
   createStyles,
   Menu,
@@ -24,11 +21,10 @@ import {
   HiClipboard,
   HiDotsVertical,
   HiFlag,
-  HiGift,
   HiPencil,
-  HiShieldCheck,
   HiTrash,
 } from "react-icons/hi";
+import Owner from "./owner";
 
 const useStyles = createStyles((theme) => ({
   comment: {
@@ -36,7 +32,7 @@ const useStyles = createStyles((theme) => ({
   },
 
   body: {
-    paddingLeft: 54,
+    paddingLeft: 51,
     paddingTop: theme.spacing.sm,
     fontSize: theme.fontSizes.sm,
   },
@@ -92,38 +88,9 @@ const Comment = ({
             </Stack>
           </div>
           <div className="w-full">
-            <div className="justify-between flex">
+            <div className="justify-between flex mb-4">
               <div className="flex gap-2">
-                <UserContext user={user}>
-                  <Avatar
-                    src={
-                      getMediaUrl(user.avatarUri) ||
-                      `https://avatars.dicebear.com/api/identicon/${user.id}.png`
-                    }
-                    alt={user.username}
-                    radius="xl"
-                  />
-                </UserContext>
-                <div className="flex flex-col ml-2 gap-1">
-                  <div className="flex items-center gap-2">
-                    <Text size="sm" weight={500} mr={6}>
-                      {user.username}
-                    </Text>
-                    {user.role == "ADMIN" && (
-                      <HiShieldCheck title="Framework Staff Member" />
-                    )}
-                    {user.premium && <HiGift title="Premium Member" />}
-                  </div>
-                  <Tooltip
-                    label={new Date(postedAt).toISOString()}
-                    position="bottom"
-                    openDelay={250}
-                  >
-                    <Text size="xs" color="dimmed">
-                      {getRelativeTime(new Date(postedAt))}
-                    </Text>
-                  </Tooltip>
-                </div>
+                <Owner user={user} />
               </div>
               <div>
                 <Menu width={200}>
@@ -237,13 +204,23 @@ const Comment = ({
                 </Button.Group>
               </>
             ) : (
-              <Text className={classes.body}>
-                {msg.replace(/\s/g, "").length == 0 ? (
-                  <span className="text-dimmed">No content</span>
-                ) : (
-                  msg
-                )}
-              </Text>
+              <>
+                <Text size="sm">
+                  {msg.replace(/\s/g, "").length == 0 ? (
+                    <span className="text-dimmed">No content</span>
+                  ) : (
+                    msg
+                  )}
+                </Text>
+                <Tooltip
+                  label={new Date(postedAt).toLocaleString()}
+                  className="w-fit"
+                >
+                  <Text size="sm" color="dimmed" className="mt-2 w-fit">
+                    {getRelativeTime(new Date(postedAt))}
+                  </Text>
+                </Tooltip>
+              </>
             )}
           </div>
         </div>
