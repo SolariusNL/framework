@@ -32,6 +32,7 @@ import {
   Anchor,
   Avatar,
   Button,
+  Divider,
   Image,
   Indicator,
   Text,
@@ -56,6 +57,7 @@ import {
   HiMap,
   HiOutlineClock,
   HiOutlineViewGrid,
+  HiSparkles,
   HiUser,
   HiUserGroup,
   HiXCircle,
@@ -427,6 +429,12 @@ const Profile: NextPage<ProfileProps> = ({
                       Following
                     </Text>
                   </div>
+                  {user && user.id === viewing.id && (
+                    <span className="flex items-center text-sm gap-2 text-dimmed mt-4">
+                      <HiSparkles />
+                      <span>It&apos;s you!</span>
+                    </span>
+                  )}
                   {user && viewing.id !== user.id && (
                     <>
                       <div className="mt-4">
@@ -463,10 +471,12 @@ const Profile: NextPage<ProfileProps> = ({
                   )}
                 </div>
               </div>
-
-              <Text size="sm" weight={500} mb="sm" color="dimmed" mt="xl">
-                Biography
-              </Text>
+              <div className="flex items-center gap-4 mt-6 mb-3">
+                <Text size="sm" weight={500} color="dimmed">
+                  Biography
+                </Text>
+                <Divider className="flex-grow" />
+              </div>
               <Text mb="xl">
                 {viewing.bio
                   ? viewing.bio.split("\n").map((line, i) => (
@@ -634,7 +644,7 @@ const Profile: NextPage<ProfileProps> = ({
                   ))}
                 />
               )}
-              {viewing.profileLinks && <Links user={viewing} />}
+              {viewing.profileLinks.length > 0 && <Links user={viewing} />}
               <div className="grid grid-cols-2 gap-2">
                 {[
                   [<AlphaBadge user={viewing} key="alpha" />, true],
