@@ -1148,7 +1148,7 @@ model Team {
   auditLogs           TeamAuditLog[]        @relation("teamAuditLogs")
   banned              User[]                @relation("teamBans")
   giveaways           TeamGiveaway[]        @relation("teamGiveaway")
-  funds               Int                   @default(15)
+  funds               Int                   @default(0)
   displayFunds        Boolean               @default(true)
 }
 

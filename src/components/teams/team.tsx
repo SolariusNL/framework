@@ -2,6 +2,7 @@ import Copy from "@/components/copy";
 import ShadedButton from "@/components/shaded-button";
 import UserContext from "@/components/user-context";
 import { TeamType } from "@/pages/teams";
+import { Fw } from "@/util/fw";
 import getMediaUrl from "@/util/get-media";
 import { Avatar, Text, Tooltip, useMantineTheme } from "@mantine/core";
 import Link from "next/link";
@@ -20,7 +21,13 @@ const Team: React.FC<TeamProps> = (props) => {
       <ShadedButton>
         <div className="w-full">
           <div className="flex gap-5 w-full items-start">
-            <Avatar src={getMediaUrl(t.iconUri)} size={82} />
+            <Avatar
+              src={getMediaUrl(t.iconUri)}
+              size={82}
+              color={Fw.Strings.color(t.name)}
+            >
+              {Fw.Strings.initials(t.name)}
+            </Avatar>
             <div className="flex-grow">
               <div className="flex justify-between items-center">
                 <Text size="xl" weight={500}>

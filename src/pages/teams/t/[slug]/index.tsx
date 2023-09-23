@@ -9,6 +9,7 @@ import TeamsViewProvider from "@/components/teams/teams-view";
 import { TeamType } from "@/pages/teams";
 import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
 import IResponseBase from "@/types/api/IResponseBase";
+import abbreviateNumber from "@/util/abbreviate";
 import authorizedRoute from "@/util/auth";
 import fetchJson from "@/util/fetch";
 import { Fw } from "@/util/fw";
@@ -19,6 +20,7 @@ import {
   ActionIcon,
   Anchor,
   Avatar,
+  Badge,
   Button,
   Menu,
   Modal,
@@ -318,9 +320,7 @@ const TeamView: React.FC<TeamViewProps> = ({ user, team: teamInitial }) => {
           )}
         </Stateful>
         <InlineError variant="warning" title="Non-refundable" className="mt-8">
-          Any funds contributed to your team&apos;s balance are non-refundable
-          and can only be transferred to regular members. They cannot be
-          transferred to the owner or staff members.
+          Funds, once added to your team's balance, cannot be refunded.
         </InlineError>
       </Modal>
       <div className="flex items-start flex-col md:flex-row gap-y-4 md:gap-y-0 justify-between mb-8">
@@ -341,118 +341,118 @@ const TeamView: React.FC<TeamViewProps> = ({ user, team: teamInitial }) => {
             </div>
             <div className="flex justify-between items-center gap-8 w-full">
               <Owner user={team.owner} size={34} className="mt-2" />
-              {team.displayFunds && (
-                <Tooltip label={`Team funds: ${team.funds} Tickets`}>
-                  <div
-                    className="flex items-center gap-2 mt-2 text-teal-400 cursor-pointer"
-                    onClick={() =>
-                      openModal({
-                        title: "Team funds",
-                        children: (
-                          <>
-                            <Text size="sm" color="dimmed" align="center">
-                              Teams can have Ticket balances which can be used
-                              to distribute earnings to giveaway winners, fund
-                              development, or anything else you can think of.
-                            </Text>
-                            <Text
-                              size="sm"
-                              color="dimmed"
-                              mt="md"
-                              align="center"
-                            >
-                              You can add funds to your team by clicking the
-                              triple vertical dots in the top right corner of
-                              this page, and selecting &quot;Add funds&quot;.
-                            </Text>
-                          </>
-                        ),
-                      })
-                    }
-                  >
-                    <HiOutlineTicket />
-                    <Text size="sm" weight={500}>
-                      T${team.funds}
-                    </Text>
-                  </div>
-                </Tooltip>
-              )}
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-4 ml-auto">
-          <Menu>
-            <Menu.Target>
-              <ActionIcon size="lg">
-                <HiDotsVertical />
-              </ActionIcon>
-            </Menu.Target>
-            <Menu.Dropdown>
-              <Menu.Label>Actions</Menu.Label>
-              <Menu.Item
-                icon={<HiClipboard />}
-                onClick={() => {
-                  copy(
-                    `${window.location.protocol}//${window.location.host}/teams/t/${team.slug}`
-                  );
-                }}
+        <div className="flex flex-col gap-4 items-end">
+          <div className="flex items-center gap-4 ml-auto">
+            <Menu>
+              <Menu.Target>
+                <ActionIcon size="lg">
+                  <HiDotsVertical />
+                </ActionIcon>
+              </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Label>Actions</Menu.Label>
+                <Menu.Item
+                  icon={<HiClipboard />}
+                  onClick={() => {
+                    copy(
+                      `${window.location.protocol}//${window.location.host}/teams/t/${team.slug}`
+                    );
+                  }}
+                >
+                  Copy team link
+                </Menu.Item>
+                <Menu.Item icon={<HiClipboard />} onClick={() => copy(team.id)}>
+                  Copy ID
+                </Menu.Item>
+                <Menu.Item
+                  icon={<HiOutlineTicket />}
+                  onClick={() => setAddFundsOpened(true)}
+                >
+                  Add funds
+                </Menu.Item>
+                {(team.owner.id === user.id ||
+                  (team.staff &&
+                    team.staff.map((s) => s.id).includes(user.id))) && (
+                  <>
+                    <Menu.Divider />
+                    <Menu.Label>Administration</Menu.Label>
+                    <Link
+                      href={`/teams/t/${team.slug}/settings/general`}
+                      passHref
+                    >
+                      <Menu.Item icon={<HiCog />}>Manage team</Menu.Item>
+                    </Link>
+                    <Menu.Item
+                      icon={<HiChat />}
+                      onClick={() => setShoutEditOpened(true)}
+                    >
+                      Edit shout
+                    </Menu.Item>
+                  </>
+                )}
+              </Menu.Dropdown>
+            </Menu>
+            <Button
+              color={member === null ? "dark" : member ? "red" : "blue"}
+              disabled={
+                member === null ||
+                team.owner.id === user.id ||
+                (team.access === TeamAccess.PRIVATE && !invited && !member) ||
+                team.banned.some((b) => b.id === user.id)
+              }
+              onClick={joinTeam}
+              className="ml-auto md:ml-0"
+            >
+              {member === null
+                ? "..."
+                : team.banned.some((b) => b.id === user.id)
+                ? "Banned"
+                : member
+                ? "Leave team"
+                : team.access === TeamAccess.PRIVATE
+                ? invited
+                  ? "Accept invite"
+                  : "Private"
+                : "Join team"}
+            </Button>
+          </div>
+          {team.displayFunds && (
+            <Tooltip label={`Team funds: ${team.funds} Tickets`}>
+              <Badge
+                color="teal"
+                radius="sm"
+                className="px-2 cursor-pointer w-fit"
+                size="xl"
+                onClick={() =>
+                  openModal({
+                    title: "Team funds",
+                    children: (
+                      <>
+                        <Text size="sm" color="dimmed" align="center">
+                          Teams can have Ticket balances which can be used to
+                          distribute earnings to giveaway winners, fund
+                          development, or anything else you can think of.
+                        </Text>
+                        <Text size="sm" color="dimmed" mt="md" align="center">
+                          You can add funds to your team by clicking the triple
+                          vertical dots in the top right corner of this page,
+                          and selecting &quot;Add funds&quot;.
+                        </Text>
+                      </>
+                    ),
+                  })
+                }
               >
-                Copy team link
-              </Menu.Item>
-              <Menu.Item icon={<HiClipboard />} onClick={() => copy(team.id)}>
-                Copy ID
-              </Menu.Item>
-              <Menu.Item
-                icon={<HiOutlineTicket />}
-                onClick={() => setAddFundsOpened(true)}
-              >
-                Add funds
-              </Menu.Item>
-              {(team.owner.id === user.id ||
-                (team.staff &&
-                  team.staff.map((s) => s.id).includes(user.id))) && (
-                <>
-                  <Menu.Divider />
-                  <Menu.Label>Administration</Menu.Label>
-                  <Link
-                    href={`/teams/t/${team.slug}/settings/general`}
-                    passHref
-                  >
-                    <Menu.Item icon={<HiCog />}>Manage team</Menu.Item>
-                  </Link>
-                  <Menu.Item
-                    icon={<HiChat />}
-                    onClick={() => setShoutEditOpened(true)}
-                  >
-                    Edit shout
-                  </Menu.Item>
-                </>
-              )}
-            </Menu.Dropdown>
-          </Menu>
-          <Button
-            color={member === null ? "dark" : member ? "red" : "blue"}
-            disabled={
-              member === null ||
-              team.owner.id === user.id ||
-              (team.access === TeamAccess.PRIVATE && !invited && !member) ||
-              team.banned.some((b) => b.id === user.id)
-            }
-            onClick={joinTeam}
-            className="ml-auto md:ml-0"
-          >
-            {member === null
-              ? "..."
-              : team.banned.some((b) => b.id === user.id)
-              ? "Banned"
-              : member
-              ? "Leave team"
-              : team.access === TeamAccess.PRIVATE
-              ? invited
-                ? "Accept invite"
-                : "Private"
-              : "Join team"}
-          </Button>
+                <div className="flex items-center gap-2">
+                  <HiOutlineTicket />
+                  <span>{abbreviateNumber(team.funds)}</span>
+                </div>
+              </Badge>
+            </Tooltip>
+          )}
         </div>
       </div>
       {team.shout && (
