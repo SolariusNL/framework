@@ -320,7 +320,7 @@ const TeamView: React.FC<TeamViewProps> = ({ user, team: teamInitial }) => {
           )}
         </Stateful>
         <InlineError variant="warning" title="Non-refundable" className="mt-8">
-          Funds, once added to your team's balance, cannot be refunded.
+          Funds, once added to your team&apos;s balance, cannot be refunded.
         </InlineError>
       </Modal>
       <div className="flex items-start flex-col md:flex-row gap-y-4 md:gap-y-0 justify-between mb-8">
