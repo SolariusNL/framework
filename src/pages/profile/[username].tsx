@@ -430,7 +430,7 @@ const Profile: NextPage<ProfileProps> = ({
                     </Text>
                   </div>
                   {user && user.id === viewing.id && (
-                    <span className="flex items-center text-sm gap-2 text-dimmed mt-4">
+                    <span className="flex items-center text-sm gap-2 text-dimmed mt-4 md:justify-start justify-center">
                       <HiSparkles />
                       <span>It&apos;s you!</span>
                     </span>
