@@ -412,7 +412,7 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
             </div>
             <GameComments game={game} user={user} />
           </div>
-          <div className="col-span-2">
+          <div className="col-span-2 flex flex-col gap-4">
             {similarGames && similarGames.length > 0 && (
               <ShadedCard className="col-span-1 h-fit w-full">
                 <Title order={4} mb={16}>
