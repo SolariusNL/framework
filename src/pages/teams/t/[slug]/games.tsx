@@ -3,10 +3,11 @@ import ModernEmptyState from "@/components/modern-empty-state";
 import TeamsViewProvider from "@/components/teams/teams-view";
 import { TeamType } from "@/pages/teams";
 import authorizedRoute from "@/util/auth";
+import cast from "@/util/cast";
 import prisma from "@/util/prisma";
 import { Game, gameSelect, NonUser, User } from "@/util/prisma-types";
 import { getTeam } from "@/util/teams";
-import { Rating } from "@prisma/client";
+import { Rating, Team } from "@prisma/client";
 import { GetServerSideProps } from "next";
 
 export type TeamViewGamesProps = {
@@ -65,7 +66,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
   const games = await prisma.game.findMany({
     where: {
-      teamId: team.id,
+      teamId: cast<Team>(team).id,
     },
     select: gameSelect,
   });
