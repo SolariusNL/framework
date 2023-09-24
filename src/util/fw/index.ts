@@ -9,3 +9,4 @@ export * from "./presence";
 export * from "./string-parser";
 export * from "./strings";
 export * from "./util";
+export * from "./obj";

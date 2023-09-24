@@ -1,3 +1,5 @@
+import cast from "@/util/cast";
+import { Fw } from "@/util/fw";
 import prisma from "@/util/prisma";
 import { nonCurrentUserSelect } from "@/util/prisma-types";
 import { TeamIssueStatus } from "@prisma/client";
@@ -40,7 +42,13 @@ const getTeam = async (slug: string, include?: Record<string, any>) => {
   });
 
   return {
-    ...team,
+    ...Fw.Objects.applyConditional(cast<Record<string, any>>(team), {
+      displayFunds: {
+        false: {
+          pop: ["funds"],
+        },
+      },
+    }),
     _count: {
       ...team?._count,
       issues: openIssues,

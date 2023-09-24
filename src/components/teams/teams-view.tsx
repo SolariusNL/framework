@@ -2,6 +2,8 @@ import Framework from "@/components/framework";
 import ShadedButton from "@/components/shaded-button";
 import SidebarTabNavigation from "@/layouts/SidebarTabNavigation";
 import { TeamType } from "@/pages/teams";
+import abbreviateNumber from "@/util/abbreviate";
+import { Fw } from "@/util/fw";
 import getMediaUrl from "@/util/get-media";
 import { User } from "@/util/prisma-types";
 import { Avatar, Badge, NavLink, Text } from "@mantine/core";
@@ -13,12 +15,13 @@ import {
   HiExclamation,
   HiFolder,
   HiGift,
-  HiLockClosed,
+  HiOutlineLockClosed,
+  HiOutlineTicket,
   HiTicket,
   HiUserGroup,
   HiUsers,
   HiViewGrid,
-  HiViewList,
+  HiViewList
 } from "react-icons/hi";
 
 type TeamsViewProps = {
@@ -93,20 +96,46 @@ const TeamsViewProvider: React.FC<TeamsViewProps> = ({
                   size={42}
                   src={getMediaUrl(team.iconUri)}
                   className="rounded-md"
-                />
+                  color={Fw.Strings.color(team.name)}
+                >
+                  {Fw.Strings.initials(team.name)}
+                </Avatar>
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-2">
                     <Text size="lg" weight={500}>
                       {team.name}
                     </Text>
                     {team.access === "PRIVATE" && (
-                      <HiLockClosed className="dark:text-gray-300/50 text-gray-700/50" />
+                      <HiOutlineLockClosed className="text-dimmed" />
                     )}
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge color="gray" leftSection={<HiUsers size={10} />}>
+                    <Badge
+                      color="gray"
+                      radius="sm"
+                      className="px-1.5"
+                      size="lg"
+                      leftSection={
+                        <div className="flex items-center">
+                          <HiUsers className="text-dimmed" />
+                        </div>
+                      }
+                    >
                       {team._count.members + 1}
                     </Badge>
+                    {team.displayFunds && (
+                      <Badge
+                        color="teal"
+                        radius="sm"
+                        className="px-1.5"
+                        size="lg"
+                      >
+                        <div className="flex items-center gap-2">
+                          <HiOutlineTicket />
+                          <span>{abbreviateNumber(team.funds)}</span>
+                        </div>
+                      </Badge>
+                    )}
                   </div>
                 </div>
               </div>

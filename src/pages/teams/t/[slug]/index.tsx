@@ -325,7 +325,13 @@ const TeamView: React.FC<TeamViewProps> = ({ user, team: teamInitial }) => {
       </Modal>
       <div className="flex items-start flex-col md:flex-row gap-y-4 md:gap-y-0 justify-between mb-8">
         <div className="flex items-start gap-7">
-          <Avatar size={100} src={getMediaUrl(team.iconUri)} />
+          <Avatar
+            size={100}
+            src={getMediaUrl(team.iconUri)}
+            color={Fw.Strings.color(team.name)}
+          >
+            {Fw.Strings.initials(team.name)}
+          </Avatar>
           <div className="flex flex-col gap-2 w-full">
             <div className="flex items-center gap-4">
               {team.access === TeamAccess.PRIVATE && (
@@ -524,12 +530,13 @@ const TeamView: React.FC<TeamViewProps> = ({ user, team: teamInitial }) => {
           {
             tooltip: "Website",
             icon: <HiGlobe />,
-            value:
-              (
-                <Anchor onClick={() => Fw.Links.externalWarning(team.website!)}>
-                  {team.website}
-                </Anchor>
-              ) || "Unprovided",
+            value: team.website ? (
+              <Anchor onClick={() => Fw.Links.externalWarning(team.website!)}>
+                {team.website}
+              </Anchor>
+            ) : (
+              "Unprovided"
+            ),
           },
           {
             tooltip: "Based in",
@@ -544,7 +551,7 @@ const TeamView: React.FC<TeamViewProps> = ({ user, team: teamInitial }) => {
           {
             tooltip: "Funds",
             icon: <HiOutlineTicket />,
-            value: `T$${team.funds}`,
+            value: team.displayFunds ? `T$${team.funds}` : "Hidden",
           },
         ]}
       />
