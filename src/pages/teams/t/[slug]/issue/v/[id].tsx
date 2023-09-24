@@ -7,6 +7,7 @@ import ShadedCard from "@/components/shaded-card";
 import TeamsViewProvider from "@/components/teams/teams-view";
 import { TeamType } from "@/pages/teams";
 import authorizedRoute from "@/util/auth";
+import cast from "@/util/cast";
 import clsx from "@/util/clsx";
 import getMediaUrl from "@/util/get-media";
 import prisma from "@/util/prisma";
@@ -26,7 +27,7 @@ import {
   Title,
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
-import { TeamIssue } from "@prisma/client";
+import { Team, TeamIssue } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
@@ -365,7 +366,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const issue = await prisma.teamIssue.findFirst({
     where: {
       id: String(id),
-      teamId: team.id,
+      teamId: cast<Team>(team).id,
     },
     include: {
       assignee: nonCurrentUserSelect,

@@ -1,3 +1,4 @@
+import { TeamType } from "@/pages/teams";
 import cast from "@/util/cast";
 import { Fw } from "@/util/fw";
 import prisma from "@/util/prisma";
@@ -42,13 +43,19 @@ const getTeam = async (slug: string, include?: Record<string, any>) => {
   });
 
   return {
-    ...Fw.Objects.applyConditional(cast<Record<string, any>>(team), {
-      displayFunds: {
-        false: {
-          pop: ["funds"],
+    ...cast<
+      TeamType & {
+        staff: { username: string; id: number }[];
+      }
+    >(
+      Fw.Objects.applyConditional(cast<Record<string, any>>(team), {
+        displayFunds: {
+          false: {
+            pop: ["funds"],
+          },
         },
-      },
-    }),
+      })
+    ),
     _count: {
       ...team?._count,
       issues: openIssues,
