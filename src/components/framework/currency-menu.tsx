@@ -4,9 +4,10 @@ import Rocket from "@/icons/Rocket";
 import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
 import IResponseBase from "@/types/api/IResponseBase";
 import abbreviateNumber from "@/util/abbreviate";
-import clsx from "@/util/clsx";
 import fetchJson from "@/util/fetch";
+import { Fw } from "@/util/fw";
 import {
+  Badge,
   Button,
   CloseButton,
   Group,
@@ -22,9 +23,8 @@ import { useLocalStorage } from "@mantine/hooks";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
-import Celebration from "react-confetti";
 import {
-  HiGift,
+  HiArrowRight,
   HiOutlineGift,
   HiOutlineShoppingBag,
   HiOutlineSparkles,
@@ -154,7 +154,7 @@ const CurrencyMenu = ({
               size="lg"
               sx={{ lineHeight: 1 }}
             >
-              {user?.bits!}
+              {Fw.Nums.beautify(user?.bits! || 0)}
             </Text>
           </Group>
           <Exchange
@@ -164,96 +164,80 @@ const CurrencyMenu = ({
             }}
           />
           <Group spacing={6}>
-            <HiTicket color={theme.colors.green[3]} className="w-6 h-6" />
+            <HiOutlineTicket
+              color={theme.colors.green[3]}
+              className="w-6 h-6"
+            />
             <Text
               color={theme.colors.green[4]}
               weight={600}
               size="lg"
               sx={{ lineHeight: 1 }}
             >
-              {Math.floor(user?.bits! / 100) * 10 +
-                Math.round((user?.bits! % 100) / 10)}
+              {Fw.Nums.beautify(
+                Math.floor(user?.bits! / 100) * 10 +
+                  Math.round((user?.bits! % 100) / 10) || 0
+              )}
             </Text>
           </Group>
         </div>
         <Text align="center" color="dimmed" size="sm" mt="lg" mb="xl">
-          Bits are a new currency earned by participating in the community and
-          by logging in daily. You can convert your bits to tickets at a rate of
-          100 bits = 10 tickets.
+          Bits are earned by participating in the community, and by logging in
+          daily.
         </Text>
-        <div className="flex flex-col">
-          {[
-            {
-              label: "Convert my Bits to Tickets",
-              icon: <Exchange className="text-dimmed" />,
-              onClick: async () => {
-                setProperty(
-                  "tickets",
-                  user?.tickets! +
-                    Math.floor(user?.bits! / 100) * 10 +
-                    Math.round((user?.bits! % 100) / 10)
-                );
-                setProperty("bits", 0);
-                await fetchJson<IResponseBase>("/api/users/bits", {
-                  auth: true,
-                });
-                setCelebration(true);
-                setTimeout(() => setCelebration(false), 5000);
-              },
-              celebration: true,
-              disabled: user?.bits! < 100,
-            },
-            {
-              label: "Redeem daily prize",
-              icon: <HiGift className="text-dimmed" />,
-              onClick: () => {
-                router.push("/prizes");
-                setModalOpened(false);
-              },
-              celebration: false,
-            },
-          ]
-            .filter((item) => item)
-            .map((item, i) => (
-              <React.Fragment key={item.label}>
-                <div
-                  key={item.label}
-                  className={clsx(
-                    "p-4 dark:bg-mantine-paper-dark bg-gray-100 hover:bg-gray-200 dark:hover:bg-mantine-paper-dark/90 cursor-pointer",
-                    "transition-all flex items-center justify-center text-center",
-                    i === 0 ? "rounded-t-md" : "rounded-b-md",
-                    item.disabled && "opacity-20 pointer-events-none"
-                  )}
-                  onClick={() => {
-                    item.onClick();
-                    setMenuOpened(false);
-                  }}
-                >
-                  {item.celebration && celebration && (
-                    <div
-                      onClick={(e: React.MouseEvent) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                      }}
-                      className="absolute pointer-events-none top-0 left-0 right-0 bottom-0 flex items-center justify-center"
-                    >
-                      <Celebration
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                        }}
-                      />
-                    </div>
-                  )}
-                  <div className="flex items-center gap-2">
-                    {item.icon}
-                    <Text size="sm" weight={500} color="dimmed">
-                      {item.label}
-                    </Text>
-                  </div>
-                </div>
-              </React.Fragment>
-            ))}
+        <div className="flex justify-center mb-6">
+          <div className="flex items-center gap-2">
+            <Badge color="violet" radius="sm" className="px-2 w-fit" size="xl">
+              <div className="flex items-center gap-2">
+                <Bit />
+                <span>10</span>
+              </div>
+            </Badge>
+            <HiArrowRight className="text-dimmed w-6 h-6 stroke-1" />
+            <Badge color="teal" radius="sm" className="px-2 w-fit" size="xl">
+              <div className="flex items-center gap-2">
+                <HiOutlineTicket />
+                <span>1</span>
+              </div>
+            </Badge>
+          </div>
+        </div>
+        <div className="flex justify-center gap-2">
+          <Button
+            variant="light"
+            radius="xl"
+            leftIcon={<HiOutlineGift />}
+            onClick={() => {
+              router.push("/prizes");
+              setModalOpened(false);
+            }}
+            color="violet"
+          >
+            Redeem daily prize
+          </Button>
+          <Button
+            variant="light"
+            radius="xl"
+            leftIcon={<Exchange />}
+            onClick={async () => {
+              setProperty(
+                "tickets",
+                user?.tickets! +
+                  Math.floor(user?.bits! / 100) * 10 +
+                  Math.round((user?.bits! % 100) / 10)
+              );
+              setProperty("bits", 0);
+              await fetchJson<IResponseBase>("/api/users/bits", {
+                auth: true,
+              });
+              setCelebration(true);
+              setTimeout(() => setCelebration(false), 5000);
+            }}
+            disabled={user?.bits! < 100}
+            color="violet"
+          >
+            Convert Bits to T$
+          </Button>
         </div>
       </Modal>
       <Menu
@@ -303,7 +287,7 @@ const CurrencyMenu = ({
                     variant="gradient"
                     className="transition-all"
                     gradient={{
-                      from: "grape",
+                      from: "violet",
                       to: "violet",
                     }}
                   >
