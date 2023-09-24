@@ -5,7 +5,7 @@ import Links from "@/components/profile/links";
 import SettingsTab from "@/components/settings/settings-tab";
 import Stateful from "@/components/stateful";
 import getTimezones from "@/data/timezones";
-import { BLACK, FormSection } from "@/pages/teams/t/[slug]/issue/create";
+import { FormSection } from "@/pages/teams/t/[slug]/issue/create";
 import { getCookie } from "@/util/cookies";
 import getMediaUrl from "@/util/get-media";
 import { User } from "@/util/prisma-types";
@@ -234,7 +234,6 @@ const AccountTab = ({ user }: AccountTabProps) => {
                         604800000 >
                         Date.now() || user.tickets < 500
                     }
-                    classNames={BLACK}
                   />
                   <Text size="sm" color="dimmed">
                     You&apos;ll be charged 500T$ to change your username.
@@ -255,7 +254,6 @@ const AccountTab = ({ user }: AccountTabProps) => {
                         ? "Your alias must be between 3 and 24 characters and can only contain letters, numbers, and underscores."
                         : undefined
                     }
-                    classNames={BLACK}
                   />
                   <Text size="sm" color="dimmed">
                     Your alias is a non-unique username.
@@ -270,7 +268,6 @@ const AccountTab = ({ user }: AccountTabProps) => {
                     update("bio", e.target.value);
                   }}
                   minRows={3}
-                  classNames={BLACK}
                 />
                 <Text size="sm" color="dimmed">
                   Tell other users about yourself.
@@ -305,7 +302,6 @@ const AccountTab = ({ user }: AccountTabProps) => {
                   value: t.value,
                 }))}
                 searchable
-                classNames={BLACK}
               />
             </div>
             <Descriptive title="Busy">
@@ -315,7 +311,6 @@ const AccountTab = ({ user }: AccountTabProps) => {
                 onChange={(e) => {
                   update("busy", e.currentTarget.checked);
                 }}
-                classNames={BLACK}
               />
             </Descriptive>
           </FormSection>

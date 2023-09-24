@@ -5,7 +5,7 @@ import {
   LicenseHolderDetails,
 } from "@/pages/api/sounds/[[...params]]";
 import { fetchAndSetData } from "@/util/fetch";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { HiOutlineGlobe, HiOutlineTag } from "react-icons/hi";
 
 type SoundLicenseDetailsProps = {
@@ -26,7 +26,9 @@ const SoundLicenseDetails: React.FC<SoundLicenseDetailsProps> = ({
     ]);
   };
 
-  fetchAudioDetails();
+  useEffect(() => {
+    fetchAudioDetails();
+  }, []);
 
   return (
     <div className="mt-4">

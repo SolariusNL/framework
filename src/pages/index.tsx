@@ -42,6 +42,9 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import {
+  HiBell,
+  HiChatAlt,
+  HiCloud,
   HiCube,
   HiCubeTransparent,
   HiOutlineBell,
@@ -51,9 +54,12 @@ import {
   HiOutlineSparkles,
   HiOutlineUserGroup,
   HiPhotograph,
+  HiSearch,
   HiShare,
   HiShoppingCart,
+  HiSparkles,
   HiUserAdd,
+  HiUserGroup,
   HiX,
   HiXCircle,
 } from "react-icons/hi";
@@ -76,6 +82,7 @@ const Home: NextPage<HomeProps> = ({ user: u }) => {
       component: <FriendsWidget />,
       side: "left",
       icon: <HiOutlineUserGroup />,
+      activeIcon: <HiUserGroup />,
     },
     {
       title: "Spotlight",
@@ -84,6 +91,7 @@ const Home: NextPage<HomeProps> = ({ user: u }) => {
       component: <></>,
       side: "left",
       icon: <HiOutlineSearch />,
+      activeIcon: <HiSearch />,
       onClick: () => openSpotlight(),
     },
     {
@@ -93,6 +101,7 @@ const Home: NextPage<HomeProps> = ({ user: u }) => {
       component: <SubscriptionWidget />,
       side: "left",
       icon: <HiOutlineSparkles />,
+      activeIcon: <HiSparkles />,
     },
     {
       title: "Feed",
@@ -101,6 +110,7 @@ const Home: NextPage<HomeProps> = ({ user: u }) => {
       component: <FeedWidget />,
       side: "right",
       icon: <HiOutlineChatAlt />,
+      activeIcon: <HiChatAlt />,
     },
     {
       title: "Updates",
@@ -109,6 +119,7 @@ const Home: NextPage<HomeProps> = ({ user: u }) => {
       component: <UpdatesWidget />,
       side: "right",
       icon: <HiOutlineCloud />,
+      activeIcon: <HiCloud />,
     },
     {
       title: "Notifications",
@@ -129,6 +140,7 @@ const Home: NextPage<HomeProps> = ({ user: u }) => {
         ) : (
           <HiOutlineBell />
         ),
+      activeIcon: <HiBell />,
     },
   ];
 
@@ -201,7 +213,11 @@ const Home: NextPage<HomeProps> = ({ user: u }) => {
             <NavLink
               label={widget.title}
               description={widget.description}
-              icon={widget.icon}
+              icon={
+                activeIndex === widgets.indexOf(widget)
+                  ? widget.activeIcon
+                  : widget.icon
+              }
               key={widget.id}
               active={activeIndex === widgets.indexOf(widget)}
               onClick={() => {
