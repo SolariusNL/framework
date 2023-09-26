@@ -1,4 +1,4 @@
-import cron from "node-cron";
+import { Cron } from "croner";
 import logMsg from "./log";
 
 class FwCronJob {
@@ -14,7 +14,13 @@ class FwCronJob {
   }
 
   private init() {
-    cron.schedule(this.schedule, this.execute.bind(this));
+    Cron(
+      this.schedule,
+      {
+        timezone: "Europe/Paris",
+      },
+      this.execute.bind(this)
+    );
   }
 
   private async execute() {
