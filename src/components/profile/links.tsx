@@ -52,43 +52,51 @@ const Links = ({
 
   return (
     <ShadedCard className="min-w-0 truncate text-ellipsis" p="md" {...props}>
-      {user.profileLinks.map((link, i) => (
-        <Card.Section
-          key={i}
-          p="md"
-          withBorder
-          className="dark:!border-zinc-900 !border-gray-200 flex flex-col"
-        >
-          <div className="flex gap-2 items-center">
-            <Text weight={700} size="sm" color="dimmed" mb={4}>
-              {link.name}
-            </Text>
-            {typeof window !== "undefined" &&
-              domains &&
-              domains
-                .filter((d) =>
-                  [
-                    DomainStatus.GENERATING_CERTIFICATE,
-                    DomainStatus.VERIFIED,
-                  ].includes(d.status as "GENERATING_CERTIFICATE" | "VERIFIED")
-                )
-                .map((d) => d.domain)
-                .includes(removeProtocol(link.url)) && (
-                <IconTooltip
-                  icon={<HiBadgeCheck className="text-sky-500 -mt-1" />}
-                  label="This user has verified ownership of this domain"
-                />
-              )}
-          </div>
-          <Anchor
-            onClick={() => Fw.Links.externalWarning(link.url)}
-            target="_blank"
-            className="truncate"
+      {user.profileLinks
+        .map((link) => ({
+          ...link,
+          url: link.url.startsWith("http") ? link.url : `https://${link.url}`,
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map((link, i) => (
+          <Card.Section
+            key={i}
+            p="md"
+            withBorder
+            className="dark:!border-zinc-900 !border-gray-200 flex flex-col"
           >
-            {link.url}
-          </Anchor>
-        </Card.Section>
-      ))}
+            <div className="flex gap-2 items-center">
+              <Text weight={700} size="sm" color="dimmed" mb={4}>
+                {link.name}
+              </Text>
+              {typeof window !== "undefined" &&
+                domains &&
+                domains
+                  .filter((d) =>
+                    [
+                      DomainStatus.GENERATING_CERTIFICATE,
+                      DomainStatus.VERIFIED,
+                    ].includes(
+                      d.status as "GENERATING_CERTIFICATE" | "VERIFIED"
+                    )
+                  )
+                  .map((d) => d.domain)
+                  .includes(removeProtocol(link.url)) && (
+                  <IconTooltip
+                    icon={<HiBadgeCheck className="text-sky-500 -mt-1" />}
+                    label="This user has verified ownership of this domain"
+                  />
+                )}
+            </div>
+            <Anchor
+              onClick={() => Fw.Links.externalWarning(link.url)}
+              target="_blank"
+              className="truncate"
+            >
+              {link.url}
+            </Anchor>
+          </Card.Section>
+        ))}
       {user.profileLinks.length === 0 && (
         <div className="w-full justify-center flex">
           <ModernEmptyState title="No links" body="This user has no links." />
