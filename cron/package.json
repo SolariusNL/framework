@@ -16,7 +16,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "cross-env DEVELOPMENT=true ts-node src/app.ts",
-    "start": "cross-env DEVELOPMENT=false ts-node src/app.ts",
+    "start": "node dist/app.js",
     "migrate": "prisma migrate dev",
     "seed": "prisma seed",
     "prismadeploy": "prisma deploy",
