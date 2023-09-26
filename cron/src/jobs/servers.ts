@@ -1,8 +1,8 @@
-import { NotificationType } from "@prisma/client";
 import { FwCronJob } from "../classes";
 import prisma from "../prisma";
+import { checkServerStatus } from "../util/servers";
 
-const serverSync = new FwCronJob("0 * * * *", "server-sync", async () => {
+const serverJob = new FwCronJob("0 * * * *", "server-sync", async () => {
   const servers = await prisma.connection.findMany({
     where: { online: true },
     include: {
@@ -21,4 +21,4 @@ const serverSync = new FwCronJob("0 * * * *", "server-sync", async () => {
   console.log("cron ~ 🔄 Server status synchronization complete");
 });
 
-export default serverSync;
+export default serverJob;

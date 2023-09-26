@@ -50,4 +50,4 @@ async function setServerStatus(server: Connection, online: boolean) {
   });
 }
 
-export default setServerStatus;
+export { checkServerStatus, setServerStatus };
