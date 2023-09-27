@@ -4,7 +4,7 @@ import logMsg from "./log";
 class FwCronJob {
   public task: () => Promise<void>;
   public id: string;
-  private schedule: string;
+  public schedule: string;
 
   constructor(schedule: string, id: string, task: () => Promise<void>) {
     this.schedule = schedule;
