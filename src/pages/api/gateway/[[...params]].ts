@@ -1,5 +1,5 @@
 import Authorized from "@/util/api/authorized";
-import { checkSession } from "@/util/auth";
+import { getAccountFromSession } from "@/util/auth";
 import logger from "@/util/logger";
 import prisma from "@/util/prisma";
 import { NucleusStdoutType } from "@prisma/client";
@@ -57,7 +57,7 @@ class GatewayRouter {
         }
 
         if (type === "user") {
-          const account = await checkSession(token);
+          const account = await getAccountFromSession(token);
           if (!account) {
             return next(new Error("Authentication error"));
           }

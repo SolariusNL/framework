@@ -1,4 +1,4 @@
-import { checkSession } from "@/util/auth";
+import { getAccountFromSession } from "@/util/auth";
 import prisma from "@/util/prisma";
 import { nucleusKeySelect } from "@/util/prisma-types";
 import { NucleusKey } from "@prisma/client";
@@ -18,7 +18,7 @@ const AuthorizedBase = async (req: NextApiRequest, res: NextApiResponse) => {
     });
   }
 
-  const player = await checkSession(String(token));
+  const player = await getAccountFromSession(String(token));
   if (!player) {
     return res.status(401).json({
       error: "You are not authorized to access this resource",
@@ -76,7 +76,7 @@ const NucleusAuthorization = async (
 };
 
 export const Account = createParamDecorator<any>((req: NextApiRequest) => {
-  return checkSession(String(req.headers["authorization"]));
+  return getAccountFromSession(String(req.headers["authorization"]));
 });
 
 export const NucleusAuthorized =
