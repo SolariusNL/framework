@@ -3,7 +3,7 @@
   "version": "0.9.0",
   "private": true,
   "scripts": {
-    "dev": "cross-env NEXT_PUBLIC_VERSION=0.9.0 concurrently \"cd cron && yarn run start\" \"next dev\"",
+    "dev": "cross-env NEXT_PUBLIC_VERSION=0.9.0 concurrently \"cd cron && yarn run dev\" \"next dev\"",
     "build": "next build",
     "start": "cross-env NEXT_PUBLIC_VERSION=0.9.0 concurrently \"cd cron && yarn run build && yarn run start\" \"next start\"",
     "lint": "next lint",
