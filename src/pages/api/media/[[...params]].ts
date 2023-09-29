@@ -1,5 +1,5 @@
 import Authorized, { Account } from "@/util/api/authorized";
-import { getAccountFromSession } from "@/util/auth";
+import { checkSession } from "@/util/auth";
 import prisma from "@/util/prisma";
 import type { User } from "@/util/prisma-types";
 import { AssetType, prismaAssetTypeMap } from "@/util/types";
@@ -62,9 +62,7 @@ const createMulter = (
   });
 
 const avatars = createMulter("avatars", async (req, file, cb) => {
-  const user = await getAccountFromSession(
-    String(req.headers["authorization"])
-  );
+  const user = await checkSession(String(req.headers["authorization"]));
 
   await prisma.user.update({
     where: { id: user?.id },
@@ -77,9 +75,7 @@ const avatars = createMulter("avatars", async (req, file, cb) => {
 });
 
 const gameThumbnails = createMulter("thumbnails", async (req, file, cb) => {
-  const user = await getAccountFromSession(
-    String(req.headers["authorization"])
-  );
+  const user = await checkSession(String(req.headers["authorization"]));
 
   if (!req.params.gameId) return cb(new Error("No game id provided"), "");
 
@@ -107,9 +103,7 @@ const gameThumbnails = createMulter("thumbnails", async (req, file, cb) => {
 });
 
 const gameIcons = createMulter("icons", async (req, file, cb) => {
-  const user = await getAccountFromSession(
-    String(req.headers["authorization"])
-  );
+  const user = await checkSession(String(req.headers["authorization"]));
 
   if (!req.params.gameId) return cb(new Error("No game id provided"), "");
 
@@ -137,9 +131,7 @@ const gameIcons = createMulter("icons", async (req, file, cb) => {
 });
 
 const gamepassIcons = createMulter("gamepass", async (req, file, cb) => {
-  const user = await getAccountFromSession(
-    String(req.headers["authorization"])
-  );
+  const user = await checkSession(String(req.headers["authorization"]));
 
   if (!req.params.gamepassId) return cb(new Error("No game id provided"), "");
 
@@ -170,9 +162,7 @@ const gamepassIcons = createMulter("gamepass", async (req, file, cb) => {
 });
 
 const teamIcons = createMulter("team", async (req, file, cb) => {
-  const user = await getAccountFromSession(
-    String(req.headers["authorization"])
-  );
+  const user = await checkSession(String(req.headers["authorization"]));
 
   if (!req.params.teamId) return cb(new Error("No team id provided"), "");
 
@@ -199,9 +189,7 @@ const teamIcons = createMulter("team", async (req, file, cb) => {
 });
 
 const convoIcons = createMulter("convo", async (req, file, cb) => {
-  const user = await getAccountFromSession(
-    String(req.headers["authorization"])
-  );
+  const user = await checkSession(String(req.headers["authorization"]));
 
   if (!req.params.convoId)
     return cb(new Error("No conversation id provided"), "");
@@ -234,9 +222,7 @@ const convoIcons = createMulter("convo", async (req, file, cb) => {
 });
 
 const assetIcons = createMulter("asset", async (req, file, cb) => {
-  const user = await getAccountFromSession(
-    String(req.headers["authorization"])
-  );
+  const user = await checkSession(String(req.headers["authorization"]));
 
   if (!req.params.assetId) return cb(new Error("No asset id provided"), "");
   const type = req.query.type as AssetType;
@@ -274,9 +260,7 @@ const assetIcons = createMulter("asset", async (req, file, cb) => {
 const sounds = createMulter(
   "sounds",
   async (req, file, cb) => {
-    const user = await getAccountFromSession(
-      String(req.headers["authorization"])
-    );
+    const user = await checkSession(String(req.headers["authorization"]));
 
     if (!req.params.soundId) return cb(new Error("No sound id provided"), "");
 
