@@ -121,7 +121,7 @@ const UserMenu = ({
                 <Avatar
                   src={
                     getMediaUrl(user?.avatarUri!) ||
-                    `https://avatars.dicebear.com/api/identicon/${user?.id}.png`
+                    `https://api.dicebear.com/7.x/identicon/svg?seed=${user?.id}`
                   }
                   alt={user?.username}
                   radius="xl"
