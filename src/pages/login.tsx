@@ -1,7 +1,6 @@
 import PinInput from "@/components/pin-input";
 import OuterUI from "@/layouts/OuterUI";
 import authorizedRoute from "@/util/auth";
-import { setCookie } from "@/util/cookies";
 import {
   Anchor,
   Button,
@@ -15,6 +14,7 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
+import { setCookie } from "cookies-next";
 import { AnimatePresence, motion } from "framer-motion";
 import type { GetServerSidePropsContext, NextPage } from "next";
 import Link from "next/link";
@@ -52,6 +52,15 @@ const Login: NextPage = () => {
   const [twofaUid, setTwofaUid] = useState("");
   const [lockError, setLockError] = useState("");
 
+  const setLoginCookie = (token: string) => {
+    setCookie(".frameworksession", token, {
+      maxAge: 60 * 60 * 24 * 30,
+      ...(process.env.NEXT_PUBLIC_COOKIE_DOMAIN && {
+        domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
+      }),
+    });
+  };
+
   const verifyTwoFactor = async (code: string) => {
     await fetch("/api/auth/@me/twofa/verify", {
       method: "POST",
@@ -67,7 +76,7 @@ const Login: NextPage = () => {
       .then((res) => res.json())
       .then((res) => {
         if (res.success) {
-          setCookie(".frameworksession", res.token, 365);
+          setLoginCookie(res.token);
           router.push("/").then(() => router.reload());
         } else {
           showNotification({
@@ -102,7 +111,7 @@ const Login: NextPage = () => {
             setTwofaOpened(true);
             setTwofaUid(res.uid);
           } else {
-            setCookie(".frameworksession", res.token, 60);
+            setLoginCookie(res.token);
             router.push("/").then(() => router.reload());
           }
         } else {

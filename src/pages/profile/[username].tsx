@@ -292,7 +292,7 @@ const Profile: NextPage<ProfileProps> = ({
                     <Avatar
                       src={
                         getMediaUrl(viewing.avatarUri) ||
-                        `https://avatars.dicebear.com/api/identicon/${viewing.id}.png`
+                        `https://api.dicebear.com/7.x/identicon/svg?seed=${viewing.id}`
                       }
                       className="cursor-pointer"
                       radius={999}
