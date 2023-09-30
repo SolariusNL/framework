@@ -162,12 +162,7 @@ const Framework = ({
       }}
       icon={
         <span
-          className={clsx(
-            "flex items-center justify-center",
-            (router.pathname.startsWith(tab.href) ||
-              router.pathname === tab.href) &&
-              "text-dimmed"
-          )}
+          className={clsx("flex items-center justify-center", "text-dimmed")}
         >
           {tab.icon}
         </span>
