@@ -276,7 +276,6 @@ const Home: NextPage<HomeProps> = ({ user: u }) => {
                       label: "Follow your friends",
                       description:
                         "Follow your friends to play together and chat.",
-                      complete: user?._count.following! > 0,
                       icon: <HiUserAdd />,
                       href: "/social",
                     },
@@ -285,10 +284,6 @@ const Home: NextPage<HomeProps> = ({ user: u }) => {
                       label: "Create your profile",
                       description:
                         "Tell us a little about yourself so your friends can get to know you.",
-                      complete:
-                        user?.bio !== null &&
-                        user?.bio !== "This user has not yet written a bio." &&
-                        user?.bio !== "",
                       icon: <HiPhotograph />,
                       href: "/settings/account",
                     },
@@ -297,7 +292,6 @@ const Home: NextPage<HomeProps> = ({ user: u }) => {
                       label: "Like some games",
                       description:
                         "Like some games to get recommendations and updates.",
-                      complete: false,
                       icon: <HiCube />,
                       href: "/games",
                     },
@@ -306,7 +300,6 @@ const Home: NextPage<HomeProps> = ({ user: u }) => {
                       label: "Browse the catalog",
                       description:
                         "Browse the catalog to customize your avatar and more.",
-                      complete: false,
                       icon: <HiShoppingCart />,
                       href: "/catalog",
                     },
@@ -315,7 +308,6 @@ const Home: NextPage<HomeProps> = ({ user: u }) => {
                       label: "Refer your friends",
                       description:
                         "Refer your friends to earn rewards and help us grow.",
-                      complete: false,
                       icon: <HiShare />,
                       href: "/settings/referrals",
                     },
@@ -324,37 +316,33 @@ const Home: NextPage<HomeProps> = ({ user: u }) => {
                       label: "Create your first game",
                       description:
                         "Create your first game to start building your community.",
-                      complete: false,
                       icon: <HiCubeTransparent />,
                       href: "/invent/games",
                     },
-                  ]
-                    .filter((step) => !step.complete)
-                    .map((step) => (
-                      <Link href={step.href} key={step.label}>
-                        <motion.div
-                          transition={{
-                            type: "spring",
-                            stiffness: 260,
-                            damping: 20,
-                          }}
-                          whileHover={{ scale: 1.02 }}
-                          className="flex flex-col gap-2 cursor-pointer"
-                        >
-                          <step.component className="p-8 rounded-md px-20 flex items-center text-center justify-center">
-                            <div className="text-white text-2xl">
-                              {step.icon}
-                            </div>
-                          </step.component>
-                          <Text size="sm" weight={500}>
-                            {step.label}
-                          </Text>
-                          <Text size="sm" color="dimmed">
-                            {step.description}
-                          </Text>
-                        </motion.div>
-                      </Link>
-                    ))}
+                  ].map((step) => (
+                    <Link href={step.href} key={step.label}>
+                      <motion.div
+                        transition={{
+                          type: "spring",
+                          stiffness: 260,
+                          damping: 20,
+                        }}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="flex flex-col gap-2 cursor-pointer"
+                      >
+                        <step.component className="p-8 rounded-md px-20 flex items-center text-center justify-center">
+                          <div className="text-white text-2xl">{step.icon}</div>
+                        </step.component>
+                        <Text size="sm" weight={500}>
+                          {step.label}
+                        </Text>
+                        <Text size="sm" color="dimmed">
+                          {step.description}
+                        </Text>
+                      </motion.div>
+                    </Link>
+                  ))}
                 </div>
                 <Divider mt="xl" mb="xl" />
               </>
