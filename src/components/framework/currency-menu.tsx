@@ -202,7 +202,7 @@ const CurrencyMenu = ({
             </Badge>
           </div>
         </div>
-        <div className="flex justify-center gap-2">
+        <div className="flex md:flex-row flex-col justify-center gap-2">
           <Button
             variant="light"
             radius="xl"
