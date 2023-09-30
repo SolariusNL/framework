@@ -3,7 +3,7 @@ import { getAccountFromSession } from "@/util/auth";
 import logger from "@/util/logger";
 import prisma from "@/util/prisma";
 import { NucleusStdoutType } from "@prisma/client";
-import { Get, Res, createHandler } from "@storyofams/next-api-decorators";
+import { Get, Res, createHandler } from "@solariusnl/next-api-decorators";
 import http from "http";
 import { NextApiResponse } from "next";
 import { Server } from "socket.io";

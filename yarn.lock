@@ -2012,6 +2012,13 @@
   resolved "https://registry.yarnpkg.com/@socket.io/component-emitter/-/component-emitter-3.1.0.tgz#96116f2a912e0c02817345b3c10751069920d553"
   integrity sha512-+9jVqKhRSpsc591z5vX+X5Yyw+he/HCB4iQ/RYxw35CEPaY1gnsNE43nf9n9AaYjAQrTiI/mOwKUKdUs9vf7Xg==
 
+"@solariusnl/next-api-decorators@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@solariusnl/next-api-decorators/-/next-api-decorators-1.1.0.tgz#47003a3d62f273c2178b3b775236980bb4544b19"
+  integrity sha512-5jT4AkXSvrEeXEa1oM8CVMrKCX5Egndnm/XnQYxYfoBwcRaVOyMMEqxbDFqkuCMqA21+NJfkcbNkJk1kMg2U3Q==
+  dependencies:
+    reflect-metadata "^0.1.13"
+
 "@soodam.re/env-utils@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@soodam.re/env-utils/-/env-utils-1.0.1.tgz#ca747189d042cb3543546ca2235459c75c6bafd7"
@@ -2029,13 +2036,6 @@
     typescript "^4.9.4"
     v8-compile-cache-lib "^3.0.1"
     yn "^3.1.1"
-
-"@storyofams/next-api-decorators@^1.8.2":
-  version "1.8.2"
-  resolved "https://registry.yarnpkg.com/@storyofams/next-api-decorators/-/next-api-decorators-1.8.2.tgz#f0d9a5697cf41f919cfbd756296f4e9fda710fb4"
-  integrity sha512-42K8xxwNd/cIOR5+t4OfRxXTATGlGzY2T/onlvVFLmKG9ci2Y/hvFnSepOE/7fiq4FnYrUA668064KxysXEUJA==
-  dependencies:
-    reflect-metadata "^0.1.13"
 
 "@stripe/stripe-js@^1.44.1":
   version "1.44.1"

@@ -1,7 +1,7 @@
 import {
   createMiddlewareDecorator,
   NextFunction,
-} from "@storyofams/next-api-decorators";
+} from "@solariusnl/next-api-decorators";
 import { NextApiRequest, NextApiResponse } from "next";
 
 const rateLimits = new Map();

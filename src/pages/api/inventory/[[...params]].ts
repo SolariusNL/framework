@@ -12,7 +12,7 @@ import {
   Param,
   Query,
   createHandler,
-} from "@storyofams/next-api-decorators";
+} from "@solariusnl/next-api-decorators";
 
 export type GetInventoryItemsByTypeResponse = IResponseBase<{
   items: AssetFrontend[];

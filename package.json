@@ -47,7 +47,7 @@
     "@react-email/render": "0.0.6",
     "@reduxjs/toolkit": "^1.9.5",
     "@soodam.re/env-utils": "^1.0.1",
-    "@storyofams/next-api-decorators": "^1.8.2",
+    "@solariusnl/next-api-decorators": "^1.1.0",
     "@stripe/stripe-js": "^1.44.1",
     "@supabase/supabase-js": "^1.35.4",
     "@tailwindcss/line-clamp": "^0.4.4",

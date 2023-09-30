@@ -8,7 +8,7 @@ import {
   Query,
   Res,
   createHandler,
-} from "@storyofams/next-api-decorators";
+} from "@solariusnl/next-api-decorators";
 import type { NextApiResponse } from "next";
 import Stripe from "stripe";
 

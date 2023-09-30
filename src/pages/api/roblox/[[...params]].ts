@@ -1,4 +1,4 @@
-import { Get, Query, createHandler } from "@storyofams/next-api-decorators";
+import { Get, Query, createHandler } from "@solariusnl/next-api-decorators";
 
 class RobloxRouter {
   @Get("/convert")

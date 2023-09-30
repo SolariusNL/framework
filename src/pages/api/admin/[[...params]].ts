@@ -32,7 +32,6 @@ import {
   Role,
 } from "@prisma/client";
 import { render } from "@react-email/render";
-import { setEnvVar } from "@soodam.re/env-utils";
 import {
   BadRequestException,
   Body,
@@ -43,7 +42,8 @@ import {
   Query,
   Request,
   createHandler,
-} from "@storyofams/next-api-decorators";
+} from "@solariusnl/next-api-decorators";
+import { setEnvVar } from "@soodam.re/env-utils";
 import { randomUUID } from "crypto";
 import AccountUpdate from "email/emails/account-update";
 import JoinFramework from "email/emails/join-framework";
@@ -351,7 +351,7 @@ class AdminRouter {
     return <IResponseBase<{ user: AdminViewUser }>>{
       success: true,
       data: {
-        user: cast<AdminViewUser>(user)
+        user: cast<AdminViewUser>(user),
       },
     };
   }

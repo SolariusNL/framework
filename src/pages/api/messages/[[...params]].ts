@@ -1,14 +1,14 @@
+import Authorized, { Account } from "@/util/api/authorized";
+import prisma from "@/util/prisma";
+import type { User } from "@/util/prisma-types";
+import { messageSelect } from "@/util/prisma-types";
 import {
   Body,
   createHandler,
   Get,
   Param,
   Post,
-} from "@storyofams/next-api-decorators";
-import Authorized, { Account } from "@/util/api/authorized";
-import prisma from "@/util/prisma";
-import { messageSelect } from "@/util/prisma-types";
-import type { User } from "@/util/prisma-types";
+} from "@solariusnl/next-api-decorators";
 
 class MessageRouter {
   @Post("/new/:recipientId")

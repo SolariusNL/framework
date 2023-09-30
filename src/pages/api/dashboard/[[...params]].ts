@@ -1,9 +1,9 @@
-import { PrivacyPreferences } from "@prisma/client";
-import { createHandler, Get } from "@storyofams/next-api-decorators";
 import Authorized, { Account } from "@/util/api/authorized";
 import prisma from "@/util/prisma";
 import type { User } from "@/util/prisma-types";
 import { gameSelect } from "@/util/prisma-types";
+import { PrivacyPreferences } from "@prisma/client";
+import { createHandler, Get } from "@solariusnl/next-api-decorators";
 
 class DashboardRouter {
   @Get("/friends")

@@ -4,7 +4,7 @@ import { assetFrontendInclude } from "@/util/includes";
 import prisma from "@/util/prisma";
 import type { User } from "@/util/prisma-types";
 import { AssetFrontend } from "@/util/types";
-import { Get, Param, createHandler } from "@storyofams/next-api-decorators";
+import { Get, Param, createHandler } from "@solariusnl/next-api-decorators";
 
 export type GetGameGamepassesResponse = IResponseBase<{
   gamepasses: AssetFrontend[];

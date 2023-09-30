@@ -11,7 +11,7 @@ import {
   Param,
   Post,
   createHandler,
-} from "@storyofams/next-api-decorators";
+} from "@solariusnl/next-api-decorators";
 import { z } from "zod";
 
 export const createAbuseReportSchema = z.object({

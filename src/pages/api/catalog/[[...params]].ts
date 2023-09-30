@@ -29,7 +29,7 @@ import {
   Patch,
   Post,
   Query,
-} from "@storyofams/next-api-decorators";
+} from "@solariusnl/next-api-decorators";
 import { z } from "zod";
 
 export type GetLimitedRecentAveragePriceResponse = IResponseBase<{

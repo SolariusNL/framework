@@ -14,7 +14,7 @@ import {
   createHandler,
   Get,
   Post,
-} from "@storyofams/next-api-decorators";
+} from "@solariusnl/next-api-decorators";
 import AccountUpdate from "email/emails/account-update";
 import SupportTicketCreated from "email/emails/support-ticket-created";
 import sanitize from "sanitize-html";

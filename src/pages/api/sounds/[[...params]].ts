@@ -10,7 +10,7 @@ import {
   Param,
   Post,
   createHandler,
-} from "@storyofams/next-api-decorators";
+} from "@solariusnl/next-api-decorators";
 import { z } from "zod";
 
 type LicenseHolderProperty = "name" | "location" | "id";

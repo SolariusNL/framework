@@ -2,7 +2,6 @@ import IResponseBase from "@/types/api/IResponseBase";
 import { hashPass } from "@/util/hash/password";
 import prisma from "@/util/prisma";
 import { AdminPermission, PrismaClient } from "@prisma/client";
-import { setEnvVar } from "@soodam.re/env-utils";
 import {
   Body,
   Get,
@@ -10,7 +9,8 @@ import {
   Post,
   UnauthorizedException,
   createHandler,
-} from "@storyofams/next-api-decorators";
+} from "@solariusnl/next-api-decorators";
+import { setEnvVar } from "@soodam.re/env-utils";
 import { spawn } from "child_process";
 import { copyFileSync, existsSync } from "fs";
 import { z } from "zod";

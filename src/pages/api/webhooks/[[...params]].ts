@@ -4,7 +4,7 @@ import { PREMIUM_PAYOUTS } from "@/util/constants";
 import createNotification from "@/util/notifications";
 import prisma from "@/util/prisma";
 import { NotificationType } from "@prisma/client";
-import { Post, Req, createHandler } from "@storyofams/next-api-decorators";
+import { Post, Req, createHandler } from "@solariusnl/next-api-decorators";
 import { buffer } from "micro";
 import type { NextApiRequest } from "next";
 import Stripe from "stripe";

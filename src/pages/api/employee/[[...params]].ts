@@ -14,7 +14,7 @@ import {
   Query,
   UnauthorizedException,
   createHandler,
-} from "@storyofams/next-api-decorators";
+} from "@solariusnl/next-api-decorators";
 
 class EmployeeRouter {
   @Get("/my/tasks")

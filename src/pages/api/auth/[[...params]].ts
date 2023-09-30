@@ -23,7 +23,7 @@ import {
   Req,
   Res,
   createHandler,
-} from "@storyofams/next-api-decorators";
+} from "@solariusnl/next-api-decorators";
 import { setCookie } from "cookies-next";
 import AccountUpdate from "email/emails/account-update";
 import LoginCode from "email/emails/login-code";

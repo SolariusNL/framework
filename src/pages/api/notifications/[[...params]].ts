@@ -10,7 +10,7 @@ import {
   Post,
   Query,
   createHandler,
-} from "@storyofams/next-api-decorators";
+} from "@solariusnl/next-api-decorators";
 
 class NotificationRouter {
   private async getNotification(id: string): Promise<Notification | null> {

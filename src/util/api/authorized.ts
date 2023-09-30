@@ -5,7 +5,7 @@ import { NucleusKey } from "@prisma/client";
 import {
   createMiddlewareDecorator,
   createParamDecorator,
-} from "@storyofams/next-api-decorators";
+} from "@solariusnl/next-api-decorators";
 import { NextApiRequest, NextApiResponse } from "next";
 import { getClientIp } from "request-ip";
 

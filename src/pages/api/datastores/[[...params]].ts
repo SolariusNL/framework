@@ -9,12 +9,12 @@ import type { NucleusKey, User } from "@/util/prisma-types";
 import { RateLimitMiddleware } from "@/util/rate-limit";
 import {
   Body,
-  createHandler,
   Delete,
   Get,
   Param,
   Post,
-} from "@storyofams/next-api-decorators";
+  createHandler,
+} from "@solariusnl/next-api-decorators";
 
 class DatastoreRouter {
   @Post("/new")

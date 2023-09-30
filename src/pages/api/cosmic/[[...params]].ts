@@ -1,12 +1,12 @@
+import Authorized, { Account } from "@/util/api/authorized";
+import prisma from "@/util/prisma";
+import type { User } from "@/util/prisma-types";
 import {
   createHandler,
   Get,
   Param,
   Query,
-} from "@storyofams/next-api-decorators";
-import Authorized, { Account } from "@/util/api/authorized";
-import prisma from "@/util/prisma";
-import type { User } from "@/util/prisma-types";
+} from "@solariusnl/next-api-decorators";
 
 class CosmicRouter {
   @Get("/my/servers")

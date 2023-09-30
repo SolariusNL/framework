@@ -1,3 +1,6 @@
+import Authorized, { Account } from "@/util/api/authorized";
+import prisma from "@/util/prisma";
+import type { User } from "@/util/prisma-types";
 import { NotificationType } from "@prisma/client";
 import {
   BadRequestException,
@@ -5,10 +8,7 @@ import {
   createHandler,
   Post,
   UnauthorizedException,
-} from "@storyofams/next-api-decorators";
-import Authorized, { Account } from "@/util/api/authorized";
-import prisma from "@/util/prisma";
-import type { User } from "@/util/prisma-types";
+} from "@solariusnl/next-api-decorators";
 
 class ReferralsRouter {
   @Post("/create")
@@ -48,7 +48,8 @@ class ReferralsRouter {
         "Your account is older than 30 days, you can't use a referral code"
       );
     }
-    if (user.usedReferral) throw new BadRequestException("You already used a referral code");
+    if (user.usedReferral)
+      throw new BadRequestException("You already used a referral code");
 
     const referral = await prisma.referral.findUnique({
       where: {

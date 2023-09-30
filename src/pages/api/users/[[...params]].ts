@@ -39,7 +39,7 @@ import {
   Post,
   Query,
   createHandler,
-} from "@storyofams/next-api-decorators";
+} from "@solariusnl/next-api-decorators";
 import AccountUpdate from "email/emails/account-update";
 import sanitize from "sanitize-html";
 

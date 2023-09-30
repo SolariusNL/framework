@@ -1,13 +1,13 @@
+import IResponseBase from "@/types/api/IResponseBase";
+import { AdminAuthorized } from "@/util/api/authorized";
+import prisma from "@/util/prisma";
 import { FastFlag } from "@prisma/client";
 import {
   Body,
   Get,
   Post,
   createHandler,
-} from "@storyofams/next-api-decorators";
-import IResponseBase from "@/types/api/IResponseBase";
-import { AdminAuthorized } from "@/util/api/authorized";
-import prisma from "@/util/prisma";
+} from "@solariusnl/next-api-decorators";
 
 export type GenericFastFlag = Pick<FastFlag, "name" | "value" | "valueType">;
 

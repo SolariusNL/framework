@@ -1,3 +1,6 @@
+import Authorized, { Account } from "@/util/api/authorized";
+import prisma from "@/util/prisma";
+import type { User } from "@/util/prisma-types";
 import {
   Body,
   createHandler,
@@ -5,10 +8,7 @@ import {
   Get,
   Param,
   Post,
-} from "@storyofams/next-api-decorators";
-import Authorized, { Account } from "@/util/api/authorized";
-import prisma from "@/util/prisma";
-import type { User } from "@/util/prisma-types";
+} from "@solariusnl/next-api-decorators";
 
 interface CreateChecklistBody {
   name: string;
@@ -248,10 +248,7 @@ class ChecklistRouter {
 
   @Delete("/:id/delete")
   @Authorized()
-  public async deleteChecklist(
-    @Account() user: User,
-    @Param("id") id: string
-  ) {
+  public async deleteChecklist(@Account() user: User, @Param("id") id: string) {
     const checklist = await prisma.checklist.findFirst({
       where: {
         id: String(id),

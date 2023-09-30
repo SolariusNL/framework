@@ -9,7 +9,7 @@ import {
   Param,
   Post,
   createHandler,
-} from "@storyofams/next-api-decorators";
+} from "@solariusnl/next-api-decorators";
 import { randomUUID } from "crypto";
 import { promises } from "node:dns";
 import { z } from "zod";

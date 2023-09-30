@@ -1,5 +1,5 @@
 import IResponseBase from "@/types/api/IResponseBase";
-import { Body, Get } from "@storyofams/next-api-decorators";
+import { Body, Get } from "@solariusnl/next-api-decorators";
 import { serialize } from "next-mdx-remote/serialize";
 
 class MdxRouter {

@@ -13,7 +13,7 @@ import {
   Patch,
   Post,
   createHandler,
-} from "@storyofams/next-api-decorators";
+} from "@solariusnl/next-api-decorators";
 import { z } from "zod";
 
 const lastEmailSent = new Map<number, Date>();

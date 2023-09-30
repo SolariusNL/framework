@@ -12,7 +12,7 @@ import {
   Post,
   UnauthorizedException,
   createHandler,
-} from "@storyofams/next-api-decorators";
+} from "@solariusnl/next-api-decorators";
 import sanitize from "sanitize-html";
 import { ZodArray, ZodLiteral, z } from "zod";
 

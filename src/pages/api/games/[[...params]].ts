@@ -30,7 +30,7 @@ import {
   Post,
   Query,
   ValidationPipe,
-} from "@storyofams/next-api-decorators";
+} from "@solariusnl/next-api-decorators";
 import * as Validate from "class-validator";
 import { default as sanitize, default as sanitizeHtml } from "sanitize-html";
 import { z } from "zod";

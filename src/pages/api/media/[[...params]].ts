@@ -9,7 +9,7 @@ import {
   Post,
   UseMiddleware,
   createHandler,
-} from "@storyofams/next-api-decorators";
+} from "@solariusnl/next-api-decorators";
 import multer from "multer";
 import path from "path";
 import sharp from "sharp";
