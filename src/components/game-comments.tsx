@@ -1,5 +1,4 @@
 import ShadedCard from "@/components/shaded-card";
-import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
 import IResponseBase from "@/types/api/IResponseBase";
 import { getCookie } from "@/util/cookies";
 import fetchJson from "@/util/fetch";
@@ -111,7 +110,7 @@ const GameComments = ({ user, game }: GameCommentsProps) => {
             }
             alt={user.username}
             radius="xl"
-            size={32}
+            size={42}
           />
         </div>
 
@@ -129,7 +128,7 @@ const GameComments = ({ user, game }: GameCommentsProps) => {
               resize: "none",
             }}
             maxLength={500}
-            classNames={BLACK}
+            minRows={4}
           />
           <div className="flex justify-between items-center">
             <Pagination
@@ -139,9 +138,6 @@ const GameComments = ({ user, game }: GameCommentsProps) => {
               radius="xl"
               withEdges
               size="sm"
-              classNames={{
-                item: BLACK.input,
-              }}
             />
             <Button
               leftIcon={<HiChat />}
@@ -152,6 +148,8 @@ const GameComments = ({ user, game }: GameCommentsProps) => {
                 );
               }}
               loading={loading}
+              radius="xl"
+              variant="light"
             >
               Send
             </Button>

@@ -1,7 +1,7 @@
-import ShadedCard from "@/components/shaded-card";
 import ViewGameTab from "@/components/view-game/view-game";
 import { Game } from "@/util/prisma-types";
-import { Card, Text, TypographyStylesProvider } from "@mantine/core";
+import { Text, TypographyStylesProvider } from "@mantine/core";
+import { TbCopyright } from "react-icons/tb";
 import sanitize from "sanitize-html";
 
 interface InfoTabProps {
@@ -35,18 +35,19 @@ const InfoTab = ({ game }: InfoTabProps) => {
       </TypographyStylesProvider>
 
       {game.copyrightMetadata.length > 0 && (
-        <>
-          <ShadedCard withBorder>
-            {game.copyrightMetadata.map((x, i) => (
-              <Card.Section key={i} withBorder p={12}>
-                <Text weight={500} color="dimmed" size="sm">
+        <div className="flex flex-col gap-4 mt-8">
+          {game.copyrightMetadata.map((x, i) => (
+            <div className="flex flex-col gap-1" key={i}>
+              <div className="flex items-center gap-1">
+                <TbCopyright className="text-dimmed mt-0" />
+                <Text weight={600} color="dimmed" size="sm">
                   {x.title}
                 </Text>
-                <Text>{x.description}</Text>
-              </Card.Section>
-            ))}
-          </ShadedCard>
-        </>
+              </div>
+              <Text>{x.description}</Text>
+            </div>
+          ))}
+        </div>
       )}
     </ViewGameTab>
   );

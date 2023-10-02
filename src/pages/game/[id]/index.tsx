@@ -1,5 +1,5 @@
+import DataGrid from "@/components/data-grid";
 import Framework from "@/components/framework";
-import GameComments from "@/components/game-comments";
 import GameRating from "@/components/game-rating";
 import ThumbnailCarousel from "@/components/image-carousel";
 import InlineError from "@/components/inline-error";
@@ -21,10 +21,12 @@ import getMediaUrl from "@/util/get-media";
 import useMediaQuery from "@/util/media-query";
 import prisma from "@/util/prisma";
 import { Game, NonUser, User, gameSelect } from "@/util/prisma-types";
+import { getGenreText } from "@/util/universe/genre";
 import {
   ActionIcon,
   AspectRatio,
   Avatar,
+  Badge,
   Button,
   Divider,
   Grid,
@@ -52,6 +54,14 @@ import {
   HiCheckCircle,
   HiDotsVertical,
   HiFlag,
+  HiOutlineCake,
+  HiOutlineClock,
+  HiOutlineCode,
+  HiOutlineServer,
+  HiOutlineShoppingBag,
+  HiOutlineUsers,
+  HiOutlineViewGrid,
+  HiOutlineViewList,
   HiPencil,
   HiPlay,
   HiPlus,
@@ -90,6 +100,10 @@ const UpdateLogTab = dynamic(
     loading: () => SSRLoader,
   }
 );
+const GameComments = dynamic(() => import("@/components/game-comments"), {
+  ssr: false,
+  loading: () => SSRLoader,
+});
 
 type GameWithGamepass = Game & {
   gamepasses: Gamepass[];
@@ -399,13 +413,64 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
           fullWidth
           onChange={(v) => setActiveTab(v as Tab)}
         />
-        <div className="md:grid flex flex-col md:grid-cols-5 gap-4 mt-4">
-          <div className="col-span-3">
+        <div className="md:grid flex flex-col md:grid-cols-6 gap-4 mt-4">
+          <div className="col-span-4">
             {activeTab === "info" && <InfoTab game={game} />}
             {activeTab === "connection" && <ConnectionTab game={game} />}
             {activeTab === "funds" && <FundsTab game={game} />}
             {activeTab === "store" && <Store game={game} />}
             {activeTab === "updatelog" && <UpdateLogTab game={game} />}
+            <ShadedCard className="mt-8">
+              <DataGrid
+                items={[
+                  {
+                    icon: <HiOutlineViewList />,
+                    value: getGenreText(game.genre),
+                    tooltip: "Genre",
+                  },
+                  {
+                    icon: <HiOutlineUsers />,
+                    value: game.maxPlayersPerSession,
+                    tooltip: "Max players",
+                  },
+                  {
+                    icon: <HiOutlineServer />,
+                    value: game.playing,
+                    tooltip: "Playing",
+                  },
+                  {
+                    icon: <HiOutlineViewGrid />,
+                    value: game.visits,
+                    tooltip: "Visits",
+                  },
+                  {
+                    icon: <HiOutlineShoppingBag />,
+                    value: game.paywall ? "Paid access" : "Free access",
+                    tooltip: "Paywall",
+                  },
+                  {
+                    icon: <HiOutlineCode />,
+                    value: (
+                      <Badge>
+                        {game.updateLogs[0] ? game.updateLogs[0].tag : "N/A"}
+                      </Badge>
+                    ),
+                    tooltip: "Latest version",
+                  },
+                  {
+                    icon: <HiOutlineCake />,
+                    value: new Date(game.createdAt).toLocaleDateString(),
+                    tooltip: "Created at",
+                  },
+                  {
+                    icon: <HiOutlineClock />,
+                    value: new Date(game.updatedAt).toLocaleDateString(),
+                    tooltip: "Updated at",
+                  },
+                ]}
+                className="!mt-0"
+              />
+            </ShadedCard>
             <div className="flex items-center gap-4 mt-8 mb-3">
               <Title order={3}>Comments</Title>
               <Divider className="flex-grow" />
