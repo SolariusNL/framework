@@ -8,7 +8,7 @@ const Solarius: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
       height={props.height || "1em"}
       {...props}
     >
-      <g clip-path="url(#clip0_822_6)">
+      <g clipPath="url(#clip0_822_6)">
         <path
           fillRule="evenodd"
           clipRule="evenodd"
