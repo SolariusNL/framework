@@ -3,6 +3,7 @@ import ContextMenu from "@/components/context-menu";
 import LoadingIndicator from "@/components/loading-indicator";
 import ShadedButton from "@/components/shaded-button";
 import UserSelect from "@/components/user-select";
+import Solarius from "@/icons/Solarius";
 import IResponseBase from "@/types/api/IResponseBase";
 import clsx from "@/util/clsx";
 import fetchJson from "@/util/fetch";
@@ -31,7 +32,6 @@ import {
   UserAdminNotes,
 } from "@prisma/client";
 import { getCookie } from "cookies-next";
-import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import {
@@ -385,11 +385,7 @@ const Users = () => {
                           {u.username}
                         </Text>
                         {u.role === "ADMIN" && (
-                          <Image
-                            src="/brand/white.png"
-                            width={16}
-                            height={16}
-                          />
+                          <Solarius width={18} height={18} />
                         )}
                         {u.banned && <Badge color="red">Banned</Badge>}
                       </div>

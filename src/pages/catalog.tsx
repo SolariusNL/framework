@@ -107,7 +107,7 @@ const Catalog: NextPage<CatalogProps> = ({ user }) => {
   const [tab, setTab] = React.useState<AssetItemType>("hat");
   const [assets, setAssets] = React.useState<AssetFrontend[]>([]);
   const [loading, setLoading] = React.useState(true);
-  const [debouncedSearch] = useDebouncedValue(filter.search, 150);
+  const [debouncedSearch] = useDebouncedValue(filter.search, 75);
 
   const changeFilterValue = (key: keyof typeof filter, value: boolean) => {
     setFilter((current) => ({ ...current, [key]: value }));
@@ -122,7 +122,7 @@ const Catalog: NextPage<CatalogProps> = ({ user }) => {
             (data) => setAssets(data?.assets!)
           ).finally(() => setLoading(false)),
         ]),
-      500
+      75
     );
   };
 

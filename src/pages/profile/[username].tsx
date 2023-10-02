@@ -15,8 +15,9 @@ import Verified from "@/components/verified";
 import { useUserInformationDialog } from "@/contexts/UserInformationDialog";
 import countries from "@/data/countries";
 import getTimezones from "@/data/timezones";
+import Premium from "@/icons/Premium";
 import Rocket from "@/icons/Rocket";
-import Soodam from "@/icons/Soodam";
+import Solarius from "@/icons/Solarius";
 import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
 import useChatStore from "@/stores/useChatStore";
 import useReportAbuse from "@/stores/useReportAbuse";
@@ -308,13 +309,13 @@ const Profile: NextPage<ProfileProps> = ({
                         <IconTooltip
                           label="Solarius Staff"
                           className="flex items-center justify-center"
-                          icon={<Soodam />}
+                          icon={<Solarius width={20} height={20} />}
                           descriptiveModal
                           descriptiveModalProps={{
                             title: "Solarius Staff",
                             children: (
                               <div className="text-center items-center flex flex-col">
-                                <Soodam height={64} width={64} />
+                                <Solarius height={64} width={64} />
                                 <Title order={3} mt="lg">
                                   Solarius Employee
                                 </Title>
@@ -364,17 +365,21 @@ const Profile: NextPage<ProfileProps> = ({
                         <IconTooltip
                           label="Premium"
                           icon={
-                            <Rocket className="text-pink-500 animate-pulse" />
+                            <Premium
+                              className="fill-zinc-900 dark:fill-white"
+                              width={20}
+                              height={20}
+                            />
                           }
                           descriptiveModal
                           descriptiveModalProps={{
                             title: "Premium",
                             children: (
                               <div className="text-center items-center flex flex-col">
-                                <Rocket
+                                <Premium
+                                  className="fill-zinc-900 dark:fill-white"
                                   height={64}
                                   width={64}
-                                  className="text-pink-500"
                                 />
                                 <Title order={3} mt="lg">
                                   Premium

@@ -47,6 +47,19 @@ const components = () => {
                 ? "inset 0 1.2px 0 0 hsla(0,0%,100%,.2);"
                 : "inset 0 1px 0 rgba(255, 255, 255, 0.1);",
           }),
+          ...(params.variant === "light" && {
+            border: "1px solid",
+            borderColor:
+              theme.colors[params.color || theme.primaryColor][
+                theme.colorScheme == "dark" ? 2 : 9
+              ] + "15",
+            "&:hover": {
+              borderColor:
+                theme.colors[params.color || theme.primaryColor][
+                  theme.colorScheme == "dark" ? 2 : 9
+                ] + "20",
+            },
+          }),
           ...(amoled &&
             params.variant === "default" && {
               backgroundColor: "#000 !important",
