@@ -309,6 +309,22 @@ const AssetView: React.FC<AssetViewProps> = ({
 
   useEffect(() => {
     if (type === "limited-catalog-item") fetchLimitedDetails();
+    if (type === "sound") {
+      if (audioEl.current) {
+        audioEl.current.onended = () => setPlayingSound(false);
+      }
+
+      if ("mediaSession" in navigator) {
+        navigator.mediaSession.setActionHandler("play", () => {
+          audioEl.current?.play();
+          setPlayingSound(true);
+        });
+        navigator.mediaSession.setActionHandler("pause", () => {
+          audioEl.current?.pause();
+          setPlayingSound(false);
+        });
+      }
+    }
     fetchGenericDetails();
   }, []);
 
@@ -437,7 +453,7 @@ const AssetView: React.FC<AssetViewProps> = ({
                 {type === "sound" && (
                   <div
                     className={clsx(
-                      "bg-zinc-800/50 rounded-md cursor-pointer transition-all opacity-0 group-hover:opacity-100 flex absolute top-0 left-0 w-full h-full items-center justify-center",
+                      "bg-zinc-800/50 overflow-hidden rounded-md cursor-pointer transition-all opacity-0 group-hover:opacity-100 flex absolute top-0 left-0 w-full h-full items-center justify-center",
                       "h-fit"
                     )}
                     onClick={async () => {
