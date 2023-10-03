@@ -288,7 +288,7 @@ const CurrencyMenu = ({
                     className="transition-all"
                     gradient={{
                       from: "violet",
-                      to: "violet",
+                      to: "grape",
                     }}
                   >
                     Claim prize

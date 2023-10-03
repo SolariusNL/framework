@@ -55,9 +55,10 @@ const Login: NextPage = () => {
   const setLoginCookie = (token: string) => {
     setCookie(".frameworksession", token, {
       maxAge: 60 * 60 * 24 * 30,
-      ...(process.env.NEXT_PUBLIC_COOKIE_DOMAIN && {
-        domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
-      }),
+      ...(process.env.NEXT_PUBLIC_COOKIE_DOMAIN &&
+        process.env.NEXT_PUBLIC_COOKIE_DOMAIN !== "CHANGE_ME" && {
+          domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
+        }),
     });
   };
 
