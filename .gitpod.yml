@@ -1,7 +1,5 @@
 image: gitpod/workspace-postgres
 
 tasks:
-  - init: yarn add
+  - init: yarn
     command: yarn run dev
-
-
