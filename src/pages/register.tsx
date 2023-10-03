@@ -1,3 +1,6 @@
+import OuterUI from "@/layouts/OuterUI";
+import authorizedRoute from "@/util/auth";
+import { setCookie } from "@/util/cookies";
 import {
   Anchor,
   Button,
@@ -12,9 +15,6 @@ import { useForm } from "@mantine/form";
 import type { GetServerSidePropsContext, NextPage } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import OuterUI from "@/layouts/OuterUI";
-import authorizedRoute from "@/util/auth";
-import { setCookie } from "@/util/cookies";
 
 interface FormValues {
   code: string;
@@ -153,35 +153,35 @@ const Register: NextPage = () => {
           {/**
            * @todo Add OAuth signup flow
            */}
-          {/* <div className="flex flex-col md:flex-row items-center gap-4">
-          <ActionIcon
-            variant="light"
-            color="blue"
-            className="w-full"
-            size="xl"
-            sx={(theme) => OAUTH_STYLE(theme, "blue")}
-          >
-            <BsDiscord size={20} />
-          </ActionIcon>
-          <ActionIcon
-            variant="light"
-            className="w-full"
-            size="xl"
-            sx={(theme) => OAUTH_STYLE(theme, "orange")}
-            color="orange"
-          >
-            <BsGoogle size={20} />
-          </ActionIcon>
-          <ActionIcon
-            variant="light"
-            color="indigo"
-            className="w-full"
-            size="xl"
-            sx={(theme) => OAUTH_STYLE(theme, "indigo")}
-          >
-            <BsTwitter size={20} />
-          </ActionIcon>
-        </div> */}
+          {/* <div className="flex flex-col md:flex-row items-center gap-4 mt-5">
+            <ActionIcon
+              variant="light"
+              color="blue"
+              className="w-full"
+              size="xl"
+              sx={(theme) => OAUTH_STYLE(theme, "blue")}
+            >
+              <BsDiscord size={20} />
+            </ActionIcon>
+            <ActionIcon
+              variant="light"
+              className="w-full"
+              size="xl"
+              sx={(theme) => OAUTH_STYLE(theme, "orange")}
+              color="orange"
+            >
+              <BsGoogle size={20} />
+            </ActionIcon>
+            <ActionIcon
+              variant="light"
+              color="indigo"
+              className="w-full"
+              size="xl"
+              sx={(theme) => OAUTH_STYLE(theme, "indigo")}
+            >
+              <BsTwitter size={20} />
+            </ActionIcon>
+          </div> */}
         </form>
       </OuterUI>
     </>
