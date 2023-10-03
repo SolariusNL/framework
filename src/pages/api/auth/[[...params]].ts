@@ -145,10 +145,10 @@ class AuthRouter {
         },
       });
 
-      sendMail(
-        account.email,
-        "Login Authorization",
-        render(
+      sendMail({
+        to: account.email,
+        subject: "Login Authorization",
+        html: render(
           LoginCode({
             username: account.username,
             os: getOperatingSystemString(os),
@@ -160,8 +160,8 @@ class AuthRouter {
                 : "http://localhost:3000/verifyemail/login"
             }/${emailAuth.id}`,
           }) as React.ReactElement
-        )
-      );
+        ),
+      });
 
       return {
         success: true,
@@ -449,16 +449,16 @@ class AuthRouter {
   @Authorized()
   public async disableTwofa(@Account() user: User) {
     await disableOTP(user.id);
-    sendMail(
-      user.email,
-      "Two-Factor Authentication Disabled",
-      render(
+    sendMail({
+      to: user.email,
+      subject: "Two-Factor Authentication Disabled",
+      html: render(
         AccountUpdate({
           content:
             "Two-Factor Authentication has been disabled on your account. If this was not you, please contact support immediately, and attempt to secure your account while you wait for a response.",
         }) as React.ReactElement
-      )
-    );
+      ),
+    });
   }
 
   @Post("/@me/twofa/request")
@@ -536,16 +536,16 @@ class AuthRouter {
         });
       }
       if (intent !== "login") {
-        sendMail(
-          session?.user?.email!,
-          "Two-Factor Authentication Enabled",
-          render(
+        sendMail({
+          to: session?.user?.email!,
+          subject: "Two-Factor Authentication Enabled",
+          html: render(
             AccountUpdate({
               content:
                 "Two-Factor Authentication has been enabled on your account. If this was not you, please contact support immediately, and attempt to secure your account while you wait for a response.",
             }) as React.ReactElement
-          )
-        );
+          ),
+        });
       }
       return {
         success: true,
@@ -691,16 +691,16 @@ class AuthRouter {
         : "http://127.0.0.1:3000";
     const endpoint = url + "/forgotpassword?token=" + request.id;
 
-    sendMail(
-      user.email,
-      "Password Reset Request",
-      render(
+    sendMail({
+      to: user.email,
+      subject: "Password Reset Request",
+      html: render(
         ResetPassword({
           username: user.username,
           url: endpoint,
         }) as React.ReactElement
-      )
-    );
+      ),
+    });
 
     return {
       success: true,
@@ -751,16 +751,16 @@ class AuthRouter {
       },
     });
 
-    sendMail(
-      request.user?.email!,
-      "Password Reset",
-      render(
+    sendMail({
+      to: request.user?.email!,
+      subject: "Password Reset",
+      html: render(
         AccountUpdate({
           content:
             "Your Framework password has been reset. If this was not you, please contact support immediately, and attempt to secure your account while you wait for a response.",
         }) as React.ReactElement
-      )
-    );
+      ),
+    });
 
     return {
       success: true,

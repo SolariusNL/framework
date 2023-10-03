@@ -193,16 +193,16 @@ class UserRouter {
       where: { userId: user.id },
     });
 
-    sendMail(
-      user.email,
-      "Password changed",
-      render(
+    sendMail({
+      to: user.email,
+      subject: "Password changed",
+      html: render(
         AccountUpdate({
           content:
             "Your Framework password has been changed. If you did not authorize this change, please contact support and immediately secure your account.",
         }) as React.ReactElement
-      )
-    );
+      ),
+    });
 
     return {
       success: true,
@@ -257,15 +257,15 @@ class UserRouter {
     });
 
     await verificationEmail(user.id, newEmail);
-    sendMail(
-      user.email,
-      "Email changed",
-      render(
+    sendMail({
+      to: user.email,
+      subject: "Email changed",
+      html: render(
         AccountUpdate({
           content: `Your Framework email is being changed from <b>${user.email}</b> to <b>${newEmail}</b>. If you did not authorize this change, please contact support and immediately secure your account.`,
         }) as React.ReactElement
-      )
-    );
+      ),
+    });
 
     return {
       success: true,

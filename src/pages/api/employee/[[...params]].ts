@@ -100,10 +100,10 @@ class EmployeeRouter {
       },
     });
 
-    sendMail(
-      task.employee.user?.email!,
-      "New task assigned",
-      `
+    sendMail({
+      to: task.employee.user?.email!,
+      subject: "New task assigned",
+      html: `
       <h1>New task assigned</h1>
       <hr />
       <table>
@@ -120,8 +120,8 @@ class EmployeeRouter {
           <td>${assignee.employee?.fullName} (${assignee.username})</td>
         </tr>
       </table>
-      `
-    );
+      `,
+    });
 
     return task;
   }

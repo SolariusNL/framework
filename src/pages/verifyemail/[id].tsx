@@ -64,11 +64,11 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     },
   });
 
-  sendMail(
-    String(auth.props.user?.email),
-    "Email verified",
-    render(<VerificationConfirmation />)
-  );
+  sendMail({
+    to: String(auth.props.user?.email),
+    subject: "Email verified",
+    html: render(<VerificationConfirmation />),
+  });
 
   return {
     props: {},

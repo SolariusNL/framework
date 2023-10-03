@@ -76,10 +76,10 @@ class SupportRouter {
       },
     });
 
-    sendMail(
-      String(data.data.contactEmail),
-      "New support ticket",
-      render(
+    sendMail({
+      to: String(data.data.contactEmail),
+      subject: "New support ticket",
+      html: render(
         SupportTicketCreated({
           title: data.data.title,
           category:
@@ -88,12 +88,12 @@ class SupportRouter {
           contactEmail: data.data.contactEmail,
           contactName: data.data.contactName || "N/A",
         }) as React.ReactElement
-      )
-    );
-    sendMail(
-      String(process.env.SUPPORT_EMAIL),
-      "New support ticket",
-      `
+      ),
+    });
+    sendMail({
+      to: String(process.env.SUPPORT_EMAIL),
+      subject: "New support ticket",
+      html: `
       <div style="max-width: 600px; margin: 0 auto; padding: 20px; box-sizing: border-box;">
         <h1 style="font-size: 24px; color: #333; margin-bottom: 20px;">New Support Ticket</h1>
         <p style="font-size: 16px; color: #666;">A new support ticket has been submitted on the website:</p>
@@ -139,8 +139,8 @@ class SupportRouter {
             }
         </div>
       </div>
-      `
-    );
+      `,
+    });
 
     return {
       status: 200,
@@ -247,18 +247,22 @@ class SupportRouter {
       </div>
     `;
 
-    sendMail(String(process.env.SUPPORT_EMAIL), "New DMCA Form", html);
+    sendMail({
+      to: String(process.env.SUPPORT_EMAIL),
+      subject: "New DMCA Form",
+      html,
+    });
 
-    sendMail(
-      data.from,
-      "DMCA Form Submitted",
-      render(
+    sendMail({
+      to: data.from,
+      subject: "DMCA Form Submitted",
+      html: render(
         AccountUpdate({
           content:
             "Your DMCA form has been submitted. We will review it shortly. Thank you!",
         }) as React.ReactElement
-      )
-    );
+      ),
+    });
 
     return {
       status: 200,

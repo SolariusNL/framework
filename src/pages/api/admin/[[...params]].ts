@@ -259,15 +259,15 @@ class AdminRouter {
     });
 
     if (req.email) {
-      sendMail(
-        req.email,
-        "Join Framework",
-        render(
+      sendMail({
+        to: req.email,
+        subject: "Join Framework",
+        html: render(
           JoinFramework({
             code: keys[0],
           }) as React.ReactElement
-        )
-      );
+        ),
+      });
     }
 
     return keys;
@@ -701,10 +701,10 @@ class AdminRouter {
       );
     }
 
-    sendMail(
-      user.email,
-      "Enforcement Action Notice",
-      render(
+    sendMail({
+      to: user.email,
+      subject: "Enforcement Action Notice",
+      html: render(
         AccountUpdate({
           content: `Hello ${user.username},<br /><br />You have been ${
             category === "ban" ? "banned" : "warned"
@@ -716,8 +716,8 @@ class AdminRouter {
               : `Reason: ${body.reason}`
           }<br /><br />If you believe this is a mistake, please contact us at our support portal.`,
         }) as React.ReactElement
-      )
-    );
+      ),
+    });
 
     if (body.scrubUsername && body.scrubUsername === true) {
       const random = randomUUID().split("-").shift();
@@ -941,15 +941,15 @@ class AdminRouter {
             `Reset ${user.username}'s username to ${username}`,
             3
           );
-          sendMail(
-            user.email,
-            "Username Reset",
-            render(
+          sendMail({
+            to: user.email,
+            subject: "Username Reset",
+            html: render(
               AccountUpdate({
                 content: `Our staff have reset your username to ${username}. Please use this username to login to your account, and if you wish to change it, you can do so in your account settings.`,
               }) as React.ReactElement
-            )
-          );
+            ),
+          });
         },
       },
       {
@@ -980,16 +980,16 @@ class AdminRouter {
           });
 
           await createActionLog(`Reset ${user.username}'s email address`, 3);
-          sendMail(
-            user.email,
-            "Email Reset",
-            render(
+          sendMail({
+            to: user.email,
+            subject: "Email Reset",
+            html: render(
               AccountUpdate({
                 content:
                   "Our staff have reset your email address. You will be asked to enter a new email address when you access Framework.",
               }) as React.ReactElement
-            )
-          );
+            ),
+          });
         },
       },
       {
@@ -1013,15 +1013,15 @@ class AdminRouter {
           });
 
           await createActionLog(`Reset ${user.username}'s password`, 3);
-          sendMail(
-            user.email,
-            "Password Reset",
-            render(
+          sendMail({
+            to: user.email,
+            subject: "Password Reset",
+            html: render(
               AccountUpdate({
                 content: `Your password has been changed by a Framework staff member. See below for your new password:<br /><br />Password: <b>${randomPassword}</b><br /><br />As soon as you can, please change your password in your account settings.`,
               }) as React.ReactElement
-            )
-          );
+            ),
+          });
         },
       },
       {
@@ -1167,16 +1167,16 @@ class AdminRouter {
           });
 
           await createActionLog(`Unbanned ${user.username}`, 3);
-          sendMail(
-            user.email,
-            "Unbanned",
-            render(
+          sendMail({
+            to: user.email,
+            subject: "Unbanned",
+            html: render(
               AccountUpdate({
                 content:
                   "You've been unbanned from Framework. You can now access your account again.",
               }) as React.ReactElement
-            )
-          );
+            ),
+          });
         },
       },
       {
@@ -1213,18 +1213,18 @@ class AdminRouter {
             };
           }
 
-          sendMail(
-            user.email,
-            email.subject,
-            render(
+          sendMail({
+            to: user.email,
+            subject: email.subject,
+            html: render(
               StaffEmail({
                 subject: email.subject,
                 content: email.content,
                 contact: account.employee.contactEmail,
                 sender: account.employee.fullName,
               }) as React.ReactElement
-            )
-          );
+            ),
+          });
 
           await createActionLog(`Sent email to ${user.username}`, 2);
         },
@@ -1424,15 +1424,15 @@ class AdminRouter {
       },
     });
 
-    sendMail(
-      t.contactEmail,
-      "Support Ticket Closed",
-      render(
+    sendMail({
+      to: t.contactEmail,
+      subject: "Support Ticket Closed",
+      html: render(
         SupportTicketClosed({
           title: t.title,
         }) as React.ReactElement
-      )
-    );
+      ),
+    });
 
     return {
       success: true,

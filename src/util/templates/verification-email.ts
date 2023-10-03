@@ -17,10 +17,10 @@ export const verificationEmail = async (userId: number, email: string) => {
     },
   });
 
-  sendMail(
-    email,
-    "Verify your email address",
-    render(
+  sendMail({
+    to: email,
+    subject: "Verify your email address",
+    html: render(
       Email({
         username: token.user.username,
         apiLink:
@@ -28,6 +28,6 @@ export const verificationEmail = async (userId: number, email: string) => {
             ? "https://framework.solarius.me" + "/verifyemail/" + token.id
             : "http://localhost:3000" + "/verifyemail/" + token.id,
       }) as React.ReactElement
-    )
-  );
+    ),
+  });
 };
