@@ -55,6 +55,10 @@ export const sendMail = async ({ to, subject, html }: SendMailOptions) => {
 };
 
 if (queue) {
+  queue.isReady().then(() => {
+    logger().info(`Mail queue connected to Redis at ${process.env.REDIS_URL}`);
+  });
+
   queue.process(async (job, done) => {
     try {
       const { to, subject, html } = job.data;
