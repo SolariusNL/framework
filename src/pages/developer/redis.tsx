@@ -13,18 +13,31 @@ import Rocket from "@/icons/Rocket";
 import Developer from "@/layouts/DeveloperLayout";
 import SidebarTabNavigation from "@/layouts/SidebarTabNavigation";
 import ServiceUnavailable from "@/pages/503";
+import {
+  CreateRedisDatabaseResponse,
+  GetRedisDatabasesResponse,
+} from "@/pages/api/redis/[[...params]]";
 import authorizedRoute from "@/util/auth";
 import fetchJson, { fetchAndSetData } from "@/util/fetch";
 import { Fw } from "@/util/fw";
 import { User } from "@/util/prisma-types";
-import { Button, NavLink, Select, Text, TextInput, Title } from "@mantine/core";
+import {
+  ActionIcon,
+  Button,
+  NavLink,
+  Select,
+  Text,
+  TextInput,
+  Title,
+} from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { openModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import { RedisDatabase, RedisDatabaseType } from "@prisma/client";
+import { AnimatePresence, motion } from "framer-motion";
 import { GetServerSidePropsContext } from "next";
 import React, { ReactNode, useEffect, useState } from "react";
 import {
+  HiArrowLeft,
   HiArrowRight,
   HiCheckCircle,
   HiOutlineChartBar,
@@ -34,10 +47,6 @@ import {
   HiOutlineTag,
   HiXCircle,
 } from "react-icons/hi";
-import {
-  CreateRedisDatabaseResponse,
-  GetRedisDatabasesResponse,
-} from "../api/redis/[[...params]]";
 
 type SidebarItem = {
   title: string;
@@ -81,6 +90,10 @@ const Redis: React.FC<RedisProps> = ({ user }) => {
   );
   const [loading, setLoading] = useState(false);
   const [databases, setDatabases] = useState<RedisDatabase[]>([]);
+  const [selected, setSelected] = useState<RedisDatabase | undefined>(
+    undefined
+  );
+  const [anim, setAnim] = useState(false);
   const form = useForm<NewDatabaseForm>({
     initialValues: {
       name: "",
@@ -140,6 +153,38 @@ const Redis: React.FC<RedisProps> = ({ user }) => {
       }
     });
   };
+  const databaseTags = (database: RedisDatabase) => {
+    return (
+      <div className="flex md:flex-row flex-col md:gap-3 gap-1">
+        {[
+          {
+            icon: <HiOutlineGlobeAlt />,
+            value: redisRegions[database.region],
+          },
+          {
+            icon: <HiOutlineTag />,
+            value: Fw.Strings.upper(database.type),
+          },
+          {
+            icon: <Exchange />,
+            value: database.multiZoneReplication
+              ? "Multi-zone replication"
+              : "Single-zone replication",
+          },
+        ].map((item, i) => (
+          <Text
+            size="sm"
+            color="dimmed"
+            className="flex items-center gap-1"
+            key={i}
+          >
+            {item.icon}
+            {item.value}
+          </Text>
+        ))}
+      </div>
+    );
+  };
 
   useEffect(() => {
     fetchRedisDatabases();
@@ -168,98 +213,124 @@ const Redis: React.FC<RedisProps> = ({ user }) => {
         <SidebarTabNavigation.Content>
           {activeTab === SidebarValue.Databases && (
             <>
-              <Section
-                title="Databases"
-                description="Overview of your Redis databases."
-                right={
-                  <Button
-                    radius="xl"
-                    variant="light"
-                    leftIcon={<Rocket />}
-                    onClick={() => setActiveTab(SidebarValue.CreateDatabase)}
+              <AnimatePresence mode="wait" initial={false}>
+                {selected !== undefined ? (
+                  <motion.div
+                    key="server-details"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 500,
+                      damping: 30,
+                    }}
                   >
-                    New database
-                  </Button>
-                }
-              />
-              {loading ? (
-                <ShadedCard className="w-full flex justify-center items-center py-12">
-                  <LoadingIndicator />
-                </ShadedCard>
-              ) : (
-                <>
-                  {databases.length === 0 ? (
-                    <>
-                      <ShadedCard>
-                        <ModernEmptyState
-                          title="No databases"
-                          body="You don't have any Redis databases yet."
-                        />
-                      </ShadedCard>
-                    </>
-                  ) : (
-                    <div className="flex flex-col gap-1">
-                      {databases.map((database) => (
-                        <ShadedButton
-                          className="w-full group"
-                          onClick={() =>
-                            openModal({
-                              title: database.name,
-                              children: (
-                                <ModernEmptyState
-                                  title="Coming soon"
-                                  body="This feature is coming soon."
-                                />
-                              ),
-                            })
-                          }
-                          key={database.id}
+                    <div className="flex items-start gap-5">
+                      <div className="flex items-center md:gap-6 gap-2">
+                        <ActionIcon
+                          onClick={() => {
+                            setSelected(undefined);
+                          }}
+                          size="xl"
+                          className="rounded-full hover:border-zinc-500/50 transition-all"
+                          sx={{
+                            borderWidth: 1,
+                          }}
                         >
-                          <div className="flex justify-between w-full items-center">
-                            <div className="flex flex-col md:gap-0 gap-4">
-                              <div className="flex items-center gap-3">
-                                <Dot pulse />
-                                <Title order={3} className="font-mono">
-                                  {database.name}
-                                </Title>
-                              </div>
-                              <div className="flex md:flex-row flex-col gap-3">
-                                {[
-                                  {
-                                    icon: <HiOutlineGlobeAlt />,
-                                    value: redisRegions[database.region],
-                                  },
-                                  {
-                                    icon: <HiOutlineTag />,
-                                    value: Fw.Strings.upper(database.type),
-                                  },
-                                  {
-                                    icon: <Exchange />,
-                                    value: database.multiZoneReplication
-                                      ? "Multi-zone replication"
-                                      : "Single-zone replication",
-                                  },
-                                ].map((item, i) => (
-                                  <Text
-                                    size="sm"
-                                    color="dimmed"
-                                    className="flex items-center gap-1"
-                                    key={i}
-                                  >
-                                    {item.icon}
-                                    {item.value}
-                                  </Text>
-                                ))}
-                              </div>
-                            </div>
-                            <HiArrowRight className="text-dimmed text-2xl opacity-0 group-hover:opacity-100 transition-all" />
-                          </div>
-                        </ShadedButton>
-                      ))}
+                          <HiArrowLeft />
+                        </ActionIcon>
+                        <HiOutlineDatabase size={32} />
+                      </div>
+                      <div className="flex flex-col md:gap-0 gap-2">
+                        <div className="flex items-center gap-3">
+                          <Dot pulse />
+                          <Title order={3}>{selected.name}</Title>
+                        </div>
+                        {databaseTags(selected)}
+                      </div>
                     </div>
-                  )}
-                </>
-              )}
+                  </motion.div>
+                ) : (
+                  <>
+                    <motion.div
+                      key="server-list"
+                      initial={{
+                        opacity: 0,
+                        x: anim ? 20 : 0,
+                      }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{
+                        opacity: 0,
+                        x: anim ? 20 : 0,
+                      }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 500,
+                        damping: 30,
+                      }}
+                    >
+                      <Section
+                        title="Databases"
+                        description="Overview of your Redis databases."
+                        right={
+                          <Button
+                            radius="xl"
+                            variant="light"
+                            leftIcon={<Rocket />}
+                            onClick={() =>
+                              setActiveTab(SidebarValue.CreateDatabase)
+                            }
+                          >
+                            New database
+                          </Button>
+                        }
+                      />
+                      {loading ? (
+                        <ShadedCard className="w-full flex justify-center items-center py-12">
+                          <LoadingIndicator />
+                        </ShadedCard>
+                      ) : (
+                        <>
+                          {databases.length === 0 ? (
+                            <>
+                              <ShadedCard>
+                                <ModernEmptyState
+                                  title="No databases"
+                                  body="You don't have any Redis databases yet."
+                                />
+                              </ShadedCard>
+                            </>
+                          ) : (
+                            <div className="flex flex-col gap-1">
+                              {databases.map((database) => (
+                                <ShadedButton
+                                  className="w-full group"
+                                  onClick={() => setSelected(database)}
+                                  key={database.id}
+                                >
+                                  <div className="flex justify-between w-full items-center">
+                                    <div className="flex flex-col md:gap-0 gap-4">
+                                      <div className="flex items-center gap-3">
+                                        <Dot pulse />
+                                        <Title order={3} className="font-mono">
+                                          {database.name}
+                                        </Title>
+                                      </div>
+                                      {databaseTags(database)}
+                                    </div>
+                                    <HiArrowRight className="text-dimmed text-2xl opacity-0 group-hover:opacity-100 transition-all" />
+                                  </div>
+                                </ShadedButton>
+                              ))}
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
             </>
           )}
           {activeTab === SidebarValue.Analytics && (
