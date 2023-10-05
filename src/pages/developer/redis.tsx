@@ -25,7 +25,9 @@ import {
   ActionIcon,
   Button,
   NavLink,
+  ScrollArea,
   Select,
+  Tabs,
   Text,
   TextInput,
   Title,
@@ -83,6 +85,13 @@ const sidebar: SidebarItem[] = [
     value: SidebarValue.Analytics,
   },
 ];
+const viewTabs: Record<string, string> = {
+  details: "Details",
+  usage: "Usage",
+  cli: "CLI",
+  data: "Data browser",
+  settings: "Settings",
+};
 
 const Redis: React.FC<RedisProps> = ({ user }) => {
   const [activeTab, setActiveTab] = useState<SidebarValue>(
@@ -250,6 +259,21 @@ const Redis: React.FC<RedisProps> = ({ user }) => {
                         {databaseTags(selected)}
                       </div>
                     </div>
+                    <Tabs
+                      variant="default"
+                      defaultValue="details"
+                      className="mt-4"
+                    >
+                      <ScrollArea type="never">
+                        <Tabs.List>
+                          {Object.keys(viewTabs).map((k, i) => (
+                            <Tabs.Tab key={i} value={k}>
+                              {viewTabs[k]}
+                            </Tabs.Tab>
+                          ))}
+                        </Tabs.List>
+                      </ScrollArea>
+                    </Tabs>
                   </motion.div>
                 ) : (
                   <>

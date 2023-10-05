@@ -6,6 +6,7 @@ import {
   MantineTheme,
   NavLinkStylesParams,
   PaginationStylesParams,
+  TabsStylesParams,
   TooltipStylesParams,
 } from "@mantine/core";
 import { AMOLED_COLORS } from "./constants";
@@ -98,11 +99,16 @@ const components = () => {
       },
     },
     Tabs: {
-      styles: () => ({
+      styles: (theme: MantineTheme, params: TabsStylesParams) => ({
         tab: {
           "&[data-active]": {
             fontWeight: 700,
           },
+          ...(params.variant === "default" && {
+            "&[data-active=true]": {
+              fontWeight: "normal"
+            }
+          })
         },
       }),
     },
