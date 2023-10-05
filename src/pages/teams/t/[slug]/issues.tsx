@@ -136,6 +136,7 @@ const TeamViewIssues: React.FC<TeamViewIssuesProps> = ({ user, team }) => {
                 <LabelledCheckbox
                   key={tag.value}
                   label={tag.label}
+                  black
                   checked={tagFilter.includes(tag.value)}
                   description={`Show issues with the ${tag.label} tag.`}
                   onChange={() => {

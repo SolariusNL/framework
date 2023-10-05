@@ -201,6 +201,7 @@ const AssetView: React.FC<AssetViewProps> = ({
                   onChange={(e) =>
                     changeField("onSale", e.currentTarget.checked)
                   }
+                  black
                 />
               </div>
               <Textarea

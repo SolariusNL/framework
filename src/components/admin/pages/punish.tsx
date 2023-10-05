@@ -437,6 +437,7 @@ const Punish: React.FC<PunishProps> = ({
                         label={item.label}
                         value={String(item.value)}
                         description={item.description}
+                        black
                         disabled={item.disabled}
                         classNames={BLACK}
                         radius="xl"
@@ -583,6 +584,7 @@ const Punish: React.FC<PunishProps> = ({
                   <Stack spacing="xs" mb="xl">
                     <LabelledCheckbox
                       label="Escalate report"
+                      black
                       description="For reports which contain threats, harassment, child exploitation or other serious violations."
                       classNames={BLACK}
                       {...form.getInputProps("escalate", { type: "checkbox" })}
@@ -591,6 +593,7 @@ const Punish: React.FC<PunishProps> = ({
                       label="Scrub username"
                       description="This will set the users username to a randomly generated string making it impossible to find them by username and to remove inappropiate content."
                       classNames={BLACK}
+                      black
                       {...form.getInputProps("scrubUsername", {
                         type: "checkbox",
                       })}

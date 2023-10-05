@@ -6,16 +6,23 @@ import { ChangeEvent } from "react";
 interface LabelledCheckboxProps {
   label: string;
   description: string;
+  black?: boolean;
 }
 
 const LabelledCheckbox: React.FC<LabelledCheckboxProps & CheckboxProps> = ({
   label,
   description,
+  black,
   ...props
 }) => {
   return (
     <div className="flex gap-3 items-start">
-      <Checkbox classNames={BLACK} {...props} />
+      <Checkbox
+        {...(black && {
+          classNames: BLACK,
+        })}
+        {...props}
+      />
       <div>
         <Text
           size="sm"

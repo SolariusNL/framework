@@ -447,6 +447,7 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
                     defaultChecked={
                       user[method.pointer as keyof User] as boolean
                     }
+                    black
                     onChange={(e) => {
                       if (method.onChange) {
                         method.onChange(e);

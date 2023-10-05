@@ -207,6 +207,7 @@ model User {
   filedAbuseReports          AbuseReport[]               @relation("filedAbuseReports")
   recentIp                   String                      @default("")
   recentIpGeo                Json                        @default("{}")
+  redisDatabases             RedisDatabase[]             @relation("redisDatabases")
 }
 
 model Story {
@@ -1509,4 +1510,20 @@ enum AbuseReportState {
 enum AbuseReportContentIdType {
   STRING
   NUMBER
+}
+
+model RedisDatabase {
+  id                   String            @id @default(uuid())
+  createdAt            DateTime          @default(now())
+  name                 String
+  type                 RedisDatabaseType
+  region               String
+  multiZoneReplication Boolean           @default(false)
+  owner                User              @relation("redisDatabases", fields: [ownerId], references: [id])
+  ownerId              Int
+}
+
+enum RedisDatabaseType {
+  REGIONAL
+  GLOBAL
 }

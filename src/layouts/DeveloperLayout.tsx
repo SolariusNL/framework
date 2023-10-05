@@ -5,11 +5,11 @@ import { Fw } from "@/util/fw";
 import { User } from "@/util/prisma-types";
 import Link from "next/link";
 import {
+  HiDatabase,
   HiGlobe,
   HiKey,
   HiServer,
   HiUserCircle,
-  HiViewList,
 } from "react-icons/hi";
 import { IconType } from "react-icons/lib";
 
@@ -41,7 +41,7 @@ const tabs: Array<{
     "Developer Profile",
     Fw.FeatureIdentifier.DevProfiles,
   ],
-  [HiViewList, "/developer/activity", "Activity"],
+  [HiDatabase, "/developer/redis", "Redis"],
 ];
 
 const Developer: React.FC<DeveloperLayoutProps> = ({

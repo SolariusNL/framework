@@ -4,6 +4,7 @@ export enum FeatureIdentifier {
   OAuth2 = "oauth2",
   DevProfiles = "devProfiles",
   Bits = "bits",
+  Redis = "redis",
 }
 const enabledFeatures = new Set<FeatureIdentifier>(
   Object.values(FeatureIdentifier) as FeatureIdentifier[]

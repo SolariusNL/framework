@@ -184,6 +184,7 @@ const Catalog: NextPage<CatalogProps> = ({ user }) => {
                       event.currentTarget.checked
                     )
                   }
+                  black
                   label="Unavailable items"
                   description="Show items that are not available for purchase."
                 />
@@ -195,6 +196,7 @@ const Catalog: NextPage<CatalogProps> = ({ user }) => {
                       event.currentTarget.checked
                     )
                   }
+                  black
                   label="Limited items"
                   description="Show items that are limited."
                 />
