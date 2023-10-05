@@ -1,3 +1,4 @@
+import Copy from "@/components/copy";
 import Descriptive from "@/components/descriptive";
 import Dot from "@/components/dot";
 import { Section } from "@/components/home/friends";
@@ -23,6 +24,7 @@ import { Fw } from "@/util/fw";
 import { User } from "@/util/prisma-types";
 import {
   ActionIcon,
+  Anchor,
   Button,
   NavLink,
   ScrollArea,
@@ -46,6 +48,7 @@ import {
   HiOutlineDatabase,
   HiOutlineGlobe,
   HiOutlineGlobeAlt,
+  HiOutlineLink,
   HiOutlineTag,
   HiXCircle,
 } from "react-icons/hi";
@@ -264,7 +267,7 @@ const Redis: React.FC<RedisProps> = ({ user }) => {
                       defaultValue="details"
                       className="mt-4"
                     >
-                      <ScrollArea type="never">
+                      <ScrollArea className="mb-3" type="never">
                         <Tabs.List>
                           {Object.keys(viewTabs).map((k, i) => (
                             <Tabs.Tab key={i} value={k}>
@@ -273,6 +276,26 @@ const Redis: React.FC<RedisProps> = ({ user }) => {
                           ))}
                         </Tabs.List>
                       </ScrollArea>
+                      <Tabs.Panel value="details">
+                        <div className="flex items-center gap-2">
+                          <Text
+                            size="sm"
+                            color="dimmed"
+                            className="flex items-center gap-1 truncate text-ellipsis"
+                          >
+                            <HiOutlineLink className="flex-shrink-0" />
+                            Connection URL
+                            {/**
+                             * @FIXME dont hardcode solarius.me
+                             */}
+                            <Anchor className="cursor-none pointer-events-none">
+                              redis://default:********@
+                              {selected.tenantPhrase}.solarius.me:33648
+                            </Anchor>
+                          </Text>
+                          <Copy value={selected.tenantPhrase} />
+                        </div>
+                      </Tabs.Panel>
                     </Tabs>
                   </motion.div>
                 ) : (

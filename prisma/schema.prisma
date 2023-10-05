@@ -1521,6 +1521,7 @@ model RedisDatabase {
   multiZoneReplication Boolean           @default(false)
   owner                User              @relation("redisDatabases", fields: [ownerId], references: [id])
   ownerId              Int
+  tenantPhrase         String            @default("")
 }
 
 enum RedisDatabaseType {
