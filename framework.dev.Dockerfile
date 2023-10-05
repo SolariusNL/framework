@@ -4,9 +4,9 @@ WORKDIR /app
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
 
 RUN apk --no-cache --virtual build-dependencies add \
-        python3 \
-        make \
-        g++
+  python3 \
+  make \
+  g++
 
 RUN \
   if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
