@@ -122,7 +122,7 @@ const Redis: React.FC<RedisProps> = ({ user }) => {
   );
   const [loading, setLoading] = useState(false);
   const [databases, setDatabases] = useState<RedisDatabase[]>([]);
-  const [anim, setAnim] = useState(false);
+  const [anim] = useState(false);
   const form = useForm<NewDatabaseForm>({
     initialValues: {
       name: "",
@@ -148,8 +148,7 @@ const Redis: React.FC<RedisProps> = ({ user }) => {
     },
   });
 
-  const { selectedDatabase, setSelectedDatabase, clearSelectedDatabase } =
-    useRedis();
+  const { selectedDatabase, setSelectedDatabase, opened } = useRedis();
 
   const fetchRedisDatabases = async () => {
     setLoading(true);
@@ -214,7 +213,7 @@ const Redis: React.FC<RedisProps> = ({ user }) => {
           {activeTab === SidebarValue.Databases && (
             <>
               <AnimatePresence mode="wait" initial={false}>
-                {selectedDatabase !== null ? (
+                {opened ? (
                   <motion.div
                     key="server-details"
                     initial={{ opacity: 0, x: 20 }}

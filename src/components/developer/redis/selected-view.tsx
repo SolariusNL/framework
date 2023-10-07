@@ -24,7 +24,7 @@ const viewTabs: Record<string, string> = {
 };
 
 const SelectedDatabaseView: FC = () => {
-  const { selectedDatabase, clearSelectedDatabase } = useRedis();
+  const { selectedDatabase, clearSelectedDatabase, setOpened } = useRedis();
 
   return selectedDatabase !== null ? (
     <>
@@ -32,7 +32,7 @@ const SelectedDatabaseView: FC = () => {
         <div className="flex items-center md:gap-6 gap-2">
           <ActionIcon
             onClick={() => {
-              clearSelectedDatabase();
+              setOpened(false);
             }}
             size="xl"
             className="rounded-full hover:border-zinc-500/50 transition-all"
