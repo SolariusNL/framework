@@ -20,19 +20,29 @@ const UpdateDrawer: React.FC = () => {
     href?: string;
   }> = [
     {
+      title: "Redis databases",
+      description:
+        "You can now create Redis databases directly on Framework for your applications.",
+      badge: BadgeType.NEW,
+      date: new Date("2023-10-7"),
+      href: "/developer/redis",
+    },
+    {
       title: "0.9.0",
-      description: "Framework v0.9.0 is now available and brings many new changes.",
+      description:
+        "Framework v0.9.0 is now available and brings many new changes.",
       badge: BadgeType.NEW,
       date: new Date("2023-09-19"),
-      href: "https://github.com/SolariusNL/framework/releases/tag/0.9.0"
+      href: "https://changelog.solarius.me/#framework-v090",
     },
     {
       title: "Economy",
-      description: "The Framework economy is now available. Powered by our Asset API, you can now purchase & trade goods on Framework.",
+      description:
+        "The Framework economy is now available. Powered by our Asset API, you can now purchase & trade goods on Framework.",
       badge: BadgeType.NEW,
       date: new Date("2023-08-28"),
-      href: "/catalog"
-    }
+      href: "/catalog",
+    },
   ];
 
   return (
