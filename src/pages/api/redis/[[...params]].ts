@@ -10,7 +10,9 @@ import {
 } from "@prisma/client";
 import {
   Body,
+  Delete,
   Get,
+  Param,
   Post,
   createHandler,
 } from "@solariusnl/next-api-decorators";
@@ -74,6 +76,37 @@ class RedisRouter {
       data: {
         database: db,
       },
+    };
+  }
+
+  @Delete("/database/:id")
+  @Authorized()
+  public async deleteRedisDatabase(
+    @Account() user: User,
+    @Param("id") id: string
+  ) {
+    const db = await prisma.redisDatabase.findFirst({
+      where: {
+        id,
+        ownerId: user.id,
+      },
+    });
+
+    if (!db) {
+      return <IResponseBase>{
+        success: false,
+        error: "Database not found",
+      };
+    }
+
+    await prisma.redisDatabase.delete({
+      where: {
+        id,
+      },
+    });
+
+    return <IResponseBase>{
+      success: true,
     };
   }
 }

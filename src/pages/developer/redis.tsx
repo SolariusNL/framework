@@ -148,7 +148,7 @@ const Redis: React.FC<RedisProps> = ({ user }) => {
     },
   });
 
-  const { selectedDatabase, setSelectedDatabase, opened } = useRedis();
+  const { setRefetch, setSelectedDatabase, opened } = useRedis();
 
   const fetchRedisDatabases = async () => {
     setLoading(true);
@@ -187,6 +187,7 @@ const Redis: React.FC<RedisProps> = ({ user }) => {
 
   useEffect(() => {
     fetchRedisDatabases();
+    setRefetch(fetchRedisDatabases);
   }, []);
 
   return Fw.Feature.enabled(Fw.FeatureIdentifier.Redis) ? (

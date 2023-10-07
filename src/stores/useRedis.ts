@@ -7,6 +7,8 @@ interface RedisStore {
   clearSelectedDatabase: () => void;
   opened: boolean;
   setOpened: (opened: boolean) => void;
+  refetch: () => void;
+  setRefetch: (refetch: () => void) => void;
 }
 
 const useRedis = create<RedisStore>((set) => ({
@@ -16,6 +18,8 @@ const useRedis = create<RedisStore>((set) => ({
     set({ selectedDatabase: database, opened: true }),
   clearSelectedDatabase: () => set({ selectedDatabase: null }),
   setOpened: (opened) => set({ opened }),
+  refetch: () => undefined,
+  setRefetch: (refetch) => set({ refetch }),
 }));
 
 export default useRedis;

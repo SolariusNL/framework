@@ -1,20 +1,34 @@
 import Copy from "@/components/copy";
 import Dot from "@/components/dot";
 import InlineError from "@/components/inline-error";
+import SideBySide from "@/components/settings/side-by-side";
 import SSRLoader from "@/components/ssr-loader";
 import { databaseTags } from "@/pages/developer/redis";
 import useRedis from "@/stores/useRedis";
+import IResponseBase from "@/types/api/IResponseBase";
+import fetchJson from "@/util/fetch";
 import buildTenantUrl from "@/util/tenant";
 import {
   ActionIcon,
   Anchor,
+  Button,
   ScrollArea,
   Tabs,
   Text,
   Title,
 } from "@mantine/core";
+import { openConfirmModal } from "@mantine/modals";
+import { showNotification } from "@mantine/notifications";
 import { FC } from "react";
-import { HiArrowLeft, HiOutlineDatabase, HiOutlineLink } from "react-icons/hi";
+import {
+  HiArrowLeft,
+  HiCheckCircle,
+  HiOutlineDatabase,
+  HiOutlineLink,
+  HiOutlineTrash,
+  HiTrash,
+  HiXCircle,
+} from "react-icons/hi";
 
 const viewTabs: Record<string, string> = {
   details: "Details",
@@ -25,7 +39,35 @@ const viewTabs: Record<string, string> = {
 };
 
 const SelectedDatabaseView: FC = () => {
-  const { selectedDatabase, clearSelectedDatabase, setOpened } = useRedis();
+  const { selectedDatabase, refetch, setOpened } = useRedis();
+
+  const deleteDatabase = async () => {
+    await fetchJson<IResponseBase>(
+      `/api/redis/database/${selectedDatabase!.id}`,
+      {
+        method: "DELETE",
+        auth: true,
+      }
+    )
+      .then((res) => {
+        if (res.success) {
+          setOpened(false);
+          showNotification({
+            title: "Database deleted",
+            message: "The database has been deleted successfully.",
+            icon: <HiCheckCircle />,
+          });
+        } else {
+          showNotification({
+            title: "Error",
+            message: res.message || "An unknown error occurred.",
+            icon: <HiXCircle />,
+            color: "red",
+          });
+        }
+      })
+      .finally(refetch);
+  };
 
   return selectedDatabase !== null ? (
     <>
@@ -96,6 +138,55 @@ const SelectedDatabaseView: FC = () => {
               })}
             />
           </div>
+        </Tabs.Panel>
+        <Tabs.Panel value="settings">
+          <SideBySide
+            title="Delete database"
+            description="Delete this database and all of its associated data. This action cannot be undone."
+            icon={<HiTrash />}
+            noUpperBorder
+            shaded
+            right={
+              <Button
+                variant="light"
+                radius="xl"
+                color="red"
+                leftIcon={<HiOutlineTrash />}
+                fullWidth
+                onClick={() =>
+                  openConfirmModal({
+                    title: "Delete database",
+                    children: (
+                      <Text size="sm" color="dimmed">
+                        Are you sure you want to delete this database? This
+                        action cannot be undone, and no data will be recoverable
+                        after deletion.
+                      </Text>
+                    ),
+                    labels: {
+                      confirm: "Delete database",
+                      cancel: "Cancel",
+                    },
+                    confirmProps: {
+                      variant: "light",
+                      color: "red",
+                      radius: "xl",
+                      leftIcon: <HiOutlineTrash />,
+                    },
+                    cancelProps: {
+                      variant: "light",
+                      color: "gray",
+                      radius: "xl",
+                    },
+                    onConfirm: deleteDatabase,
+                    closeOnConfirm: true,
+                  })
+                }
+              >
+                Permanently delete
+              </Button>
+            }
+          />
         </Tabs.Panel>
       </Tabs>
     </>
