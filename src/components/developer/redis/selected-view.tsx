@@ -1,8 +1,8 @@
 import Copy from "@/components/copy";
 import Dot from "@/components/dot";
 import InlineError from "@/components/inline-error";
+import SSRLoader from "@/components/ssr-loader";
 import { databaseTags } from "@/pages/developer/redis";
-import SSRLoader from "@/ssr-loader";
 import useRedis from "@/stores/useRedis";
 import buildTenantUrl from "@/util/tenant";
 import {

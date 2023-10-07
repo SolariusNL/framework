@@ -7,6 +7,7 @@ import LoadingIndicator from "@/components/loading-indicator";
 import ModernEmptyState from "@/components/modern-empty-state";
 import ShadedButton from "@/components/shaded-button";
 import ShadedCard from "@/components/shaded-card";
+import SSRLoader from "@/components/ssr-loader";
 import { redisRegions } from "@/data/redis";
 import Exchange from "@/icons/Exchange";
 import Rocket from "@/icons/Rocket";
@@ -17,7 +18,6 @@ import {
   CreateRedisDatabaseResponse,
   GetRedisDatabasesResponse,
 } from "@/pages/api/redis/[[...params]]";
-import SSRLoader from "@/ssr-loader";
 import useRedis from "@/stores/useRedis";
 import authorizedRoute from "@/util/auth";
 import fetchJson, { fetchAndSetData } from "@/util/fetch";
