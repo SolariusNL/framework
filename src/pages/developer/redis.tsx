@@ -1,4 +1,3 @@
-import Copy from "@/components/copy";
 import Descriptive from "@/components/descriptive";
 import Dot from "@/components/dot";
 import { Section } from "@/components/home/friends";
@@ -18,40 +17,35 @@ import {
   CreateRedisDatabaseResponse,
   GetRedisDatabasesResponse,
 } from "@/pages/api/redis/[[...params]]";
+import SSRLoader from "@/ssr-loader";
+import useRedis from "@/stores/useRedis";
 import authorizedRoute from "@/util/auth";
 import fetchJson, { fetchAndSetData } from "@/util/fetch";
 import { Fw } from "@/util/fw";
 import { User } from "@/util/prisma-types";
-import {
-  ActionIcon,
-  Anchor,
-  Button,
-  NavLink,
-  ScrollArea,
-  Select,
-  Tabs,
-  Text,
-  TextInput,
-  Title,
-} from "@mantine/core";
+import { Button, NavLink, Select, Text, TextInput, Title } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { RedisDatabase, RedisDatabaseType } from "@prisma/client";
 import { AnimatePresence, motion } from "framer-motion";
 import { GetServerSidePropsContext } from "next";
+import dynamic from "next/dynamic";
 import React, { ReactNode, useEffect, useState } from "react";
 import {
-  HiArrowLeft,
   HiArrowRight,
   HiCheckCircle,
   HiOutlineChartBar,
   HiOutlineDatabase,
   HiOutlineGlobe,
   HiOutlineGlobeAlt,
-  HiOutlineLink,
   HiOutlineTag,
   HiXCircle,
 } from "react-icons/hi";
+
+const SelectedDatabaseView = dynamic(
+  () => import("@/components/developer/redis/selected-view"),
+  { ssr: false, loading: () => SSRLoader }
+);
 
 type SidebarItem = {
   title: string;
@@ -88,12 +82,38 @@ const sidebar: SidebarItem[] = [
     value: SidebarValue.Analytics,
   },
 ];
-const viewTabs: Record<string, string> = {
-  details: "Details",
-  usage: "Usage",
-  cli: "CLI",
-  data: "Data browser",
-  settings: "Settings",
+
+export const databaseTags = (database: RedisDatabase) => {
+  return (
+    <div className="flex md:flex-row flex-col md:gap-3 gap-1">
+      {[
+        {
+          icon: <HiOutlineGlobeAlt />,
+          value: redisRegions[database.region],
+        },
+        {
+          icon: <HiOutlineTag />,
+          value: Fw.Strings.upper(database.type),
+        },
+        {
+          icon: <Exchange />,
+          value: database.multiZoneReplication
+            ? "Multi-zone replication"
+            : "Single-zone replication",
+        },
+      ].map((item, i) => (
+        <Text
+          size="sm"
+          color="dimmed"
+          className="flex items-center gap-1"
+          key={i}
+        >
+          {item.icon}
+          {item.value}
+        </Text>
+      ))}
+    </div>
+  );
 };
 
 const Redis: React.FC<RedisProps> = ({ user }) => {
@@ -102,9 +122,6 @@ const Redis: React.FC<RedisProps> = ({ user }) => {
   );
   const [loading, setLoading] = useState(false);
   const [databases, setDatabases] = useState<RedisDatabase[]>([]);
-  const [selected, setSelected] = useState<RedisDatabase | undefined>(
-    undefined
-  );
   const [anim, setAnim] = useState(false);
   const form = useForm<NewDatabaseForm>({
     initialValues: {
@@ -130,6 +147,9 @@ const Redis: React.FC<RedisProps> = ({ user }) => {
       },
     },
   });
+
+  const { selectedDatabase, setSelectedDatabase, clearSelectedDatabase } =
+    useRedis();
 
   const fetchRedisDatabases = async () => {
     setLoading(true);
@@ -165,38 +185,6 @@ const Redis: React.FC<RedisProps> = ({ user }) => {
       }
     });
   };
-  const databaseTags = (database: RedisDatabase) => {
-    return (
-      <div className="flex md:flex-row flex-col md:gap-3 gap-1">
-        {[
-          {
-            icon: <HiOutlineGlobeAlt />,
-            value: redisRegions[database.region],
-          },
-          {
-            icon: <HiOutlineTag />,
-            value: Fw.Strings.upper(database.type),
-          },
-          {
-            icon: <Exchange />,
-            value: database.multiZoneReplication
-              ? "Multi-zone replication"
-              : "Single-zone replication",
-          },
-        ].map((item, i) => (
-          <Text
-            size="sm"
-            color="dimmed"
-            className="flex items-center gap-1"
-            key={i}
-          >
-            {item.icon}
-            {item.value}
-          </Text>
-        ))}
-      </div>
-    );
-  };
 
   useEffect(() => {
     fetchRedisDatabases();
@@ -226,7 +214,7 @@ const Redis: React.FC<RedisProps> = ({ user }) => {
           {activeTab === SidebarValue.Databases && (
             <>
               <AnimatePresence mode="wait" initial={false}>
-                {selected !== undefined ? (
+                {selectedDatabase !== null ? (
                   <motion.div
                     key="server-details"
                     initial={{ opacity: 0, x: 20 }}
@@ -238,65 +226,7 @@ const Redis: React.FC<RedisProps> = ({ user }) => {
                       damping: 30,
                     }}
                   >
-                    <div className="flex items-start gap-5">
-                      <div className="flex items-center md:gap-6 gap-2">
-                        <ActionIcon
-                          onClick={() => {
-                            setSelected(undefined);
-                          }}
-                          size="xl"
-                          className="rounded-full hover:border-zinc-500/50 transition-all"
-                          sx={{
-                            borderWidth: 1,
-                          }}
-                        >
-                          <HiArrowLeft />
-                        </ActionIcon>
-                        <HiOutlineDatabase size={32} />
-                      </div>
-                      <div className="flex flex-col md:gap-0 gap-2">
-                        <div className="flex items-center gap-3">
-                          <Dot pulse />
-                          <Title order={3}>{selected.name}</Title>
-                        </div>
-                        {databaseTags(selected)}
-                      </div>
-                    </div>
-                    <Tabs
-                      variant="default"
-                      defaultValue="details"
-                      className="mt-4"
-                    >
-                      <ScrollArea className="mb-3" type="never">
-                        <Tabs.List>
-                          {Object.keys(viewTabs).map((k, i) => (
-                            <Tabs.Tab key={i} value={k}>
-                              {viewTabs[k]}
-                            </Tabs.Tab>
-                          ))}
-                        </Tabs.List>
-                      </ScrollArea>
-                      <Tabs.Panel value="details">
-                        <div className="flex items-center gap-2">
-                          <Text
-                            size="sm"
-                            color="dimmed"
-                            className="flex items-center gap-1 truncate text-ellipsis"
-                          >
-                            <HiOutlineLink className="flex-shrink-0" />
-                            Connection URL
-                            {/**
-                             * @FIXME dont hardcode solarius.me
-                             */}
-                            <Anchor className="cursor-none pointer-events-none">
-                              redis://default:********@
-                              {selected.tenantPhrase}.solarius.me:33648
-                            </Anchor>
-                          </Text>
-                          <Copy value={selected.tenantPhrase} />
-                        </div>
-                      </Tabs.Panel>
-                    </Tabs>
+                    <SelectedDatabaseView />
                   </motion.div>
                 ) : (
                   <>
@@ -353,7 +283,7 @@ const Redis: React.FC<RedisProps> = ({ user }) => {
                               {databases.map((database) => (
                                 <ShadedButton
                                   className="w-full group"
-                                  onClick={() => setSelected(database)}
+                                  onClick={() => setSelectedDatabase(database)}
                                   key={database.id}
                                 >
                                   <div className="flex justify-between w-full items-center">

@@ -1,6 +1,7 @@
 import { redisRegions } from "@/data/redis";
 import IResponseBase from "@/types/api/IResponseBase";
 import Authorized, { Account } from "@/util/api/authorized";
+import { Fw } from "@/util/fw";
 import prisma from "@/util/prisma";
 import {
   RedisDatabaseType,
@@ -64,6 +65,7 @@ class RedisRouter {
         region: validated.region,
         multiZoneReplication: validated.multiZoneReplication,
         ownerId: user.id,
+        tenantPhrase: Fw.Strings.randomPhrase(),
       },
     });
 
