@@ -1,5 +1,6 @@
 import Copy from "@/components/copy";
 import Dot from "@/components/dot";
+import InlineError from "@/components/inline-error";
 import { databaseTags } from "@/pages/developer/redis";
 import SSRLoader from "@/ssr-loader";
 import useRedis from "@/stores/useRedis";
@@ -63,6 +64,16 @@ const SelectedDatabaseView: FC = () => {
           </Tabs.List>
         </ScrollArea>
         <Tabs.Panel value="details">
+          {!selectedDatabase!.tenantPhrase && (
+            <InlineError
+              variant="warning"
+              title="Provisioning error"
+              className="mb-2"
+            >
+              This database has not been provisioned correctly. Please contact
+              Solarius for assistance.
+            </InlineError>
+          )}
           <div className="flex items-center gap-2">
             <Text
               size="sm"
