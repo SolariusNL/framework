@@ -425,7 +425,12 @@ const NotificationsPage: React.FC<NotificationsPage> = ({ user }) => {
                               </Menu.Dropdown>
                             </Menu>
                           </div>
-                          <Text size="sm" color="dimmed" mt="xs" lineClamp={2}>
+                          <Text
+                            size="sm"
+                            color="dimmed"
+                            mt="xs"
+                            lineClamp={open ? 0 : 2}
+                          >
                             {Fw.StringParser.t(notification.message)
                               .addPlugins(boldPlugin, linkPlugin)
                               .parse()}
@@ -467,7 +472,7 @@ const NotificationsPage: React.FC<NotificationsPage> = ({ user }) => {
                                   })}
                                 >
                                   <DataGrid
-                                    className="mt-0"
+                                    className="!mt-0"
                                     items={[
                                       {
                                         tooltip: "Created at",

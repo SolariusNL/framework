@@ -218,8 +218,24 @@ const UserView = ({ user: u, loading }: UserViewProps) => {
                               .then((res) => res.json())
                               .then((res) => {
                                 const newSession = res.token;
-                                setCookie(".frameworksession.old", oldSession);
-                                setCookie(".frameworksession", newSession);
+                                setCookie(".frameworksession.old", oldSession, {
+                                  maxAge: 60 * 60 * 24 * 30,
+                                  ...(process.env.NEXT_PUBLIC_COOKIE_DOMAIN &&
+                                    process.env.NEXT_PUBLIC_COOKIE_DOMAIN !==
+                                      "CHANGE_ME" && {
+                                      domain:
+                                        process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
+                                    }),
+                                });
+                                setCookie(".frameworksession", newSession, {
+                                  maxAge: 60 * 60 * 24 * 30,
+                                  ...(process.env.NEXT_PUBLIC_COOKIE_DOMAIN &&
+                                    process.env.NEXT_PUBLIC_COOKIE_DOMAIN !==
+                                      "CHANGE_ME" && {
+                                      domain:
+                                        process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
+                                    }),
+                                });
 
                                 router.push("/");
                                 showNotification({
