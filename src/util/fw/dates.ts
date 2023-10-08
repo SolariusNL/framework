@@ -1,5 +1,7 @@
 export const Dates = {
   format(date: Date, formatString: string) {
+    date = new Date(date);
+
     const months: string[] = [
       "January",
       "February",

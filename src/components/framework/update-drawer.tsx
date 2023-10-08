@@ -24,7 +24,7 @@ const UpdateDrawer: React.FC = () => {
       description:
         "You can now create Redis databases directly on Framework for your applications.",
       badge: BadgeType.NEW,
-      date: new Date("2023-10-7"),
+      date: new Date("2023-10-07"),
       href: "/developer/redis",
     },
     {
