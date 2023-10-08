@@ -253,10 +253,10 @@ export async function getServerSideProps(
   const id = params?.id;
   const type = params?.type;
 
-  if (!id) return { notFound: true };
-  if (!type) return { notFound: true };
+  if (!id) return { redirect: { destination: "/catalog", permanent: false } };
+  if (!type) return { redirect: { destination: "/catalog", permanent: false } };
   if (!Object.keys(prismaAssetTypeMap).includes(type))
-    return { notFound: true };
+    return { redirect: { destination: "/catalog", permanent: false } };
 
   const queryExecutor = prisma[prismaAssetTypeMap[type]] as never as {
     findUnique: (args: Prisma.CatalogItemFindUniqueArgs) => Promise<any>;
@@ -279,8 +279,20 @@ export async function getServerSideProps(
     },
   });
 
-  if (!asset.canAuthorEdit && asset.author.id !== auth.props.user?.id)
-    return { notFound: true };
+  if (!asset.canAuthorEdit)
+    return {
+      redirect: {
+        destination: `/asset/${type}/${id}`,
+        permanent: false,
+      },
+    };
+  if (asset.authorId !== auth.props?.user?.id)
+    return {
+      redirect: {
+        destination: `/asset/${type}/${id}`,
+        permanent: false,
+      },
+    };
 
   return {
     props: {
