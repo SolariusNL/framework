@@ -1,5 +1,8 @@
+import Owner from "@/components/owner";
 import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
 import logout from "@/util/api/logout";
+import cast from "@/util/cast";
+import { NonUser } from "@/util/prisma-types";
 import { Box, Button, Container, Text } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { deleteCookie, getCookie, setCookie } from "cookies-next";
@@ -22,12 +25,13 @@ const ImpersonationBanner: FC = () => {
       py="md"
     >
       <Container className="flex justify-between items-center">
-        <Text>
-          You are impersonating{" "}
-          <span className="font-semibold">{user?.username}</span>.{" "}
+        <Text className="flex items-center gap-3" color="dimmed">
+          <span className="hidden md:block">You are impersonating </span>
+          <Owner user={cast<NonUser>(user)} />
         </Text>
         <Button
           variant="white"
+          radius="xl"
           onClick={async () => {
             const newCookie = getCookie(".frameworksession.old");
 
