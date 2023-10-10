@@ -71,6 +71,7 @@
     "clsx": "^1.2.1",
     "concurrently": "^7.3.0",
     "cookies-next": "^2.1.1",
+    "country-emoji": "^1.5.6",
     "cp-cli": "^2.0.0",
     "cross-env": "^7.0.3",
     "dayjs": "^1.11.5",
