@@ -5,7 +5,7 @@ services:
     container_name: next-app
     build:
       context: .
-      dockerfile: framework.dev.Dockerfile
+      dockerfile: framework.Dockerfile
 
     environment:
       ENV_VARIABLE: ${ENV_VARIABLE}
@@ -26,7 +26,7 @@ services:
     container_name: next-cron
     build:
       context: .
-      dockerfile: cron.dev.Dockerfile
+      dockerfile: cron.Dockerfile
     volumes:
       - ./cron:/app
     restart: always
