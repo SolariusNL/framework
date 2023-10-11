@@ -1,5 +1,5 @@
 import clsx from "@/util/clsx";
-import { Button, Code, Text, Title } from "@mantine/core";
+import { Button, Text, Title } from "@mantine/core";
 import { Prism } from "@mantine/prism";
 import { Component, ErrorInfo, ReactNode } from "react";
 import {
@@ -7,6 +7,7 @@ import {
   HiOutlineRefresh,
   HiOutlineTag,
 } from "react-icons/hi";
+import DataGrid from "./data-grid";
 import ModernEmptyState from "./modern-empty-state";
 import ShadedCard from "./shaded-card";
 
@@ -16,15 +17,17 @@ type Props = {
 
 type State = {
   hasError: boolean;
-  error?: Error;
   errorInfo?: ErrorInfo;
+  message?: string;
+  name?: string;
 };
 
 class ErrorBoundary extends Component<Props, State> {
   public state: State = {
     hasError: false,
-    error: undefined,
     errorInfo: undefined,
+    message: undefined,
+    name: undefined,
   };
 
   public static getDerivedStateFromError(_: Error): State {
@@ -34,8 +37,9 @@ class ErrorBoundary extends Component<Props, State> {
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     this.setState({
       ...this.state,
-      error,
       errorInfo,
+      message: error.message,
+      name: error.name,
     });
   }
 
@@ -54,52 +58,32 @@ class ErrorBoundary extends Component<Props, State> {
             <Title order={2}>
               An exception caused Framework to stop working.
             </Title>
-            <Text size="sm" color="dimmed" mt="sm">
+            <Text size="sm" color="dimmed" mt="sm" mb="xl">
               We are sorry for the inconvenience. Please see the detailed
               exception report below, which you can save and send to Solarius
               for further investigation.
             </Text>
-            <Title order={3} mt="xl" mb="sm">
-              <Code>error</Code> object properties
-            </Title>
-            {this.state.error &&
-            this.state.error instanceof Error &&
-            JSON.stringify(this.state.error) !== "{}" ? (
-              <div className="flex flex-col gap-4">
-                {Object.entries(this.state.error).map(([key, value]) => (
-                  <div
-                    className="flex gap-2 items-start md:flex-row flex-col"
-                    key={key}
-                  >
-                    <Text
-                      weight={500}
-                      size="sm"
-                      color="dimmed"
-                      className="flex items-center gap-2 flex-shrink-0 md:w-[25%] w-full"
-                    >
-                      <HiOutlineTag />
-                      {key}
-                    </Text>
-                    <Text
-                      style={{
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      }}
-                      className="md:max-w-[75%] max-w-full"
-                      size="sm"
-                    >
-                      {value}
-                    </Text>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <ModernEmptyState
-                title="No error object"
-                body="The internal error object is not available."
-              />
-            )}
+            <DataGrid
+              className="!mt-0"
+              mdCols={1}
+              smCols={1}
+              defaultCols={1}
+              items={[
+                {
+                  tooltip: "name",
+                  icon: <HiOutlineTag />,
+                  value: this.state.name,
+                  hoverTip:
+                    "The name of the error - usually the name of the exception class",
+                },
+                {
+                  tooltip: "message",
+                  icon: <HiOutlineTag />,
+                  value: this.state.message,
+                  hoverTip: "The error message - should be human-readable",
+                },
+              ]}
+            />
             <Title order={3} mt="xl" mb="sm">
               Stack trace
             </Title>
