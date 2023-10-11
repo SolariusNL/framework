@@ -1,3 +1,6 @@
+import DataGrid from "@/components/data-grid";
+import ModernEmptyState from "@/components/modern-empty-state";
+import ShadedCard from "@/components/shaded-card";
 import clsx from "@/util/clsx";
 import { Button, Text, Title } from "@mantine/core";
 import { Prism } from "@mantine/prism";
@@ -7,9 +10,6 @@ import {
   HiOutlineRefresh,
   HiOutlineTag,
 } from "react-icons/hi";
-import DataGrid from "./data-grid";
-import ModernEmptyState from "./modern-empty-state";
-import ShadedCard from "./shaded-card";
 
 type Props = {
   children?: ReactNode;
