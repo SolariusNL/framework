@@ -69,6 +69,7 @@ import {
   HiOutlineLightningBolt,
   HiOutlineSearch,
   HiTrash,
+  HiX,
   HiXCircle,
 } from "react-icons/hi";
 import { useDispatch, useSelector } from "react-redux";
@@ -133,6 +134,7 @@ const Framework = ({
   const mobile = useMediaQuery("950");
   const oldCookie = getCookie(".frameworksession.old");
   const [impersonating, setImpersonating] = useState(false);
+  const [testError, setTestError] = useState(false);
   const [mobileSearchOpened, _setMobileSearchOpened] = useState(false);
   const { setOpened } = useFeedback();
   const { enabled: amoled } = useAmoled();
@@ -220,6 +222,12 @@ const Framework = ({
       };
     }
   }, []);
+  React.useEffect(() => {
+    if (testError)
+      throw new Error(
+        "A client-side exception was invoked by user interaction."
+      );
+  }, [testError]);
 
   return (
     <SpotlightProvider
@@ -374,6 +382,13 @@ const Framework = ({
                       }}
                     >
                       Clear Cookies
+                    </Menu.Item>
+                    <Menu.Item
+                      color="red"
+                      icon={<HiX />}
+                      onClick={() => setTestError(true)}
+                    >
+                      Raise exception
                     </Menu.Item>
                     <Menu.Divider />
                     <Link

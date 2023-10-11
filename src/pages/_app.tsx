@@ -1,3 +1,4 @@
+import ErrorBoundary from "@/components/error-boundary";
 import GlobalStyles from "@/components/global-styles";
 import MdxComponents from "@/components/mdx-components";
 import { FrameworkUserProvider } from "@/contexts/FrameworkUser";
@@ -261,15 +262,19 @@ const Framework: FC<FrameworkProps> & {
                         <FrameworkUserProvider
                           value={pageProps && pageProps.user && pageProps.user}
                         >
-                          <NextNProgress />
-                          <WarningModal />
-                          <SurveyModal />
-                          <CookieAcknowledgementDialog />
-                          <ResetEmailModal />
-                          <ResetPasswordModal />
-                          <ReportAbuseModal {...reportProps as ReportAbuseProps} />
-                          <Component {...pageProps} key={router.asPath} />
-                          {router.query.flow && <ActiveFlow />}
+                          <ErrorBoundary>
+                            <NextNProgress />
+                            <WarningModal />
+                            <SurveyModal />
+                            <CookieAcknowledgementDialog />
+                            <ResetEmailModal />
+                            <ResetPasswordModal />
+                            <ReportAbuseModal
+                              {...(reportProps as ReportAbuseProps)}
+                            />
+                            <Component {...pageProps} key={router.asPath} />
+                            {router.query.flow && <ActiveFlow />}
+                          </ErrorBoundary>
                         </FrameworkUserProvider>
                       </NotificationsProvider>
                     </MDXProvider>
