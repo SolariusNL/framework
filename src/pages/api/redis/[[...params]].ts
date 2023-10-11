@@ -59,6 +59,21 @@ class RedisRouter {
     @Body() body: unknown
   ) {
     const validated = createRedisDatabaseValidator.parse(body);
+    const existing = await prisma.redisDatabase.findMany({
+      where: {
+        ownerId: user.id,
+      },
+      select: {
+        name: true,
+      },
+    });
+
+    if (existing.map((v) => validated.name.toLowerCase() === v.name)) {
+      return <IResponseBase>{
+        success: false,
+        message: "A database already exists with the provided name.",
+      };
+    }
 
     const db = await prisma.redisDatabase.create({
       data: {
