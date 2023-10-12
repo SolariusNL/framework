@@ -1,60 +1,80 @@
+import authorizedRoute from "@/util/auth";
 import prisma from "@/util/prisma";
-import { Code, Divider, Text, Title } from "@mantine/core";
+import { Button, Code, Divider, Text, Title } from "@mantine/core";
 import { EmailReceipt } from "@prisma/client";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
+import Link from "next/link";
 import { FC } from "react";
-import { HiOutlineTag } from "react-icons/hi";
+import { HiArrowSmLeft, HiOutlineMail, HiOutlineTag } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 
 type EmailReceiptProps = {
   receipt: EmailReceipt;
 };
+type DataRow = {
+  key: string;
+  value: string;
+};
 
 const EmailReceipt: FC<EmailReceiptProps> = ({ receipt }) => {
+  const dataRows: DataRow[] = [
+    {
+      key: "Subject",
+      value: receipt.subject,
+    },
+    {
+      key: "Recipient",
+      value: receipt.to,
+    },
+    {
+      key: "Created at",
+      value: new Date(receipt.createdAt).toLocaleString(),
+    },
+  ];
+
   return (
     <>
       <main className="min-h-screen w-full h-full flex flex-col justify-center items-center">
         <div className="max-w-xl py-4 md:my-32 my-12 px-4 w-full h-full">
+          <Link href="/" passHref>
+            <Button
+              variant="light"
+              radius="xl"
+              leftIcon={<HiArrowSmLeft />}
+              component="a"
+              className="mb-8"
+            >
+              Back to home
+            </Button>
+          </Link>
           <div className="flex items-center gap-4">
-            <HiOutlineTag className="text-dimmed text-2xl" />
-            <Title order={2} className="flex items-center gap-2">
+            <HiOutlineMail className="text-dimmed text-2xl" />
+            <Title order={2} className="flex items-center gap-4">
               Email <Code>{receipt.id.split("-")[0]}</Code>
             </Title>
             <Divider className="flex-grow" />
           </div>
-          <div className="flex flex-col gap-1 mt-8">
-            {[
-              {
-                key: "Subject",
-                value: receipt.subject,
-              },
-              {
-                key: "Sent to",
-                value: receipt.to,
-              },
-              {
-                key: "Sent at",
-                value: new Date(receipt.createdAt).toLocaleString(),
-              },
-            ]
+          <div className="flex flex-col gap-2 mt-8">
+            {dataRows
               .filter((row) => row.value)
               .map((row, i) => (
                 <div className="flex gap-2" key={i}>
                   <Text
-                    weight={500}
                     color="dimmed"
-                    style={{ width: "15%" }}
-                    className="flex-shrink-0"
+                    style={{ width: "30%" }}
+                    className="flex-shrink-0 flex items-center gap-2"
                   >
+                    <HiOutlineTag />
                     {row.key}
                   </Text>
                   <Text
                     style={{
-                      maxWidth: "60%",
+                      maxWidth: "70%",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
                       whiteSpace: "nowrap",
                     }}
+                    weight={500}
                   >
                     {row.value}
                   </Text>
@@ -79,6 +99,8 @@ export const getServerSideProps: GetServerSideProps<EmailReceiptProps> = async (
   ctx: GetServerSidePropsContext
 ) => {
   const { id } = ctx.params as { id: string };
+  const auth = await authorizedRoute(ctx, true, false);
+
   if (!id)
     return {
       redirect: {
@@ -86,10 +108,12 @@ export const getServerSideProps: GetServerSideProps<EmailReceiptProps> = async (
         permanent: false,
       },
     };
+  if (auth.redirect) return auth;
 
   const receipt = await prisma.emailReceipt.findFirst({
     where: {
       id,
+      to: auth.props.user?.email,
     },
   });
 
