@@ -2,6 +2,7 @@ import cast from "@/util/cast";
 import logger from "@/util/logger";
 import Queue from "bull";
 import { createTransport } from "nodemailer";
+import prisma from "./prisma";
 
 type SendMailOptions = {
   to: string;
@@ -29,6 +30,14 @@ export const sendMail = async ({ to, subject, html }: SendMailOptions) => {
     subject,
     html,
   };
+
+  await prisma.emailReceipt.create({
+    data: {
+      template: html,
+      to,
+      subject,
+    },
+  });
 
   if (!queue) {
     await transport

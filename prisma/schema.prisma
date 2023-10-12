@@ -1528,3 +1528,20 @@ enum RedisDatabaseType {
   REGIONAL
   GLOBAL
 }
+
+model EmailReceipt {
+  id         String                   @id @default(uuid())
+  createdAt  DateTime                 @default(now())
+  template   String
+  subject    String
+  to         String
+  properties EmailReceiptProperties[] @relation("emailReceiptProperties")
+}
+
+model EmailReceiptProperties {
+  id        String       @id @default(uuid())
+  key       String
+  value     String
+  receipt   EmailReceipt @relation("emailReceiptProperties", references: [id], fields: [receiptId])
+  receiptId String
+}
