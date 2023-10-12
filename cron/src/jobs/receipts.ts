@@ -18,7 +18,7 @@ const clearEmailReceiptsJob = new FwCronJob(
     });
 
     console.log(
-      `cron ~ 🧹 Deleted ${emailReceiptsToDelete.count} email receipts older than 7 days.`
+      `cron ~ 🧹 Purged ${emailReceiptsToDelete.count} expired email receipts.`
     );
   }
 );
