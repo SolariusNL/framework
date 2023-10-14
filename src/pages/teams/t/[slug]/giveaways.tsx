@@ -18,7 +18,6 @@ import {
   Button,
   Divider,
   Select,
-  Skeleton,
   Text,
   TextInput,
   Title,
@@ -65,9 +64,6 @@ const TeamViewGiveaways: FC<TeamViewGiveawaysProps> = ({ user, team }) => {
   const [selectedGiveaway, setSelectedGiveaway] = useState<
     TeamGiveaway | undefined
   >();
-  const [selectedGiveawayCountdown, setSelectedGiveawayCountdown] = useState<
-    number | undefined
-  >(undefined);
   const [participating, setParticipating] = useState<boolean | undefined>(
     undefined
   );
@@ -158,14 +154,6 @@ const TeamViewGiveaways: FC<TeamViewGiveawaysProps> = ({ user, team }) => {
   useEffect(() => {
     if (selectedGiveaway !== undefined) {
       fetchParticipating();
-      const countdown = setInterval(() => {
-        setSelectedGiveawayCountdown(
-          Math.floor(
-            (new Date(selectedGiveaway?.endsAt).getTime() - Date.now()) / 1000
-          )
-        );
-      }, 1000);
-      return () => clearInterval(countdown);
     }
   }, [selectedGiveaway]);
 
@@ -193,7 +181,6 @@ const TeamViewGiveaways: FC<TeamViewGiveawaysProps> = ({ user, team }) => {
                       <ActionIcon
                         onClick={() => {
                           setSelectedGiveaway(undefined);
-                          setSelectedGiveawayCountdown(undefined);
                         }}
                         size="xl"
                         className="rounded-full hover:border-zinc-500/50 transition-all"
@@ -264,27 +251,6 @@ const TeamViewGiveaways: FC<TeamViewGiveawaysProps> = ({ user, team }) => {
                       ]}
                       className="mt-0"
                     />
-                    <div className="flex justify-center mt-4">
-                      {selectedGiveawayCountdown ? (
-                        <Title order={2}>
-                          {selectedGiveawayCountdown > 0
-                            ? `${Math.floor(
-                                selectedGiveawayCountdown / 86400
-                              )}d ${Math.floor(
-                                (selectedGiveawayCountdown % 86400) / 3600
-                              )}h ${Math.floor(
-                                ((selectedGiveawayCountdown % 86400) % 3600) /
-                                  60
-                              )}m ${Math.floor(
-                                ((selectedGiveawayCountdown % 86400) % 3600) %
-                                  60
-                              )}s`
-                            : "Ended"}
-                        </Title>
-                      ) : (
-                        <Skeleton width={200} height={36} />
-                      )}
-                    </div>
                   </div>
                 </div>
               </>

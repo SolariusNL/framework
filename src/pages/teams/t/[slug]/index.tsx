@@ -31,7 +31,6 @@ import {
   useMantineColorScheme,
 } from "@mantine/core";
 import { useClipboard } from "@mantine/hooks";
-import { openModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import { Rating, TeamAccess } from "@prisma/client";
 import { getCookie } from "cookies-next";
@@ -43,9 +42,7 @@ import {
   HiCake,
   HiChat,
   HiCheckCircle,
-  HiClipboard,
   HiClock,
-  HiCog,
   HiDocumentText,
   HiDotsVertical,
   HiExclamationCircle,
@@ -53,6 +50,9 @@ import {
   HiLockClosed,
   HiMail,
   HiOfficeBuilding,
+  HiOutlineChatAlt2,
+  HiOutlineClipboard,
+  HiOutlineCog,
   HiOutlineTicket,
   HiTicket,
   HiUsers,
@@ -355,7 +355,7 @@ const TeamView: React.FC<TeamViewProps> = ({ user, team: teamInitial }) => {
               <Menu.Dropdown>
                 <Menu.Label>Actions</Menu.Label>
                 <Menu.Item
-                  icon={<HiClipboard />}
+                  icon={<HiOutlineClipboard />}
                   onClick={() => {
                     copy(
                       `${window.location.protocol}//${window.location.host}/teams/t/${team.slug}`
@@ -364,7 +364,10 @@ const TeamView: React.FC<TeamViewProps> = ({ user, team: teamInitial }) => {
                 >
                   Copy team link
                 </Menu.Item>
-                <Menu.Item icon={<HiClipboard />} onClick={() => copy(team.id)}>
+                <Menu.Item
+                  icon={<HiOutlineClipboard />}
+                  onClick={() => copy(team.id)}
+                >
                   Copy ID
                 </Menu.Item>
                 <Menu.Item
@@ -383,10 +386,10 @@ const TeamView: React.FC<TeamViewProps> = ({ user, team: teamInitial }) => {
                       href={`/teams/t/${team.slug}/settings/general`}
                       passHref
                     >
-                      <Menu.Item icon={<HiCog />}>Manage team</Menu.Item>
+                      <Menu.Item icon={<HiOutlineCog />}>Manage team</Menu.Item>
                     </Link>
                     <Menu.Item
-                      icon={<HiChat />}
+                      icon={<HiOutlineChatAlt2 />}
                       onClick={() => setShoutEditOpened(true)}
                     >
                       Edit shout
@@ -420,32 +423,10 @@ const TeamView: React.FC<TeamViewProps> = ({ user, team: teamInitial }) => {
             </Button>
           </div>
           {team.displayFunds && (
-            <Tooltip label={`Team funds: ${team.funds} Tickets`}>
-              <Badge
-                color="teal"
-                radius="sm"
-                className="px-2 cursor-pointer w-fit"
-                size="xl"
-                onClick={() =>
-                  openModal({
-                    title: "Team funds",
-                    children: (
-                      <>
-                        <Text size="sm" color="dimmed" align="center">
-                          Teams can have Ticket balances which can be used to
-                          distribute earnings to giveaway winners, fund
-                          development, or anything else you can think of.
-                        </Text>
-                        <Text size="sm" color="dimmed" mt="md" align="center">
-                          You can add funds to your team by clicking the triple
-                          vertical dots in the top right corner of this page,
-                          and selecting &quot;Add funds&quot;.
-                        </Text>
-                      </>
-                    ),
-                  })
-                }
-              >
+            <Tooltip
+              label={`Team funds: ${Fw.Nums.beautify(team.funds)} Tickets`}
+            >
+              <Badge color="teal" radius="sm" className="px-2 w-fit" size="xl">
                 <div className="flex items-center gap-2">
                   <HiOutlineTicket />
                   <span>{abbreviateNumber(team.funds)}</span>
@@ -493,7 +474,7 @@ const TeamView: React.FC<TeamViewProps> = ({ user, team: teamInitial }) => {
       <DataGrid
         mdCols={3}
         smCols={2}
-        defaultCols={1}
+        defaultCols={2}
         items={[
           {
             tooltip: "Cake day",
