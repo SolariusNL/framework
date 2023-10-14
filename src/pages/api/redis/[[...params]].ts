@@ -68,7 +68,7 @@ class RedisRouter {
       },
     });
 
-    if (existing.map((v) => validated.name.toLowerCase() === v.name)) {
+    if (existing.find((db) => db.name === validated.name)) {
       return <IResponseBase>{
         success: false,
         message: "A database already exists with the provided name.",
