@@ -144,10 +144,10 @@ const Store: React.FC<StoreProps> = ({ game }) => {
                   );
 
                   formData.append("file", file);
-                  formData.append("gamepassId", res.gamepass.id.toString());
-                  formData.append("bucket", "gamepasses");
+                  formData.append("assetId", res.gamepass.id.toString());
+                  formData.append("bucket", "assets");
 
-                  await fetch("/api/media/upload", {
+                  await fetch("/api/media/upload?type=sounds", {
                     method: "POST",
                     headers: {
                       authorization: String(getCookie(".frameworksession")),
