@@ -164,7 +164,7 @@ const Sounds = ({ user }: SoundsProps) => {
                   formData.append("bucket", "assets");
                   formData.append("assetId", res.data?.sound.id!);
 
-                  await fetch(`/api/media/upload?type=sound`, {
+                  await fetch("/api/media/upload?type=sound", {
                     method: "POST",
                     body: formData,
                     headers: {
