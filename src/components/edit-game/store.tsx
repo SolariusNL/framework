@@ -147,7 +147,7 @@ const Store: React.FC<StoreProps> = ({ game }) => {
                   formData.append("assetId", res.gamepass.id.toString());
                   formData.append("bucket", "assets");
 
-                  await fetch("/api/media/upload?type=gamepasses", {
+                  await fetch("/api/media/upload?type=gamepass", {
                     method: "POST",
                     headers: {
                       authorization: String(getCookie(".frameworksession")),
