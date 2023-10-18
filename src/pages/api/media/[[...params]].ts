@@ -8,17 +8,22 @@ import { RateLimitMiddleware } from "@/util/rate-limit";
 import { AssetType, prismaAssetTypeMap } from "@/util/types";
 import { CatalogItem, Prisma } from "@prisma/client";
 import {
+  Download,
+  Get,
   Middleware,
   NextFunction,
+  Param,
   Post,
   Query,
   Req,
+  Res,
   UseMiddleware,
   createHandler,
 } from "@solariusnl/next-api-decorators";
 import formidable, { Formidable } from "formidable";
-import { rename } from "fs/promises";
-import { NextApiRequest, NextApiResponse } from "next";
+import { createReadStream, existsSync } from "fs";
+import { rename, stat } from "fs/promises";
+import type { NextApiRequest, NextApiResponse } from "next";
 import { join } from "path";
 import sharp from "sharp";
 
@@ -403,6 +408,38 @@ class MediaRouter {
       };
     }
     return result;
+  }
+
+  @Get("/local-file/:bucket/:name")
+  @Download()
+  public async getLocalFile(
+    @Param("bucket") bucket: Bucket,
+    @Param("name") name: string,
+    @Res() response: NextApiResponse
+  ) {
+    if (process.env.NODE_ENV !== "development") return ProhibitedQuery;
+    if (!buckets[cast<number>(bucket)])
+      return <IResponseBase>{
+        success: false,
+        message: "Invalid bucket",
+      };
+
+    const path = join(process.cwd(), "data-storage", bucket, name);
+    if (!existsSync(path))
+      return <IResponseBase>{
+        success: false,
+        message: "No file exists in the provided bucket",
+      };
+    else {
+      const fileStat = await stat(path);
+
+      response.writeHead(200, {
+        "Content-Length": fileStat.size,
+      });
+
+      const readStream = createReadStream(path);
+      readStream.pipe(response);
+    }
   }
 }
 
