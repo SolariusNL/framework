@@ -1,17 +1,24 @@
+import IResponseBase from "@/types/api/IResponseBase";
 import Authorized, { Account } from "@/util/api/authorized";
-import { getAccountFromSession } from "@/util/auth";
+import cast from "@/util/cast";
 import prisma from "@/util/prisma";
 import type { User } from "@/util/prisma-types";
+import { RateLimitMiddleware } from "@/util/rate-limit";
 import { AssetType, prismaAssetTypeMap } from "@/util/types";
 import { CatalogItem, Prisma } from "@prisma/client";
 import {
-  Param,
+  Middleware,
+  NextFunction,
   Post,
+  Query,
+  Req,
   UseMiddleware,
   createHandler,
 } from "@solariusnl/next-api-decorators";
-import multer from "multer";
-import path from "path";
+import formidable, { Formidable } from "formidable";
+import { existsSync, mkdirSync } from "fs";
+import { NextApiRequest, NextApiResponse } from "next";
+import { join } from "path";
 import sharp from "sharp";
 
 export const config = {
@@ -20,400 +27,380 @@ export const config = {
   },
 };
 
-const convertToWebp = (file: string) => {
-  return sharp(file)
-    .webp({ quality: 95, alphaQuality: 95, lossless: true })
-    .toBuffer()
-    .then((data) => data)
-    .catch((err) => {
-      console.log("Failed to convert to webp: ", err);
-      return file;
-    });
+type NextApiRequestEx = NextApiRequest & {
+  form?: Record<string, any>;
 };
 
-const imageOnly = (req: any, file: any, callback: any) => {
-  const ext = path.extname(file.originalname).toLowerCase();
+type UploadThumbnailInput = {
+  gameId: number;
+};
+type UploadIconInput = {
+  gameId: number;
+};
+type UploadGamepassInput = {
+  gamepassId: string;
+};
+type UploadTeamInput = {
+  teamId: string;
+};
+type UploadConversationInput = {
+  convoId: string;
+};
+type UploadAssetInput = {
+  assetId: string;
+};
+type UploadSoundInput = {
+  soundId: string;
+};
 
-  if (ext !== ".png" && ext !== ".jpg" && ext !== ".jpeg" && ext !== ".gif") {
-    return callback(new Error("Only images are allowed"));
+type UploadInput =
+  | UploadThumbnailInput
+  | UploadIconInput
+  | UploadGamepassInput
+  | UploadTeamInput
+  | UploadConversationInput
+  | UploadAssetInput
+  | UploadSoundInput;
+
+type UploadAssetQuery = {
+  type: AssetType;
+};
+
+type UploadQuery = UploadAssetQuery;
+
+const buckets = [
+  "avatars",
+  "thumbnails",
+  "icons",
+  "gamepasses",
+  "teams",
+  "conversations",
+  "assets",
+  "sounds",
+] as const;
+const extensions = [
+  ".png",
+  ".jpg",
+  ".webp",
+  ".jpeg",
+  ".mp3",
+  ".wav",
+  ".ogg",
+  ".m4a",
+  ".gif",
+] as const;
+const mimeTypes = {
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".webp": "image/webp",
+  ".jpeg": "image/jpeg",
+  ".mp3": "audio/mpeg",
+  ".wav": "audio/wav",
+  ".ogg": "audio/ogg",
+  ".m4a": "audio/mp4",
+  ".gif": "image/gif",
+} as const;
+type Bucket = (typeof buckets)[number];
+type Extension = (typeof extensions)[number];
+type MimeType = (typeof mimeTypes)[Extension];
+
+const defaultImageConfig = {
+  acceptedExtensions: [".png", ".jpg", ".webp", ".jpeg", ".gif"],
+  acceptedMimeTypes: ["image/png", "image/jpeg", "image/webp", "image/gif"],
+} as { acceptedExtensions: Extension[]; acceptedMimeTypes: MimeType[] };
+const ProhibitedQuery = <IResponseBase>{
+  success: false,
+  message:
+    "You are not permitted to upload to this bucket, or you did not supply the correct parameters",
+};
+
+const bucketData: Record<
+  Bucket,
+  {
+    acceptedExtensions: Extension[];
+    acceptedMimeTypes: MimeType[];
   }
-
-  convertToWebp(file).then((data) => {
-    file.buffer = data;
-  });
-
-  callback(null, true);
+> = {
+  avatars: defaultImageConfig,
+  thumbnails: defaultImageConfig,
+  icons: defaultImageConfig,
+  gamepasses: defaultImageConfig,
+  teams: defaultImageConfig,
+  conversations: defaultImageConfig,
+  assets: defaultImageConfig,
+  sounds: {
+    acceptedExtensions: [".mp3", ".wav", ".ogg", ".m4a"],
+    acceptedMimeTypes: ["audio/mpeg", "audio/wav", "audio/ogg", "audio/mp4"],
+  },
 };
-
-const createMulter = (
-  destination: string,
-  nameFunction: (req: any, file: any, cb: any) => any,
-  alternativeFilter?: (req: any, file: any, cb: any) => any
-) =>
-  multer({
-    limits: {
-      fileSize: 12 * 1024 * 1024,
-    },
-    storage: multer.diskStorage({
-      destination: `./public/${destination}`,
-      filename: nameFunction,
-    }),
-    fileFilter: alternativeFilter || imageOnly,
-  });
-
-const avatars = createMulter("avatars", async (req, file, cb) => {
-  const user = await getAccountFromSession(
-    String(req.headers["authorization"])
-  );
-
-  await prisma.user.update({
-    where: { id: user?.id },
-    data: {
-      avatarUri: `/avatars/${String(user?.username)}.webp?at=${Date.now()}`,
-    },
-  });
-
-  cb(null, user?.username + ".webp");
-});
-
-const gameThumbnails = createMulter("thumbnails", async (req, file, cb) => {
-  const user = await getAccountFromSession(
-    String(req.headers["authorization"])
-  );
-
-  if (!req.params.gameId) return cb(new Error("No game id provided"), "");
-
-  const game = await prisma.game.findFirst({
-    where: {
-      id: Number(req.params.gameId),
-      authorId: user?.id,
-    },
-  });
-
-  if (!game) return cb(new Error("Game not found"), "");
-  if (!Number.isInteger(Number(req.params.gameId)))
-    return cb(new Error("Invalid game id"), "");
-
-  await prisma.game.update({
-    where: { id: Number(req.params.gameId) },
-    data: {
-      gallery: {
-        set: [`/thumbnails/${req.params.gameId}.webp?at=${Date.now()}`],
+const databaseOperations: Record<
+  Bucket,
+  (input: any, user: User, params?: any) => Promise<string | IResponseBase>
+> = {
+  avatars: async (input, user, params) => {
+    const name = `${user.username}.webp`;
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        avatarUri: `/avatars/${name}?at=${Date.now()}`,
       },
-    },
-  });
-
-  cb(null, `${req.params.gameId}.webp`);
-});
-
-const gameIcons = createMulter("icons", async (req, file, cb) => {
-  const user = await getAccountFromSession(
-    String(req.headers["authorization"])
-  );
-
-  if (!req.params.gameId) return cb(new Error("No game id provided"), "");
-
-  const game = await prisma.game.findFirst({
-    where: {
-      id: Number(req.params.gameId),
-      authorId: user?.id,
-    },
-  });
-
-  if (!game) return cb(new Error("Game not found"), "");
-  if (!Number.isInteger(Number(req.params.gameId)))
-    return cb(new Error("Invalid game id"), "");
-
-  await prisma.game.update({
-    where: {
-      id: Number.parseInt(req.params.gameId),
-    },
-    data: {
-      iconUri: `/icons/${game.id}.webp?at=${Date.now()}`,
-    },
-  });
-
-  cb(null, game.id + ".webp");
-});
-
-const gamepassIcons = createMulter("gamepass", async (req, file, cb) => {
-  const user = await getAccountFromSession(
-    String(req.headers["authorization"])
-  );
-
-  if (!req.params.gamepassId) return cb(new Error("No game id provided"), "");
-
-  const gamepass = await prisma.gamepass.findFirst({
-    where: {
-      id: String(req.params.gamepassId),
-      game: {
-        authorId: user?.id,
-      },
-    },
-  });
-
-  if (!gamepass) return cb(new Error("Gamepass not found"), "");
-  if (!String(req.params.gamepassId))
-    return cb(new Error("Invalid gamepass id"), "");
-
-  await prisma.gamepass.update({
-    where: {
-      id: String(req.params.gamepassId),
-    },
-    data: {
-      previewUri: `/gamepass/${gamepass.id}.webp?at=${Date.now()}`,
-      iconUri: `/gamepass/${gamepass.id}.webp?at=${Date.now()}`,
-    },
-  });
-
-  cb(null, gamepass.id + ".webp");
-});
-
-const teamIcons = createMulter("team", async (req, file, cb) => {
-  const user = await getAccountFromSession(
-    String(req.headers["authorization"])
-  );
-
-  if (!req.params.teamId) return cb(new Error("No team id provided"), "");
-
-  const team = await prisma.team.findFirst({
-    where: {
-      id: String(req.params.teamId),
-      ownerId: user?.id,
-    },
-  });
-
-  if (!team) return cb(new Error("Team not found"), "");
-  if (!String(req.params.teamId)) return cb(new Error("Invalid team id"), "");
-
-  await prisma.team.update({
-    where: {
-      id: String(req.params.teamId),
-    },
-    data: {
-      iconUri: `/team/${team.id}.webp?at=${Date.now()}`,
-    },
-  });
-
-  cb(null, team.id + ".webp");
-});
-
-const convoIcons = createMulter("convo", async (req, file, cb) => {
-  const user = await getAccountFromSession(
-    String(req.headers["authorization"])
-  );
-
-  if (!req.params.convoId)
-    return cb(new Error("No conversation id provided"), "");
-
-  const conversation = await prisma.chatConversation.findFirst({
-    where: {
-      id: String(req.params.convoId),
-      participants: {
-        some: {
-          id: user?.id,
+    });
+    return name;
+  },
+  thumbnails: async (input: UploadThumbnailInput, user, params) => {
+    if (!input.gameId) return ProhibitedQuery;
+    const game = await prisma.game.findFirst({
+      where: { authorId: user.id, id: Number(input.gameId) },
+    });
+    if (!game) return ProhibitedQuery;
+    const name = `${input.gameId}.webp`;
+    await prisma.game.update({
+      where: { id: Number(input.gameId) },
+      data: {
+        gallery: {
+          set: [`/thumbnails/${name}?at=${Date.now()}`],
         },
       },
-    },
-  });
+    });
+    return name;
+  },
+  icons: async (input: UploadIconInput, user, params) => {
+    if (!input.gameId) return ProhibitedQuery;
+    const game = await prisma.game.findFirst({
+      where: { authorId: user.id, id: Number(input.gameId) },
+    });
+    if (!game) return ProhibitedQuery;
+    const name = `${input.gameId}.webp`;
+    await prisma.game.update({
+      where: { id: Number(input.gameId) },
+      data: {
+        iconUri: `/icons/${name}?at=${Date.now()}`,
+      },
+    });
+    return name;
+  },
+  gamepasses: async (input: UploadGamepassInput, user, params) => {
+    if (!input.gamepassId) return ProhibitedQuery;
+    const gp = await prisma.gamepass.findFirst({
+      where: { authorId: user.id, id: input.gamepassId },
+    });
+    if (!gp) return ProhibitedQuery;
+    const name = `${input.gamepassId}.webp`;
+    await prisma.gamepass.update({
+      where: { id: input.gamepassId },
+      data: {
+        iconUri: `/gamepasses/${name}?at=${Date.now()}`,
+      },
+    });
+    return name;
+  },
+  teams: async (input: UploadTeamInput, user, params) => {
+    if (!input.teamId) return ProhibitedQuery;
+    const team = await prisma.team.findFirst({
+      where: { ownerId: user.id, id: input.teamId },
+    });
+    if (!team) return ProhibitedQuery;
+    const name = `${input.teamId}.webp`;
+    await prisma.team.update({
+      where: { id: input.teamId },
+      data: {
+        iconUri: `/teams/${name}?at=${Date.now()}`,
+      },
+    });
+    return name;
+  },
+  conversations: async (input: UploadConversationInput, user, params) => {
+    if (!input.convoId) return ProhibitedQuery;
+    const convo = await prisma.chatConversation.findFirst({
+      where: { ownerId: user.id, id: input.convoId },
+    });
+    if (!convo) return ProhibitedQuery;
+    const name = `${input.convoId}.webp`;
+    await prisma.chatConversation.update({
+      where: { id: input.convoId },
+      data: {
+        iconUri: `/conversations/${name}?at=${Date.now()}`,
+      },
+    });
+    return name;
+  },
+  assets: async (input: UploadAssetInput, user, params: UploadAssetQuery) => {
+    if (!input.assetId) return ProhibitedQuery;
+    if (!params.type) return ProhibitedQuery;
 
-  if (!conversation) return cb(new Error("Conversation not found"), "");
-  if (!String(req.params.convoId))
-    return cb(new Error("Invalid conversation id"), "");
+    const queryExecutor = prisma[prismaAssetTypeMap[params.type]] as never as {
+      findFirst: (
+        args: Prisma.CatalogItemFindFirstArgs
+      ) => Promise<CatalogItem>;
+      update: (args: Prisma.CatalogItemUpdateArgs) => Promise<CatalogItem>;
+    };
 
-  await prisma.chatConversation.update({
-    where: {
-      id: String(req.params.convoId),
-    },
-    data: {
-      iconUri: `/convo/${conversation.id}.webp?at=${Date.now()}`,
-    },
-  });
+    const asset = await queryExecutor.findFirst({
+      where: {
+        id: input.assetId,
+        author: {
+          id: user?.id,
+        },
+        canAuthorEdit: true,
+      },
+    });
 
-  cb(null, conversation.id + ".webp");
-});
+    if (!asset) return ProhibitedQuery;
+    const name = `${input.assetId}.webp`;
 
-const assetIcons = createMulter("asset", async (req, file, cb) => {
-  const user = await getAccountFromSession(
-    String(req.headers["authorization"])
-  );
+    await queryExecutor.update({
+      where: { id: input.assetId },
+      data: {
+        previewUri: `/assets/${name}?at=${Date.now()}`,
+      },
+    });
 
-  if (!req.params.assetId) return cb(new Error("No asset id provided"), "");
-  const type = req.query.type as AssetType;
-  if (!type) return cb(new Error("No asset type provided"), "");
+    return name;
+  },
+  sounds: async (input: UploadSoundInput, user, params) => {
+    if (!input.soundId) return ProhibitedQuery;
+    const sound = await prisma.sound.findFirst({
+      where: { authorId: user.id, id: input.soundId },
+    });
+    if (!sound) return ProhibitedQuery;
+    const name = `${input.soundId}.webp`;
+    await prisma.sound.update({
+      where: { id: input.soundId },
+      data: {
+        audioUri: `/sounds/${name}?at=${Date.now()}`,
+      },
+    });
 
-  const queryExecutor = prisma[prismaAssetTypeMap[type]] as never as {
-    findFirst: (args: Prisma.CatalogItemFindFirstArgs) => Promise<CatalogItem>;
-    update: (args: Prisma.CatalogItemUpdateArgs) => Promise<CatalogItem>;
+    return name;
+  },
+};
+
+const getFileMiddleware: Middleware = async (
+  req: NextApiRequestEx,
+  res: NextApiResponse,
+  next: NextFunction
+) => {
+  const data = (await new Promise((resolve, reject) => {
+    const form = new Formidable();
+
+    form.parse(req, (err, fields, files) => {
+      if (err) reject(err);
+      resolve({ err, fields, files });
+    });
+  })) as {
+    err: Error;
+    fields: formidable.Fields;
+    files: formidable.Files;
   };
 
-  const asset = await queryExecutor.findFirst({
-    where: {
-      id: String(req.params.assetId),
-      author: {
-        id: user?.id,
-      },
-      canAuthorEdit: true,
-    },
-  });
+  const { files } = data;
+  const file = cast<formidable.File>(files?.file![0]);
+  const newFields = Object.fromEntries(
+    Object.entries(data.fields).map(([key, value]) => [key, value![0]])
+  );
+  const bucket = newFields.bucket;
 
-  if (!asset) return cb(new Error("Asset not found"), "");
+  if (!file)
+    return res
+      .status(400)
+      .json(<IResponseBase>{ success: false, message: "No file provided" });
+  if (!file.mimetype)
+    return res
+      .status(400)
+      .json(<IResponseBase>{ success: false, message: "No mimetype provided" });
+  if (!file.originalFilename)
+    return res.status(400).json(<IResponseBase>{
+      success: false,
+      message: "No file name provided",
+    });
 
-  await queryExecutor.update({
-    where: {
-      id: String(req.params.assetId),
-    },
-    data: {
-      previewUri: `/asset/${asset.id}.webp?at=${Date.now()}`,
-    },
-  });
+  const extension = file.originalFilename.split(".").pop();
+  if (!extension)
+    return res.status(400).json(<IResponseBase>{
+      success: false,
+      message: "No file extension provided",
+    });
 
-  cb(null, asset.id + ".webp");
+  const mimeType = mimeTypes[`.${extension}` as Extension];
+  if (!mimeType)
+    return res.status(400).json(<IResponseBase>{
+      success: false,
+      message: "Invalid file extension",
+    });
+
+  const bucketConfig = bucketData[cast<Bucket>(bucket)];
+
+  if (!bucketConfig)
+    return res.status(400).json(<IResponseBase>{
+      success: false,
+      message: "Invalid bucket",
+    });
+
+  if (
+    !bucketConfig.acceptedExtensions.includes(`.${extension}` as Extension) ||
+    !bucketConfig.acceptedMimeTypes.includes(mimeType as MimeType)
+  )
+    return res.status(400).json(<IResponseBase>{
+      success: false,
+      message: "Invalid file type",
+    });
+
+  req.form = { ...newFields, file };
+
+  next();
+};
+
+buckets.forEach((bucket) => {
+  const path = join(process.cwd(), "data-storage", bucket);
+  if (!existsSync(path)) mkdirSync(path);
 });
 
-const sounds = createMulter(
-  "sounds",
-  async (req, file, cb) => {
-    const user = await getAccountFromSession(
-      String(req.headers["authorization"])
-    );
-
-    if (!req.params.soundId) return cb(new Error("No sound id provided"), "");
-
-    const sound = await prisma.sound.findFirst({
-      where: {
-        id: String(req.params.soundId),
-        authorId: user?.id,
-      },
-    });
-
-    if (!sound) return cb(new Error("Sound not found"), "");
-    if (!String(req.params.soundId))
-      return cb(new Error("Invalid sound id"), "");
-
-    const extension = file.mimetype.split("/")[1];
-    const validExtensions = ["mp3", "wav", "ogg", "mpeg", "webm", "aac"];
-
-    if (!validExtensions.includes(extension))
-      return cb(new Error("Invalid file type"), "");
-
-    await prisma.sound.update({
-      where: {
-        id: String(req.params.soundId),
-      },
-      data: {
-        audioUri: `/sounds/${sound.id}.${extension}`,
-      },
-    });
-
-    cb(null, sound.id + "." + extension);
-  },
-  (req, file, cb) => {
-    if (!file.mimetype.startsWith("audio/")) {
-      return cb(new Error("Invalid file type"));
-    }
-
-    cb(null, true);
-  }
-);
-
 class MediaRouter {
-  @Post("/upload/avatar")
+  @Post("/upload")
   @Authorized()
-  @UseMiddleware(avatars.single("avatar"))
-  async uploadAvatar(@Account() account: User) {
-    return {
-      avatar: `/avatars/${account.username}.webp`,
-      success: true,
-    };
-  }
-
-  @Post("/upload/thumbnail/:gameId")
-  @Authorized()
-  @UseMiddleware(gameThumbnails.single("thumbnail"))
-  async uploadThumbnail(
-    @Account() account: User,
-    @Param("gameId") gameId: number
+  @UseMiddleware(getFileMiddleware)
+  @RateLimitMiddleware(10)()
+  async uploadAvatar(
+    @Account() user: User,
+    @Req() req: NextApiRequestEx,
+    @Query() query: unknown
   ) {
-    return {
-      thumbnail: `/thumbnails/${gameId}.webp`,
-      success: true,
-    };
-  }
+    const { bucket, file } = req.form!;
+    const params = query as UploadQuery;
 
-  @Post("/upload/icon/:gameId")
-  @Authorized()
-  @UseMiddleware(gameIcons.single("icon"))
-  async uploadIcon(@Account() account: User, @Param("gameId") gameId: number) {
-    return {
-      icon: `/icons/${gameId}.webp`,
-      success: true,
-    };
-  }
+    const operation = databaseOperations[cast<Bucket>(bucket)];
+    if (!operation)
+      return <IResponseBase>{
+        success: false,
+        message: "Invalid bucket provided",
+      };
 
-  @Post("/upload/gamepass/:gamepassId")
-  @Authorized()
-  @UseMiddleware(gamepassIcons.single("gamepass"))
-  async uploadGamepassIcon(
-    @Account() account: User,
-    @Param("gamepassId") gamepassId: string
-  ) {
-    return {
-      icon: `/gamepass/${gamepassId}.webp`,
-      success: true,
-    };
-  }
+    const result = await operation(req.form!, user, params);
+    if (typeof result === "string") {
+      const path = join(
+        process.cwd(),
+        "data-storage",
+        cast<Bucket>(bucket),
+        result
+      );
 
-  @Post("/upload/team/:teamId")
-  @Authorized()
-  @UseMiddleware(teamIcons.single("team"))
-  async uploadTeamIcon(
-    @Account() account: User,
-    @Param("teamId") teamId: string
-  ) {
-    return {
-      icon: `/team/${teamId}.webp`,
-      success: true,
-    };
-  }
+      await sharp(cast<formidable.File>(file).filepath)
+        .webp({ quality: 95, alphaQuality: 95, lossless: true })
+        .toFile(path)
+        .then((data) => data)
+        .catch(() => {
+          return <IResponseBase>{
+            success: false,
+            message: "Failed to write to disk",
+          };
+        });
 
-  @Post("/upload/convo/:convoId")
-  @Authorized()
-  @UseMiddleware(convoIcons.single("convo"))
-  async uploadConversationIcon(
-    @Account() account: User,
-    @Param("convoId") convoId: string
-  ) {
-    return {
-      icon: `/convo/${convoId}.webp`,
-      success: true,
-    };
-  }
-
-  @Post("/upload/asset/:assetId")
-  @Authorized()
-  @UseMiddleware(assetIcons.single("asset"))
-  async uploadAssetIcon(
-    @Account() account: User,
-    @Param("assetId") assetId: string
-  ) {
-    return {
-      icon: `/asset/${assetId}.webp`,
-      success: true,
-    };
-  }
-
-  @Post("/upload/sound/:soundId")
-  @Authorized()
-  @UseMiddleware(sounds.single("sound"))
-  async uploadSound(
-    @Account() account: User,
-    @Param("soundId") soundId: string
-  ) {
-    return {
-      sound: `/sounds/${soundId}.webm`,
-      success: true,
-    };
+      return <IResponseBase>{
+        success: true,
+        message: "Successfully uploaded file",
+      };
+    }
+    return result;
   }
 }
 

@@ -199,8 +199,10 @@ const Details = ({ game: g }: DetailsProps) => {
 
     if (uploadedIcon) {
       const formData = new FormData();
-      formData.append("icon", getFileFromImg(uploadedIcon));
-      await fetch(`/api/media/upload/icon/${game.id}`, {
+      formData.append("file", getFileFromImg(uploadedIcon));
+      formData.append("gameId", game.id.toString());
+      formData.append("bucket", "icons");
+      await fetch(`/api/media/upload`, {
         method: "POST",
         body: formData,
         headers: {
@@ -209,16 +211,18 @@ const Details = ({ game: g }: DetailsProps) => {
       })
         .then((res) => res.json())
         .then((res) => {
-          if (res.error) {
-            throw new Error(res.error);
+          if (res.success === false) {
+            throw new Error(res.message);
           }
         });
     }
 
     if (uploadedThumbnail) {
       const formData = new FormData();
-      formData.append("thumbnail", getFileFromImg(uploadedThumbnail));
-      await fetch(`/api/media/upload/thumbnail/${game.id}`, {
+      formData.append("file", getFileFromImg(uploadedThumbnail));
+      formData.append("bucket", "thumbnails");
+      formData.append("gameId", game.id.toString());
+      await fetch(`/api/media/upload`, {
         method: "POST",
         body: formData,
         headers: {
@@ -227,8 +231,8 @@ const Details = ({ game: g }: DetailsProps) => {
       })
         .then((res) => res.json())
         .then((res) => {
-          if (res.error) {
-            throw new Error(res.error);
+          if (res.success === false) {
+            throw new Error(res.message);
           }
         });
     }

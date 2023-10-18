@@ -107,9 +107,9 @@ const AccountTab = ({ user }: AccountTabProps) => {
               }
             );
 
-            formData.append("avatar", file);
+            formData.append("file", file);
 
-            fetch("/api/media/upload/avatar", {
+            fetch("/api/media/upload", {
               method: "POST",
               headers: {
                 authorization: String(getCookie(".frameworksession")),

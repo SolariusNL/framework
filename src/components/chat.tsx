@@ -279,9 +279,11 @@ const Chat: React.FC = () => {
   const uploadIcon = async () => {
     if (uploadedIcon) {
       const form = new FormData();
-      form.append("convo", getFileFromImg(uploadedIcon));
+      form.append("file", getFileFromImg(uploadedIcon));
+      form.append("bucket", "conversations");
+      form.append("convoId", conversation!.id);
 
-      fetch(`/api/media/upload/convo/${conversation?.id}`, {
+      fetch(`/api/media/upload`, {
         method: "POST",
         headers: {
           authorization: String(getCookie(".frameworksession")),

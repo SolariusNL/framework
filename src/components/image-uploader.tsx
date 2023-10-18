@@ -1,9 +1,7 @@
-import LoadingIndicator from "@/components/loading-indicator";
 import Stateful from "@/components/stateful";
-import cast from "@/util/cast";
 import { Button, ButtonProps, FileButton, Modal } from "@mantine/core";
 import dynamic from "next/dynamic";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { HiUpload } from "react-icons/hi";
 import { Crop } from "react-image-crop";
 
@@ -35,7 +33,6 @@ const ImageUploader = ({
   const [img, setImg] = useState<File | null>(null);
   const [croppedImg, setCroppedImg] = useState<string | null>(null);
   const [cropData, setCropData] = useState<Crop>();
-  const [loadedImage, setLoadedImage] = useState<string | null>(null);
 
   const getImageFromFile = () => {
     if (!img) return null;
@@ -43,7 +40,7 @@ const ImageUploader = ({
     const reader = new FileReader();
 
     reader.onload = () => {
-      setLoadedImage(reader.result as string);
+      setCroppedImg(reader.result as string);
     };
 
     reader.readAsDataURL(img);
@@ -59,12 +56,16 @@ const ImageUploader = ({
 
   const makeClientCrop = async (crop: Crop) => {
     if (crop.width && crop.height) {
-      const croppedImg = await getCroppedImg(imgRef!.current!, crop);
+      const croppedImg = await getCroppedImg(
+        imgRef!.current!,
+        crop,
+        "newFile.png"
+      );
       setCroppedImg(String(croppedImg));
     }
   };
 
-  const getCroppedImg = (image: HTMLImageElement, crop: Crop) => {
+  const getCroppedImg = (image: any, crop: Crop, fileName: string) => {
     const canvas = document.createElement("canvas");
     const scaleX = image.naturalWidth / image.width;
     const scaleY = image.naturalHeight / image.height;
@@ -95,14 +96,6 @@ const ImageUploader = ({
     }
   };
 
-  const loadedImageRef = useRef<string | null>(null);
-
-  useEffect(() => {
-    if (loadedImage) {
-      loadedImageRef.current = loadedImage;
-    }
-  }, [loadedImage]);
-
   return (
     <Stateful>
       {(cropOpen, setCropOpen) => (
@@ -119,17 +112,11 @@ const ImageUploader = ({
               crop={cropData}
               aspect={ratio}
             >
-              {!loadedImageRef.current ? (
-                <div className="flex justify-center items-center py-4">
-                  <LoadingIndicator />
-                </div>
-              ) : (
-                <img
-                  ref={imgRef}
-                  src={cast<string>(loadedImageRef.current || croppedImg)}
-                  alt="avatar"
-                />
-              )}
+              <img
+                ref={imgRef as any}
+                src={String(img ? URL.createObjectURL(img) : croppedImg)}
+                alt="avatar"
+              />
             </Cropper>
 
             <Button

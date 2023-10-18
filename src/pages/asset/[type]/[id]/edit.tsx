@@ -102,9 +102,11 @@ const AssetView: React.FC<AssetViewProps> = ({
           type: "image/jpeg",
         }
       );
-      formData.append("asset", file);
+      formData.append("file", file);
+      formData.append("bucket", "assets");
+      formData.append("assetId", asset.id);
 
-      await fetch(`/api/media/upload/asset/${asset.id}?type=${type}`, {
+      await fetch(`/api/media/upload?type=${type}`, {
         method: "POST",
         body: formData,
         headers: {

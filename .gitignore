@@ -43,6 +43,7 @@ yarn-error.log*
 /public/sounds
 /public/assets
 /public/asset
+/data-storage
 
 framework.yml
 framework.schema.json

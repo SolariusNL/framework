@@ -158,9 +158,11 @@ const TeamViewSettings: React.FC<TeamViewSettingsProps> = ({ user, team }) => {
               }
             );
 
-            formData.append("team", file);
+            formData.append("file", file);
+            formData.append("bucket", "teams");
+            formData.append("teamId", team.id);
 
-            await fetch(`/api/media/upload/team/${res.team.id}`, {
+            await fetch(`/api/media/upload`, {
               method: "POST",
               headers: {
                 authorization: String(getCookie(".frameworksession")),

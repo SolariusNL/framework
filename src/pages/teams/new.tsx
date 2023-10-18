@@ -162,9 +162,11 @@ const NewTeam: React.FC<NewTeamProps> = ({ user }) => {
                         }
                       );
 
-                      formData.append("team", file);
+                      formData.append("file", file);
+                      formData.append("bucket", "teams");
+                      formData.append("teamId", res.team.id);
 
-                      await fetch(`/api/media/upload/team/${res.team.id}`, {
+                      await fetch(`/api/media/upload`, {
                         method: "POST",
                         headers: {
                           authorization: String(getCookie(".frameworksession")),

@@ -133,9 +133,11 @@ const Sounds = ({ user }: SoundsProps) => {
           })
             .then(async (res) => {
               const formData = new FormData();
-              formData.append("sound", values.audio!);
+              formData.append("file", values.audio!);
+              formData.append("bucket", "sounds");
+              formData.append("soundId", res.data?.sound.id!);
 
-              await fetch(`/api/media/upload/sound/${res.data?.sound.id}`, {
+              await fetch(`/api/media/upload`, {
                 method: "POST",
                 headers: {
                   authorization: String(getCookie(".frameworksession")),
@@ -145,7 +147,7 @@ const Sounds = ({ user }: SoundsProps) => {
                 if (picture) {
                   const formData = new FormData();
                   formData.append(
-                    "asset",
+                    "file",
                     new File(
                       [
                         Buffer.from(
@@ -159,17 +161,16 @@ const Sounds = ({ user }: SoundsProps) => {
                       }
                     )
                   );
+                  formData.append("bucket", "assets");
+                  formData.append("assetId", res.data?.sound.id!);
 
-                  await fetch(
-                    `/api/media/upload/asset/${res.data?.sound.id}?type=sound`,
-                    {
-                      method: "POST",
-                      body: formData,
-                      headers: {
-                        authorization: String(getCookie(".frameworksession")),
-                      },
-                    }
-                  );
+                  await fetch(`/api/media/upload?type=sound`, {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                      authorization: String(getCookie(".frameworksession")),
+                    },
+                  });
                 }
                 showNotification({
                   title: "Sound created",
