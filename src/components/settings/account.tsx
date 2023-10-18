@@ -108,6 +108,7 @@ const AccountTab = ({ user }: AccountTabProps) => {
             );
 
             formData.append("file", file);
+            formData.append("bucket", "avatars");
 
             fetch("/api/media/upload", {
               method: "POST",
