@@ -1,5 +1,6 @@
 import IResponseBase from "@/types/api/IResponseBase";
 import Authorized, { Account } from "@/util/api/authorized";
+import buckets from "@/util/buckets";
 import cast from "@/util/cast";
 import prisma from "@/util/prisma";
 import type { User } from "@/util/prisma-types";
@@ -16,7 +17,6 @@ import {
   createHandler,
 } from "@solariusnl/next-api-decorators";
 import formidable, { Formidable } from "formidable";
-import { existsSync, mkdirSync } from "fs";
 import { rename } from "fs/promises";
 import { NextApiRequest, NextApiResponse } from "next";
 import { join } from "path";
@@ -69,16 +69,6 @@ type UploadAssetQuery = {
 
 type UploadQuery = UploadAssetQuery;
 
-const buckets = [
-  "avatars",
-  "thumbnails",
-  "icons",
-  "gamepasses",
-  "teams",
-  "conversations",
-  "assets",
-  "sounds",
-] as const;
 const extensions = [
   ".png",
   ".jpg",
@@ -362,11 +352,6 @@ const getFileMiddleware: Middleware = async (
 
   next();
 };
-
-buckets.forEach((bucket) => {
-  const path = join(process.cwd(), "data-storage", bucket);
-  if (!existsSync(path)) mkdirSync(path);
-});
 
 class MediaRouter {
   @Post("/upload")

@@ -1,6 +1,20 @@
 const { AppConfigUnionType, PrismaClient } = require("@prisma/client");
 const figlet = require("figlet");
 const gradient = require("gradient-string");
+const { join } = require("path");
+const { existsSync, mkdirSync } = require("fs");
+
+function requireTypescript(path) {
+  const fileContent = require("fs").readFileSync(path, "utf8");
+  const compiled = require("@babel/core").transform(fileContent, {
+    filename: path,
+    presets: ["@babel/preset-env", "@babel/preset-typescript"],
+  });
+  const Module = module.constructor;
+  const m = new Module();
+  m._compile(compiled.code, path);
+  return m.exports;
+}
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -105,6 +119,13 @@ module.exports = () => {
       });
       console.log(`Created app config ${config.key}`);
     }
+  });
+
+  const buckets = requireTypescript("./src/util/buckets.ts").default;
+
+  buckets.forEach((bucket) => {
+    const path = join(process.cwd(), "data-storage", bucket);
+    if (!existsSync(path)) mkdirSync(path, { recursive: true });
   });
 
   return withBundleAnalyzer(
