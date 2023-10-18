@@ -17,6 +17,7 @@ import {
 } from "@solariusnl/next-api-decorators";
 import formidable, { Formidable } from "formidable";
 import { existsSync, mkdirSync } from "fs";
+import { rename } from "fs/promises";
 import { NextApiRequest, NextApiResponse } from "next";
 import { join } from "path";
 import sharp from "sharp";
@@ -135,9 +136,14 @@ const bucketData: Record<
 };
 const databaseOperations: Record<
   Bucket,
-  (input: any, user: User, params?: any) => Promise<string | IResponseBase>
+  (
+    input: any,
+    user: User,
+    file: formidable.File,
+    params?: any
+  ) => Promise<string | IResponseBase>
 > = {
-  avatars: async (input, user, params) => {
+  avatars: async (input, user, file, params) => {
     const name = `${user.username}.webp`;
     await prisma.user.update({
       where: { id: user.id },
@@ -147,7 +153,7 @@ const databaseOperations: Record<
     });
     return name;
   },
-  thumbnails: async (input: UploadThumbnailInput, user, params) => {
+  thumbnails: async (input: UploadThumbnailInput, user, file, params) => {
     if (!input.gameId) return ProhibitedQuery;
     const game = await prisma.game.findFirst({
       where: { authorId: user.id, id: Number(input.gameId) },
@@ -164,7 +170,7 @@ const databaseOperations: Record<
     });
     return name;
   },
-  icons: async (input: UploadIconInput, user, params) => {
+  icons: async (input: UploadIconInput, user, file, params) => {
     if (!input.gameId) return ProhibitedQuery;
     const game = await prisma.game.findFirst({
       where: { authorId: user.id, id: Number(input.gameId) },
@@ -179,7 +185,7 @@ const databaseOperations: Record<
     });
     return name;
   },
-  gamepasses: async (input: UploadGamepassInput, user, params) => {
+  gamepasses: async (input: UploadGamepassInput, user, file, params) => {
     if (!input.gamepassId) return ProhibitedQuery;
     const gp = await prisma.gamepass.findFirst({
       where: { authorId: user.id, id: input.gamepassId },
@@ -194,7 +200,7 @@ const databaseOperations: Record<
     });
     return name;
   },
-  teams: async (input: UploadTeamInput, user, params) => {
+  teams: async (input: UploadTeamInput, user, file, params) => {
     if (!input.teamId) return ProhibitedQuery;
     const team = await prisma.team.findFirst({
       where: { ownerId: user.id, id: input.teamId },
@@ -209,7 +215,7 @@ const databaseOperations: Record<
     });
     return name;
   },
-  conversations: async (input: UploadConversationInput, user, params) => {
+  conversations: async (input: UploadConversationInput, user, file, params) => {
     if (!input.convoId) return ProhibitedQuery;
     const convo = await prisma.chatConversation.findFirst({
       where: { ownerId: user.id, id: input.convoId },
@@ -224,7 +230,12 @@ const databaseOperations: Record<
     });
     return name;
   },
-  assets: async (input: UploadAssetInput, user, params: UploadAssetQuery) => {
+  assets: async (
+    input: UploadAssetInput,
+    user,
+    file,
+    params: UploadAssetQuery
+  ) => {
     if (!input.assetId) return ProhibitedQuery;
     if (!params.type) return ProhibitedQuery;
 
@@ -257,13 +268,15 @@ const databaseOperations: Record<
 
     return name;
   },
-  sounds: async (input: UploadSoundInput, user, params) => {
+  sounds: async (input: UploadSoundInput, user, file, params) => {
     if (!input.soundId) return ProhibitedQuery;
     const sound = await prisma.sound.findFirst({
       where: { authorId: user.id, id: input.soundId },
     });
     if (!sound) return ProhibitedQuery;
-    const name = `${input.soundId}.webp`;
+    const name = `${input.soundId}.${cast<formidable.File>(file)
+      .originalFilename!.split(".")
+      .pop()}`;
     await prisma.sound.update({
       where: { id: input.soundId },
       data: {
@@ -375,7 +388,7 @@ class MediaRouter {
         message: "Invalid bucket provided",
       };
 
-    const result = await operation(req.form!, user, params);
+    const result = await operation(req.form!, user, file, params);
     if (typeof result === "string") {
       const path = join(
         process.cwd(),
@@ -384,16 +397,20 @@ class MediaRouter {
         result
       );
 
-      await sharp(cast<formidable.File>(file).filepath)
-        .webp({ quality: 95, alphaQuality: 95, lossless: true })
-        .toFile(path)
-        .then((data) => data)
-        .catch(() => {
-          return <IResponseBase>{
-            success: false,
-            message: "Failed to write to disk",
-          };
-        });
+      if (cast<formidable.File>(file).mimetype!.startsWith("image")) {
+        await sharp(cast<formidable.File>(file).filepath)
+          .webp({ quality: 95, alphaQuality: 95, lossless: true })
+          .toFile(path)
+          .then((data) => data)
+          .catch(() => {
+            return <IResponseBase>{
+              success: false,
+              message: "Failed to write to disk",
+            };
+          });
+      }
+
+      await rename(cast<formidable.File>(file).filepath, join(path));
 
       return <IResponseBase>{
         success: true,
