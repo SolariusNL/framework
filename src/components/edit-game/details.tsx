@@ -202,7 +202,7 @@ const Details = ({ game: g }: DetailsProps) => {
       formData.append("file", getFileFromImg(uploadedIcon));
       formData.append("gameId", game.id.toString());
       formData.append("bucket", "icons");
-      await fetch(`/api/media/upload`, {
+      await fetch("/api/media/upload", {
         method: "POST",
         body: formData,
         headers: {
@@ -222,7 +222,7 @@ const Details = ({ game: g }: DetailsProps) => {
       formData.append("file", getFileFromImg(uploadedThumbnail));
       formData.append("bucket", "thumbnails");
       formData.append("gameId", game.id.toString());
-      await fetch(`/api/media/upload`, {
+      await fetch("/api/media/upload", {
         method: "POST",
         body: formData,
         headers: {

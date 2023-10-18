@@ -283,7 +283,7 @@ const Chat: React.FC = () => {
       form.append("bucket", "conversations");
       form.append("convoId", conversation!.id);
 
-      fetch(`/api/media/upload`, {
+      fetch("/api/media/upload", {
         method: "POST",
         headers: {
           authorization: String(getCookie(".frameworksession")),
