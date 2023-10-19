@@ -22,7 +22,7 @@ import {
 } from "@solariusnl/next-api-decorators";
 import formidable, { Formidable } from "formidable";
 import { createReadStream, existsSync } from "fs";
-import { rename, stat } from "fs/promises";
+import { rename } from "fs/promises";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { join } from "path";
 import sharp from "sharp";
@@ -418,10 +418,11 @@ class MediaRouter {
     @Res() response: NextApiResponse
   ) {
     if (process.env.NODE_ENV !== "development") return ProhibitedQuery;
-    if (!buckets[cast<number>(bucket)])
+    if (!bucket || !name) return ProhibitedQuery;
+    if (!bucketData[bucket])
       return <IResponseBase>{
         success: false,
-        message: "Invalid bucket",
+        message: "Invalid bucket provided",
       };
 
     const path = join(process.cwd(), "data-storage", bucket, name);
@@ -431,14 +432,18 @@ class MediaRouter {
         message: "No file exists in the provided bucket",
       };
     else {
-      const fileStat = await stat(path);
-
-      response.writeHead(200, {
-        "Content-Length": fileStat.size,
+      const buffer = await new Promise<Buffer>((resolve, reject) => {
+        createReadStream(path)
+          .on("error", (error) => {
+            reject(error);
+          })
+          .on("end", () => {
+            resolve(Buffer.from(""));
+          })
+          .pipe(response);
       });
 
-      const readStream = createReadStream(path);
-      readStream.pipe(response);
+      return buffer;
     }
   }
 }
