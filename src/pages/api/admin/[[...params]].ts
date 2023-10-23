@@ -62,7 +62,11 @@ const adminUserSelect = {
   ...userSelect,
   sessions: true,
   discordAccount: true,
-  notifications: true,
+  notifications: {
+    where: {
+      seen: false,
+    },
+  },
   notes: {
     include: {
       author: nonCurrentUserSelect,
