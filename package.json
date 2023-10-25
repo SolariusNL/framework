@@ -69,7 +69,7 @@
     "ansi-to-html": "^0.7.2",
     "bcrypt": "^5.0.1",
     "bull": "^4.11.3",
-    "class-validator": "^0.13.2",
+    "class-validator": "^0.14.0",
     "clsx": "^1.2.1",
     "concurrently": "^7.3.0",
     "cookies-next": "^2.1.1",
