@@ -737,7 +737,7 @@ const timezones = [
     utc: ["Europe/Istanbul"],
   },
   {
-    value: "Israel Standard Time",
+    value: "Palestine Standard Time",
     abbr: "JDT",
     offset: 3,
     isdst: true,
