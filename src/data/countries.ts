@@ -167,7 +167,7 @@ const countries = [
   { name: "Oman", code: "OM" },
   { name: "Pakistan", code: "PK" },
   { name: "Palau", code: "PW" },
-  { name: "Palestinian Territory, Occupied", code: "PS" },
+  { name: "Palestine", code: "PS" },
   { name: "Panama", code: "PA" },
   { name: "Papua New Guinea", code: "PG" },
   { name: "Paraguay", code: "PY" },
