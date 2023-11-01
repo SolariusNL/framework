@@ -443,6 +443,45 @@ const UserView = ({ user: u, loading }: UserViewProps) => {
                       </Table>
                     </Accordion.Panel>
                   </Accordion.Item>
+                  <Accordion.Item value="ip">
+                    <Accordion.Control>Location Information</Accordion.Control>
+                    <Accordion.Panel>
+                      {user.recentIp ? (
+                        <Table striped mb={6}>
+                          <tbody>
+                            {Object.entries(user.recentIpGeo as object)
+                              .map(([key, value]) => {
+                                if (typeof value === "boolean") {
+                                  return [key, value ? "Yes" : "No"];
+                                }
+                                return [key, value] as [string, any];
+                              })
+                              .map(([key, value]) => (
+                                <tr key={key}>
+                                  <td className="font-semibold whitespace-nowrap">
+                                    {key}
+                                  </td>
+                                  <td>
+                                    {
+                                      value as
+                                        | string
+                                        | number
+                                        | JSX.Element
+                                        | null
+                                    }
+                                  </td>
+                                </tr>
+                              ))}
+                          </tbody>
+                        </Table>
+                      ) : (
+                        <ModernEmptyState
+                          title="No location information"
+                          body="This user does not have any location information available."
+                        />
+                      )}
+                    </Accordion.Panel>
+                  </Accordion.Item>
                   <Accordion.Item value="totp">
                     <Accordion.Control>TOTP Details</Accordion.Control>
                     <Accordion.Panel>

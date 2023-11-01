@@ -85,6 +85,8 @@ const adminUserSelect = {
   otpHex: true,
   previousEmails: true,
   locked: true,
+  recentIp: true,
+  recentIpGeo: true,
 };
 
 class AdminRouter {
