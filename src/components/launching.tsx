@@ -1,17 +1,24 @@
 import {
-  Button, Group, Modal,
-  Stack, Text, ThemeIcon, Title, UnstyledButton
+  Button,
+  Group,
+  Modal,
+  Stack,
+  Text,
+  ThemeIcon,
+  Title,
+  UnstyledButton,
 } from "@mantine/core";
-import React from "react";
+import React, { FC } from "react";
 import { BsApple, BsWindows } from "react-icons/bs";
 import { FaLinux } from "react-icons/fa";
+import LoadingIndicator from "./loading-indicator";
 
-interface LaunchingProps {
+type LaunchingProps = {
   opened: boolean;
   setOpened: (opened: boolean) => void;
-}
+};
 
-const Launching = ({ opened, setOpened }: LaunchingProps) => {
+const Launching: FC<LaunchingProps> = ({ opened, setOpened }) => {
   const [downloadClicked, setDownloadClicked] = React.useState(false);
 
   const downloads = [
@@ -56,7 +63,7 @@ const Launching = ({ opened, setOpened }: LaunchingProps) => {
       hint: ".snap (x86_64)",
       icon: <FaLinux />,
       color: "pink",
-    }
+    },
   ];
 
   return (
@@ -71,11 +78,14 @@ const Launching = ({ opened, setOpened }: LaunchingProps) => {
             <Title order={3} mb={10}>
               Launching Framework...
             </Title>
-            <Text color="dimmed" mb={16}>
-              This may take a few seconds.
-            </Text>
+            <LoadingIndicator className="my-4" />
           </Stack>
-          <Button size="sm" onClick={() => setDownloadClicked(true)}>
+          <Button
+            size="sm"
+            variant="light"
+            radius="xl"
+            onClick={() => setDownloadClicked(true)}
+          >
             Download Framework
           </Button>
         </Stack>
