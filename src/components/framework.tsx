@@ -33,9 +33,7 @@ import { User } from "@/util/prisma-types";
 import {
   ActionIcon,
   Affix,
-  Anchor,
   Badge,
-  Box,
   Burger,
   Button,
   Container,
@@ -45,8 +43,7 @@ import {
   NavLink,
   Popover,
   Stack,
-  Text,
-  Title,
+  Text
 } from "@mantine/core";
 import { useLocalStorage } from "@mantine/hooks";
 import { openConfirmModal } from "@mantine/modals";
@@ -59,7 +56,6 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useContext, useEffect, useState } from "react";
 import {
-  HiArrowLeft,
   HiCode,
   HiDocumentText,
   HiExternalLink,
@@ -70,9 +66,10 @@ import {
   HiOutlineSearch,
   HiTrash,
   HiX,
-  HiXCircle,
+  HiXCircle
 } from "react-icons/hi";
 import { useDispatch, useSelector } from "react-redux";
+import NavHeader from "./nav-header";
 
 const Products = dynamic(() => import("@/components/products"), {
   ssr: false,
@@ -559,83 +556,17 @@ const Framework = ({
       <Banner />
       <Conditional if={!noPadding}>
         <Conditional if={modernTitle && modernSubtitle}>
-          <Box
-            sx={(theme) => ({
-              backgroundColor: theme.colorScheme === "dark" ? "#000" : "#fff",
-              position: immersive ? "sticky" : "relative",
-              top: immersive ? "108.7px" : "0",
-            })}
-            mb={noContentPadding ? 0 : 32}
-            p={32}
-          >
-            <Container>
-              <Group position="apart">
-                <div>
-                  <Title mb={8}>
-                    {modernTitle}
-                    {beta && (
-                      <Badge
-                        sx={{
-                          verticalAlign: "middle",
-                        }}
-                        ml={12}
-                      >
-                        Beta
-                      </Badge>
-                    )}
-                  </Title>
-                  <Text color="dimmed">{modernSubtitle}</Text>
-                  {returnTo && (
-                    <Link href={returnTo.href} passHref>
-                      <Anchor
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 8,
-                        }}
-                        mt={16}
-                      >
-                        <HiArrowLeft />
-                        {returnTo.label}
-                      </Anchor>
-                    </Link>
-                  )}
-                </div>
-                <div className={mobile ? "flex gap-2" : ""}>
-                  {actions && (
-                    <div>
-                      {actions.map(([label, onClick], index) => (
-                        <Anchor
-                          key={index}
-                          onClick={onClick}
-                          sx={(theme) => ({
-                            color:
-                              theme.colorScheme === "dark" ? "#fff" : "#000",
-                            "&:after": {
-                              content: "''",
-                              display: "block",
-                              width: "100%",
-                              height: "2px",
-                              backgroundColor:
-                                theme.colorScheme === "dark"
-                                  ? "#fff"
-                                  : "#000" + "80",
-                              transform: "scaleX(0)",
-                              transition: "transform 0.3s ease-in-out",
-                            },
-                            fontWeight: 500,
-                          })}
-                        >
-                          {label}
-                        </Anchor>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </Group>
-              {integratedTabs && <div className="mt-8">{integratedTabs}</div>}
-            </Container>
-          </Box>
+          <NavHeader
+            title={String(modernTitle)}
+            subtitle={String(modernSubtitle)}
+            beta={beta}
+            returnTo={returnTo}
+            mobile={mobile}
+            actions={actions}
+            integratedTabs={integratedTabs}
+            noContentPadding={noContentPadding!}
+            immersive={immersive!}
+          />
         </Conditional>
       </Conditional>
       <Conditional if={!noPadding}>

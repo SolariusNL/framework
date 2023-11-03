@@ -19,7 +19,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import type { GetServerSidePropsContext, NextPage } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { HiExclamation, HiXCircle } from "react-icons/hi";
 
 interface FormValues {
@@ -51,11 +51,13 @@ const Login: NextPage = () => {
   const [twofaFailed, setTwofaFailed] = useState(false);
   const [twofaUid, setTwofaUid] = useState("");
   const [lockError, setLockError] = useState("");
+  const [unknownHost, setUnknownHost] = useState(false);
 
   const setLoginCookie = (token: string) => {
     setCookie(".frameworksession", token, {
       maxAge: 60 * 60 * 24 * 30,
       ...(process.env.NEXT_PUBLIC_COOKIE_DOMAIN &&
+        !unknownHost &&
         process.env.NEXT_PUBLIC_COOKIE_DOMAIN !== "CHANGE_ME" && {
           domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
         }),
@@ -135,6 +137,16 @@ const Login: NextPage = () => {
         setLoading(false);
       });
   };
+
+  useEffect(() => {
+    if (
+      typeof window !== "undefined" &&
+      window.location.host !== process.env.NEXT_PUBLIC_HOSTNAME
+    ) {
+      if (process.env.NEXT_PUBLIC_ENABLE_HOSTNAME_CHECK !== "true") return;
+      setUnknownHost(true);
+    }
+  }, []);
 
   return (
     <>
