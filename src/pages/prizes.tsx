@@ -1,5 +1,7 @@
 import Framework from "@/components/framework";
 import Bit from "@/icons/Bit";
+import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
+import useBitsModalStore from "@/stores/useBitsModalStore";
 import authorizedRoute from "@/util/auth";
 import clsx from "@/util/clsx";
 import { User } from "@/util/prisma-types";
@@ -14,8 +16,10 @@ import {
 import { useViewportSize } from "@mantine/hooks";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
+import Link from "next/link";
 import React from "react";
 import Celebration from "react-confetti";
+import { HiOutlineHome } from "react-icons/hi";
 
 export const useStyles = createStyles((theme) => ({
   controls: {
@@ -39,6 +43,8 @@ interface PrizesProps {
 const Prizes: NextPage<PrizesProps> = ({ user }) => {
   const { classes, theme } = useStyles();
   const { width, height } = useViewportSize();
+  const { setOpened } = useBitsModalStore();
+  const { setProperty } = useAuthorizedUserStore();
   const [finished, setFinished] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | undefined>(undefined);
@@ -72,6 +78,7 @@ const Prizes: NextPage<PrizesProps> = ({ user }) => {
         if (res.success) {
           setPrizeData(res);
           setFinished(true);
+          setProperty("bits", (user.bits + res.earned) as number);
         } else {
           setError(String(res.message) || "An unknown error occurred.");
         }
@@ -104,6 +111,25 @@ const Prizes: NextPage<PrizesProps> = ({ user }) => {
             <Text color="dimmed" align="center">
               Your Bits should be added to your account shortly.
             </Text>
+            <div className="mt-8 md:flex-row flex-col flex items-center justify-center gap-2">
+              <Link href="/">
+                <Button
+                  variant="light"
+                  radius="xl"
+                  leftIcon={<HiOutlineHome />}
+                >
+                  Go back home
+                </Button>
+              </Link>
+              <Button
+                variant="light"
+                radius="xl"
+                leftIcon={<Bit />}
+                onClick={() => setOpened(true)}
+              >
+                Manage Bits
+              </Button>
+            </div>
             {isClient && <Celebration width={width} height={height} />}
           </>
         ) : (

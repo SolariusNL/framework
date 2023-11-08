@@ -33,6 +33,7 @@ import {
   HiTicket,
 } from "react-icons/hi";
 import { useFrameworkComponentStyles } from "../framework.styles";
+import useBitsModalStore from "@/stores/useBitsModalStore";
 
 const CurrencyMenu = ({
   currencyMenuOpened,
@@ -51,8 +52,8 @@ const CurrencyMenu = ({
     defaultValue: false,
   });
   const [menuOpened, setMenuOpened] = React.useState(false);
-  const [modalOpened, setModalOpened] = React.useState(false);
-  const [celebration, setCelebration] = React.useState(false);
+  const { opened: modalOpened, setOpened: setModalOpened } =
+    useBitsModalStore();
 
   const Target = (
     <UnstyledButton
@@ -230,8 +231,6 @@ const CurrencyMenu = ({
               await fetchJson<IResponseBase>("/api/users/bits", {
                 auth: true,
               });
-              setCelebration(true);
-              setTimeout(() => setCelebration(false), 5000);
             }}
             disabled={user?.bits! < 100}
             color="violet"
