@@ -118,7 +118,7 @@ const tabs = [
       {
         icon: HiOutlineUserGroup,
         title: "Revolt",
-        description: "Join the Framework community on Revolt",
+        description: "Join the Framework community on Revolt and get engaged with other players",
         href: "https://framework.solarius.me/community",
       },
     ],
@@ -243,11 +243,20 @@ const LandingHeader = () => {
         <Header
           height={60}
           px="md"
-          className="flex items-center justify-between w-full bg-black bg-opacity-60"
-          sx={{
+          className="flex items-center justify-between w-full bg-opacity-60"
+          sx={(theme) => ({
             backdropFilter: "blur(10px)",
             WebkitBackdropFilter: "blur(10px)",
-          }}
+            backgroundColor:
+              theme.colorScheme === "dark"
+                ? theme.colors.dark[6]
+                : theme.colors.gray[0],
+            borderBottom: `1px solid ${
+              theme.colorScheme === "dark"
+                ? theme.colors.gray[8]
+                : theme.colors.gray[2]
+            }`,
+          })}
         >
           <Container className="flex justify-between w-full">
             <div className="flex justify-between w-full items-center">
