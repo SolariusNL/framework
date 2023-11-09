@@ -82,11 +82,14 @@ const Faq: FC = () => {
         </Accordion.Item>
 
         <Accordion.Item className={classes.item} value="payment">
-          <Accordion.Control>What's your technology stack?</Accordion.Control>
+          <Accordion.Control>
+            What&apos;s your technology stack?
+          </Accordion.Control>
           <Accordion.Panel>
             Framework is built with Next.js, React, and TypeScript on our web
-            app. Our backend is a mix between Next.js's API routes and Rust to
-            power the website, server logistics, and many other functionalities.
+            app. Our backend is a mix between Next.js&apos;s API routes and Rust
+            to power the website, server logistics, and many other
+            functionalities.
             <br />
             <br />
             We use PostgreSQL as our database, and Redis for caching. We also
