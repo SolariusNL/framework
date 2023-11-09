@@ -1,3 +1,5 @@
+import logger from "./logger";
+
 const GEO_API = "https://ipapi.co";
 
 export type Geolocation = {
@@ -25,7 +27,16 @@ export type Geolocation = {
 export const getIPAddressGeolocation = async (
   ip: string
 ): Promise<Geolocation> => {
-  const response = await fetch(`${GEO_API}/${ip}/json`);
+  if (ip === "::ffff:127.0.0.1")
+    return {
+      error: true,
+    } as Geolocation;
+
+  const apiKey = process.env.IPAPI_KEY;
+  const response = await fetch(
+    `${GEO_API}/${ip}/json${apiKey ? `?key=${apiKey}` : ""}`
+  );
   const data = await response.json();
+  logger().debug(`Geolocation for ${ip}:\n\t${JSON.stringify(data, null, 2)}`);
   return data;
 };
