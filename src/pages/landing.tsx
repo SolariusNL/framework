@@ -1,3 +1,4 @@
+import CodeSample from "@/components/code-sample";
 import Faq from "@/components/faq";
 import Features from "@/components/features";
 import Footer from "@/components/foot";
@@ -14,6 +15,7 @@ const Landing: NextPage = () => {
       <Hero />
       <Features />
       <LargeFeatures />
+      <CodeSample />
       <Faq />
       <LoveFromSolarius />
       <Footer />

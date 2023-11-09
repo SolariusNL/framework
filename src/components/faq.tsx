@@ -1,3 +1,4 @@
+import clsx from "@/util/clsx";
 import { rem } from "@/util/rem";
 import {
   Accordion,
@@ -27,9 +28,18 @@ const useStyles = createStyles((theme) => ({
 }));
 
 const Faq: FC = () => {
-  const { classes } = useStyles();
+  const { classes, theme } = useStyles();
   return (
-    <Container size="sm" className={classes.wrapper}>
+    <Container
+      size="sm"
+      style={{
+        backgroundColor:
+          theme.colorScheme === "dark"
+            ? theme.colors.dark[9]
+            : theme.colors.gray[0],
+      }}
+      className={clsx(classes.wrapper, "rounded-3xl")}
+    >
       <Title align="center" className="mb-12">
         Frequently Asked Questions
       </Title>
