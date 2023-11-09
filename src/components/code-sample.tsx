@@ -51,8 +51,8 @@ const CodeSample: FC = () => {
           </Title>
           <Text color="dimmed">
             Unbelievably flexible and easy to use, Framework is the perfect
-            solution for any game project. Whether you're a solo developer or a
-            100-person team, Framework is the best choice.
+            solution for any game project. Whether you&apos;re a solo developer
+            or a 100-person team, Framework is the best choice.
           </Text>
         </Col>
         <Col span={12} md={7}>
