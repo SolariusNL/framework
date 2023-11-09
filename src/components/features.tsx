@@ -68,9 +68,9 @@ export function Feature({ icon: Icon, title, description }: FeatureProps) {
       <ThemeIcon variant="light" color="pink" size={40} radius={40}>
         <Icon size="24" />
       </ThemeIcon>
-      <Text mt="sm" mb={7}>
+      <Title order={4} mt="sm" mb={7}>
         {title}
-      </Text>
+      </Title>
       <Text size="sm" color="dimmed" sx={{ lineHeight: 1.6 }}>
         {description}
       </Text>

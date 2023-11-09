@@ -126,8 +126,8 @@ const Hero: FC = () => {
               }
             >
               <List.Item>
-                <b>100% free & open source</b> - as in free beer & freedom. The
-                community is in control.
+                <b>100% free & open source</b> - Free as in free beer & free
+                speech. The community is in control.
               </List.Item>
               <List.Item>
                 <b>Packed with features</b> - Framework empowers anyone to build
