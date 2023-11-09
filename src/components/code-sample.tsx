@@ -18,6 +18,27 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
+const code = {
+  "data.ts": `"use client";
+
+import { LocalStorageBuilder } from "@fw/localstorage";
+
+const storage = new LocalStorageBuilder()
+  .addTable(
+    "saves",
+    ...
+  )
+  .build();
+
+storage.tables.saves.insert({
+  name: "My Save",
+  date: new Date(),
+  level: 1,
+});
+
+export default storage;`,
+};
+
 const CodeSample: FC = () => {
   const { classes } = useStyles();
 
@@ -29,34 +50,23 @@ const CodeSample: FC = () => {
             Build your games however you like
           </Title>
           <Text color="dimmed">
-            Experience in JavaScript or Lua? You&apos;re already one step ahead.
-            Our variety of language bindings makes it easy for anyone to get
-            started with their first game.
+            Unbelievably flexible and easy to use, Framework is the perfect
+            solution for any game project. Whether you're a solo developer or a
+            100-person team, Framework is the best choice.
           </Text>
         </Col>
         <Col span={12} md={7}>
-          <Prism.Tabs defaultValue="styles.css">
+          <Prism.Tabs defaultValue="data.ts">
             <Prism.TabsList>
               <Prism.Tab
-                value="server.ts"
+                value="data.ts"
                 icon={<TsIcon width={16} height={16} />}
               >
-                server.ts
-              </Prism.Tab>
-              <Prism.Tab
-                value="server.lua"
-                icon={<TsIcon width={16} height={16} />}
-              >
-                server.lua
+                data.ts
               </Prism.Tab>
             </Prism.TabsList>
-
-            <Prism.Panel language="typescript" value="server.ts">
-              {"console.log('test');"}
-            </Prism.Panel>
-            {/** @FIXME add lua language support https://v5.mantine.dev/others/prism/#languages  https://codesandbox.io/s/stupefied-hellman-lfudm?file=/src/App.tsx */}
-            <Prism.Panel language="lua" value="server.lua">
-              {"print('hellow world');"}
+            <Prism.Panel language="typescript" value="data.ts" withLineNumbers>
+              {code["data.ts"]}
             </Prism.Panel>
           </Prism.Tabs>
         </Col>
