@@ -1,3 +1,5 @@
+import LandingMeshBg from "@/assets/bg.png";
+import Rocket from "@/icons/Rocket";
 import { rem } from "@/util/rem";
 import {
   Button,
@@ -9,6 +11,7 @@ import {
   Title,
   createStyles,
 } from "@mantine/core";
+import Link from "next/link";
 import { FC } from "react";
 import { HiBadgeCheck } from "react-icons/hi";
 import Typewriter from "typewriter-effect";
@@ -68,17 +71,37 @@ const useStyles = createStyles((theme) => ({
 }));
 
 const Hero: FC = () => {
-  const { classes } = useStyles();
+  const { classes, theme } = useStyles();
   return (
-    <div className="mt-16">
-      <Container>
+    <div
+      className="py-16 my-16 relative mx-auto rounded-3xl overflow-hidden"
+      style={{
+        backgroundColor:
+          theme.colorScheme === "dark"
+            ? theme.colors.dark[9]
+            : theme.colors.gray[0],
+        backgroundImage: `url(${LandingMeshBg.src})`,
+        backgroundSize: "cover",
+      }}
+    >
+      <Container className="z-10 mx-auto relative">
         <div className={classes.inner}>
           <div className={classes.content}>
             <Title className={classes.title}>
               A <span className={classes.highlight}>new</span> way <br />{" "}
               <Typewriter
                 options={{
-                  strings: ["to be creative", "to build a community"],
+                  strings: [
+                    "to be creative",
+                    "to build a community",
+                    "to make friends",
+                    "to learn and grow",
+                    "to have fun",
+                    "to be yourself",
+                    "to be a gamer",
+                    "to be a developer",
+                    "to be a designer",
+                  ],
                   autoStart: true,
                   loop: true,
                   delay: 50,
@@ -87,8 +110,9 @@ const Hero: FC = () => {
               />
             </Title>
             <Text color="dimmed" mt="md">
-              Build your dream game faster than ever. Dive into immersive games
-              with your friends. Powering creativity.
+              Framework is a new way to make your dreams come true. Free, open
+              and safe game platform - built by the community, for the
+              community.
             </Text>
 
             <List
@@ -116,14 +140,26 @@ const Hero: FC = () => {
             </List>
 
             <Group mt={30}>
-              <Button radius="xl" size="md" className={classes.control}>
-                Get started
-              </Button>
+              <Link href="/register" passHref>
+                <Button
+                  radius="xl"
+                  size="md"
+                  className={classes.control}
+                  color="pink"
+                  leftIcon={<Rocket />}
+                  component="a"
+                >
+                  Get started
+                </Button>
+              </Link>
               <Button
-                variant="default"
+                variant="light"
                 radius="xl"
                 size="md"
+                color="gray"
                 className={classes.control}
+                component="a"
+                href="https://github.com/SolariusNL/framework"
               >
                 Source code
               </Button>

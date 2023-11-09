@@ -118,7 +118,8 @@ const tabs = [
       {
         icon: HiOutlineUserGroup,
         title: "Revolt",
-        description: "Join the Framework community on Revolt and get engaged with other players",
+        description:
+          "Join the Framework community on Revolt and get engaged with other players",
         href: "https://framework.solarius.me/community",
       },
     ],
@@ -149,7 +150,6 @@ const links = [
 const LandingHeader = () => {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
     useDisclosure(false);
-  const [linksOpened, { toggle: toggleLinks }] = useDisclosure(false);
   const { classes } = useStyles();
 
   const tabItems = tabs.map((tab) => (
@@ -241,27 +241,13 @@ const LandingHeader = () => {
     <>
       <Box className="sticky top-0 z-50">
         <Header
-          height={60}
+          height={80}
           px="md"
-          className="flex items-center justify-between w-full bg-opacity-60"
-          sx={(theme) => ({
-            backdropFilter: "blur(10px)",
-            WebkitBackdropFilter: "blur(10px)",
-            backgroundColor:
-              theme.colorScheme === "dark"
-                ? theme.colors.dark[6]
-                : theme.colors.gray[0],
-            borderBottom: `1px solid ${
-              theme.colorScheme === "dark"
-                ? theme.colors.gray[8]
-                : theme.colors.gray[2]
-            }`,
-          })}
+          className="flex items-center justify-between w-full bg-opacity-60 border-0"
         >
           <Container className="flex justify-between w-full">
             <div className="flex justify-between w-full items-center">
               <FrameworkLogo />
-
               <Group
                 sx={{ height: "100%" }}
                 spacing={0}
