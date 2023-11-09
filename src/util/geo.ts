@@ -37,6 +37,6 @@ export const getIPAddressGeolocation = async (
     `${GEO_API}/${ip}/json${apiKey ? `?key=${apiKey}` : ""}`
   );
   const data = await response.json();
-  logger().debug(`Geolocation for ${ip}:\n\t${JSON.stringify(data, null, 2)}`);
+  logger().debug(`Geolocation for ${ip}:\n${JSON.stringify(data, null, 2)}`);
   return data;
 };
