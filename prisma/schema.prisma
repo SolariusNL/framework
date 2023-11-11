@@ -471,6 +471,7 @@ model Game {
   teamId               String?
   issues               TeamIssue[]               @relation("gameIssues")
   showcase             DeveloperProfile[]        @relation("developerShowcaseGames")
+  usedStorageBytes     Float                     @default(8511)
 }
 
 model GameComment {
