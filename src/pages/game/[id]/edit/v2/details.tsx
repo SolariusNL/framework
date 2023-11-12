@@ -1,3 +1,4 @@
+import StorageStat from "@/components/game-stats/storage";
 import EditGame, {
   EditGameRoutes,
   EditableGamePageProps,
@@ -8,7 +9,9 @@ import { FC } from "react";
 const EditGameDetails: FC<EditableGamePageProps> = ({ game, user }) => {
   return (
     <EditGame game={game} user={user} activePage={EditGameRoutes.Details}>
-      <p>Test</p>
+      <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
+        <StorageStat game={game} />
+      </div>
     </EditGame>
   );
 };

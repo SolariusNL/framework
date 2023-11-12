@@ -254,7 +254,7 @@ const EditGame: FC<EditGameLayoutProps> = ({
             title={tabs[activePage].title}
             description={tabs[activePage].subtitle}
           />
-          <Divider className="mb-12 mt-8" />
+          <Divider className="mb-8 mt-6" />
           {children}
         </SidebarTabNavigation.Content>
       </SidebarTabNavigation>
