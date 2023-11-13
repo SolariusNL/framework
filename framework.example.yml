@@ -1,9 +1,30 @@
 features:
-  additional:
-    ukraine:
-      enabled: false
-      supportText: Support Ukraine 🇺🇦
-      supportUrl: https://donate.chooselove.org/campaigns/ukraine-appeal/
+  stripe:
+    tickets:
+      - name: 1,000T$
+        priceId: price_1M5GjkKrKkWmvq0Ri9nmHUuO
+        price: €9.99
+        grant: 1000
+      - name: 2,400T$
+        priceId: price_1M5HinKrKkWmvq0RolhK59CB
+        price: €19.99
+        grant: 2400
+      - name: 5,000T$
+        priceId: price_1M5HjFKrKkWmvq0RhmJdEZga
+        price: €39.99
+        grant: 5000
+        goodDeal: true
+        previousPrice: €49.99
+      - name: 10,000T$
+        priceId: price_1M5HjjKrKkWmvq0RUHMYV0Zn
+        price: €79.99
+        grant: 10000
+        goodDeal: true
+        previousPrice: €99.99
+    premium:
+      bronze: price_1MIfC4KrKkWmvq0RWGeD2jMO
+      silver: price_1NRNU1KrKkWmvq0Rh7svmxto
+      gold: price_1NRNUWKrKkWmvq0RdRZxrUQW
 
 footer:
   links:
