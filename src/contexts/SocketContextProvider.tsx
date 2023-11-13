@@ -45,12 +45,6 @@ const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
         const { banned } = data;
         if (banned) {
           router.push("/punished");
-          showNotification({
-            title: "Banned",
-            message:
-              "You have been banned from Framework. Please review your notice and check your email for more information.",
-            icon: <HiXCircle />,
-          });
         }
       });
 

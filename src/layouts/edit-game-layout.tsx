@@ -167,6 +167,8 @@ const EditGame: FC<EditGameLayoutProps> = ({
   activePage,
   user,
 }) => {
+  const route = tabs[activePage];
+
   return (
     <Framework user={user} activeTab="invent">
       <SidebarTabNavigation>
@@ -247,12 +249,12 @@ const EditGame: FC<EditGameLayoutProps> = ({
             </Link>
             <Anchor color="dimmed">Edit</Anchor>
             <Link href={`/game/${game.id}/edit/v2/${activePage}`}>
-              <Anchor color="dimmed">{tabs[activePage].title}</Anchor>
+              <Anchor color="dimmed">{route.title}</Anchor>
             </Link>
           </Breadcrumbs>
           <Section
-            title={tabs[activePage].title}
-            description={tabs[activePage].subtitle}
+            title={route.title}
+            description={route.subtitle}
           />
           <Divider className="mb-8 mt-6" />
           {children}
