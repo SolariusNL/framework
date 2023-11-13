@@ -26,7 +26,25 @@ const Punished: React.FC<{
 }> = ({ user }) => {
   const router = useRouter();
   const theme = useMantineTheme();
-  const SECONDARY_COL_HEIGHT = PRIMARY_COL_HEIGHT / 2 - theme.spacing.md / 2;
+  const calculateRemainingTime = () => {
+    const timeDifference =
+      new Date(user.banExpires as Date).getTime() - new Date().getTime();
+    const daysRemaining = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+    const hoursRemaining = Math.ceil(timeDifference / (1000 * 60 * 60));
+    const minutesRemaining = Math.ceil(timeDifference / (1000 * 60));
+
+    if (daysRemaining >= 1) {
+      return `${daysRemaining} day${daysRemaining > 1 ? "s" : ""} from now`;
+    } else if (hoursRemaining >= 1) {
+      return `${hoursRemaining} hour${hoursRemaining > 1 ? "s" : ""} from now`;
+    } else if (minutesRemaining >= 1) {
+      return `${minutesRemaining} minute${
+        minutesRemaining > 1 ? "s" : ""
+      } from now`;
+    } else {
+      return "Less than a minute from now";
+    }
+  };
 
   useEffect(() => {
     if (!user.banned) {
@@ -64,20 +82,25 @@ const Punished: React.FC<{
           <Text color="dimmed" size="sm" weight={700} mb="xs">
             Ban expires
           </Text>
-          <Tooltip label={new Date(user.banExpires as Date).toUTCString()}>
-            <Text mb="xl" className="flex items-center gap-2 w-fit">
-              {new Date(user.banExpires as Date).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
-              {new Date(user.banExpires as Date).getFullYear() === 9999 && (
-                <Badge radius="md" color="red">
-                  Permanent Ban
-                </Badge>
-              )}
+          <div className="flex mb-6 items-center gap-3">
+            <Tooltip label={new Date(user.banExpires as Date).toUTCString()}>
+              <Text className="flex items-center gap-2 w-fit">
+                {new Date(user.banExpires as Date).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+                {new Date(user.banExpires as Date).getFullYear() === 9999 && (
+                  <Badge radius="md" color="red">
+                    Permanent Ban
+                  </Badge>
+                )}
+              </Text>
+            </Tooltip>
+            <Text size="sm" color="dimmed" weight={500}>
+              {user.banExpires && calculateRemainingTime()}
             </Text>
-          </Tooltip>
+          </div>
           <div className="flex justify-end">
             <Button
               onClick={async () => {
