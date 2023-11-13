@@ -235,6 +235,7 @@ const Funding = ({ game }: FundingProps) => {
                 label="Goal"
                 placeholder="5000T$"
                 required
+                min={1}
                 icon={<HiTicket />}
                 classNames={{ input: "!mt-1 dark:bg-black" }}
                 {...form.getInputProps("goal")}
@@ -296,6 +297,7 @@ const Funding = ({ game }: FundingProps) => {
                             label="Goal"
                             placeholder="5000T$"
                             required
+                            min={1}
                             icon={<HiTicket />}
                             classNames={BLACK}
                             {...editForm.getInputProps("goal")}

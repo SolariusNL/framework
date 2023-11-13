@@ -980,6 +980,13 @@ class GameRouter {
       };
     }
 
+    if (amount < 1) {
+      return {
+        success: false,
+        error: "Invalid amount",
+      };
+    }
+
     const fund = game.funds.find((fund) => fund.id == fundId);
 
     if (!fund) {

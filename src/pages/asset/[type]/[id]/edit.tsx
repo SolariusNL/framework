@@ -194,6 +194,7 @@ const AssetView: React.FC<AssetViewProps> = ({
                   input: "bg-transparent",
                 }}
                 className="w-[50%]"
+                min={1}
               />
               <div className="my-4">
                 <LabelledCheckbox

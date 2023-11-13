@@ -157,6 +157,7 @@ const TeamViewSettingsGiveaways: React.FC<TeamViewGiveawaysProps> = ({
             icon={<HiOutlineTicket />}
             placeholder="300"
             required
+            min={1}
             label="Tickets"
             description="How many Tickets will the winner receive?"
             classNames={BLACK}

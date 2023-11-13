@@ -247,6 +247,7 @@ const TeamView: React.FC<TeamViewProps> = ({ user, team: teamInitial }) => {
                 my="xl"
                 required
                 placeholder="450T$"
+                min={1}
                 value={tickets}
                 onChange={(value) => setTickets(value)}
               />

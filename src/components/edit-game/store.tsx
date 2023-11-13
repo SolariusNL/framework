@@ -194,6 +194,7 @@ const Store: React.FC<StoreProps> = ({ game }) => {
             mb="md"
             classNames={BLACK}
             icon={<HiTicket />}
+            min={1}
             {...form.getInputProps("price")}
           />
           <Descriptive
