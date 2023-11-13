@@ -126,7 +126,7 @@ const tabs: Record<
 
 export const gameDetails = (game: EditableGame) => {
   return (
-    <div className="flex md:flex-row flex-col md:gap-3 gap-1">
+    <div className="flex gap-4">
       {[
         {
           icon: <HiOutlineUserGroup />,
