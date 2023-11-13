@@ -9,28 +9,36 @@ interface SocialLink {
   url: string;
 }
 
+interface TicketProduct {
+  name: string;
+  priceId: string;
+  price: string;
+  grant: number;
+  goodDeal: boolean;
+  previousPrice?: string;
+}
+
 interface Configuration {
   /**
    * Features to enable on this instance
    */
   features?: {
     /**
-     * Additional features that are not categorized
+     * Stripe integration
      */
-    additional?: {
-      ukraine?: {
-        /**
-         * Feature enabled?
-         */
-        enabled?: boolean;
-        /**
-         * Support text
-         */
-        supportText?: string;
-        /**
-         * Support link navigated on interaction
-         */
-        supportUrl?: string;
+    stripe?: {
+      /**
+       * Ticket products
+       */
+      tickets?: Array<TicketProduct>;
+      /**
+       * Premium products
+       * Values are corresponding price ID
+       */
+      premium?: {
+        bronze?: string;
+        silver?: string;
+        gold?: string;
       };
     };
   };

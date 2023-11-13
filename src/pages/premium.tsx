@@ -2,6 +2,7 @@ import Framework from "@/components/framework";
 import ModernEmptyState from "@/components/modern-empty-state";
 import ShadedCard from "@/components/shaded-card";
 import authorizedRoute from "@/util/auth";
+import useConfig from "@/util/config";
 import getStripe from "@/util/get-stripe";
 import useMediaQuery from "@/util/media-query";
 import { User } from "@/util/prisma-types";
@@ -55,26 +56,28 @@ const premiumFeatures = [
   ],
 ];
 
+const config = useConfig();
+
 export const plans = [
   {
     name: "Premium Bronze",
     price: [["€4", "EUR"]],
     popular: false,
-    priceId: "price_1NROOBKrKkWmvq0RfNo4B4rl",
+    priceId: config.features?.stripe?.premium?.bronze,
     type: PremiumSubscriptionType.PREMIUM_ONE_MONTH,
   },
   {
     name: "Premium Silver",
     price: [["€26", "EUR"]],
     popular: true,
-    priceId: "price_1NROOPKrKkWmvq0RcL0d6k06",
+    priceId: config.features?.stripe?.premium?.silver,
     type: PremiumSubscriptionType.PREMIUM_SIX_MONTHS,
   },
   {
     name: "Premium Gold",
     price: [["€40", "EUR"]],
     popular: false,
-    priceId: "price_1NROOXKrKkWmvq0RZS3fVbHX",
+    priceId: config.features?.stripe?.premium?.gold,
     type: PremiumSubscriptionType.PREMIUM_ONE_YEAR,
   },
 ];
@@ -99,6 +102,7 @@ const Premium: NextPage<PremiumProps> = ({ user }) => {
       .then((res) => res.json())
       .then(async (res) => {
         const stripe = await getStripe();
+        console.log(plan.priceId);
         const { error } = await stripe!.redirectToCheckout({
           sessionId: res.sessionId,
         });
@@ -122,7 +126,7 @@ const Premium: NextPage<PremiumProps> = ({ user }) => {
       activeTab="none"
       user={user}
       modernTitle="Framework Premium"
-      modernSubtitle="Framework Premium is a premium subscription that is considered a donation to the Framework project, to help us keep the project alive and running. It also gives you access to some cool perks! This is for you if you love Framework and want to support us in the long run, and support our cause of creating a free, and open source web."
+      modernSubtitle="Get access to exclusive features and more."
     >
       <Group
         grow={!mobile}
@@ -138,27 +142,34 @@ const Premium: NextPage<PremiumProps> = ({ user }) => {
             </Text>
 
             <Stack spacing={6}>
-              {premiumFeatures.map((feature) => (
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "16px",
-                  }}
-                  key={feature[0]}
-                >
-                  <div>
-                    <HiCheckCircle size={24} color="#20C997" />
+              {config.features?.stripe?.premium ? (
+                premiumFeatures.map((feature) => (
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "16px",
+                    }}
+                    key={feature[0]}
+                  >
+                    <div>
+                      <HiCheckCircle size={24} color="#20C997" />
+                    </div>
+                    <Group>
+                      <Stack spacing={3}>
+                        <Text weight={700}>{feature[0]}</Text>
+                        <Text color="dimmed" size="sm">
+                          {feature[1]}
+                        </Text>
+                      </Stack>
+                    </Group>
                   </div>
-                  <Group>
-                    <Stack spacing={3}>
-                      <Text weight={700}>{feature[0]}</Text>
-                      <Text color="dimmed" size="sm">
-                        {feature[1]}
-                      </Text>
-                    </Stack>
-                  </Group>
-                </div>
-              ))}
+                ))
+              ) : (
+                <ModernEmptyState
+                  title="Premium Subscriptions Not Available"
+                  body="There are no premium features available at the moment."
+                />
+              )}
             </Stack>
           </Stack>
         </Group>
@@ -230,15 +241,8 @@ const Premium: NextPage<PremiumProps> = ({ user }) => {
                                       <span key={price[0]}>
                                         {price[0]} {price[1]}
                                       </span>
-
-                                      {plans[plans.length - 1].name !==
-                                        plan.name && (
-                                        <>
-                                          <span key={price[1]}>&#8226;</span>
-
-                                          <span>per month</span>
-                                        </>
-                                      )}
+                                      <span key={price[1]}>&#8226;</span>
+                                      <span>per month</span>
                                     </>
                                   ))}
                                 </div>

@@ -1,6 +1,7 @@
 import CheckboxCard from "@/components/checkbox-card";
 import Framework from "@/components/framework";
 import authorizedRoute from "@/util/auth";
+import useConfig from "@/util/config";
 import getStripe from "@/util/get-stripe";
 import { User } from "@/util/prisma-types";
 import { Accordion, Badge, Button, Stack, Text, Title } from "@mantine/core";
@@ -13,48 +14,11 @@ interface BuyTicketsProps {
   user: User;
 }
 
-/**
- * Since Framework is still in development,
- * we override the price ID with a test price ID.
- */
-export const products = [
-  {
-    name: "1,000T$",
-    priceId: "price_1M5BNfKrKkWmvq0RofjjWGf0",
-    price: "€9.99",
-    grant: 1000,
-  },
-  {
-    name: "2,400T$",
-    priceId: "price_1M5BOqKrKkWmvq0RaskrxAIz",
-    price: "€19.99",
-    grant: 2400,
-  },
-  {
-    name: "5,000T$",
-    priceId: "price_1M5IK0KrKkWmvq0RBe4RgCQa",
-    price: "€39.99",
-    grant: 5000,
-    goodDeal: true,
-    rawPrice: 39.99,
-    percentOff: 10,
-    altPrice: 49.99,
-  },
-  {
-    name: "10,000T$",
-    priceId: "price_1M6neqKrKkWmvq0RjvITQpeY",
-    price: "€79.99",
-    grant: 10000,
-    goodDeal: true,
-    rawPrice: 79.99,
-    percentOff: 20,
-    altPrice: 99.99,
-  },
-];
-
 const BuyTickets: NextPage<BuyTicketsProps> = ({ user }) => {
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState(1);
+  const config = useConfig();
+  const products = config.features?.stripe?.tickets!;
 
   const handler = async () => {
     setLoading(true);
@@ -169,7 +133,7 @@ const BuyTickets: NextPage<BuyTicketsProps> = ({ user }) => {
                         }}
                       >
                         {product.goodDeal
-                          ? `€${product.altPrice}`
+                          ? product.previousPrice
                           : product.price}
                       </Text>
                       {product.goodDeal && (
