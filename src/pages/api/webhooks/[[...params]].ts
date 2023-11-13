@@ -1,5 +1,5 @@
 import { plans } from "@/pages/premium";
-import useConfig from "@/util/config";
+import getConfig from "@/util/config";
 import { PREMIUM_PAYOUTS } from "@/util/constants";
 import createNotification from "@/util/notifications";
 import prisma from "@/util/prisma";
@@ -12,7 +12,7 @@ import Stripe from "stripe";
 const stripe = new Stripe(String(process.env.STRIPE_SECRET_KEY), {
   apiVersion: "2022-11-15",
 });
-const appConfig = useConfig();
+const appConfig = getConfig();
 const products = appConfig.features?.stripe?.tickets ?? [];
 
 export const config = {

@@ -2,7 +2,7 @@ import Framework from "@/components/framework";
 import ModernEmptyState from "@/components/modern-empty-state";
 import ShadedCard from "@/components/shaded-card";
 import authorizedRoute from "@/util/auth";
-import useConfig from "@/util/config";
+import getConfig from "@/util/config";
 import getStripe from "@/util/get-stripe";
 import useMediaQuery from "@/util/media-query";
 import { User } from "@/util/prisma-types";
@@ -56,7 +56,7 @@ const premiumFeatures = [
   ],
 ];
 
-const config = useConfig();
+const config = getConfig();
 
 export const plans = [
   {

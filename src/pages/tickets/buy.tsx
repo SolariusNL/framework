@@ -1,7 +1,7 @@
 import CheckboxCard from "@/components/checkbox-card";
 import Framework from "@/components/framework";
 import authorizedRoute from "@/util/auth";
-import useConfig from "@/util/config";
+import getConfig from "@/util/config";
 import getStripe from "@/util/get-stripe";
 import { User } from "@/util/prisma-types";
 import { Accordion, Badge, Button, Stack, Text, Title } from "@mantine/core";
@@ -17,7 +17,7 @@ interface BuyTicketsProps {
 const BuyTickets: NextPage<BuyTicketsProps> = ({ user }) => {
   const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState(1);
-  const config = useConfig();
+  const config = getConfig();
   const products = config.features?.stripe?.tickets!;
 
   const handler = async () => {

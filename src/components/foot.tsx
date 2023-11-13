@@ -1,6 +1,6 @@
 import SoodamLogo from "@/components/soodam-logo";
 import clsx from "@/util/clsx";
-import useConfig from "@/util/config";
+import getConfig from "@/util/config";
 import { Fw } from "@/util/fw";
 import {
   ActionIcon,
@@ -120,7 +120,7 @@ const useStyles = createStyles((theme) => ({
 
 const Footer = () => {
   const { classes } = useStyles();
-  const config = useConfig();
+  const config = getConfig();
   const [status, setStatus] = useState<
     "up" | "problems" | "disabled" | "loading"
   >("loading");
