@@ -1,6 +1,7 @@
+import LoadingIndicator from "@/components/loading-indicator";
 import authorizedRoute from "@/util/auth";
 import prisma from "@/util/prisma";
-import { Button, Code, Divider, Text, Title } from "@mantine/core";
+import { Button, Code, Container, Divider, Text, Title } from "@mantine/core";
 import { EmailReceipt } from "@prisma/client";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import Link from "next/link";
@@ -33,7 +34,13 @@ const EmailReceipt: FC<EmailReceiptProps> = ({ receipt }) => {
   ];
 
   return (
-    <>
+    <ReactNoSSR
+      onSSR={
+        <Container className="flex items-center justify-center">
+          <LoadingIndicator />
+        </Container>
+      }
+    >
       <main className="min-h-screen w-full h-full flex flex-col justify-center items-center">
         <div className="max-w-xl py-4 md:my-32 my-12 px-4 w-full h-full">
           <Link href="/" passHref>
@@ -81,17 +88,15 @@ const EmailReceipt: FC<EmailReceiptProps> = ({ receipt }) => {
                 </div>
               ))}
           </div>
-          <ReactNoSSR>
-            <div
-              dangerouslySetInnerHTML={{
-                __html: receipt.template,
-              }}
-              className="rounded-md overflow-auto mt-8"
-            />
-          </ReactNoSSR>
+          <div
+            dangerouslySetInnerHTML={{
+              __html: receipt.template,
+            }}
+            className="rounded-md overflow-auto mt-8"
+          />
         </div>
       </main>
-    </>
+    </ReactNoSSR>
   );
 };
 
