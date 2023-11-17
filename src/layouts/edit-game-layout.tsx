@@ -26,6 +26,7 @@ import {
   HiDatabase,
   HiLocationMarker,
   HiLockClosed,
+  HiOutlinePhotograph,
   HiOutlineStar,
   HiOutlineTag,
   HiOutlineUserGroup,
@@ -52,6 +53,7 @@ export type EditableGame = Game & {
 };
 export enum EditGameRoutes {
   Details = "details",
+  Art = "art",
   Funds = "funds",
   Servers = "servers",
   Compliance = "compliance",
@@ -81,6 +83,11 @@ const tabs: Record<
     title: "Home",
     subtitle: "Configure basic details about your game, and see some stats.",
     icon: <HiLocationMarker />,
+  },
+  [EditGameRoutes.Art]: {
+    title: "Art",
+    subtitle: "Configure your games icon and thumbnail.",
+    icon: <HiOutlinePhotograph />,
   },
   [EditGameRoutes.Funds]: {
     title: "Funding",
@@ -170,96 +177,97 @@ const EditGame: FC<EditGameLayoutProps> = ({
   const route = tabs[activePage];
 
   return (
-    <Framework user={user} activeTab="invent">
-      <SidebarTabNavigation>
-        <SidebarTabNavigation.Sidebar>
-          <Link href={`/game/${game.id}`}>
-            <ShadedButton
-              mb="md"
-              className="col-span-full rounded-lg flex flex-col gap-2"
-            >
-              <div className="flex items-start gap-4">
-                <Avatar
-                  size={50}
-                  src={getMediaUrl(game.iconUri)}
-                  className="rounded-md"
-                  color={Fw.Strings.color(game.name)}
+    <Framework user={user} activeTab="invent" noPadding>
+      <div className="w-full flex justify-center mt-8">
+        <div className="w-full px-4">
+          <SidebarTabNavigation>
+            <SidebarTabNavigation.Sidebar>
+              <Link href={`/game/${game.id}`}>
+                <ShadedButton
+                  mb="md"
+                  className="col-span-full rounded-lg flex flex-col gap-2"
                 >
-                  {Fw.Strings.initials(game.name)}
-                </Avatar>
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-center gap-2">
-                    <Text size="lg" weight={500}>
-                      {game.name}
-                    </Text>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Badge
-                      color="gray"
-                      radius="sm"
-                      className="px-1.5"
-                      size="lg"
-                      leftSection={
-                        <div className="flex items-center">
-                          <HiUserAdd className="text-dimmed" />
-                        </div>
-                      }
+                  <div className="flex items-start gap-4">
+                    <Avatar
+                      size={50}
+                      src={getMediaUrl(game.iconUri)}
+                      className="rounded-md"
+                      color={Fw.Strings.color(game.name)}
                     >
-                      {Fw.Nums.beautify(game._count.followers)}
-                    </Badge>
-                    <Badge
-                      color="gray"
-                      radius="sm"
-                      className="px-1.5"
-                      size="lg"
-                      leftSection={
-                        <div className="flex items-center">
-                          <HiStatusOnline className="text-dimmed" />
-                        </div>
-                      }
-                    >
-                      {Fw.Nums.beautify(game.playing)}
-                    </Badge>
+                      {Fw.Strings.initials(game.name)}
+                    </Avatar>
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center gap-2">
+                        <Text size="lg" weight={500}>
+                          {game.name}
+                        </Text>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge
+                          color="gray"
+                          radius="sm"
+                          className="px-1.5"
+                          size="lg"
+                          leftSection={
+                            <div className="flex items-center">
+                              <HiUserAdd className="text-dimmed" />
+                            </div>
+                          }
+                        >
+                          {Fw.Nums.beautify(game._count.followers)}
+                        </Badge>
+                        <Badge
+                          color="gray"
+                          radius="sm"
+                          className="px-1.5"
+                          size="lg"
+                          leftSection={
+                            <div className="flex items-center">
+                              <HiStatusOnline className="text-dimmed" />
+                            </div>
+                          }
+                        >
+                          {Fw.Nums.beautify(game.playing)}
+                        </Badge>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div className="flex justify-center items-center text-center w-full">
-                {gameDetails(game)}
-              </div>
-            </ShadedButton>
-          </Link>
-          {Object.entries(tabs).map(([key, tab]) => (
-            <Link href={`/game/${game.id}/edit/v2/${key}`} key={key}>
-              <NavLink
-                label={tab.title}
-                icon={tab.icon}
-                active={key === activePage}
-                className="rounded-lg"
-              />
-            </Link>
-          ))}
-        </SidebarTabNavigation.Sidebar>
-        <SidebarTabNavigation.Content>
-          <Breadcrumbs className="mb-4">
-            <Link href="/invent/games">
-              <Anchor color="dimmed">Invent</Anchor>
-            </Link>
-            <Link href={`/game/${game.id}`}>
-              <Anchor color="dimmed">{game.name}</Anchor>
-            </Link>
-            <Anchor color="dimmed">Edit</Anchor>
-            <Link href={`/game/${game.id}/edit/v2/${activePage}`}>
-              <Anchor color="dimmed">{route.title}</Anchor>
-            </Link>
-          </Breadcrumbs>
-          <Section
-            title={route.title}
-            description={route.subtitle}
-          />
-          <Divider className="mb-8 mt-6" />
-          {children}
-        </SidebarTabNavigation.Content>
-      </SidebarTabNavigation>
+                  <div className="flex justify-center items-center text-center w-full">
+                    {gameDetails(game)}
+                  </div>
+                </ShadedButton>
+              </Link>
+              {Object.entries(tabs).map(([key, tab]) => (
+                <Link href={`/game/${game.id}/edit/v2/${key}`} key={key}>
+                  <NavLink
+                    label={tab.title}
+                    icon={tab.icon}
+                    active={key === activePage}
+                    className="rounded-lg"
+                  />
+                </Link>
+              ))}
+            </SidebarTabNavigation.Sidebar>
+            <SidebarTabNavigation.Content>
+              <Breadcrumbs className="mb-4">
+                <Link href="/invent/games">
+                  <Anchor color="dimmed">Invent</Anchor>
+                </Link>
+                <Link href={`/game/${game.id}`}>
+                  <Anchor color="dimmed">{game.name}</Anchor>
+                </Link>
+                <Anchor color="dimmed">Edit</Anchor>
+                <Link href={`/game/${game.id}/edit/v2/${activePage}`}>
+                  <Anchor color="dimmed">{route.title}</Anchor>
+                </Link>
+              </Breadcrumbs>
+              <Section title={route.title} description={route.subtitle} />
+              <Divider className="mb-8 mt-6" />
+              {children}
+            </SidebarTabNavigation.Content>
+          </SidebarTabNavigation>
+        </div>
+      </div>
     </Framework>
   );
 };

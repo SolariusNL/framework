@@ -433,6 +433,31 @@ enum GameGenre {
   OTHER
 }
 
+enum GamePlatform {
+  PC
+  MOBILE
+  VR
+}
+
+enum ContentWarning {
+  VIOLENCE
+  SEXUAL_CONTENT
+  STRONG_LANGUAGE
+  DRUG_ABUSE
+  ALCOHOL_ABUSE
+  SELF_HARM
+  SUICIDAL_CONTENT
+  NUDITY
+  DISCRIMINATION
+  GRAPHIC_IMAGES
+  SENSITIVE_TOPIC
+  DEATH
+  ABUSE
+  MENTAL_HEALTH
+  MEDICAL_PROCEDURES
+  FLASHING_LIGHTS
+}
+
 model Game {
   id                   Int                       @id @default(autoincrement())
   name                 String
@@ -472,6 +497,17 @@ model Game {
   issues               TeamIssue[]               @relation("gameIssues")
   showcase             DeveloperProfile[]        @relation("developerShowcaseGames")
   usedStorageBytes     Float                     @default(8511)
+  supportedPlatforms   GamePlatform[] @default([PC, MOBILE, VR])
+  soyoruEnabled        Boolean                   @default(true)
+  voiceEnabled         Boolean                   @default(true)
+  chatFilterEnabled    Boolean                   @default(true)
+  restartOnUpdate      Boolean                   @default(true)
+  enforceLatestVersion Boolean                   @default(true)
+  attemptLiveUpdates   Boolean                   @default(true)
+  requiredAccountAge   Int                       @default(0)
+  hasParentalControls  Boolean                   @default(false)
+  contentWarnings ContentWarning[]
+  feedbackEnabled      Boolean                   @default(true)
 }
 
 model GameComment {

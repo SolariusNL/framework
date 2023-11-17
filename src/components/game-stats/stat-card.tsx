@@ -1,4 +1,4 @@
-import { ActionIcon, Center, Paper, RingProgress, Text } from "@mantine/core";
+import { Center, Paper, RingProgress, Text, ThemeIcon } from "@mantine/core";
 import { FC } from "react";
 
 type GameStatCardState = "increased" | "decreased" | "neutral";
@@ -36,7 +36,7 @@ const GameStatCard: FC<GameStatCardProps> = ({
         />
       ) : (
         <div className="w-[80px] h-[80px] flex justify-center items-center">
-          <ActionIcon
+          <ThemeIcon
             size={56}
             variant="light"
             color={
@@ -49,7 +49,7 @@ const GameStatCard: FC<GameStatCardProps> = ({
             className="rounded-full"
           >
             {icon}
-          </ActionIcon>
+          </ThemeIcon>
         </div>
       )}
 
