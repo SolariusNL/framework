@@ -9,7 +9,7 @@ type GameDataEntryProps = {
 
 const GameDataEntry: FC<GameDataEntryProps> = ({ icon, label, value }) => (
   <div>
-    <div className="flex items-center gap-1 mb-1 text-dimmed">
+    <div className="flex shrink-0 items-center gap-1 mb-1 text-dimmed">
       {icon}
       <Text weight={500} size="sm">
         {label}

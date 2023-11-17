@@ -34,7 +34,7 @@ const GameDataGroup: FC<GameDataGroupProps> = ({
         mt="xs"
         leftIcon={<HiArrowsExpand />}
       >
-        Edit {label}
+        Edit {label.toLowerCase()}
       </Button>
     </div>
   );

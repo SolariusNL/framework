@@ -357,6 +357,17 @@ export const gameSelect: Prisma.GameSelect = {
   },
   team: true,
   teamId: true,
+  supportedPlatforms: true,
+  soyoruEnabled: true,
+  voiceEnabled: true,
+  chatFilterEnabled: true,
+  restartOnUpdate: true,
+  enforceLatestVersion: true,
+  attemptLiveUpdates: true,
+  requiredAccountAge: true,
+  hasParentalControls: true,
+  contentWarnings: true,
+  feedbackEnabled: true,
 };
 
 export const snippetSelect: Prisma.CodeSnippetSelect = {
