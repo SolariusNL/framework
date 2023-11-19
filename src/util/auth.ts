@@ -1,10 +1,12 @@
+import { blockedRegions } from "@/data/blocked-regions";
 import { exclude } from "@/util/exclude";
 import prisma from "@/util/prisma";
 import { User, userSelect } from "@/util/prisma-types";
 import { OAuthApplication, Session } from "@prisma/client";
 import { GetServerSidePropsContext } from "next";
 import { getClientIp } from "request-ip";
-import { getIPAddressGeolocation } from "./geo";
+import cast from "./cast";
+import { Geolocation, getIPAddressGeolocation } from "./geo";
 
 const authorizedRoute = async (
   context: GetServerSidePropsContext,
@@ -64,6 +66,20 @@ const authorizedRoute = async (
         });
       }
     });
+  }
+
+  const geoloc = cast<Geolocation>(account?.recentIpGeo);
+
+  if (
+    account?.recentIpGeo &&
+    blockedRegions[geoloc.country as keyof typeof blockedRegions] !== undefined
+  ) {
+    return {
+      redirect: {
+        destination: `/restricted-region/${geoloc.country}`,
+        permanent: false,
+      },
+    };
   }
 
   switch (isAuthorized) {
@@ -201,6 +217,7 @@ export async function getAccountFromSession(
           ...exclude(userSelect, "games"),
           password: true,
           recentIp: true,
+          recentIpGeo: true,
         },
       })
     )
