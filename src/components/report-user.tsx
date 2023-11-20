@@ -1,7 +1,6 @@
 import useReportAbuse, { ReportAbuseProps } from "@/stores/useReportAbuse";
 import IResponseBase from "@/types/api/IResponseBase";
 import fetchJson from "@/util/fetch";
-import { NonUser } from "@/util/prisma-types";
 import {
   ActionIcon,
   Button,
@@ -35,6 +34,8 @@ export type ReportCategory =
   | "Inappropriate username"
   | "Inappropriate profile description"
   | "One of this users games violates the rules"
+  | "Violent, harmful or otherwise disturbing content"
+  | "Discriminatory remarks based on protected characteristics"
   | "Other";
 
 export const category = {
@@ -45,6 +46,8 @@ export const category = {
   "Inappropriate username": "username",
   "Inappropriate profile description": "description",
   "One of this users games violates the rules": "game",
+  "Violent, harmful or otherwise disturbing content": "violent",
+  "Discriminatory remarks based on protected characteristics": "discrimination",
   Other: "other",
 } as const;
 
@@ -117,9 +120,15 @@ const ReportUser: FC<ReportAbuseProps> = ({ user }) => {
         <Select
           label="Category"
           description="Choose a category you think suits this report."
-          data={Object.keys(category)}
+          data={
+            Object.keys(category).map((key) => ({
+              value: category[key as keyof typeof category],
+              label: key,
+            })) as any
+          }
           className="mb-2"
           required
+          searchable
           {...form.getInputProps("reason")}
         />
         <Textarea
