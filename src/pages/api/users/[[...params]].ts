@@ -1497,7 +1497,7 @@ class UserRouter {
         }
 
         const validator = userPreferenceValidators[key as UserPreferences];
-        if (validator && !validator(value)) {
+        if (validator && !validator(value, user)) {
           throw new BadRequestException(
             `Preference ${key} has an invalid value`
           );

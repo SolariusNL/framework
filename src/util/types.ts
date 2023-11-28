@@ -35,7 +35,14 @@ export type UserPreferences =
   | "@dismissible/chat/conversation-tooltip"
   | "@app/secret-gift"
   | "@app/notification-manager"
-  | "@user/seen-roblox-convert";
+  | "@user/seen-roblox-convert"
+  | "@feature/personalised-games"
+  | "@feature/personalised-catalog"
+  | "@feature/user-ads"
+  | "@feature/preroll-ads"
+  | "@feature/child-safety"
+  | "@feature/chat-filter"
+  | "@feature/voice-chat";
 export const userPreferences: UserPreferences[] = [
   "@chat/bell",
   "@chat/enabled",
@@ -44,6 +51,13 @@ export const userPreferences: UserPreferences[] = [
   "@app/secret-gift",
   "@app/notification-manager",
   "@user/seen-roblox-convert",
+  "@feature/personalised-games",
+  "@feature/personalised-catalog",
+  "@feature/user-ads",
+  "@feature/preroll-ads",
+  "@feature/child-safety",
+  "@feature/chat-filter",
+  "@feature/voice-chat",
 ];
 export const defaultUserPreferences: Record<
   UserPreferences,
@@ -56,15 +70,26 @@ export const defaultUserPreferences: Record<
   "@app/secret-gift": false,
   "@app/notification-manager": true,
   "@user/seen-roblox-convert": false,
+  "@feature/personalised-games": true,
+  "@feature/personalised-catalog": true,
+  "@feature/user-ads": true,
+  "@feature/preroll-ads": true,
+  "@feature/child-safety": false,
+  "@feature/chat-filter": false,
+  "@feature/voice-chat": true,
 };
 export const userPreferenceValidators: Partial<
-  Record<UserPreferences, (value: string | boolean | number) => boolean>
+  Record<
+    UserPreferences,
+    (value: string | boolean | number, user: NonUser) => boolean
+  >
 > = {
   "@chat/my-color": (value) =>
     typeof value === "string" && MANTINE_COLORS.includes(value),
   "@app/secret-gift": (value) => typeof value === "boolean" && value === true,
   "@user/seen-roblox-convert": (value) =>
     typeof value === "boolean" && value === true,
+  "@feature/preroll-ads": (_, user) => user.premium === true,
 };
 
 export type PascalToCamel<S extends string> =

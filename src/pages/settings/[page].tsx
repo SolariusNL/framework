@@ -4,6 +4,7 @@ import AccountTab from "@/components/settings/account";
 import AppearanceTab from "@/components/settings/appearance";
 import BetaTab from "@/components/settings/beta";
 import DeleteAccountTab from "@/components/settings/delete";
+import FeaturesTab from "@/components/settings/features";
 import NotificationsTab from "@/components/settings/notifications";
 import PrivacyTab from "@/components/settings/privacy";
 import ReferralsTab from "@/components/settings/referrals";
@@ -36,6 +37,7 @@ import {
   HiTicket,
   HiTrash,
   HiUser,
+  HiViewGrid,
 } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 
@@ -68,6 +70,14 @@ const tabs = [
     label: "Privacy",
     component: PrivacyTab,
     description: "Manage privacy preferences and features",
+  },
+  {
+    value: "features",
+    icon: <HiViewGrid />,
+    color: "",
+    label: "Features",
+    component: FeaturesTab,
+    description: "Manage how Framework features function",
   },
   {
     value: "subscriptions",

@@ -653,6 +653,7 @@ enum NotificationType {
   SUCCESS
   LOGIN
   GIFT
+  PREMIUM_REFERRAL
 }
 
 model Notification {

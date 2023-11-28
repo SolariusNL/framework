@@ -1,8 +1,8 @@
-import create from "zustand";
 import { Preferences } from "@/util/preferences";
 import { UserPreferences, defaultUserPreferences } from "@/util/types";
+import create from "zustand";
 
-type PreferencesStore = {
+export type PreferencesStore = {
   preferences: Record<UserPreferences, string | boolean | number>;
   setPreferences: (
     preferences: Record<UserPreferences, string | boolean | number>
