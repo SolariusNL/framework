@@ -11,7 +11,7 @@ RUN sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release 
 RUN sudo apt-get update \
  && sudo apt-get install -y \
   redis-server \
- && sudo rm -rf /var/lib/apt/lists/*
+ && sudo rm -rf /var/lib/apt/lists/* \
  && sudo service redis-server start
 
 ENV PATH="/usr/lib/postgresql/12/bin:$PATH"
