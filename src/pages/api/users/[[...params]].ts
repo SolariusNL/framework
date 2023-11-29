@@ -17,6 +17,7 @@ import { verificationEmail } from "@/util/templates/verification-email";
 import { logTransaction } from "@/util/transaction-history";
 import {
   UserPreferences,
+  defaultUserPreferences,
   userPreferenceValidators,
   userPreferences,
 } from "@/util/types";
@@ -1447,12 +1448,19 @@ class UserRouter {
       }
     });
 
+    const userPreferences = Object.fromEntries(
+      convertedPrefs.map((pref) => [pref.key, pref.value])
+    );
+
+    const mergedPreferences = {
+      ...defaultUserPreferences,
+      ...userPreferences,
+    };
+
     return {
       success: true,
       data: {
-        preferences: Object.fromEntries(
-          convertedPrefs.map((pref) => [pref.key, pref.value])
-        ),
+        preferences: mergedPreferences,
       },
     };
   }

@@ -29,18 +29,18 @@ function fetchPreferences() {
   Preferences.getPreferences().then((res) => {
     if (res?.success) {
       usePreferences.getState().setPreferences(res?.data!.preferences);
-      for (const key of Object.keys(defaultUserPreferences)) {
-        if (
-          !Object.keys(res?.data!.preferences).includes(key as UserPreferences)
-        ) {
-          usePreferences
-            .getState()
-            .setPreference(
-              key as UserPreferences,
-              defaultUserPreferences[key as UserPreferences]
-            );
-        }
-      }
+      // for (const key of Object.keys(defaultUserPreferences)) {
+      //   if (
+      //     !Object.keys(res?.data!.preferences).includes(key as UserPreferences)
+      //   ) {
+      //     usePreferences
+      //       .getState()
+      //       .setPreference(
+      //         key as UserPreferences,
+      //         defaultUserPreferences[key as UserPreferences]
+      //       );
+      //   }
+      // }
     }
   });
 }
