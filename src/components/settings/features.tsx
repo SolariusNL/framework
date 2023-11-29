@@ -7,15 +7,18 @@ import usePreferences, { PreferencesStore } from "@/stores/usePreferences";
 import { Preferences } from "@/util/preferences";
 import { User } from "@/util/prisma-types";
 import { UserPreferences } from "@/util/types";
-import { Divider, Stack, Switch } from "@mantine/core";
-import { useState } from "react";
+import { Anchor, Divider, Stack, Switch } from "@mantine/core";
+import { ReactNode, useState } from "react";
 import {
   HiChat,
   HiExclamation,
+  HiExclamationCircle,
   HiMicrophone,
   HiPhotograph,
   HiShoppingCart,
+  HiSparkles,
 } from "react-icons/hi";
+import InlineError from "../inline-error";
 
 type FeaturesTabProps = {
   user: User;
@@ -27,6 +30,7 @@ type Feature = {
   property: UserPreferences;
   icon: React.ReactNode;
   disabled?: boolean;
+  disabledRenderer?: ReactNode;
 };
 type FeatureSwitchProps = Feature & {
   preferences: PreferencesStore["preferences"];
@@ -41,23 +45,28 @@ const FeatureSwitch: React.FC<FeatureSwitchProps> = ({
   preferences,
   setPreferences,
   disabled,
+  disabledRenderer,
 }) => (
   <SideBySide
     title={title}
     description={description}
     icon={icon}
     right={
-      <Switch
-        label={`Enable ${title.toLowerCase()}`}
-        checked={Boolean(preferences[property])}
-        onChange={() =>
-          setPreferences({
-            [property]: !preferences[property],
-          })
-        }
-        classNames={BLACK}
-        disabled={disabled}
-      />
+      disabled ? (
+        disabledRenderer
+      ) : (
+        <Switch
+          label={`Enable ${title.toLowerCase()}`}
+          checked={Boolean(preferences[property])}
+          onChange={() =>
+            setPreferences({
+              [property]: !preferences[property],
+            })
+          }
+          classNames={BLACK}
+          disabled={disabled}
+        />
+      )
     }
     shaded
     noUpperBorder
@@ -111,6 +120,17 @@ const FeaturesTab = ({ user }: FeaturesTabProps) => {
         "Allow us to show you advertisements before you join a game. Available to Premium members only.",
       property: "@feature/preroll-ads",
       disabled: !user.premium,
+      disabledRenderer: (
+        <InlineError
+          variant="pink"
+          icon={<HiSparkles />}
+          title="Purchase Premium"
+        >
+          <Anchor href="/premium">Purchase Premium</Anchor> to disable preroll
+          advertisements on Framework. Premium helps keep our services free to
+          use.
+        </InlineError>
+      ),
       icon: <HiPhotograph />,
     },
   ];
@@ -135,6 +155,12 @@ const FeaturesTab = ({ user }: FeaturesTabProps) => {
         "Enable voice chat to communicate with other players in-game through your microphone.",
       property: "@feature/voice-chat",
       icon: <HiMicrophone />,
+    },
+    {
+      title: "Adult games",
+      description: "Allow discovery of M-rated games or above on Framework.",
+      property: "@feature/adult-games",
+      icon: <HiExclamationCircle />,
     },
   ];
 

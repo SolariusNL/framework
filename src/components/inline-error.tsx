@@ -3,7 +3,7 @@ import { FC } from "react";
 import { HiExclamation } from "react-icons/hi";
 import clsx from "@/util/clsx";
 
-type InlineErrorVariant = "error" | "warning" | "info" | "success";
+type InlineErrorVariant = "error" | "warning" | "info" | "success" | "pink";
 type InlineErrorProps = {
   icon?: React.ReactNode;
   title?: React.ReactNode;
@@ -24,6 +24,7 @@ const InlineError: FC<InlineErrorProps> = ({
     warning: "text-yellow-700",
     info: "text-sky-700",
     success: "text-teal-800",
+    pink: "text-pink-700"
   };
 
   return (
@@ -42,6 +43,8 @@ const InlineError: FC<InlineErrorProps> = ({
               ? "blue"
               : variant === "success"
               ? "teal"
+              : variant === "pink"
+              ? "pink"
               : "red"
           }
           weight={500}
