@@ -20,6 +20,13 @@ const UpdateDrawer: React.FC = () => {
     href?: string;
   }> = [
     {
+      title: "Features",
+      description: "You can now customize your experience even further with the new Features settings tab.",
+      badge: BadgeType.NEW,
+      date: new Date("2023-11-30"),
+      href: "/settings/features"
+    },
+    {
       title: "Redis databases",
       description:
         "You can now create Redis databases directly on Framework for your applications.",
