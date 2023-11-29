@@ -43,7 +43,8 @@ export type UserPreferences =
   | "@feature/child-safety"
   | "@feature/chat-filter"
   | "@feature/voice-chat"
-  | "@feature/adult-games";
+  | "@feature/adult-games"
+  | "@feature/crash-reports";
 export const userPreferences: UserPreferences[] = [
   "@chat/bell",
   "@chat/enabled",
@@ -60,6 +61,7 @@ export const userPreferences: UserPreferences[] = [
   "@feature/chat-filter",
   "@feature/voice-chat",
   "@feature/adult-games",
+  "@feature/crash-reports",
 ];
 export const defaultUserPreferences: Record<
   UserPreferences,
@@ -80,6 +82,7 @@ export const defaultUserPreferences: Record<
   "@feature/chat-filter": false,
   "@feature/voice-chat": true,
   "@feature/adult-games": true,
+  "@feature/crash-reports": true,
 };
 export const userPreferenceValidators: Partial<
   Record<

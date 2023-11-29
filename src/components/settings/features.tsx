@@ -17,6 +17,7 @@ import {
   HiPhotograph,
   HiShoppingCart,
   HiSparkles,
+  HiTable,
 } from "react-icons/hi";
 import InlineError from "../inline-error";
 
@@ -104,6 +105,13 @@ const FeaturesTab = ({ user }: FeaturesTabProps) => {
         "Allow us to recommend catalog items to buy based on your previous purchases.",
       property: "@feature/personalised-catalog",
       icon: <HiShoppingCart />,
+    },
+    {
+      title: "Crash reports",
+      description:
+        "Automatically submit crash and error reports to Solarius for debugging purposes.",
+      property: "@feature/crash-reports",
+      icon: <HiTable />,
     },
   ];
   const ADVERTISING: Feature[] = [
