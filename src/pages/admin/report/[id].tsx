@@ -26,7 +26,7 @@ import {
   ThemeIcon,
   Title,
 } from "@mantine/core";
-import { UserAdminNotes } from "@prisma/client";
+import { UserAdminNotes, UserReportState } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { GetServerSidePropsContext, NextPage } from "next";
 import dynamic from "next/dynamic";
@@ -102,13 +102,18 @@ const ReportPage: NextPage<ReportProps> = ({ user, report }) => {
   const [punishUser, setPunishUser] = useState<NonUser | undefined>(undefined);
   const router = useRouter();
 
-  const closeReport = async () => {
+  const closeReport = async (punished: boolean) => {
     await fetch(`/api/admin/report/${report.id}/close`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: String(getCookie(".frameworksession")),
       },
+      body: JSON.stringify({
+        state: punished
+          ? UserReportState.VIOLATIONS_FOUND
+          : UserReportState.NO_VIOLATIONS,
+      }),
     })
       .then((res) => res.json())
       .then((res) => {
@@ -136,7 +141,7 @@ const ReportPage: NextPage<ReportProps> = ({ user, report }) => {
                 setPunishOpened(false);
               },
             }}
-            onComplete={closeReport}
+            onComplete={() => closeReport(true)}
           />
         ) : (
           <div className="flex md:flex-row flex-col md:gap-4 gap-12">
@@ -330,7 +335,7 @@ const ReportPage: NextPage<ReportProps> = ({ user, report }) => {
                   disabled={report.processed}
                   fullWidth
                   onClick={() => {
-                    closeReport();
+                    closeReport(false);
                   }}
                   mt="md"
                   radius="xl"

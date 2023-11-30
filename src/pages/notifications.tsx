@@ -3,6 +3,7 @@ import DataGrid from "@/components/data-grid";
 import Framework from "@/components/framework";
 import LoadingIndicator from "@/components/loading-indicator";
 import ModernEmptyState from "@/components/modern-empty-state";
+import ReportNotificationApplet from "@/components/notification-applets/report";
 import ShadedCard from "@/components/shaded-card";
 import Stateful from "@/components/stateful";
 import Infinity from "@/icons/Infinity";
@@ -435,6 +436,9 @@ const NotificationsPage: React.FC<NotificationsPage> = ({ user }) => {
                               .addPlugins(boldPlugin, linkPlugin)
                               .parse()}
                           </Text>
+                          <ReportNotificationApplet
+                            notification={notification}
+                          />
                           <AnimatePresence mode="wait" initial={false}>
                             {open && (
                               <motion.div

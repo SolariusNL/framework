@@ -1,6 +1,7 @@
 import { PrefCategory } from "@/components/admin/pages/instance";
 import { AdminViewUser } from "@/components/admin/pages/users";
 import type { ReportCategory } from "@/components/report-user";
+import { notificationMetadata } from "@/data/notification-metadata";
 import IResponseBase from "@/types/api/IResponseBase";
 import { AdminAction } from "@/util/admin-action";
 import Authorized, { Account, AdminAuthorized } from "@/util/api/authorized";
@@ -30,6 +31,7 @@ import {
   Prisma,
   PunishmentType,
   Role,
+  UserReportState,
 } from "@prisma/client";
 import { render } from "@react-email/render";
 import {
@@ -136,10 +138,13 @@ class AdminRouter {
 
   @Post("/report/:id/close")
   @AdminAuthorized()
-  public async closeReport(@Param("id") id: string) {
+  public async closeReport(@Param("id") id: string, @Body() body: unknown) {
     const report = await prisma.userReport.findFirst({
       where: {
         id: String(id),
+      },
+      include: {
+        user: nonCurrentUserSelect,
       },
     });
 
@@ -150,14 +155,32 @@ class AdminRouter {
       };
     }
 
+    const schema = z.object({
+      state: z.nativeEnum(UserReportState),
+    });
+
+    const parsedBody = schema.parse(body);
+
     await prisma.userReport.update({
       where: {
         id: String(id),
       },
       data: {
         processed: true,
+        state: parsedBody.state,
       },
     });
+
+    await createNotification(
+      report.authorId,
+      NotificationType.REPORT_PROCESSED,
+      `Your report against @${report.user.username} has been processed. Please check the report details for more information.`,
+      "Report processed",
+      <z.infer<typeof notificationMetadata.REPORT_PROCESSED>>{
+        reportId: report.id,
+        state: parsedBody.state,
+      }
+    );
 
     return {
       success: true,

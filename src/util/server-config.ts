@@ -5,8 +5,12 @@ import cast from "./cast";
 const serverCfgSchema = z.object({
   components: z.object({
     "abuse-reports": z.object({
-      runHostnameCheck: z.boolean(),
-      enabled: z.boolean(),
+      runHostnameCheck: z.boolean().default(true), // check if the link belongs to the instance
+      enabled: z.boolean().default(true), // enable or disable the component
+      limit: z.object({
+        count: z.number().default(5), // a user can report someone 5 times
+        frequency: z.number().default(3200000), // for every {frequency}
+      }),
     }),
   }),
 });

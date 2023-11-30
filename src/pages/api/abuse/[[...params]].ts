@@ -1,19 +1,32 @@
 import { category } from "@/components/report-user";
+import { notificationMetadata } from "@/data/notification-metadata";
 import IResponseBase from "@/types/api/IResponseBase";
 import Authorized, { Account } from "@/util/api/authorized";
 import createNotification from "@/util/notifications";
 import prisma from "@/util/prisma";
-import type { User } from "@/util/prisma-types";
+import {
+  nonCurrentUserSelect,
+  type NonUser,
+  type User,
+} from "@/util/prisma-types";
 import { RateLimitMiddleware } from "@/util/rate-limit";
 import { getServerConfig } from "@/util/server-config";
-import { NotificationType } from "@prisma/client";
+import { NotificationType, UserReport } from "@prisma/client";
 import {
   Body,
+  createHandler,
+  Get,
   Param,
   Post,
-  createHandler,
 } from "@solariusnl/next-api-decorators";
 import { z } from "zod";
+
+export type ViewableReport = UserReport & {
+  user: NonUser;
+};
+export type GetReportByIdResponse = IResponseBase<{
+  report: ViewableReport;
+}>;
 
 export const createAbuseReportSchema = z.object({
   reason: z.string(),
@@ -33,11 +46,13 @@ class AbuseRouter {
   ) {
     const { description, reason, links } = createAbuseReportSchema.parse(body);
     const reporting = Number(uid);
+    const abuseConfig = config?.components["abuse-reports"];
 
-    if (config?.components["abuse-reports"].enabled === false) return <IResponseBase>{
-      success: false,
-      message: "Abuse reports are not enabled on this instance."
-    };
+    if (abuseConfig.enabled === false)
+      return <IResponseBase>{
+        success: false,
+        message: "Abuse reports are not enabled on this instance.",
+      };
 
     if (!Object.values(category).find((c) => c === reason)) {
       return <IResponseBase>{
@@ -47,7 +62,7 @@ class AbuseRouter {
     }
 
     if (
-      config?.components["abuse-reports"].runHostnameCheck &&
+      abuseConfig.runHostnameCheck &&
       links.some(
         (l) =>
           !l.startsWith(`http://${process.env.NEXT_PUBLIC_HOSTNAME}`) &&
@@ -66,6 +81,30 @@ class AbuseRouter {
         message: "You cannot report yourself",
       };
 
+    const previousReports = await prisma.userReport.findMany({
+      where: {
+        authorId: author.id,
+        userId: reporting,
+        createdAt: {
+          gte: new Date(Date.now() - abuseConfig.limit.frequency),
+        },
+      },
+    });
+
+    if (previousReports.length >= abuseConfig.limit.count) {
+      const recurrence = abuseConfig.limit.count;
+      const time = abuseConfig.limit.frequency / 1000 / 60 / 60;
+      return <IResponseBase>{
+        success: false,
+        message:
+          "You cannot report the same user more than " +
+          recurrence +
+          " times every " +
+          time +
+          " hours",
+      };
+    }
+
     const reportingUser = await prisma.user.findFirst({
       where: {
         id: reporting,
@@ -78,7 +117,7 @@ class AbuseRouter {
         message: "The user you're trying to report does not exist",
       };
 
-    await prisma.userReport.create({
+    const report = await prisma.userReport.create({
       data: {
         author: {
           connect: {
@@ -90,7 +129,10 @@ class AbuseRouter {
             id: reportingUser.id,
           },
         },
-        reason,
+        reason:
+          Object.keys(category).find(
+            (key) => category[key as keyof typeof category] === reason
+          ) || "Other",
         description,
         links,
       },
@@ -108,10 +150,45 @@ class AbuseRouter {
         "New report"
       );
     });
+    await createNotification(
+      author.id,
+      NotificationType.REPORT_SUCCESS,
+      `Your report against @${reportingUser.username} has been submitted and will be reviewed by Solarius. Thank you for your patience.`,
+      "Report submitted",
+      <z.infer<typeof notificationMetadata.REPORT_SUCCESS>>{
+        reportId: report.id,
+      }
+    );
 
     return <IResponseBase>{
       success: true,
       message: "Report submitted successfully",
+    };
+  }
+
+  @Get("/:reportid")
+  @Authorized()
+  public async getReport(@Param("reportid") reportid: string) {
+    const report = await prisma.userReport.findUnique({
+      where: {
+        id: reportid,
+      },
+      include: {
+        user: nonCurrentUserSelect,
+      },
+    });
+
+    if (!report)
+      return <GetReportByIdResponse>{
+        success: false,
+        message: "Report not found",
+      };
+
+    return <GetReportByIdResponse>{
+      success: true,
+      data: {
+        report,
+      },
     };
   }
 }

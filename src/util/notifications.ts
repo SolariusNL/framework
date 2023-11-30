@@ -5,7 +5,8 @@ async function createNotification(
   uid: number,
   type: NotificationType,
   message: string,
-  title: string
+  title: string,
+  metadata?: Record<string, unknown>
 ) {
   await prisma.notification.create({
     data: {
@@ -17,6 +18,7 @@ async function createNotification(
       type: type,
       message: message,
       title: title,
+      ...(metadata ? { metadata: JSON.parse(JSON.stringify(metadata)) } : {}),
     },
   });
 }

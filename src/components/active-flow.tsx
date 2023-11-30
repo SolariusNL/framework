@@ -1,5 +1,5 @@
 import { Flow, Flows } from "@/stores/useFlow";
-import { Modal } from "@mantine/core";
+import { Modal, useMantineColorScheme } from "@mantine/core";
 import { useRouter } from "next/router";
 
 const ActiveFlow = () => {
@@ -14,6 +14,7 @@ const ActiveFlow = () => {
           shallow: true,
         });
       }}
+      className={useMantineColorScheme().colorScheme}
     >
       {Flows[router.query.flow as Flow].component}
     </Modal>

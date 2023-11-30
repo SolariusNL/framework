@@ -2,7 +2,11 @@
   "components": {
     "abuse-reports": {
       "runHostnameCheck": true,
-      "enabled": true
+      "enabled": true,
+      "limit": {
+        "count": 5,
+        "frequency": 43200000
+      }
     }
   }
 }

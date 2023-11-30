@@ -11,11 +11,15 @@ const SecretGift = dynamic(() => import("@/components/flows/gift"), {
 const RobloxAuth = dynamic(() => import("@/components/flows/roblox"), {
   ssr: false,
 });
+const ViewReport = dynamic(() => import("@/components/flows/view-report"), {
+  ssr: false,
+});
 
 export enum Flow {
   Logins = "logins",
   SecretGift = "secret-gift",
   RobloxAuth = "roblox-auth",
+  ViewReport = "view-report",
 }
 
 export const Flows: {
@@ -32,6 +36,10 @@ export const Flows: {
   [Flow.RobloxAuth]: {
     component: React.createElement(RobloxAuth),
     title: "Roblox authentication",
+  },
+  [Flow.ViewReport]: {
+    component: React.createElement(ViewReport),
+    title: "View report",
   },
 };
 

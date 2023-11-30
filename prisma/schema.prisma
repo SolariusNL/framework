@@ -661,6 +661,8 @@ enum NotificationType {
   LOGIN
   GIFT
   PREMIUM_REFERRAL
+  REPORT_SUCCESS
+  REPORT_PROCESSED
 }
 
 model Notification {
@@ -673,6 +675,7 @@ model Notification {
   createdAt DateTime             @default(now())
   seen      Boolean              @default(false)
   actions   NotificationAction[] @relation("notificationActions")
+  metadata  Json                 @default("{}")
 }
 
 model NotificationAction {

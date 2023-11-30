@@ -1,8 +1,5 @@
 import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
-import useExperimentsStore, {
-  ExperimentId,
-} from "@/stores/useExperimentsStore";
-import { Flow } from "@/stores/useFlow";
+import useExperimentsStore from "@/stores/useExperimentsStore";
 import usePreferences from "@/stores/usePreferences";
 import { Fw } from "@/util/fw";
 import boldPlugin from "@/util/fw/plugins/bold";
@@ -32,6 +29,7 @@ import {
   HiOutlineBell,
   HiOutlineTrash,
 } from "react-icons/hi";
+import ReportNotificationApplet from "../notification-applets/report";
 
 const Notifications: React.FC = () => {
   const [activePage, setActivePage] = useState(1);
@@ -52,6 +50,10 @@ const Notifications: React.FC = () => {
         return <HiCheckCircle size={12} />;
       case "GIFT":
         return <HiGift size={12} />;
+      case "REPORT_SUCCESS":
+        return <HiCheckCircle size={12} />;
+      case "REPORT_PROCESSED":
+        return <HiInformationCircle size={12} />;
       default:
         return <HiInformationCircle size={12} />;
     }
@@ -162,23 +164,9 @@ const Notifications: React.FC = () => {
                   {Fw.StringParser.t(notification.message)
                     .addPlugins(boldPlugin, linkPlugin)
                     .parse()}
-                  {experiments.includes(ExperimentId.LoginManager) &&
-                    notification.type === NotificationType.LOGIN && (
-                      <>
-                        <span className="ml-2 mr-2 font-semibold">
-                          {Fw.Elements.bullet()}
-                        </span>
-                        <Anchor
-                          onClick={() =>
-                            Fw.Flows.toggleFlow(Flow.Logins, router)
-                          }
-                        >
-                          View logins
-                        </Anchor>
-                      </>
-                    )}
                 </Text>
               </Spoiler>
+              <ReportNotificationApplet notification={notification} />
               <Text size="xs" mt={4} color="dimmed">
                 <Tooltip
                   label={new Date(notification.createdAt).toLocaleString()}
