@@ -19,7 +19,7 @@ import {
   HiSparkles,
   HiTable,
 } from "react-icons/hi";
-import InlineError from "../inline-error";
+import InlineError from "@/components/inline-error";
 
 type FeaturesTabProps = {
   user: User;
