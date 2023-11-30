@@ -14,13 +14,14 @@
     "seed": "ts-node --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\" scripts/seed.ts",
     "ctl": "ts-node --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\" scripts/frameworkctl.ts",
     "postinstall": "cp-cli node_modules/.prisma/client/ cron/node_modules/.prisma/client",
-    "setup-projects": "cd cron && yarn && cd .. && cd email && yarn && cd .. && yarn run generate && yarn && yarn run create-config && yarn run create-config-schema",
+    "setup-projects": "cd cron && yarn && cd .. && cd email && yarn && cd .. && yarn run generate && yarn run generate-config && yarn && yarn run create-config && yarn run create-config-schema",
     "analyze": "cross-env ANALYZE=true yarn run build",
     "create-config": "ts-node --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\" scripts/create-config.ts",
     "create-config-schema": "typescript-json-schema src/types/Configuration.ts Configuration > framework.schema.json",
     "emails:dev": "cd email && yarn run dev",
     "profanity": "ts-node --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\" scripts/profanity.ts",
-    "console": "ts-node --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\" src/util/shell.ts"
+    "console": "ts-node --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\" src/util/shell.ts",
+    "generate-config": "sh generate-server-config.sh || call generate-server-config.bat"
   },
   "dependencies": {
     "@emoji-mart/react": "^1.1.0",

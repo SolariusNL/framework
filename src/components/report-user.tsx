@@ -120,6 +120,7 @@ const ReportUser: FC<ReportAbuseProps> = ({ user }) => {
         <Select
           label="Category"
           description="Choose a category you think suits this report."
+          placeholder="Choose a category"
           data={
             Object.keys(category).map((key) => ({
               value: category[key as keyof typeof category],

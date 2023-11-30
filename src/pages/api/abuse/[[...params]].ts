@@ -5,6 +5,7 @@ import createNotification from "@/util/notifications";
 import prisma from "@/util/prisma";
 import type { User } from "@/util/prisma-types";
 import { RateLimitMiddleware } from "@/util/rate-limit";
+import { getServerConfig } from "@/util/server-config";
 import { NotificationType } from "@prisma/client";
 import {
   Body,
@@ -19,6 +20,7 @@ export const createAbuseReportSchema = z.object({
   description: z.string().max(256).min(3),
   links: z.array(z.string().url()),
 });
+const config = getServerConfig();
 
 class AbuseRouter {
   @Post("/:uid/new")
@@ -32,7 +34,12 @@ class AbuseRouter {
     const { description, reason, links } = createAbuseReportSchema.parse(body);
     const reporting = Number(uid);
 
-    if (!Object.keys(category).find((c) => c === reason)) {
+    if (config?.components["abuse-reports"].enabled === false) return <IResponseBase>{
+      success: false,
+      message: "Abuse reports are not enabled on this instance."
+    };
+
+    if (!Object.values(category).find((c) => c === reason)) {
       return <IResponseBase>{
         success: false,
         message: "Invalid report category",
@@ -40,6 +47,7 @@ class AbuseRouter {
     }
 
     if (
+      config?.components["abuse-reports"].runHostnameCheck &&
       links.some(
         (l) =>
           !l.startsWith(`http://${process.env.NEXT_PUBLIC_HOSTNAME}`) &&

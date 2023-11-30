@@ -49,3 +49,4 @@ framework.yml
 framework.schema.json
 
 backups
+server.json

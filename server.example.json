@@ -1,0 +1,8 @@
+{
+  "components": {
+    "abuse-reports": {
+      "runHostnameCheck": true,
+      "enabled": true
+    }
+  }
+}

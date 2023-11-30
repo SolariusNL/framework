@@ -497,7 +497,7 @@ model Game {
   issues               TeamIssue[]               @relation("gameIssues")
   showcase             DeveloperProfile[]        @relation("developerShowcaseGames")
   usedStorageBytes     Float                     @default(8511)
-  supportedPlatforms   GamePlatform[] @default([PC, MOBILE, VR])
+  supportedPlatforms   GamePlatform[]            @default([PC, MOBILE, VR])
   soyoruEnabled        Boolean                   @default(true)
   voiceEnabled         Boolean                   @default(true)
   chatFilterEnabled    Boolean                   @default(true)
@@ -506,7 +506,7 @@ model Game {
   attemptLiveUpdates   Boolean                   @default(true)
   requiredAccountAge   Int                       @default(0)
   hasParentalControls  Boolean                   @default(false)
-  contentWarnings ContentWarning[]
+  contentWarnings      ContentWarning[]
   feedbackEnabled      Boolean                   @default(true)
 }
 
@@ -632,17 +632,24 @@ enum TransactionType {
   OUTBOUND
 }
 
+enum UserReportState {
+  AWAITING_REVIEW
+  NO_VIOLATIONS
+  VIOLATIONS_FOUND
+}
+
 model UserReport {
-  id          String   @id @default(uuid())
-  user        User     @relation("userReportedBy", fields: [userId], references: [id])
+  id          String          @id @default(uuid())
+  user        User            @relation("userReportedBy", fields: [userId], references: [id])
   userId      Int
   reason      String
   description String
-  author      User     @relation("userReportAuthor", fields: [authorId], references: [id])
+  author      User            @relation("userReportAuthor", fields: [authorId], references: [id])
   authorId    Int
-  processed   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  game        Game?    @relation("gameReport", fields: [gameId], references: [id])
+  processed   Boolean         @default(false)
+  state       UserReportState @default(AWAITING_REVIEW)
+  createdAt   DateTime        @default(now())
+  game        Game?           @relation("gameReport", fields: [gameId], references: [id])
   gameId      Int?
   links       String[]
 }
