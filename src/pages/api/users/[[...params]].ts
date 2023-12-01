@@ -296,77 +296,9 @@ class UserRouter {
     @Body() data: { reason: string; description: string; game?: number },
     @Param("id") id: number
   ) {
-    const { reason, description, game } = data;
-
-    if (
-      !reason ||
-      !description ||
-      description.length > 800 ||
-      !Object.keys(category).find((c) => c === reason)
-    ) {
-      return {
-        success: false,
-        message: "Invalid report",
-      };
-    }
-
-    if (user.id == id) {
-      return {
-        success: false,
-        message: "You cannot report yourself",
-      };
-    }
-
-    const reportingUser = await prisma.user.findFirst({
-      where: { id: Number(id) },
-    });
-
-    if (!reportingUser) {
-      return {
-        success: false,
-        message: "User not found",
-      };
-    }
-
-    if (game) {
-      const gameExists = await prisma.game.findFirst({
-        where: { id: game },
-      });
-
-      if (!gameExists) {
-        return {
-          success: false,
-          message: "Game not found",
-        };
-      }
-    }
-
-    await prisma.userReport.create({
-      data: {
-        user: { connect: { id: reportingUser.id } },
-        author: { connect: { id: user.id } },
-        reason,
-        description,
-        game: game ? { connect: { id: game } } : undefined,
-      },
-    });
-
-    const adminsToNotify = await prisma.user.findMany({
-      where: { notificationPreferences: { has: "ADMIN_REPORTS" } },
-    });
-
-    adminsToNotify.forEach(async (admin) => {
-      await createNotification(
-        admin.id,
-        NotificationType.INFO,
-        `There is a new report to review for ${reportingUser.username}. Please review it as soon as possible.`,
-        "New Report"
-      );
-    });
-
     return {
-      success: true,
-      message: "User reported successfully",
+      success: false,
+      message: "Deprecated",
     };
   }
 
