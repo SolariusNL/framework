@@ -1,8 +1,26 @@
 package main
 
-import "github.com/SolariusNL/framework/pkg/logger"
+import (
+	"fmt"
+	"runtime"
+
+	"github.com/SolariusNL/framework/pkg/logger"
+	"github.com/SolariusNL/framework/pkg/run"
+)
+
+var log = logger.NewLogger("orchestrator.main")
 
 func main() {
-	appLogger := logger.NewLogger("framework.app")
-	appLogger.Err("James")
+	if runtime.GOOS == "windows" {
+		log.Err("Windows is not supported")
+		return
+	}
+
+	fmt.Print("Do you want to rebuild the apps before running? (y/n): ")
+	var input string
+	fmt.Scanln(&input)
+
+	rebuild := input == "y" || input == "Y"
+
+	run.Run(rebuild)
 }

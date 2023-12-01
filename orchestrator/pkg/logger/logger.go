@@ -32,7 +32,7 @@ func (l *Logger) Err(message string) {
 
 func (l *Logger) printLog(logType, message, color string) {
 	timestamp := time.Now().Format("2006-01-02 15:04:05")
-	fmt.Printf("%s[%s]%s [%s:%s] ~~~\n%s%s%s", bold, timestamp, reset, l.Namespace, logType, color, message, reset)
+	fmt.Printf("%s[%s]%s [%s:%s] ~~~\n%s%s%s\n", bold, timestamp, reset, l.Namespace, logType, color, message, reset)
 }
 
 func NewLogger(namespace string) *Logger {
