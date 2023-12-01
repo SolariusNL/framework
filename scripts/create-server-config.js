@@ -9,7 +9,9 @@ function mergeConfigs(target, source) {
     if (source[key] instanceof Object && key in target) {
       mergeConfigs(target[key], source[key]);
     } else {
-      target[key] = source[key];
+      if (!(key in target)) {
+        target[key] = source[key];
+      }
     }
   }
 }
