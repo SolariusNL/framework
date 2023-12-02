@@ -1,4 +1,5 @@
 import Descriptive from "@/components/descriptive";
+import InlineError from "@/components/inline-error";
 import ModernEmptyState from "@/components/modern-empty-state";
 import SideBySide from "@/components/settings/side-by-side";
 import { GenericFastFlag } from "@/pages/api/flags/[[...params]]";
@@ -191,6 +192,12 @@ const Flags: FC = () => {
       </Modal>
       {user?.adminPermissions.includes(AdminPermission.EDIT_FAST_FLAGS) ? (
         <>
+          <InlineError className="mb-4" title="Warning" variant="warning">
+            These flags are automatically managed by Orchestrator and should
+            only be edited in the event of catastrophic failure or if you are
+            positive you know what you are doing. These flags can have
+            detrimental effects on the user experience if misconfigured.
+          </InlineError>
           <Group>
             <TextInput
               classNames={BLACK}
