@@ -1,6 +1,10 @@
 package config
 
-import "path"
+import (
+	"path"
+
+	"github.com/SolariusNL/framework/internal"
+)
 
 var services = map[string][]string{
 	"nextjs": {"yarn run build", "yarn run start-next"},
@@ -12,6 +16,12 @@ var paths = map[string]string{
 }
 
 func GetServices() map[string][]string {
+	if internal.GetDevMode() {
+		return map[string][]string{
+			"nextjs": {"yarn run prebuild", "yarn run dev-next"},
+			"cron":   {"yarn run prebuild", "yarn run dev"},
+		}
+	}
 	return services
 }
 

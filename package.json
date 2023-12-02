@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "cross-env NEXT_PUBLIC_VERSION=0.9.0 concurrently \"cd cron && yarn run build && yarn run start\" \"next start\"",
     "start-next": "cross-env NEXT_PUBLIC_VERSION=0.9.0 next start",
+    "dev-next": "cross-env NEXT_PUBLIC_VERSION=0.9.0 next dev",
     "lint": "next lint",
     "migrate": "npx prisma migrate dev && npx prisma generate",
     "studio": "npx prisma studio",

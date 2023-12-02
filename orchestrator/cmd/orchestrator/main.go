@@ -5,6 +5,7 @@ import (
 	"os"
 	"path"
 
+	"github.com/SolariusNL/framework/internal"
 	"github.com/SolariusNL/framework/pkg/config"
 	"github.com/SolariusNL/framework/pkg/logger"
 	"github.com/SolariusNL/framework/pkg/run"
@@ -13,6 +14,8 @@ import (
 var log = logger.NewLogger("orchestrator.main")
 
 func main() {
+	internal.ParseFlags()
+
 	var exists bool
 	for _, p := range config.GetPaths() {
 		dist := path.Join(p, "dist")
@@ -32,7 +35,7 @@ func main() {
 		exists = true
 	}
 
-	if exists {
+	if exists && internal.GetDevMode() == false {
 		fmt.Print("Do you want to rebuild the apps before running? (y/n): ")
 		var input string
 		fmt.Scanln(&input)
@@ -41,6 +44,8 @@ func main() {
 
 		run.Run(rebuild)
 		return
+	} else {
+		log.Log("Development mode is enabled.")
 	}
 
 	run.Run(true)

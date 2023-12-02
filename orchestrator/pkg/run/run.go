@@ -7,6 +7,7 @@ import (
 	"runtime"
 	"sync"
 
+	"github.com/SolariusNL/framework/internal"
 	"github.com/SolariusNL/framework/pkg/config"
 	"github.com/SolariusNL/framework/pkg/logger"
 )
@@ -104,7 +105,7 @@ func Run(rebuild bool) {
 	for service, commands := range config.GetServices() {
 		wg.Add(1)
 
-		if rebuild {
+		if rebuild && internal.GetDevMode() == false {
 			err := buildService(service, commands)
 			if err != nil {
 				log := getServiceLogger(service)
