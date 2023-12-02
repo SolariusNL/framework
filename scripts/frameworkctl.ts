@@ -35,7 +35,7 @@ async function main() {
     process.exit(1);
   }
 
-  PID = await readFile(".next/FW_PID")
+  PID = await readFile("dist/FW_PID")
     .then((data) => parseInt(data.toString()))
     .catch(() => undefined);
   let running = PID && pidIsRunning(PID);
@@ -114,13 +114,13 @@ async function startFramework() {
 
   let rebuild = false;
 
-  if (existsSync(".next")) {
+  if (existsSync("dist")) {
     await inquirer
       .prompt({
         name: "rebuild",
         type: "confirm",
         message:
-          "We found a .next folder, would you like to use the existing build or rebuild? (y=rebuild, n=use existing)",
+          "We found a dist folder, would you like to use the existing build or rebuild? (y=rebuild, n=use existing)",
         default: true,
       })
       .then((answer) => {
@@ -187,7 +187,7 @@ async function startFramework() {
       }
     });
 
-    const stream = createWriteStream(`.next/${new Date().toISOString()}.log`);
+    const stream = createWriteStream(`dist/${new Date().toISOString()}.log`);
 
     start.stdout.on("data", (data) => {
       stream.write(data);
@@ -197,8 +197,8 @@ async function startFramework() {
       "App started successfully. You can safely exit this process, Framework will continue to run in the background."
     );
 
-    writeFile(".next/FW_PID", start.pid!.toString()).catch((err) => {
-      logger().error("Failed to save PID to .next/FW_PID");
+    writeFile("dist/FW_PID", start.pid!.toString()).catch((err) => {
+      logger().error("Failed to save PID to dist/FW_PID");
       logger().error(err);
     });
   });
@@ -333,7 +333,10 @@ async function cli() {
     "--generate-invite": [Boolean, "Generates an invite code"],
     "--clear-admin-activity": [Boolean, "Clears the admin activity log"],
     "--give-all-tickets": [Boolean, "Give all users provided ticket amount"],
-    "--decrease-all-tickets": [Boolean, "Decrease all users provided ticket amount"],
+    "--decrease-all-tickets": [
+      Boolean,
+      "Decrease all users provided ticket amount",
+    ],
   };
 
   let opts: { name: string; value: any }[] = [];
@@ -512,7 +515,7 @@ async function cli() {
     const prisma = new PrismaClient();
     const users = await prisma.user.findMany();
     const amount = get("--decrease-all-tickets");
-    
+
     if (typeof amount === "string") {
       for (const user of users) {
         await prisma.user.update({
@@ -548,7 +551,7 @@ async function macosAlert(
   const e = await spawnSync("osascript", [
     "-e",
     `display alert "${title}" message "${message}" as ${as} buttons {"${buttons.join(
-      "\", \""
+      '", "'
     )}"} default button "${defaultButton || buttons[0]}"`,
   ]);
 

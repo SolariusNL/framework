@@ -27,6 +27,7 @@ const nextConfig = {
     });
     return config;
   },
+  distDir: "dist",
   async headers() {
     return [
       {

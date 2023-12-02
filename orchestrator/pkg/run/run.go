@@ -3,26 +3,18 @@ package run
 import (
 	"os"
 	"os/exec"
-	"path"
 	"path/filepath"
+	"runtime"
 	"sync"
 
+	"github.com/SolariusNL/framework/pkg/config"
 	"github.com/SolariusNL/framework/pkg/logger"
 )
-
-var services = map[string][]string{
-	"nextjs": {"yarn run build", "yarn run start"},
-	"cron":   {"yarn run build", "yarn run start"},
-}
-var paths = map[string]string{
-	"nextjs": path.Join(".."),
-	"cron":   path.Join("..", "cron"),
-}
 
 var logs = make(map[string]*logger.Logger)
 
 func init() {
-	for service := range services {
+	for service := range config.GetServices() {
 		logs[service] = logger.NewLogger("orchestrator.runner." + service)
 	}
 }
@@ -37,7 +29,7 @@ func getServicePath(service string) (string, error) {
 		return "", err
 	}
 
-	return filepath.Join(wd, paths[service]), nil
+	return filepath.Join(wd, config.GetPaths()[service]), nil
 }
 
 func buildService(service string, commands []string) error {
@@ -49,7 +41,14 @@ func buildService(service string, commands []string) error {
 	log := getServiceLogger(service)
 	log.Log("Building " + service)
 
-	cmd := exec.Command("sh", "-c", commands[0])
+	var cmd *exec.Cmd
+
+	if runtime.GOOS == "windows" {
+		cmd = exec.Command("cmd", "/C", commands[0])
+	} else {
+		cmd = exec.Command("sh", "-c", commands[0])
+	}
+
 	cmd.Dir = path
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -74,7 +73,14 @@ func runService(service string, commands []string, wg *sync.WaitGroup) error {
 	log := getServiceLogger(service)
 	log.Log("Starting " + service)
 
-	cmd := exec.Command("sh", "-c", commands[1])
+	var cmd *exec.Cmd
+
+	if runtime.GOOS == "windows" {
+		cmd = exec.Command("cmd", "/C", commands[1])
+	} else {
+		cmd = exec.Command("sh", "-c", commands[1])
+	}
+	
 	cmd.Dir = path
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -95,7 +101,7 @@ func runService(service string, commands []string, wg *sync.WaitGroup) error {
 func Run(rebuild bool) {
 	var wg sync.WaitGroup
 
-	for service, commands := range services {
+	for service, commands := range config.GetServices() {
 		wg.Add(1)
 
 		if rebuild {
