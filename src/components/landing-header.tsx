@@ -263,6 +263,7 @@ const LandingHeader = () => {
                     color="pink"
                     leftIcon={<HiArrowRight />}
                     className="transition-all"
+                    data-cy="landing-header-register"
                   >
                     Get started
                   </Button>

@@ -18,7 +18,10 @@ const CookieAcknowledgementDialog: FC = () => {
   });
 
   return (
-    <Dialog opened={!cookieConsent.accepted && !cookieConsent.rejected}>
+    <Dialog
+      opened={!cookieConsent.accepted && !cookieConsent.rejected}
+      data-cy="landing-cookie-dialog"
+    >
       <Text size="sm" mb={12}>
         Framework and other Solarius services use cookies to help us provide you
         the best experience. By continuing to use our services, you agree to our
@@ -37,6 +40,7 @@ const CookieAcknowledgementDialog: FC = () => {
               rejected: false,
             })
           }
+          data-cy="landing-accept-cookie"
         >
           I agree
         </Button>

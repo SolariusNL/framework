@@ -118,6 +118,7 @@ const Framework: FC<FrameworkProps> & {
     });
   }
   async function checkUdmux() {
+    if (process.env.NODE_ENV === "development") return;
     if (
       !udmuxGuard.lastSeen ||
       Date.now() - new Date(udmuxGuard.lastSeen).getTime() > 1000 * 60 * 60 * 12

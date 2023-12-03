@@ -23,7 +23,8 @@
     "emails:dev": "cd email && yarn run dev",
     "profanity": "ts-node --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\" scripts/profanity.ts",
     "console": "ts-node --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\" src/util/shell.ts",
-    "prebuild": "node scripts/create-server-config.js"
+    "prebuild": "node scripts/create-server-config.js",
+    "cypress:open": "cypress open"
   },
   "dependencies": {
     "@emoji-mart/react": "^1.1.0",
@@ -137,6 +138,7 @@
     "@types/react": "18.0.15",
     "@types/react-dom": "18.0.6",
     "autoprefixer": "^10.4.13",
+    "cypress": "^13.6.0",
     "eslint": "8.20.0",
     "eslint-config-next": "12.2.3",
     "figlet": "^1.6.0",
