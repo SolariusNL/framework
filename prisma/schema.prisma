@@ -1593,3 +1593,32 @@ model EmailReceiptProperties {
   receipt   EmailReceipt @relation("emailReceiptProperties", references: [id], fields: [receiptId])
   receiptId String
 }
+
+model ApplicationLicense {
+  id        String                         @id @default(uuid())
+  createdAt DateTime                       @default(now())
+  data      String
+  store     ApplicationLicenseStoreEntry[] @relation("applicationLicenseStoreEntries")
+}
+
+model ApplicationLicenseStoreEntry {
+  id        String                  @id @default(uuid())
+  createdAt DateTime                @default(now())
+  license   ApplicationLicense      @relation("applicationLicenseStoreEntries", fields: [licenseId], references: [id])
+  licenseId String
+  expiresAt DateTime
+  store     ApplicationLicenseStore @relation("applicationLicenseStoreEntries", fields: [storeId], references: [id])
+  storeId   Int
+}
+
+model ApplicationLicenseStore {
+  id        Int                            @id @default(autoincrement())
+  createdAt DateTime                       @default(now())
+  entries   ApplicationLicenseStoreEntry[] @relation("applicationLicenseStoreEntries")
+}
+
+model UploadedLicense {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  data      String
+}

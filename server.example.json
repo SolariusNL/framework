@@ -8,5 +8,6 @@
         "frequency": 43200000
       }
     }
-  }
+  },
+  "licenseSecretKey": "generate-a-secret-key"
 }

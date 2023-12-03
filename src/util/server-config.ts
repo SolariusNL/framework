@@ -13,6 +13,7 @@ const serverCfgSchema = z.object({
       }),
     }),
   }),
+  licenseSecretKey: z.string(), // the secret key used to generate license keys
 });
 
 let cachedServerConfig: z.infer<typeof serverCfgSchema>;
