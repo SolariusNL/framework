@@ -1,6 +1,5 @@
 describe("Flags", () => {
   it("should successfully fetch flags", () => {
-    cy.visit("/");
     cy.request({
       method: "GET",
       url: "/api/flags",
