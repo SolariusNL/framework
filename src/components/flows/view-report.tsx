@@ -49,7 +49,7 @@ const ViewReportFlow: React.FC = () => {
               {[
                 {
                   key: "Reported user",
-                  value: <Owner user={report?.user!} inline />,
+                  value: <Owner user={report?.user!} />,
                 },
                 {
                   key: "Filed on",
