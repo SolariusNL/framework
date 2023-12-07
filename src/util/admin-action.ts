@@ -1,6 +1,6 @@
-import { HiCheckCircle, HiXCircle } from "react-icons/hi";
 import { showNotification } from "@mantine/notifications";
 import { getCookie } from "cookies-next";
+import { HiCheckCircle, HiXCircle } from "react-icons/hi";
 
 export enum AdminAction {
   ADJUST_TICKETS = "adjust-tickets",
@@ -15,6 +15,7 @@ export enum AdminAction {
   UNWARN = "unwarn",
   SEND_EMAIL = "send-email",
   ADJUST_VERIFICATION = "adjust-verification",
+  ADJUST_PROTECTED = "adjust-protected",
 }
 
 async function performAdminAction(action: AdminAction, data: any, uid: number) {
@@ -27,7 +28,7 @@ async function performAdminAction(action: AdminAction, data: any, uid: number) {
     body: JSON.stringify(data),
   });
   const res = (await response.json()) as { success: boolean; error?: string };
-  if (res.success) {
+  if (res.success === true) {
     showNotification({
       title: "Success",
       message: "Action performed successfully",

@@ -43,6 +43,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import { HiCheck, HiCheckCircle } from "react-icons/hi";
+import InlineError from "../inline-error";
 
 interface UserViewProps {
   user: AdminViewUser;
@@ -96,6 +97,16 @@ const UserView = ({ user: u, loading }: UserViewProps) => {
       ) : (
         user && (
           <>
+            {user.protected && (
+              <InlineError
+                variant="warning"
+                title="Protected user"
+                className="mb-6"
+              >
+                This is a protected user and some functionality may be
+                restricted to prevent abuse.
+              </InlineError>
+            )}
             <Group mb={18}>
               <Avatar
                 size="xl"
@@ -135,7 +146,7 @@ const UserView = ({ user: u, loading }: UserViewProps) => {
                     disabled={
                       !currentUser.adminPermissions.includes(
                         AdminPermission.PUNISH_USERS
-                      )
+                      ) || user.protected
                     }
                   >
                     Punish
@@ -356,6 +367,7 @@ const UserView = ({ user: u, loading }: UserViewProps) => {
                             ["Created at", user.createdAt],
                             ["Premium", user.premium],
                             ["Banned", user.banned],
+                            ["Protected", user.protected],
                             ["Tickets", user.tickets],
                             ["Verified", user.verified],
                             ["Bits", user.bits],
@@ -843,6 +855,10 @@ const UserView = ({ user: u, loading }: UserViewProps) => {
                                 [
                                   AdminPermission.EDIT_FAST_FLAGS,
                                   "edit fast flags",
+                                ],
+                                [
+                                  AdminPermission.PROTECT_USERS,
+                                  "protect users",
                                 ],
                               ].find((i) => i[0] === permission)![1]) as string
                           }

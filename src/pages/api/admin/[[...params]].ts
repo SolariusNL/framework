@@ -64,6 +64,7 @@ const adminUserSelect = {
   ...userSelect,
   sessions: true,
   discordAccount: true,
+  protected: true,
   notifications: {
     where: {
       seen: false,
@@ -1272,6 +1273,29 @@ class AdminRouter {
           });
 
           await createActionLog(`Adjusted ${user.username} verification`, 3);
+        },
+      },
+      {
+        name: AdminAction.ADJUST_PROTECTED,
+        action: async () => {
+          if (!account.adminPermissions.includes(AdminPermission.PROTECT_USERS))
+            return {
+              success: false,
+              error: "You do not have permission to execute this action",
+            };
+          await prisma.user.update({
+            where: {
+              id: user.id,
+            },
+            data: {
+              protected: !user.protected,
+            },
+          });
+
+          await createActionLog(
+            `Adjusted ${user.username} protection status`,
+            4
+          );
         },
       },
     ];

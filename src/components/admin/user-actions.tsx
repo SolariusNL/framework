@@ -10,13 +10,13 @@ import Unban from "@/components/admin/user-actions/unban";
 import Unwarn from "@/components/admin/user-actions/unwarn";
 import Verify from "@/components/admin/user-actions/verify";
 import ModernEmptyState from "@/components/modern-empty-state";
-import ShadedCard from "@/components/shaded-card";
 import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
 import { User } from "@/util/prisma-types";
 import { Pagination, Stack, TextInput } from "@mantine/core";
 import { AdminPermission } from "@prisma/client";
 import { useCallback, useRef, useState } from "react";
 import ReactNoSSR from "react-no-ssr";
+import Protected from "./user-actions/protected";
 
 const actions = [
   AdjustTickets,
@@ -30,6 +30,7 @@ const actions = [
   Unwarn,
   SendEmail,
   Verify,
+  Protected,
 ];
 
 const ActionList: React.FC<{
@@ -85,7 +86,7 @@ const UserActions: React.FC<{ target: User }> = ({ target }) => {
   const searchRef = useRef<HTMLInputElement>(null);
 
   return (
-    <ShadedCard>
+    <>
       <Search ref={searchRef} value={actionSearch} onChange={setActionSearch} />
       <div className="w-full flex justify-center mb-5">
         <Pagination
@@ -102,7 +103,7 @@ const UserActions: React.FC<{ target: User }> = ({ target }) => {
           actionPage={actionPage}
         />
       </Stack>
-    </ShadedCard>
+    </>
   );
 };
 

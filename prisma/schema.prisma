@@ -208,6 +208,7 @@ model User {
   recentIp                   String                      @default("")
   recentIpGeo                Json                        @default("{}")
   redisDatabases             RedisDatabase[]             @relation("redisDatabases")
+  protected                  Boolean                     @default(false)
 }
 
 model Story {
@@ -271,6 +272,7 @@ enum AdminPermission {
   IMPERSONATE_USERS
   GENERATE_GIFTS
   EDIT_FAST_FLAGS
+  PROTECT_USERS
 }
 
 enum DomainStatus {

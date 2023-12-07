@@ -1,3 +1,4 @@
+import ShadedButton from "@/components/shaded-button";
 import { Anchor, Text } from "@mantine/core";
 
 const Action: React.FC<{
@@ -8,25 +9,20 @@ const Action: React.FC<{
   condition?: boolean;
 }> = ({ title, description, onClick, icon: Icon, condition }) => {
   return (
-    <div className="flex items-center justify-between gap-6">
+    <ShadedButton
+      className="flex w-full items-center justify-between gap-6 px-6"
+      onClick={() => {
+        if (!condition) onClick();
+      }}
+    >
       <Icon className="flex-shrink-0" />
-      <div>
+      <div className="flex-grow">
         <Text size="lg">{title}</Text>
         <Text size="sm" color="dimmed">
           {description}
         </Text>
       </div>
-      <Anchor
-        onClick={() => {
-          if (!condition) onClick();
-        }}
-        className={`flex-1 text-right${
-          !condition ? "" : " opacity-30 cursor-not-allowed"
-        }`}
-      >
-        Run
-      </Anchor>
-    </div>
+    </ShadedButton>
   );
 };
 

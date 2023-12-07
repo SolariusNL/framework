@@ -191,6 +191,7 @@ class SetupRouter {
           AdminPermission.PUNISH_USERS,
           AdminPermission.RUN_ACTIONS,
           AdminPermission.WRITE_ARTICLE,
+          AdminPermission.PROTECT_USERS
         ],
         avatarUri: "",
       },
