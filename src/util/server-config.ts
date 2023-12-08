@@ -2,7 +2,10 @@ import fs from "fs";
 import { z } from "zod";
 import cast from "./cast";
 
-const serverCfgSchema = z.object({
+const componentBaseSchema = z.object({
+  enabled: z.boolean(),
+});
+export const serverCfgSchema = z.object({
   components: z.object({
     "abuse-reports": z.object({
       runHostnameCheck: z.boolean().default(true), // check if the link belongs to the instance
@@ -12,6 +15,12 @@ const serverCfgSchema = z.object({
         frequency: z.number().default(3200000), // for every {frequency}
       }),
     }),
+    domains: componentBaseSchema,
+    "api-keys": componentBaseSchema,
+    oauth2: componentBaseSchema,
+    "dev-profiles": componentBaseSchema,
+    bits: componentBaseSchema,
+    redis: componentBaseSchema,
   }),
   licenseSecretKey: z.string(), // the secret key used to generate license keys
 });

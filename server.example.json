@@ -7,6 +7,24 @@
         "count": 5,
         "frequency": 43200000
       }
+    },
+    "domains": {
+      "enabled": true
+    },
+    "api-keys": {
+      "enabled": true
+    },
+    "oauth2": {
+      "enabled": true
+    },
+    "dev-profiles": {
+      "enabled": true
+    },
+    "bits": {
+      "enabled": true
+    },
+    "redis": {
+      "enabled": true
     }
   },
   "licenseSecretKey": "generate-a-secret-key"
