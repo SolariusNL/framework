@@ -308,80 +308,92 @@ const Game: NextPage<GameViewProps> = ({ gameData, user }) => {
                   </Group>
                 </Group>
 
-                {game.connection.length === 0 && ServerError}
-                {game.connection.length > 0 &&
-                  !Fw.Arrays.first(game.connection).online &&
-                  ServerError}
+                {game.underReview ? (
+                  <InlineError variant="warning" title="Under review" className="mt-8">
+                    This game is under review by Solarius staff.
+                  </InlineError>
+                ) : (
+                  <>
+                    {game.connection.length === 0 && ServerError}
+                    {game.connection.length > 0 &&
+                      !Fw.Arrays.first(game.connection).online &&
+                      ServerError}
 
-                <Button.Group mt="lg" mb="sm">
-                  <Button
-                    color="green"
-                    radius="xl"
-                    leftIcon={<HiPlay />}
-                    fullWidth
-                    size="xl"
-                    disabled={game.connection.length == 0}
-                    onClick={() => {
-                      if (isElectron()) {
-                        getIpcRenderer().send("join-game");
-                      } else {
-                        setLaunchingOpen(true);
-                      }
-                    }}
-                  >
-                    Play
-                  </Button>
+                    <Button.Group mt="lg" mb="sm">
+                      <Button
+                        color="green"
+                        radius="xl"
+                        leftIcon={<HiPlay />}
+                        fullWidth
+                        size="xl"
+                        disabled={game.connection.length == 0}
+                        onClick={() => {
+                          if (isElectron()) {
+                            getIpcRenderer().send("join-game");
+                          } else {
+                            setLaunchingOpen(true);
+                          }
+                        }}
+                      >
+                        Play
+                      </Button>
 
-                  <Tooltip label="Play in a private server">
+                      <Tooltip label="Play in a private server">
+                        <Button
+                          leftIcon={<HiSparkles />}
+                          size="xl"
+                          className="px-5"
+                          classNames={{
+                            icon: "mr-0",
+                          }}
+                          disabled={game.connection.length == 0}
+                          onClick={() => {
+                            if (isElectron()) {
+                              getIpcRenderer().send("join-game");
+                            } else {
+                              setLaunchingOpen(true);
+                            }
+                          }}
+                          radius="xl"
+                          color="blue"
+                        />
+                      </Tooltip>
+                    </Button.Group>
+                  </>
+                )}
+              </div>
+
+              {!game.underReview && (
+                <>
+                  <div>
                     <Button
-                      leftIcon={<HiSparkles />}
-                      size="xl"
-                      className="px-5"
-                      classNames={{
-                        icon: "mr-0",
-                      }}
-                      disabled={game.connection.length == 0}
-                      onClick={() => {
-                        if (isElectron()) {
-                          getIpcRenderer().send("join-game");
-                        } else {
-                          setLaunchingOpen(true);
-                        }
-                      }}
+                      leftIcon={<HiPlus />}
+                      fullWidth
+                      size="lg"
+                      mb="xl"
+                      onClick={async () => await followGame()}
                       radius="xl"
-                      color="blue"
-                    />
-                  </Tooltip>
-                </Button.Group>
-              </div>
-
-              <div>
-                <Button
-                  leftIcon={<HiPlus />}
-                  fullWidth
-                  size="lg"
-                  mb="xl"
-                  onClick={async () => await followGame()}
-                  radius="xl"
-                  variant="light"
-                >
-                  {following === null
-                    ? "..."
-                    : following
-                    ? "Unfollow"
-                    : "Follow"}
-                </Button>
-              </div>
-              <div className="mt-auto">
-                <ReactNoSSR>
-                  <Votes
-                    game={game}
-                    setGame={
-                      setGame as React.Dispatch<React.SetStateAction<Game>>
-                    }
-                  />
-                </ReactNoSSR>
-              </div>
+                      variant="light"
+                    >
+                      {following === null
+                        ? "..."
+                        : following
+                        ? "Unfollow"
+                        : "Follow"}
+                    </Button>
+                  </div>
+                  <div className="mt-auto">
+                    <ReactNoSSR>
+                      <Votes
+                        game={game}
+                        setGame={
+                          setGame as React.Dispatch<React.SetStateAction<Game>>
+                        }
+                      />
+                    </ReactNoSSR>
+                  </div>
+                </>
+              )}
             </div>
           </Grid.Col>
         </Grid>

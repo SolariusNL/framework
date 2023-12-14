@@ -510,6 +510,7 @@ model Game {
   hasParentalControls  Boolean                   @default(false)
   contentWarnings      ContentWarning[]
   feedbackEnabled      Boolean                   @default(true)
+  underReview          Boolean                   @default(false)
 }
 
 model GameComment {

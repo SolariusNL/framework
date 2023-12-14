@@ -322,6 +322,7 @@ export const gameSelect: Prisma.GameSelect = {
   createdAt: true,
   updatedAt: true,
   iconUri: true,
+  underReview: true,
   visits: true,
   usedStorageBytes: true,
   likedBy: { select: { id: true } },
