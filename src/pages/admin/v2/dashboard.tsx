@@ -1,4 +1,4 @@
-import AdminLayout, { AdminLayoutPageProps, routes } from "@/layouts/admin";
+import AdminLayout, { AdminLayoutPageProps, routes } from "@/layouts/admin-layout";
 import { getAdminSSP } from "@/util/admin-route";
 import { FC } from "react";
 
