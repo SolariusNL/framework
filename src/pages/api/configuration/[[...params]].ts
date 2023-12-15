@@ -1,31 +1,23 @@
 import IResponseBase from "@/types/api/IResponseBase";
-import Authorized from "@/util/api/authorized";
+import select from "@/util/select";
 import { getServerConfig } from "@/util/server-config";
 import { Get, createHandler } from "@solariusnl/next-api-decorators";
 
 const config = getServerConfig();
 
-/**
- * @todo
- * Create a strongly typed declarative response type
- *
- * @todo
- * Implement features route into the Fw.Features namespace
- */
-
 class ConfigurationRouter {
-  @Authorized()
   @Get("/features")
   public async getEnabledFeatures() {
     return <IResponseBase>{
       success: true,
       data: {
-        ...config.components["api-keys"],
-        ...config.components["bits"],
-        ...config.components["dev-profiles"],
-        ...config.components["domains"],
-        ...config.components["oauth2"],
-        ...config.components["redis"],
+        "api-keys": config.components["api-keys"],
+        bits: config.components["bits"],
+        "dev-profiles": config.components["dev-profiles"],
+        domains: config.components["domains"],
+        oauth2: config.components["oauth2"],
+        redis: config.components["redis"],
+        "abuse-reports": select(config.components["abuse-reports"], "enabled"),
       },
     };
   }
