@@ -11,13 +11,13 @@ class ConfigurationRouter {
     return <IResponseBase>{
       success: true,
       data: {
+        "abuse-reports": select(config.components["abuse-reports"], "enabled"),
         "api-keys": config.components["api-keys"],
         bits: config.components["bits"],
         "dev-profiles": config.components["dev-profiles"],
         domains: config.components["domains"],
         oauth2: config.components["oauth2"],
         redis: config.components["redis"],
-        "abuse-reports": select(config.components["abuse-reports"], "enabled"),
       },
     };
   }
