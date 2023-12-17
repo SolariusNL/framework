@@ -1,6 +1,8 @@
+import MobileNavHeader from "@/components/admin/v2/mobile-header";
 import Footer from "@/components/foot";
 import FrameworkLogo from "@/components/framework-logo";
 import Rocket from "@/icons/Rocket";
+import useAdmin from "@/stores/useAdmin";
 import useAuthorizedUserStore from "@/stores/useAuthorizedUser";
 import cast from "@/util/cast";
 import getMediaUrl from "@/util/get-media";
@@ -11,11 +13,8 @@ import {
   Avatar,
   Badge,
   Box,
-  Burger,
   Container,
   Group,
-  Header,
-  MediaQuery,
   NavLink,
   Navbar,
   ScrollArea,
@@ -23,8 +22,9 @@ import {
   Title,
   createStyles,
 } from "@mantine/core";
+import { randomId } from "@mantine/hooks";
 import Link from "next/link";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useMemo } from "react";
 import {
   HiArrowLeft,
   HiOutlineCog,
@@ -57,7 +57,6 @@ export type AdminLayoutProps = {
 export type AdminLayoutPageProps = {
   user: PrismaUser;
 };
-
 export enum AdminLayoutGroups {
   Home = "home",
   Application = "application",
@@ -224,7 +223,6 @@ const tabs: AdminLayoutTabs = {
   },
 };
 const useStyles = createStyles((theme, _params, getRef) => {
-  const icon = getRef("icon");
   return {
     header: {
       paddingBottom: theme.spacing.md,
@@ -245,98 +243,39 @@ const useStyles = createStyles((theme, _params, getRef) => {
           : theme.colors.gray[2]
       }`,
     },
-
-    link: {
-      ...theme.fn.focusStyles(),
-      display: "flex",
-      alignItems: "center",
-      textDecoration: "none",
-      fontSize: theme.fontSizes.sm,
-      color:
-        theme.colorScheme === "dark"
-          ? theme.colors.dark[1]
-          : theme.colors.gray[7],
-      padding: `${theme.spacing.xs}px ${theme.spacing.md}px`,
-      borderRadius: theme.radius.md,
-      fontWeight: 500,
-
-      "&:hover": {
-        backgroundColor:
-          theme.colorScheme === "dark" ? theme.colors.dark[8] : theme.white,
-        color: theme.colorScheme === "dark" ? theme.white : theme.black,
-
-        [`& .${icon}`]: {
-          color: theme.colorScheme === "dark" ? theme.white : theme.black,
-        },
-      },
-    },
-
-    linkIcon: {
-      ref: icon,
-      color:
-        theme.colorScheme === "dark"
-          ? theme.colors.dark[2]
-          : theme.colors.gray[6],
-      marginRight: theme.spacing.md + 2,
-    },
-
-    linkActive: {
-      "&, &:hover": {
-        backgroundColor: theme.fn.variant({
-          variant: "light",
-          color: theme.primaryColor,
-        }).background,
-        color: theme.fn.variant({ variant: "light", color: theme.primaryColor })
-          .color,
-        [`& .${icon}`]: {
-          color: theme.fn.variant({
-            variant: "light",
-            color: theme.primaryColor,
-          }).color,
-        },
-      },
-    },
   };
 });
 
 const AdminLayout: FC<AdminLayoutProps> = ({ user, activeRoute, children }) => {
   const { setUser } = useAuthorizedUserStore();
-  const { classes, theme, cx } = useStyles();
-  const activeGroup = Object.keys(routes).find((group) =>
-    Object.values(routes[group as keyof typeof routes]).includes(activeRoute)
-  ) as AdminLayoutGroups;
-  const [opened, setOpened] = useState(false);
+  const { classes, theme } = useStyles();
+  const { setActiveGroup, setActiveTab, sidebarOpened } = useAdmin();
   const mobile = useMediaQuery("768");
-  const activeTab = tabs[activeGroup].tabs.find(
-    (tab) => tab.route === activeRoute
-  ) as AdminLayoutTab;
+  const activeGroup = useMemo(
+    () =>
+      Object.keys(routes).find((group) =>
+        Object.values(routes[group as keyof typeof routes]).includes(
+          activeRoute
+        )
+      ) as AdminLayoutGroups,
+    [activeRoute]
+  );
+  const activeTab = useMemo(
+    () =>
+      tabs[activeGroup].tabs.find(
+        (tab) => tab.route === activeRoute
+      ) as AdminLayoutTab,
+    [activeGroup, activeRoute]
+  );
 
   useEffect(() => {
     if (user) setUser(user);
   }, [user]);
 
-  const mainLinks = Object.values(tabs).map((t) => (
-    <NavLink
-      label={t.title}
-      icon={t.icon}
-      active={cast<boolean>(t.tabs.find((ts) => ts.route === activeRoute))}
-      className="rounded-md flex"
-      defaultOpened={true}
-      key={t.title}
-    >
-      <div className="mt-1/2">
-        {t.tabs.map((tt, i) => (
-          <NavLink
-            label={tt.title}
-            icon={tt.icon}
-            active={activeRoute === tt.route}
-            className="rounded-md"
-            key={i}
-          />
-        ))}
-      </div>
-    </NavLink>
-  ));
+  useEffect(() => {
+    if (activeGroup) setActiveGroup(activeGroup);
+    if (activeTab) setActiveTab(activeTab);
+  }, [activeGroup, activeTab]);
 
   return (
     <AppShell
@@ -346,7 +285,7 @@ const AdminLayout: FC<AdminLayoutProps> = ({ user, activeRoute, children }) => {
           width={{ sm: 300 }}
           p="md"
           hiddenBreakpoint="sm"
-          hidden={!opened}
+          hidden={!sidebarOpened}
         >
           <Navbar.Section>
             <Group className={classes.header} position="apart">
@@ -365,11 +304,36 @@ const AdminLayout: FC<AdminLayoutProps> = ({ user, activeRoute, children }) => {
 
           <Navbar.Section
             grow
-            component={React.forwardRef<HTMLDivElement>((props, ref) => (
+            component={React.forwardRef<HTMLDivElement>((props) => (
               <ScrollArea {...props} />
             ))}
           >
-            <div className="flex flex-col gap-1">{mainLinks}</div>
+            <div className="flex flex-col gap-1">
+              {Object.values(tabs).map((t) => (
+                <NavLink
+                  label={t.title}
+                  icon={t.icon}
+                  active={cast<boolean>(
+                    t.tabs.find((ts) => ts.route === activeRoute)
+                  )}
+                  className="rounded-md flex"
+                  defaultOpened={true}
+                  key={randomId()}
+                >
+                  <div className="mt-1/2">
+                    {t.tabs.map((tt) => (
+                      <NavLink
+                        label={tt.title}
+                        icon={tt.icon}
+                        active={activeRoute === tt.route}
+                        className="rounded-md"
+                        key={randomId()}
+                      />
+                    ))}
+                  </div>
+                </NavLink>
+              ))}
+            </div>
           </Navbar.Section>
 
           <Navbar.Section className={classes.footer}>
@@ -396,36 +360,7 @@ const AdminLayout: FC<AdminLayoutProps> = ({ user, activeRoute, children }) => {
       }
       padding={0}
       {...(mobile && {
-        header: (
-          <Header height={50} p="md">
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                height: "100%",
-              }}
-            >
-              <MediaQuery largerThan="sm" styles={{ display: "none" }}>
-                <Burger
-                  opened={opened}
-                  onClick={() => setOpened((o) => !o)}
-                  size="sm"
-                  color={theme.colors.gray[6]}
-                  mr="xl"
-                />
-              </MediaQuery>
-
-              <div className="flex items-center gap-4">
-                <Text size="lg" weight={500}>
-                  {activeTab.title}
-                </Text>
-                <Text size="sm" color="dimmed" lineClamp={1}>
-                  {activeTab.route}
-                </Text>
-              </div>
-            </div>
-          </Header>
-        ),
+        header: <MobileNavHeader />,
       })}
     >
       <Box
