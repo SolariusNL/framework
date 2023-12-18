@@ -15,7 +15,7 @@
     "generate": "npx prisma generate",
     "seed": "ts-node --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\" scripts/seed.ts",
     "ctl": "ts-node --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\" scripts/frameworkctl.ts",
-    "postinstall": "cp-cli node_modules/.prisma/client/ cron/node_modules/.prisma/client",
+    "postinstall": "cp-cli node_modules/.prisma/client/ cron/node_modules/.prisma/client && cp-cli node_modules/.prisma/client/ media-server/node_modules/.prisma/client",
     "setup-projects": "yarn && cd cron && yarn && cd .. && cd email && yarn && cd .. && yarn run generate && yarn run prebuild && yarn && yarn run create-config && yarn run create-config-schema",
     "analyze": "cross-env ANALYZE=true yarn run build",
     "create-config": "ts-node --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\" scripts/create-config.ts",
