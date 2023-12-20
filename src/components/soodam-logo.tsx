@@ -9,7 +9,7 @@ const SoodamLogo = (
       {...props}
     >
       <g
-        clip-path="url(#clip0_843_2)"
+        clipPath="url(#clip0_843_2)"
         className="dark:fill-[#B6B0DA] fill-[#120C35]"
       >
         <path
