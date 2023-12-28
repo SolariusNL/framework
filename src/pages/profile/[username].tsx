@@ -1,13 +1,9 @@
-import AdminBadge from "@/components/badges/admin";
-import AlphaBadge from "@/components/badges/alpha";
-import EmailBadge from "@/components/badges/email";
-import PremiumBadge from "@/components/badges/premium";
-import TOTPBadge from "@/components/badges/totp";
 import DataGrid from "@/components/data-grid";
 import Framework from "@/components/framework";
 import IconTooltip from "@/components/icon-tooltip";
 import ThumbnailCarousel from "@/components/image-carousel";
 import PlaceholderGameResource from "@/components/placeholder-game-resource";
+import ProfileBadges from "@/components/profile/badges";
 import Donate from "@/components/profile/donate";
 import Links from "@/components/profile/links";
 import ShadedCard from "@/components/shaded-card";
@@ -650,24 +646,7 @@ const Profile: NextPage<ProfileProps> = ({
                 />
               )}
               {viewing.profileLinks.length > 0 && <Links user={viewing} />}
-              <div className="grid grid-cols-2 gap-2">
-                {[
-                  [<AlphaBadge user={viewing} key="alpha" />, true],
-                  [
-                    <PremiumBadge user={viewing} key="premium" />,
-                    viewing.premium,
-                  ],
-                  [
-                    <AdminBadge user={viewing} key="admin" />,
-                    viewing.role == "ADMIN",
-                  ],
-                  [
-                    <EmailBadge user={viewing} key="email" />,
-                    viewing.emailVerified,
-                  ],
-                  [<TOTPBadge user={viewing} key="totp" />, viewing.otpEnabled],
-                ].map(([badge, condition]) => condition && <div>{badge}</div>)}
-              </div>
+              <ProfileBadges user={viewing} />
             </div>
           </div>
         )}
@@ -695,6 +674,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
           private: false,
         },
       },
+      badges: true,
       avatarUri: true,
       premium: true,
       role: true,

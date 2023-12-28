@@ -1,13 +1,12 @@
-import { User } from "@/util/prisma-types";
+import { FC } from "react";
 import { HiOutlineSparkles } from "react-icons/hi";
-import Badge from "./badge";
+import Badge, { BaseBadgeProps } from "./badge";
 
-const PremiumBadge = ({ user }: { user: User }) => {
+const PremiumBadge: FC<BaseBadgeProps> = ({ user }) => {
   return (
     <Badge
       title="Premium"
-      description={`${user.username} is currently a Framework Premium subscriber.`}
-      user={user}
+      description={`${user.username} is a Framework Premium subscriber.`}
       icon={HiOutlineSparkles}
       color="grape"
     />

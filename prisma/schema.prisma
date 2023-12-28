@@ -209,6 +209,8 @@ model User {
   recentIpGeo                Json                        @default("{}")
   redisDatabases             RedisDatabase[]             @relation("redisDatabases")
   protected                  Boolean                     @default(false)
+  badges                     Badge[]                     @default([ALPHA])
+  lastBadgeSync              DateTime                    @default(now())
 }
 
 model Story {
@@ -280,6 +282,17 @@ enum DomainStatus {
   VERIFIED
   GENERATING_CERTIFICATE
   COMPLETE
+}
+
+enum Badge {
+  PRE_ALPHA // Dec 27, 2022 <
+  ALPHA // Dec 27 2023 >
+  STAFF // Be Solarius staff
+  PREMIUM // Own premium
+  VETERAN // 1+ year old account
+  WANDERER // 100 visits
+  SCRIPTER // 1000 visits
+  MAESTRO // 10000 visits
 }
 
 model Domain {

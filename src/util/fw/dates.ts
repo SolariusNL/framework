@@ -41,4 +41,13 @@ export const Dates = {
 
     return formattedDate;
   },
+  prebuilt: {
+    oneDay: 1000 * 60 * 60 * 24,
+    oneHour: 1000 * 60 * 60,
+    oneMinute: 1000 * 60,
+    oneSecond: 1000,
+    oneWeek: 1000 * 60 * 60 * 24 * 7,
+    oneYear: 1000 * 60 * 60 * 24 * 365,
+    oneMonth: 1000 * 60 * 60 * 24 * 30,
+  },
 };

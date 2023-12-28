@@ -1,27 +1,35 @@
+import clsx from "@/util/clsx";
+import { NonUser } from "@/util/prisma-types";
 import { MantineColor, Paper, Text, useMantineTheme } from "@mantine/core";
 import { openModal } from "@mantine/modals";
-import clsx from "@/util/clsx";
-import { User } from "@/util/prisma-types";
 
-interface BadgeProps {
-  user: User;
+type BadgeProps = {
   title: string;
   description: string;
   icon: React.FC<{ color: MantineColor; size: number }>;
   color: MantineColor;
-}
+};
+export type BaseBadgeProps = {
+  user: NonUser;
+};
 
-const Badge = ({ user, title, description, icon: Icon, color }: BadgeProps) => {
+const Badge = ({ title, description, icon: Icon, color }: BadgeProps) => {
   const { colors } = useMantineTheme();
   return (
     <Paper
       withBorder
       p="xs"
       radius="md"
-      sx={() => ({
-        border: `1px solid ${colors[color][5]}`,
+      sx={(theme) => ({
+        border: `1px solid 10`,
         background: "transparent",
         cursor: "pointer",
+        "&:hover": {
+          backgroundColor:
+            theme.colorScheme === "dark"
+              ? theme.colors.dark[8]
+              : theme.colors.gray[1],
+        },
       })}
       onClick={() => {
         openModal({
@@ -33,9 +41,7 @@ const Badge = ({ user, title, description, icon: Icon, color }: BadgeProps) => {
           ),
         });
       }}
-      className={clsx(
-        "dark:hover:bg-zinc-900 hover:bg-gray-100 transform transition-all duration-200"
-      )}
+      className={clsx("transform transition-all duration-200", "flex-grow")}
     >
       <div className="flex items-center gap-2">
         <Icon color={colors[color][5]} size={24} />

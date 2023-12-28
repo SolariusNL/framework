@@ -126,6 +126,7 @@ const nonuser = Prisma.validator<Prisma.UserArgs>()({
     banned: true,
     lastSeen: true,
     timeZone: true,
+    badges: true,
     role: true,
     alias: true,
     previousUsernames: true,
