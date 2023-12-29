@@ -211,6 +211,7 @@ model User {
   protected                  Boolean                     @default(false)
   badges                     Badge[]                     @default([ALPHA])
   lastBadgeSync              DateTime                    @default(now())
+  donationCount              Int                         @default(0)
 }
 
 model Story {
@@ -293,6 +294,8 @@ enum Badge {
   WANDERER // 100 visits
   SCRIPTER // 1000 visits
   MAESTRO // 10000 visits
+  TYCOON // 1M+T$ value
+  PHILANTHROPIST // Donated 10+ times
 }
 
 model Domain {

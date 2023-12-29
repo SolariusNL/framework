@@ -1,6 +1,5 @@
 import IconTooltip from "@/components/icon-tooltip";
 import ModernEmptyState from "@/components/modern-empty-state";
-import ShadedCard from "@/components/shaded-card";
 import IResponseBase from "@/types/api/IResponseBase";
 import fetchJson from "@/util/fetch";
 import { Fw } from "@/util/fw";
@@ -51,7 +50,10 @@ const Links = ({
   }, []);
 
   return (
-    <ShadedCard className="min-w-0 truncate text-ellipsis" p="md" {...props}>
+    <div
+      className="min-w-0 truncate flex flex-col gap-4 text-ellipsis"
+      {...props}
+    >
       {user.profileLinks
         .map((link) => ({
           ...link,
@@ -59,12 +61,7 @@ const Links = ({
         }))
         .sort((a, b) => a.name.localeCompare(b.name))
         .map((link, i) => (
-          <Card.Section
-            key={i}
-            p="md"
-            withBorder
-            className="dark:!border-zinc-900 !border-gray-200 flex flex-col"
-          >
+          <Card.Section key={i} className="flex flex-col">
             <div className="flex gap-2 items-center">
               <Text weight={700} size="sm" color="dimmed" mb={4}>
                 {link.name}
@@ -102,7 +99,7 @@ const Links = ({
           <ModernEmptyState title="No links" body="This user has no links." />
         </div>
       )}
-    </ShadedCard>
+    </div>
   );
 };
 

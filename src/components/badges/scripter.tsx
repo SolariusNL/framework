@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { HiKey } from "react-icons/hi";
+import { HiOutlineUserGroup } from "react-icons/hi";
 import Badge, { BaseBadgeProps } from "./badge";
 
 const ScripterBadge: FC<BaseBadgeProps> = ({ user }) => {
@@ -7,8 +7,8 @@ const ScripterBadge: FC<BaseBadgeProps> = ({ user }) => {
     <Badge
       title="Scripter"
       description={`${user.username} has accumulated 1,000+ place visits.`}
-      icon={HiKey}
-      color="red"
+      icon={HiOutlineUserGroup}
+      color="violet"
     />
   );
 };

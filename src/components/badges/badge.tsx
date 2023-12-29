@@ -6,7 +6,7 @@ import { openModal } from "@mantine/modals";
 type BadgeProps = {
   title: string;
   description: string;
-  icon: React.FC<{ color: MantineColor; size: number }>;
+  icon: React.FC<{ color: MantineColor; size: number }> | React.ReactElement;
   color: MantineColor;
 };
 export type BaseBadgeProps = {
@@ -44,7 +44,11 @@ const Badge = ({ title, description, icon: Icon, color }: BadgeProps) => {
       className={clsx("transform transition-all duration-200", "flex-grow")}
     >
       <div className="flex items-center gap-2">
-        <Icon color={colors[color][5]} size={24} />
+        {typeof Icon === "function" ? (
+          <Icon color={colors[color][5]} size={24} />
+        ) : (
+          Icon
+        )}
         <Text weight={500}>{title}</Text>
       </div>
     </Paper>

@@ -10,6 +10,7 @@ export const badgeQueue =
     ? new Queue("badge-sync", String(process.env.REDIS_URL))
     : null;
 const ONE_YEAR = 365 * 24 * 60 * 60 * 1000;
+const PREALPHA_END = new Date("2023-12-27T00:00:00.000Z");
 
 const syncBadges = async (userId: number) => {
   const user = await prisma.user.findUnique({
@@ -27,16 +28,24 @@ const syncBadges = async (userId: number) => {
     !user.badges.includes(Badge.VETERAN)
   )
     await Fwx.Badges.grant(Badge.VETERAN, user.id);
+  if (
+    new Date(user.createdAt).getTime() < PREALPHA_END.getTime() &&
+    !user.badges.includes(Badge.PRE_ALPHA)
+  )
+    await Fwx.Badges.grant(Badge.PRE_ALPHA, user.id);
 
-  if (user.premium && !user.badges.includes(Badge.PREMIUM))
-    await Fwx.Badges.grant(Badge.PREMIUM, user.id);
-  else if (user.badges.includes(Badge.PREMIUM) && !user.premium)
-    await Fwx.Badges.revoke(Badge.PREMIUM, user.id);
-
+  /**
+   * @todo when we add functionality to change role, remove this
+   */
   if (user.role === Role.ADMIN && !user.badges.includes(Badge.STAFF))
     await Fwx.Badges.grant(Badge.STAFF, user.id);
   else if (user.badges.includes(Badge.STAFF) && user.role !== Role.ADMIN)
     await Fwx.Badges.revoke(Badge.STAFF, user.id);
+
+  if (user.tickets > 1_000_000 && !user.badges.includes(Badge.TYCOON))
+    await Fwx.Badges.grant(Badge.TYCOON, user.id);
+  else if (user.tickets < 1_000_000 && user.badges.includes(Badge.TYCOON))
+    await Fwx.Badges.revoke(Badge.TYCOON, user.id);
 
   await prisma.user.update({
     where: {

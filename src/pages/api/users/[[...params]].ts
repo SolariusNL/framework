@@ -1,11 +1,11 @@
 import { parse } from "@/components/render-markdown";
-import { category } from "@/components/report-user";
 import countries from "@/data/countries";
 import getTimezones from "@/data/timezones";
 import IResponseBase from "@/types/api/IResponseBase";
 import Authorized, { Account } from "@/util/api/authorized";
 import registerAutomodHandler from "@/util/automod";
 import { exclude } from "@/util/exclude";
+import { Fwx } from "@/util/fwx";
 import { hashPass, isSamePass } from "@/util/hash/password";
 import { sendMail } from "@/util/mail";
 import createNotification from "@/util/notifications";
@@ -22,7 +22,7 @@ import {
   userPreferences,
 } from "@/util/types";
 import {
-  NotificationType,
+  Badge,
   Prisma,
   PrivacyPreferences,
   ReceiveNotification,
@@ -558,8 +558,13 @@ class UserRouter {
         tickets: {
           decrement: Number(amount),
         },
+        donationCount: {
+          increment: 1,
+        },
       },
     });
+    if (user.donationCount + 1 >= 10)
+      await Fwx.Badges.grant(Badge.PHILANTHROPIST, user.id);
 
     await prisma.user.update({
       where: {

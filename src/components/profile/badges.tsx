@@ -1,10 +1,12 @@
 import AlphaBadge from "@/components/badges/alpha";
 import { BaseBadgeProps } from "@/components/badges/badge";
 import MaestroBadge from "@/components/badges/maestro";
+import PhilanthropistBadge from "@/components/badges/philanthropist";
 import PreAlphaBadge from "@/components/badges/pre-alpha";
 import PremiumBadge from "@/components/badges/premium";
 import ScripterBadge from "@/components/badges/scripter";
 import StaffBadge from "@/components/badges/staff";
+import TycoonBadge from "@/components/badges/tycoon";
 import VeteranBadge from "@/components/badges/veteran";
 import WandererBadge from "@/components/badges/wanderer";
 import { NonUser } from "@/util/prisma-types";
@@ -24,6 +26,8 @@ const badgeComponents: Record<Badge, React.FC<BaseBadgeProps>> = {
   [Badge.WANDERER]: WandererBadge,
   [Badge.SCRIPTER]: ScripterBadge,
   [Badge.MAESTRO]: MaestroBadge,
+  [Badge.TYCOON]: TycoonBadge,
+  [Badge.PHILANTHROPIST]: PhilanthropistBadge,
 };
 
 const ProfileBadges: FC<ProfileBadges> = ({ user }) => {

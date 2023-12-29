@@ -1,5 +1,5 @@
+import Solarius from "@/icons/Solarius";
 import { FC } from "react";
-import { HiOutlineShieldCheck } from "react-icons/hi";
 import Badge, { BaseBadgeProps } from "./badge";
 
 const StaffBadge: FC<BaseBadgeProps> = ({ user }) => {
@@ -7,7 +7,7 @@ const StaffBadge: FC<BaseBadgeProps> = ({ user }) => {
     <Badge
       title="Solarius"
       description={`${user.username} is a Solarius employee and is a trusted member of the community.`}
-      icon={HiOutlineShieldCheck}
+      icon={<Solarius className="w-[24px] h-[24px] p-[2px] />" />}
       color="indigo"
     />
   );

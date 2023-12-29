@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { HiOutlineSparkles } from "react-icons/hi";
+import FrameworkLogo from "../framework-logo";
 import Badge, { BaseBadgeProps } from "./badge";
 
 const PremiumBadge: FC<BaseBadgeProps> = ({ user }) => {
@@ -7,7 +7,7 @@ const PremiumBadge: FC<BaseBadgeProps> = ({ user }) => {
     <Badge
       title="Premium"
       description={`${user.username} is a Framework Premium subscriber.`}
-      icon={HiOutlineSparkles}
+      icon={<FrameworkLogo square className="w-[24px] h-[24px]" />}
       color="grape"
     />
   );

@@ -3,6 +3,7 @@ import { parse } from "@/components/render-markdown";
 import IResponseBase from "@/types/api/IResponseBase";
 import Authorized, { Account } from "@/util/api/authorized";
 import registerAutomodHandler from "@/util/automod";
+import { Fwx } from "@/util/fwx";
 import prisma from "@/util/prisma";
 import {
   gameSelect,
@@ -12,6 +13,7 @@ import {
 import { RateLimitMiddleware } from "@/util/rate-limit";
 import { logTransaction } from "@/util/transaction-history";
 import {
+  Badge,
   GameEnvironment,
   GameGenre,
   GameUpdateLogType,
@@ -1049,8 +1051,13 @@ class GameRouter {
         tickets: {
           decrement: Number(amount),
         },
+        donationCount: {
+          increment: 1,
+        },
       },
     });
+    if (user.donationCount + 1 >= 10)
+      await Fwx.Badges.grant(Badge.PHILANTHROPIST, user.id);
 
     await logTransaction(
       amount,

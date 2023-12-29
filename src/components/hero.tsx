@@ -1,5 +1,6 @@
 import LandingMeshBg from "@/assets/bg.png";
 import Rocket from "@/icons/Rocket";
+import clsx from "@/util/clsx";
 import { rem } from "@/util/rem";
 import {
   Button,
@@ -84,8 +85,8 @@ const Hero: FC = () => {
         backgroundSize: "cover",
       }}
     >
-      <Container className="z-10 mx-auto relative">
-        <div className={classes.inner}>
+      <Container className={clsx("z-10 mx-auto relative")}>
+        <div className={clsx(classes.inner)}>
           <div className={classes.content}>
             <Title className={classes.title}>
               A <span className={classes.highlight}>new</span> way <br />{" "}

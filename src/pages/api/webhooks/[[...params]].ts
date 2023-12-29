@@ -3,7 +3,7 @@ import getConfig from "@/util/config";
 import { PREMIUM_PAYOUTS } from "@/util/constants";
 import createNotification from "@/util/notifications";
 import prisma from "@/util/prisma";
-import { NotificationType } from "@prisma/client";
+import { Badge, NotificationType } from "@prisma/client";
 import { Post, Req, createHandler } from "@solariusnl/next-api-decorators";
 import { buffer } from "micro";
 import type { NextApiRequest } from "next";
@@ -27,6 +27,14 @@ const reasons = {
 };
 
 const banUser = async (userId: number, reason: string) => {
+  const badges = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    select: {
+      badges: true,
+    },
+  });
   await prisma.user.update({
     where: {
       id: userId,
@@ -37,6 +45,12 @@ const banUser = async (userId: number, reason: string) => {
       banExpires: new Date(
         new Date().getTime() + 1000 * 60 * 60 * 24 * 365 * 1000
       ),
+      tickets: {
+        set: 0,
+      },
+      badges: {
+        set: [...badges!.badges.filter((b) => b !== Badge.PREMIUM)],
+      },
     },
   });
 };
@@ -71,6 +85,9 @@ const checkoutSessionCompleted = async (event: Stripe.Event) => {
         premium: true,
         tickets: {
           increment: PREMIUM_PAYOUTS[premium!.type],
+        },
+        badges: {
+          push: Badge.PREMIUM,
         },
       },
     });
@@ -118,6 +135,11 @@ const customerSubscriptionDeleted = async (event: Stripe.Event) => {
       stripeCustomerId: subscription.customer as string,
     },
   });
+  const u = await prisma.user.findUnique({
+    where: {
+      id: customer?.userId as number,
+    },
+  });
 
   await prisma.user.update({
     where: {
@@ -127,6 +149,9 @@ const customerSubscriptionDeleted = async (event: Stripe.Event) => {
       premium: false,
       premiumSubscription: {
         delete: true,
+      },
+      badges: {
+        set: [...u!.badges.filter((b) => b !== Badge.PREMIUM)],
       },
     },
   });
