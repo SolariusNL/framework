@@ -14,6 +14,7 @@ export const nonCurrentUserSelect = {
     premium: true,
     banned: true,
     lastSeen: true,
+    badges: true,
     timeZone: true,
     role: true,
     previousUsernames: true,
@@ -259,6 +260,7 @@ export const userSelect: Prisma.UserSelect = {
   lastSurvey: true,
   robloxTransfer: true,
   signals: true,
+  lastBadgeSync: true,
 };
 
 const article = Prisma.validator<Prisma.AdminArticleArgs>()({

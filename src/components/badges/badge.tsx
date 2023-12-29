@@ -21,7 +21,7 @@ const Badge = ({ title, description, icon: Icon, color }: BadgeProps) => {
       p="xs"
       radius="md"
       sx={(theme) => ({
-        border: `1px solid 10`,
+        border: "1px solid 10",
         background: "transparent",
         cursor: "pointer",
         "&:hover": {
