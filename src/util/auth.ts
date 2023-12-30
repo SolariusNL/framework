@@ -87,10 +87,15 @@ const authorizedRoute = async (
     new Date(account?.lastBadgeSync!).getTime() <
     Date.now() - 24 * 60 * 60 * 1000
   ) {
-    const existingJob = badgeQueue
-      ? await badgeQueue.getJob(`badge:${account?.id.toString()}`)
-      : undefined;
-    if (!existingJob) await queueBadgeSync(account?.id!);
+    if (
+      process.env.REDIS_URL &&
+      process.env.REDIS_URL !== "redis://CHANGE_ME:6379"
+    ) {
+      const existingJob = badgeQueue
+        ? await badgeQueue.getJob(`badge:${account?.id.toString()}`)
+        : undefined;
+      if (!existingJob) await queueBadgeSync(account?.id!);
+    } else queueBadgeSync(account?.id!);
   }
 
   switch (isAuthorized) {
