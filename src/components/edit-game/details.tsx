@@ -332,7 +332,7 @@ const Details = ({ game: g }: DetailsProps) => {
               label="Description"
               placeholder="Description of the notice"
               title="Description"
-              description="A detailed description of the notice. Ex: 'Copyright 2023 Solarius B.V.'"
+              description="A detailed description of the notice. Ex: 'Copyright 2024 Solarius B.V.'"
               {...metadataForm.getInputProps("description")}
             />
             <Group mt={8}>

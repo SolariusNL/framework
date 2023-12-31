@@ -1,3 +1,4 @@
+import useAmoled from "@/stores/useAmoled";
 import {
   ActionIcon,
   Anchor,
@@ -8,7 +9,6 @@ import {
 } from "@mantine/core";
 import Link from "next/link";
 import { HiMoon, HiSun } from "react-icons/hi";
-import useAmoled from "@/stores/useAmoled";
 
 const MinimalFooter: React.FC<{
   noLinks?: boolean;
@@ -20,7 +20,7 @@ const MinimalFooter: React.FC<{
   return (
     <>
       <Text size="sm" align="center" mb={5} weight={500} color="dimmed">
-        Copyright © 2023 Solarius. All rights reserved.
+        Copyright © 2024 Solarius. All rights reserved.
       </Text>
 
       <Stack>

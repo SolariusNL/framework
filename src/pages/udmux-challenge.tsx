@@ -114,7 +114,7 @@ const UdmuxChallenge: FC = () => {
           <div className="flex justify-between items-center md:flex-row flex-col">
             <Title order={2}>Solarius Udmux Guard</Title>
             <Text size="sm" color="dimmed">
-              Udmux - Solarius © 2021-2023
+              Udmux - Solarius © 2021-2024
             </Text>
           </div>
           <Text mt="xl" className="md:text-start text-center">

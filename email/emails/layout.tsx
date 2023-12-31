@@ -33,7 +33,7 @@ const EmailLayout: React.FC<EmailLayoutProps> = ({
         <Hr style={styles.hr} />
         <Text style={styles.footer}>{footer}</Text>
         <Text style={styles.footer}>
-          Copyright © 2021-2023 Solarius B.V. All rights reserved.
+          Copyright © 2021-2024 Solarius B.V. All rights reserved.
         </Text>
       </Container>
     </Section>

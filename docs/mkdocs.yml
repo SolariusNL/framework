@@ -33,7 +33,7 @@ extra:
         checked: false
 
 copyright: >
-  Copyright &copy; 2021-2023 Soodam.re A.B. and contributors. All rights reserved. -
+  Copyright &copy; 2021-2024 Soodam.re A.B. and contributors. All rights reserved. -
   <a href="#__consent">Change cookie settings</a>
 
 markdown_extensions:
@@ -51,6 +51,6 @@ markdown_extensions:
 nav:
   - Home: index.md
   - Getting Started:
-    - Installation: getting-started/installation.md
+      - Installation: getting-started/installation.md
 
 repo_url: https://github.com/Tsodinq/framework
