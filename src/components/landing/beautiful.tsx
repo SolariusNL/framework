@@ -55,13 +55,13 @@ const ForestSample: FC<ForestSampleProps> = ({
       >
         <Container>
           <Title className={classes.title}>{title}</Title>
-          <Container size={560} p={0} mb="xl">
+          <Container size={560} p={0}>
             <Text size="sm" className={classes.description}>
               {description}
             </Text>
           </Container>
         </Container>
-        <div className="max-w-6xl px-4 mx-auto">
+        <div className="max-w-6xl px-4 mx-auto mt-16">
           <Image
             src={forestSample}
             alt="Forest sample - Made with Studio"
