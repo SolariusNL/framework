@@ -12,7 +12,9 @@ RUN sudo apt-get update \
  && sudo apt-get install -y \
   redis-server \
  && sudo rm -rf /var/lib/apt/lists/* \
- && sudo service redis-server start
+ && sudo service redis-server start \
+ && sudo apt-get install clamav clamav-daemon \
+ && sudo service clamav-freshclam restart
 
 ENV PATH="/usr/lib/postgresql/12/bin:$PATH"
 
