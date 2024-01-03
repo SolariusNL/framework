@@ -389,7 +389,7 @@ class MediaRouter {
 
       if (cast<formidable.File>(file).mimetype!.startsWith("image")) {
         await sharp(cast<formidable.File>(file).filepath)
-          .webp({ quality: 95, alphaQuality: 95, lossless: true })
+          .webp({ quality: 97, alphaQuality: 97, lossless: true })
           .toFile(path)
           .then((data) => data)
           .catch(() => {
