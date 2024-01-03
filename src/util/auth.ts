@@ -5,7 +5,6 @@ import { User, userSelect } from "@/util/prisma-types";
 import { OAuthApplication, Session } from "@prisma/client";
 import { GetServerSidePropsContext } from "next";
 import { getClientIp } from "request-ip";
-import { badgeQueue, queueBadgeSync } from "./badge-sync";
 import cast from "./cast";
 import { Geolocation, getIPAddressGeolocation } from "./geo";
 
@@ -81,21 +80,6 @@ const authorizedRoute = async (
         permanent: false,
       },
     };
-  }
-
-  if (
-    new Date(account?.lastBadgeSync!).getTime() <
-    Date.now() - 24 * 60 * 60 * 1000
-  ) {
-    if (
-      process.env.REDIS_URL &&
-      process.env.REDIS_URL !== "redis://CHANGE_ME:6379"
-    ) {
-      const existingJob = badgeQueue
-        ? await badgeQueue.getJob(`badge:${account?.id.toString()}`)
-        : undefined;
-      if (!existingJob) await queueBadgeSync(account?.id!);
-    } else queueBadgeSync(account?.id!);
   }
 
   switch (isAuthorized) {
