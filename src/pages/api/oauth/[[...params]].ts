@@ -370,6 +370,11 @@ class OAuth2Router {
       throw new NotFoundException("Application not found");
     }
 
+    await prisma.oAuthClient.deleteMany({
+      where: {
+        applicationId: id,
+      },
+    });
     await prisma.oAuthApplication.delete({
       where: {
         id,
