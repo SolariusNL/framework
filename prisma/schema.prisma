@@ -212,6 +212,9 @@ model User {
   badges                     Badge[]                     @default([ALPHA])
   lastBadgeSync              DateTime                    @default(now())
   donationCount              Int                         @default(0)
+  authoredSocialPosts        SocialPost[]                @relation("socialPosts")
+  heartedSocialPosts         SocialPost[]                @relation("socialPostHearts")
+  sharedSocialPosts          SocialPost[]                @relation("socialPostShares")
 }
 
 model Story {
@@ -1640,4 +1643,18 @@ model UploadedLicense {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   data      String
+}
+
+model SocialPost {
+  id              String       @id @default(uuid())
+  createdAt       DateTime     @default(now())
+  author          User         @relation("socialPosts", fields: [authorId], references: [id])
+  authorId        Int
+  contentMd       String
+  hearts          User[]       @relation("socialPostHearts")
+  shares          User[]       @relation("socialPostShares")
+  attachments     String[]
+  isReply         Boolean      @default(false)
+  replies         SocialPost[] @relation("socialPostReplies")
+  repliesRelation SocialPost[] @relation("socialPostReplies")
 }

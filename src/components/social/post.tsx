@@ -1,10 +1,10 @@
 import ShadedButton from "@/components/shaded-button";
 import UserContext from "@/components/user-context";
 import Verified from "@/components/verified";
+import { SocialPost } from "@/pages/api/social/[[...params]]";
 import clsx from "@/util/clsx";
 import { Fw } from "@/util/fw";
 import getMediaUrl from "@/util/get-media";
-import { NonUser } from "@/util/prisma-types";
 import { getRelativeTime } from "@/util/relative-time";
 import { ActionIcon, Avatar, Badge, Text } from "@mantine/core";
 import dynamic from "next/dynamic";
@@ -12,7 +12,7 @@ import Link from "next/link";
 import { FC } from "react";
 import {
   HiHeart,
-  HiOutlineDotsVertical,
+  HiOutlineChat,
   HiOutlineFlag,
   HiOutlineHeart,
   HiOutlineShare,
@@ -25,15 +25,6 @@ const RenderMarkdown = dynamic(() => import("../render-markdown"), {
 
 type SocialPostProps = {
   post: SocialPost;
-};
-type SocialPost = {
-  author: NonUser;
-  createdAt: Date;
-  contentMd: string;
-  _count: {
-    hearts: number;
-    shares: number;
-  };
 };
 
 const SocialPost: FC<SocialPostProps> = ({ post }) => {
@@ -99,7 +90,7 @@ const SocialPost: FC<SocialPostProps> = ({ post }) => {
                 <HiOutlineShare />
               </ActionIcon>
               <Text size="sm" color="dimmed" ml="sm">
-                {getRelativeTime(post.createdAt)}
+                {getRelativeTime(new Date(post.createdAt))}
               </Text>
             </div>
             <div className="flex items-center gap-2">
@@ -115,17 +106,18 @@ const SocialPost: FC<SocialPostProps> = ({ post }) => {
                   <span>{Fw.Nums.beautify(post._count.shares)}</span>
                 </div>
               </Badge>
+              <Badge color="gray" radius="sm" className="px-1.5" size="lg">
+                <div className="flex items-center gap-2">
+                  <HiOutlineChat />
+                  <span>{Fw.Nums.beautify(post._count.replies)}</span>
+                </div>
+              </Badge>
             </div>
           </div>
         </div>
-        <div className="flex flex-col flex-shrink-0 items-center gap-2">
-          <ActionIcon color="gray" size="lg" radius="xl" variant="light">
-            <HiOutlineDotsVertical />
-          </ActionIcon>
-          <ActionIcon color="red" size="lg" radius="xl" variant="light">
-            <HiOutlineFlag />
-          </ActionIcon>
-        </div>
+        <ActionIcon color="red" size="lg" radius="xl" variant="light">
+          <HiOutlineFlag />
+        </ActionIcon>
       </div>
     </ShadedButton>
   );
