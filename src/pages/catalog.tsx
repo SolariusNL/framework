@@ -22,7 +22,12 @@ import {
 import { useDebouncedValue } from "@mantine/hooks";
 import { GetServerSidePropsContext, NextPage } from "next";
 import React, { useEffect } from "react";
-import { HiCog, HiCubeTransparent, HiMusicNote } from "react-icons/hi";
+import {
+  HiCog,
+  HiCubeTransparent,
+  HiMusicNote,
+  HiPhotograph,
+} from "react-icons/hi";
 import { TbShirt } from "react-icons/tb";
 import { GetCatalogBrowseAssetsResponse } from "./api/catalog/[[...params]]";
 
@@ -94,6 +99,11 @@ const groups: SidebarItemGroup[] = [
         icon: <HiMusicNote />,
       },
       {
+        value: "decal",
+        name: "Decals",
+        icon: <HiPhotograph />,
+      },
+      {
         value: "gamepass",
         name: "Gamepasses",
         icon: <HiCubeTransparent />,
@@ -108,9 +118,16 @@ const Catalog: NextPage<CatalogProps> = ({ user }) => {
   const [assets, setAssets] = React.useState<AssetFrontend[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [debouncedSearch] = useDebouncedValue(filter.search, 75);
+  const [existingState, setExistingState] = React.useState(false);
 
   const changeFilterValue = (key: keyof typeof filter, value: boolean) => {
     setFilter((current) => ({ ...current, [key]: value }));
+  };
+  const storeState = () => {
+    const params = new URLSearchParams();
+    params.set("type", tab);
+    if (filter.search) params.set("search", filter.search);
+    window.history.replaceState({}, "", `/catalog?${params.toString()}`);
   };
 
   const fetchAssets = async () => {
@@ -135,6 +152,21 @@ const Catalog: NextPage<CatalogProps> = ({ user }) => {
   useEffect(() => {
     fetchAssets();
   }, [debouncedSearch]);
+
+  useEffect(() => {
+    if (existingState) storeState();
+  }, [tab, debouncedSearch]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("type") || params.get("search")) setExistingState(true);
+      const type = params.get("type");
+      const search = params.get("search");
+      if (type) setTab(type as AssetItemType);
+      if (search) setFilter({ ...filter, search });
+    }
+  }, []);
 
   return (
     <Framework
