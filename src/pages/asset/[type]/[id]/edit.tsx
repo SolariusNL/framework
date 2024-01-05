@@ -184,18 +184,20 @@ const AssetView: React.FC<AssetViewProps> = ({
                   <Owner user={asset.author} />
                 </div>
               </div>
-              <NumberInput
-                icon={<HiOutlineTicket />}
-                value={asset.price}
-                onChange={(value: number) =>
-                  changeField("price", Number(value))
-                }
-                classNames={{
-                  input: "bg-transparent",
-                }}
-                className="w-[50%]"
-                min={1}
-              />
+              {type !== "sound" && (
+                <NumberInput
+                  icon={<HiOutlineTicket />}
+                  value={asset.price}
+                  onChange={(value: number) =>
+                    changeField("price", Number(value))
+                  }
+                  classNames={{
+                    input: "bg-transparent",
+                  }}
+                  className="w-[50%]"
+                  min={1}
+                />
+              )}
               <div className="my-4">
                 <LabelledCheckbox
                   label="For sale"

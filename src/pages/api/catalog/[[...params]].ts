@@ -1003,6 +1003,7 @@ class CatalogRouter {
     }
 
     const data = patchItemEditSchema.parse(body);
+    if (type === "sound") delete data.price;
 
     await queryExecutor.update({
       where: {
