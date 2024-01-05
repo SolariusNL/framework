@@ -65,6 +65,7 @@ import {
   HiOutlineTag,
   HiOutlineTicket,
   HiOutlineTrash,
+  HiPhotograph,
   HiShoppingBag,
   HiStar,
   HiXCircle,
@@ -93,6 +94,7 @@ export const iconPlaceholderMap: Record<AssetType, JSX.Element> = {
   ),
   sound: <HiMusicNote className="w-full h-full aspect-square" />,
   gamepass: <Rocket className="w-full h-full aspect-square" />,
+  decal: <HiPhotograph className="w-full h-full aspect-square" />,
 };
 
 const AssetView: React.FC<AssetViewProps> = ({
