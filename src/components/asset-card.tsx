@@ -35,6 +35,7 @@ const extendedTypeMap: Record<AssetItemType, AssetType> = {
   tshirt: "catalog-item",
   sound: "sound",
   gamepass: "gamepass",
+  decal: "decal",
 };
 const cardStyles = {
   backgroundColor: "transparent",
