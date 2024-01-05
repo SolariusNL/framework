@@ -123,12 +123,6 @@ const Catalog: NextPage<CatalogProps> = ({ user }) => {
   const changeFilterValue = (key: keyof typeof filter, value: boolean) => {
     setFilter((current) => ({ ...current, [key]: value }));
   };
-  const storeState = () => {
-    const params = new URLSearchParams();
-    params.set("type", tab);
-    if (filter.search) params.set("search", filter.search);
-    window.history.replaceState({}, "", `/catalog?${params.toString()}`);
-  };
 
   const fetchAssets = async () => {
     setTimeout(
@@ -152,21 +146,6 @@ const Catalog: NextPage<CatalogProps> = ({ user }) => {
   useEffect(() => {
     fetchAssets();
   }, [debouncedSearch]);
-
-  useEffect(() => {
-    if (existingState) storeState();
-  }, [tab, debouncedSearch]);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get("type") || params.get("search")) setExistingState(true);
-      const type = params.get("type");
-      const search = params.get("search");
-      if (type) setTab(type as AssetItemType);
-      if (search) setFilter({ ...filter, search });
-    }
-  }, []);
 
   return (
     <Framework
