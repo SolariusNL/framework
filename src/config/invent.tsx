@@ -1,3 +1,4 @@
+import Decals from "@/components/invent/decals";
 import dynamic from "next/dynamic";
 import {
   HiOutlineClipboardCheck,
@@ -9,6 +10,7 @@ import {
   HiOutlineKey,
   HiOutlineMailOpen,
   HiOutlineMusicNote,
+  HiOutlinePhotograph,
   HiOutlineScissors,
   HiOutlineTicket,
   HiOutlineViewGrid,
@@ -123,6 +125,15 @@ const tabs = [
         tab: {
           icon: <HiOutlineMusicNote />,
           label: "Sounds",
+        },
+      },
+      {
+        name: "decals",
+        component: Decals,
+        href: "/invent/decals",
+        tab: {
+          icon: <HiOutlinePhotograph />,
+          label: "Decals",
         },
       },
       {

@@ -58,15 +58,9 @@ type UploadAssetInput = {
 type UploadSoundInput = {
   soundId: string;
 };
-
-type UploadInput =
-  | UploadThumbnailInput
-  | UploadIconInput
-  | UploadGamepassInput
-  | UploadTeamInput
-  | UploadConversationInput
-  | UploadAssetInput
-  | UploadSoundInput;
+type UploadDecalInput = {
+  decalId: string;
+};
 
 type UploadAssetQuery = {
   type: AssetType;
@@ -124,6 +118,7 @@ const bucketData: Record<
   teams: defaultImageConfig,
   conversations: defaultImageConfig,
   assets: defaultImageConfig,
+  decals: defaultImageConfig,
   sounds: {
     acceptedExtensions: [".mp3", ".wav", ".ogg", ".m4a"],
     acceptedMimeTypes: ["audio/mpeg", "audio/wav", "audio/ogg", "audio/mp4"],
@@ -276,6 +271,22 @@ const databaseOperations: Record<
       where: { id: input.soundId },
       data: {
         audioUri: `/sounds/${name}?at=${Date.now()}`,
+      },
+    });
+
+    return name;
+  },
+  decals: async (input: UploadDecalInput, user, file, params) => {
+    if (!input.decalId) return ProhibitedQuery;
+    const decal = await prisma.decal.findFirst({
+      where: { authorId: user.id, id: input.decalId },
+    });
+    if (!decal) return ProhibitedQuery;
+    const name = `${input.decalId}.webp`;
+    await prisma.decal.update({
+      where: { id: input.decalId },
+      data: {
+        previewUri: `/decals/${name}?at=${Date.now()}`,
       },
     });
 

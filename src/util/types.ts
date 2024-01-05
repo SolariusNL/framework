@@ -130,12 +130,14 @@ export type AssetType =
   | "catalog-item"
   | "limited-catalog-item"
   | "sound"
-  | "gamepass";
+  | "gamepass"
+  | "decal";
 export type AssetItemType =
   | Lowercase<CatalogItemType>
   | "sound"
   | "gamepass"
-  | "limiteds";
+  | "limiteds"
+  | "decal";
 export const prismaAssetTypeMap: Record<
   AssetType,
   PascalToCamel<Prisma.ModelName>
@@ -144,6 +146,7 @@ export const prismaAssetTypeMap: Record<
   "limited-catalog-item": "limitedCatalogItem",
   sound: "sound",
   gamepass: "gamepass",
+  decal: "decal",
 };
 export const prismaAssetItemTypeModelMap: Record<
   AssetItemType,
@@ -157,6 +160,7 @@ export const prismaAssetItemTypeModelMap: Record<
   tshirt: "catalogItem",
   limiteds: "limitedCatalogItem",
   gamepass: "gamepass",
+  decal: "decal",
 };
 export const prismaAssetItemTypeViewMap: Record<AssetItemType, AssetType> = {
   gear: "catalog-item",
@@ -167,6 +171,7 @@ export const prismaAssetItemTypeViewMap: Record<AssetItemType, AssetType> = {
   tshirt: "catalog-item",
   limiteds: "limited-catalog-item",
   gamepass: "gamepass",
+  decal: "decal",
 };
 export const assetItemTypeWithTypeProp: AssetItemType[] = [
   "gear",
@@ -186,6 +191,7 @@ export const prismaInventoryMapping: Record<
   "limited-catalog-item": "limited",
   sound: "sounds",
   gamepass: "gamepasses",
+  decal: "decals",
 };
 
 export type Reportable = AssetType | "user" | "game";

@@ -190,6 +190,8 @@ model User {
   stories                    Story[]                     @relation("stories")
   sounds                     Sound[]                     @relation("userSounds")
   starredSounds              Sound[]                     @relation("userStarredSounds")
+  decals                     Decal[]                     @relation("userDecals")
+  starredDecals              Decal[]                     @relation("userStarredDecals")
   starredGamepasses          Gamepass[]                  @relation("userStarredGamepasses")
   gettingStartedDismissed    Boolean                     @default(false)
   starredCatalogItems        CatalogItem[]               @relation("starredCatalogItems")
@@ -1135,6 +1137,25 @@ model Sound {
   licensedToId  String?
 }
 
+model Decal {
+  id            String              @id @default(uuid())
+  author        User                @relation("userDecals", fields: [authorId], references: [id])
+  authorId      Int
+  name          String
+  stargazers    User[]              @relation("userStarredDecals")
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @default(now())
+  description   String              @default("")
+  rows          DecalKeyValuePair[]
+  price         Int                 @default(0)
+  priceBits     Int                 @default(0)
+  onSale        Boolean             @default(false)
+  limited       Boolean             @default(false)
+  apartOf       Inventory[]         @relation("userDecals")
+  canAuthorEdit Boolean             @default(true)
+  previewUri    String              @default("")
+}
+
 model SoundLicenseHolder {
   id        String   @id @default(uuid())
   name      String
@@ -1146,6 +1167,14 @@ model SoundLicenseHolder {
 model SoundKeyValuePair {
   id     String @id @default(uuid())
   item   Sound  @relation(references: [id], fields: [itemId])
+  itemId String
+  key    String
+  value  String
+}
+
+model DecalKeyValuePair {
+  id     String @id @default(uuid())
+  item   Decal  @relation(references: [id], fields: [itemId])
   itemId String
   key    String
   value  String
@@ -1519,6 +1548,7 @@ model Inventory {
   limited    LimitedInventoryItem[] @relation("limitedInventoryItems")
   sounds     Sound[]                @relation("userSounds")
   gamepasses Gamepass[]             @relation("userGamepasses")
+  decals     Decal[]                @relation("userDecals")
 }
 
 model LimitedInventoryItem {

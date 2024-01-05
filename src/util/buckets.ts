@@ -7,6 +7,7 @@ const buckets = [
   "conversations",
   "assets",
   "sounds",
+  "decals",
 ] as const;
 
 export default buckets;
