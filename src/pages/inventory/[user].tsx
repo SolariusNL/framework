@@ -30,6 +30,7 @@ import {
   HiCog,
   HiCubeTransparent,
   HiMusicNote,
+  HiPhotograph,
   HiSearch,
   HiSparkles,
 } from "react-icons/hi";
@@ -118,6 +119,11 @@ const groups: SidebarItemGroup[] = [
         value: "gamepass",
         name: "Gamepasses",
         icon: <HiCubeTransparent />,
+      },
+      {
+        value: "decal",
+        name: "Decals",
+        icon: <HiPhotograph />,
       },
     ],
   },
