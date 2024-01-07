@@ -1,6 +1,6 @@
 import { NonUser } from "@/util/prisma-types";
 import { MANTINE_COLORS } from "@mantine/core";
-import { CatalogItemType, Prisma } from "@prisma/client";
+import { CatalogItemType, Prisma, Role } from "@prisma/client";
 
 export type Primitive = string | number | bigint | boolean | null | undefined;
 
@@ -44,7 +44,8 @@ export type UserPreferences =
   | "@feature/chat-filter"
   | "@feature/voice-chat"
   | "@feature/adult-games"
-  | "@feature/crash-reports";
+  | "@feature/crash-reports"
+  | "@staff/sso-login";
 export const userPreferences: UserPreferences[] = [
   "@chat/bell",
   "@chat/enabled",
@@ -62,6 +63,7 @@ export const userPreferences: UserPreferences[] = [
   "@feature/voice-chat",
   "@feature/adult-games",
   "@feature/crash-reports",
+  "@staff/sso-login",
 ];
 export const defaultUserPreferences: Record<
   UserPreferences,
@@ -83,6 +85,7 @@ export const defaultUserPreferences: Record<
   "@feature/voice-chat": true,
   "@feature/adult-games": true,
   "@feature/crash-reports": true,
+  "@staff/sso-login": false,
 };
 export const userPreferenceValidators: Partial<
   Record<
@@ -96,6 +99,7 @@ export const userPreferenceValidators: Partial<
   "@user/seen-roblox-convert": (value) =>
     typeof value === "boolean" && value === true,
   "@feature/preroll-ads": (_, user) => user.premium === true,
+  "@staff/sso-login": (_, user) => user.role === Role.ADMIN,
 };
 
 export type PascalToCamel<S extends string> =

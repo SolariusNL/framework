@@ -1,6 +1,7 @@
 import IResponseBase from "@/types/api/IResponseBase";
 import Authorized, { Account } from "@/util/api/authorized";
 import cast from "@/util/cast";
+import { Fwx } from "@/util/fwx";
 import { hashPass, isSamePass } from "@/util/hash/password";
 import { sendMail } from "@/util/mail";
 import createNotification from "@/util/notifications";
@@ -97,6 +98,8 @@ class AuthRouter {
       };
     }
 
+    const prefs = await Fwx.Preferences.getPreferences(account?.id);
+
     if (!(await isSamePass(password, account.password))) {
       return {
         status: 400,
@@ -114,7 +117,8 @@ class AuthRouter {
 
     if (
       account.role === Role.ADMIN &&
-      serverConfig.components["admin-sso"].enabled
+      serverConfig.components["admin-sso"].enabled &&
+      prefs["@staff/sso-login"] === true
     ) {
       const state = Array(12)
         .fill(0)
@@ -312,6 +316,14 @@ class AuthRouter {
     });
 
     if (!account) {
+      return {
+        status: 400,
+        message: "Invalid user",
+      };
+    }
+
+    const prefs = await Fwx.Preferences.getPreferences(account?.id);
+    if (account.role !== Role.ADMIN || prefs["@staff/sso-login"] !== true) {
       return {
         status: 400,
         message: "Invalid user",

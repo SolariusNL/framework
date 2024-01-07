@@ -4,7 +4,10 @@ import { updateAccount } from "@/components/settings/account";
 import SettingsTab from "@/components/settings/settings-tab";
 import SideBySide from "@/components/settings/side-by-side";
 import { BLACK } from "@/pages/teams/t/[slug]/issue/create";
+import usePreferences from "@/stores/usePreferences";
+import cast from "@/util/cast";
 import { getCookie } from "@/util/cookies";
+import { Preferences } from "@/util/preferences";
 import { User } from "@/util/prisma-types";
 import {
   Button,
@@ -17,6 +20,7 @@ import {
   useMantineColorScheme,
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
+import { Role } from "@prisma/client";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { toDataURL } from "qrcode";
@@ -25,6 +29,7 @@ import {
   HiCheck,
   HiCheckCircle,
   HiExclamation,
+  HiIdentification,
   HiKey,
   HiLockClosed,
   HiMail,
@@ -57,6 +62,7 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
   const [base32, setBase32] = useState("");
   const [twoFactorCode, setTwoFactorCode] = useState("");
   const [invalid, setInvalid] = useState(false);
+  const { preferences } = usePreferences();
 
   const sendEmailVerification = async () => {
     await fetch("/api/users/@me/verifyemail", {
@@ -462,6 +468,32 @@ const SecurityTab = ({ user }: SecurityTabProps) => {
               </Stack>
             }
           />
+          {user.role === Role.ADMIN && (
+            <SideBySide
+              title="Staff Settings"
+              description="These settings are only available to Framework staff."
+              icon={<HiIdentification />}
+              shaded
+              noUpperBorder
+              right={
+                <Stack spacing={4}>
+                  <LabelledCheckbox
+                    label="SSO Login"
+                    description="Require login through Solarius ID."
+                    defaultChecked={cast<boolean>(
+                      preferences["@staff/sso-login"]
+                    )}
+                    black
+                    onChange={(e) => {
+                      Preferences.setPreferences({
+                        "@staff/sso-login": e.target.checked,
+                      });
+                    }}
+                  />
+                </Stack>
+              }
+            />
+          )}
         </Stack>
       </SettingsTab>
     </>
