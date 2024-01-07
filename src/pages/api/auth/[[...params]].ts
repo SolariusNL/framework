@@ -378,7 +378,11 @@ class AuthRouter {
     }
 
     setCookie(".frameworksession", session.token, {
-      maxAge: 60 * 60 * 24 * 7,
+      maxAge: 60 * 60 * 24 * 30,
+      ...(process.env.NEXT_PUBLIC_COOKIE_DOMAIN &&
+        process.env.NEXT_PUBLIC_COOKIE_DOMAIN !== "CHANGE_ME" && {
+          domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
+        }),
       req: request,
       res: response,
     });
