@@ -347,36 +347,6 @@ class AuthRouter {
       },
     });
 
-    if (account.notificationPreferences.includes("LOGIN")) {
-      await createNotification(
-        Number(account.id),
-        "LOGIN",
-        `New login detected from a ${getOperatingSystemString(
-          getOperatingSystem(String(request.headers["user-agent"] || ""))
-        )} device with IP ${getClientIp(request)}`,
-        "New Login"
-      );
-      await prisma.newLogin.create({
-        data: {
-          user: {
-            connect: {
-              id: account.id,
-            },
-          },
-          ip: String(getClientIp(request)),
-          device: getOperatingSystemEnumFromString(
-            getOperatingSystem(String(request.headers["user-agent"] || ""))
-          ),
-          session: {
-            connect: {
-              id: session.id,
-            },
-          },
-          completed: true,
-        },
-      });
-    }
-
     setCookie(".frameworksession", session.token, {
       maxAge: 60 * 60 * 24 * 30,
       ...(process.env.NEXT_PUBLIC_COOKIE_DOMAIN &&
