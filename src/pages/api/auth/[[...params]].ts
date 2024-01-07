@@ -1,11 +1,13 @@
 import IResponseBase from "@/types/api/IResponseBase";
 import Authorized, { Account } from "@/util/api/authorized";
+import cast from "@/util/cast";
 import { hashPass, isSamePass } from "@/util/hash/password";
 import { sendMail } from "@/util/mail";
 import createNotification from "@/util/notifications";
 import prisma from "@/util/prisma";
 import type { User } from "@/util/prisma-types";
 import { RateLimitMiddleware } from "@/util/rate-limit";
+import { getServerConfig } from "@/util/server-config";
 import { verificationEmail } from "@/util/templates/verification-email";
 import { disableOTP, generateOTP, verifyOTP } from "@/util/twofa";
 import {
@@ -13,13 +15,14 @@ import {
   getOperatingSystemEnumFromString,
   getOperatingSystemString,
 } from "@/util/ua";
-import { NotificationType, OperatingSystem } from "@prisma/client";
+import { NotificationType, OperatingSystem, Role } from "@prisma/client";
 import { render } from "@react-email/render";
 import {
   Body,
   Get,
   Param,
   Post,
+  Query,
   Req,
   Res,
   createHandler,
@@ -43,6 +46,8 @@ interface RegisterBody {
   password: string;
   email: string;
 }
+
+const serverConfig = getServerConfig();
 
 class AuthRouter {
   @Post("/login")
@@ -104,6 +109,24 @@ class AuthRouter {
         status: 403,
         message:
           "Your account has been locked. Please contact support for further assistance.",
+      };
+    }
+
+    if (
+      account.role === Role.ADMIN &&
+      serverConfig.components["admin-sso"].enabled
+    ) {
+      const state = Array(12)
+        .fill(0)
+        .map(() => Math.random().toString(36).substring(2))
+        .join("");
+      return {
+        success: true,
+        ssoRequired: true,
+        url: serverConfig.components["admin-sso"].sso.authorizationUrl,
+        clientId: serverConfig.components["admin-sso"].sso.clientId,
+        redirectUri: serverConfig.components["admin-sso"].sso.callbackUrl,
+        state,
       };
     }
 
@@ -231,6 +254,136 @@ class AuthRouter {
       success: true,
       token: session.token,
     };
+  }
+
+  @Get("/sso-callback")
+  public async adminSsoCallback(
+    @Query("code") code: string,
+    @Req() request: NextApiRequest,
+    @Res() response: NextApiResponse
+  ) {
+    const { clientId, clientSecret, callbackUrl, tokenUrl, userInfoUrl } =
+      serverConfig.components["admin-sso"].sso;
+
+    const body = {
+      client_id: clientId,
+      client_secret: clientSecret,
+      grant_type: "authorization_code",
+      code,
+      redirect_uri: callbackUrl,
+    };
+
+    const res = await fetch(tokenUrl, {
+      method: "POST",
+      body: new URLSearchParams(body),
+    });
+
+    const json = await res.json();
+
+    if (!json.access_token) {
+      return {
+        status: 400,
+        message: "Invalid code",
+      };
+    }
+
+    const userRes = await fetch(userInfoUrl, {
+      headers: {
+        Authorization: `Bearer ${json.access_token}`,
+      },
+    });
+
+    const userJson = await userRes.json();
+
+    if (!userJson.fw_uid) {
+      return {
+        status: 400,
+        message:
+          "Either the user doesn't exist, or you haven't been added to the Framework organization. Please contact HR for help.",
+      };
+    }
+
+    const uid = cast<number>(userJson.fw_uid);
+
+    const account = await prisma.user.findUnique({
+      where: {
+        id: uid,
+      },
+    });
+
+    if (!account) {
+      return {
+        status: 400,
+        message: "Invalid user",
+      };
+    }
+
+    if (account.locked) {
+      return {
+        status: 403,
+        message:
+          "Your account has been locked. Please contact support for further assistance.",
+      };
+    }
+
+    const session = await prisma.session.create({
+      data: {
+        user: {
+          connect: {
+            id: Number(account.id),
+          },
+        },
+        token: Array(12)
+          .fill(0)
+          .map(() => Math.random().toString(36).substring(2))
+          .join(""),
+        ip: String(getClientIp(request)),
+        ua: String(request.headers["user-agent"] || "Unknown"),
+        os: OperatingSystem[
+          getOperatingSystem(
+            String(request.headers["user-agent"]) || ""
+          ) as keyof typeof OperatingSystem
+        ],
+      },
+    });
+
+    if (account.notificationPreferences.includes("LOGIN")) {
+      await createNotification(
+        Number(account.id),
+        "LOGIN",
+        `New login detected from a ${getOperatingSystemString(
+          getOperatingSystem(String(request.headers["user-agent"] || ""))
+        )} device with IP ${getClientIp(request)}`,
+        "New Login"
+      );
+      await prisma.newLogin.create({
+        data: {
+          user: {
+            connect: {
+              id: account.id,
+            },
+          },
+          ip: String(getClientIp(request)),
+          device: getOperatingSystemEnumFromString(
+            getOperatingSystem(String(request.headers["user-agent"] || ""))
+          ),
+          session: {
+            connect: {
+              id: session.id,
+            },
+          },
+          completed: true,
+        },
+      });
+    }
+
+    setCookie(".frameworksession", session.token, {
+      maxAge: 60 * 60 * 24 * 7,
+      req: request,
+      res: response,
+    });
+
+    response.redirect("/");
   }
 
   @Post("/register")

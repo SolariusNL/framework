@@ -13,6 +13,7 @@ import {
   useMantineColorScheme,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import { setCookie } from "cookies-next";
 import { AnimatePresence, motion } from "framer-motion";
@@ -108,6 +109,36 @@ const Login: NextPage = () => {
       .then((res) => res.json())
       .then((res) => {
         if (res.success) {
+          if (res.ssoRequired) {
+            openConfirmModal({
+              title: "Single sign-on required",
+              children: (
+                <div className="flex items-center justify-center">
+                  <Text size="sm" color="dimmed">
+                    Staff are required to sign in using single sign-on as a
+                    security measure. Please click the button below to continue.
+                  </Text>
+                </div>
+              ),
+              labels: {
+                confirm: "Continue",
+                cancel: "Not now",
+              },
+              onConfirm: () => {
+                const url = new URL(res.url);
+                url.searchParams.append("redirect_uri", res.redirectUri);
+                url.searchParams.append("client_id", res.clientId);
+                url.searchParams.append("response_type", "code");
+                url.searchParams.append("scope", "openid profile email fw_uid");
+                url.searchParams.append("response_type", "code");
+                url.searchParams.append("state", res.state);
+
+                window.location.href = url.toString();
+              },
+            });
+
+            return;
+          }
           if (res.requiresEmail) {
             router.push("/verifyemail/login/" + res.emailId);
           } else if (res.otp) {

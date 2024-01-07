@@ -25,6 +25,17 @@
     },
     "redis": {
       "enabled": true
+    },
+    "admin-sso": {
+      "enabled": false,
+      "sso": {
+        "clientId": "client_id_here",
+        "clientSecret": "client_secret_here",
+        "callbackUrl": "http://127.0.0.1:3000/api/admin/sso/callback",
+        "authorizationUrl": "https://id.solarius.me/application/o/authorize/",
+        "tokenUrl": "https://id.solarius.me/application/o/token/",
+        "userInfoUrl": "https://id.solarius.me/application/o/userinfo/"
+      }
     }
   },
   "licenseSecretKey": "generate-a-secret-key"

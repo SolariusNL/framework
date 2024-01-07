@@ -3,7 +3,7 @@ import { z } from "zod";
 import cast from "./cast";
 
 const componentBaseSchema = z.object({
-  enabled: z.boolean(),
+  enabled: z.boolean().default(true),
 });
 export const serverCfgSchema = z.object({
   components: z.object({
@@ -21,6 +21,17 @@ export const serverCfgSchema = z.object({
     "dev-profiles": componentBaseSchema,
     bits: componentBaseSchema,
     redis: componentBaseSchema,
+    "admin-sso": z.object({
+      enabled: z.boolean().default(false),
+      sso: z.object({
+        clientId: z.string(),
+        clientSecret: z.string(),
+        callbackUrl: z.string(),
+        authorizationUrl: z.string(),
+        tokenUrl: z.string(),
+        userInfoUrl: z.string(),
+      }),
+    }),
   }),
   licenseSecretKey: z.string(), // the secret key used to generate license keys
 });
