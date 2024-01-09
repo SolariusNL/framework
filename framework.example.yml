@@ -35,13 +35,4 @@ footer:
         - label: Community Guidelines
           url: /guidelines
 
-  socials:
-    twitter:
-      show: false
-      url: https://twitter.com/
-    youtube:
-      show: false
-      url: https://youtube.com/
-    instagram:
-      show: false
-      url: https://instagram.com/
+  flagPs: true

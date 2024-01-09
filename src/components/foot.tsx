@@ -3,21 +3,19 @@ import clsx from "@/util/clsx";
 import getConfig from "@/util/config";
 import { Fw } from "@/util/fw";
 import {
-  ActionIcon,
+  Anchor,
   Badge,
+  Button,
   Container,
   createStyles,
   Group,
+  Popover,
   Stack,
   Text,
 } from "@mantine/core";
-import {
-  IconBrandInstagram,
-  IconBrandTwitter,
-  IconBrandYoutube,
-} from "@tabler/icons";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { HiPaperClip } from "react-icons/hi";
 import ReactNoSSR from "react-no-ssr";
 
 const useStyles = createStyles((theme) => ({
@@ -111,9 +109,9 @@ const useStyles = createStyles((theme) => ({
     },
   },
 
-  social: {
+  right: {
     [theme.fn.smallerThan("sm")]: {
-      marginTop: theme.spacing.xs,
+      marginTop: theme.spacing.md,
     },
   },
 }));
@@ -204,7 +202,7 @@ const Footer = () => {
         <div className={classes.groups}>{groups}</div>
       </Container>
       <Container className={classes.afterFooter}>
-        <Stack spacing={8}>
+        <Stack spacing={8} className="md:text-start text-center">
           <Text color="dimmed" size="sm">
             © 2021-2024 Solarius. All rights reserved.
           </Text>
@@ -215,29 +213,61 @@ const Footer = () => {
           </Text>
         </Stack>
 
-        <Group spacing={0} className={classes.social} position="right" noWrap>
-          {config?.footer?.socials?.twitter?.show && (
-            <Link href={config.footer.socials.twitter.url}>
-              <ActionIcon size="lg">
-                <IconBrandTwitter size={18} stroke={1.5} />
-              </ActionIcon>
-            </Link>
-          )}
-          {config?.footer?.socials?.youtube?.show && (
-            <Link href={config.footer.socials.youtube.url}>
-              <ActionIcon size="lg">
-                <IconBrandYoutube size={18} stroke={1.5} />
-              </ActionIcon>
-            </Link>
-          )}
-          {config?.footer?.socials?.instagram?.show && (
-            <Link href={config.footer.socials.instagram.url}>
-              <ActionIcon size="lg">
-                <IconBrandInstagram size={18} stroke={1.5} />
-              </ActionIcon>
-            </Link>
-          )}
-        </Group>
+        {config.footer?.flagPs && (
+          <Group spacing={0} className={classes.right} position="right" noWrap>
+            <Popover position="bottom-end" transition="pop-bottom-right">
+              <Popover.Target>
+                <Button
+                  variant="subtle"
+                  color="gray"
+                  className="text-dimmed"
+                  classNames={{
+                    label: "flex items-center gap-2",
+                  }}
+                  size="xs"
+                >
+                  <span>🇵🇸</span>
+                  <span>Stand with Palestine</span>
+                  <span>🇵🇸</span>
+                </Button>
+              </Popover.Target>
+              <Popover.Dropdown>
+                <div className="flex flex-col gap-2">
+                  <Text size="sm" color="dimmed">
+                    Stand for what&apos;s right. Stop the genocide.
+                  </Text>
+                  <div className="flex flex-col gap-1">
+                    {[
+                      {
+                        label: "Islamic Relief (USA)",
+                        url: "https://irusa.org/middle-east/palestine/",
+                      },
+                      {
+                        label: "Medical Aid for Palestinians (UK)",
+                        url: "https://www.map.org.uk/donate/donate",
+                      },
+                      {
+                        label: "Palestinian Red Crescent",
+                        url: "https://www.palestinercs.org/ar/donation",
+                      },
+                    ].map((resource, i) => (
+                      <Anchor
+                        className="flex items-center gap-2"
+                        href={resource.url}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        key={i}
+                      >
+                        <HiPaperClip />
+                        <span>{resource.label}</span>
+                      </Anchor>
+                    ))}
+                  </div>
+                </div>
+              </Popover.Dropdown>
+            </Popover>
+          </Group>
+        )}
       </Container>
     </footer>
   );

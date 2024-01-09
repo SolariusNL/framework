@@ -1,14 +1,3 @@
-interface SocialLink {
-  /**
-   * Show this social link?
-   */
-  show: boolean;
-  /**
-   * The URL of the social link
-   */
-  url: string;
-}
-
 interface TicketProduct {
   name: string;
   priceId: string;
@@ -70,25 +59,9 @@ interface Configuration {
       }>;
     }>;
 
-    /**
-     * Social links
-     */
-    socials?: {
-      /**
-       * Twitter link
-       */
-      twitter?: SocialLink;
-      /**
-       * YouTube link
-       */
-      youtube?: SocialLink;
-      /**
-       * Instagram link
-       */
-      instagram?: SocialLink;
-    };
-
     description?: string;
+    // Display Palestine flag in solidarity
+    flagPs?: boolean;
   };
 }
 
